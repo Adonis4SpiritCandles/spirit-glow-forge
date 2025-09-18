@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -97,11 +98,14 @@ const ProductCard = ({
               />
             </Button>
             <Button
+              asChild
               size="sm"
               variant="secondary"
               className="w-10 h-10 p-0 rounded-full shadow-elegant"
             >
-              <Eye className="h-4 w-4" />
+              <Link to={`/product/${id}`}>
+                <Eye className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ShoppingCart, Menu, X, Search, User } from "lucide-react";
+import { ShoppingCart, Menu, Search, User, Globe } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,9 +13,10 @@ import {
 } from "@/components/ui/sheet";
 import spiritLogo from "@/assets/spirit-logo.png";
 
-const Header = () => {
+const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [cartItems, setCartItems] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [language, setLanguage] = useState<'EN' | 'PL'>('EN');
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -30,23 +32,25 @@ const Header = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-4">
-            <img 
-              src={spiritLogo} 
-              alt="SPIRIT CANDLES" 
-              className="h-8 w-auto candle-glow"
-            />
+            <Link to="/">
+              <img 
+                src={spiritLogo} 
+                alt="SPIRIT CANDLES" 
+                className="h-8 w-auto candle-glow hover:scale-105 transition-transform duration-300"
+              />
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary hover:scale-105 duration-300"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -56,11 +60,27 @@ const Header = () => {
               <Search className="h-4 w-4" />
             </Button>
             
+            {/* Language Toggle */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setLanguage(language === 'EN' ? 'PL' : 'EN')}
+              className="hidden md:flex items-center space-x-1"
+            >
+              <Globe className="h-4 w-4" />
+              <span className="text-xs font-medium">{language}</span>
+            </Button>
+            
             <Button variant="ghost" size="sm" className="hidden md:flex">
               <User className="h-4 w-4" />
             </Button>
 
-            <Button variant="ghost" size="sm" className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative"
+              onClick={onCartOpen}
+            >
               <ShoppingCart className="h-4 w-4" />
               {cartItems > 0 && (
                 <Badge 
@@ -94,19 +114,27 @@ const Header = () => {
                 </SheetHeader>
                 <div className="grid gap-4 py-4">
                   {navItems.map((item) => (
-                    <a
+                    <Link
                       key={item.name}
-                      href={item.href}
+                      to={item.href}
                       className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.name}
-                    </a>
+                    </Link>
                   ))}
                   <div className="border-t border-border pt-4 mt-4">
                     <Button variant="outline" className="w-full mb-2">
                       <Search className="h-4 w-4 mr-2" />
                       Search
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full mb-2"
+                      onClick={() => setLanguage(language === 'EN' ? 'PL' : 'EN')}
+                    >
+                      <Globe className="h-4 w-4 mr-2" />
+                      {language}
                     </Button>
                     <Button variant="outline" className="w-full">
                       <User className="h-4 w-4 mr-2" />

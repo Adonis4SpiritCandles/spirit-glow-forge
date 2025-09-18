@@ -96,7 +96,7 @@ const ProductCarousel = () => {
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => 
-        prev >= sampleProducts.length - 1 ? 0 : prev + 1
+        prev >= sampleProducts.length - 3 ? 0 : prev + 1
       );
     }, 4000);
 
@@ -105,13 +105,13 @@ const ProductCarousel = () => {
 
   const goToNext = () => {
     setCurrentIndex((prev) => 
-      prev >= sampleProducts.length - 1 ? 0 : prev + 1
+      prev >= sampleProducts.length - 3 ? 0 : prev + 1
     );
   };
 
   const goToPrev = () => {
     setCurrentIndex((prev) => 
-      prev <= 0 ? sampleProducts.length - 1 : prev - 1
+      prev <= 0 ? sampleProducts.length - 3 : prev - 1
     );
   };
 
@@ -141,14 +141,12 @@ const ProductCarousel = () => {
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
-          {/* Main Carousel */}
+          {/* Main Carousel - 3 items */}
           <div className="flex transition-transform duration-500 ease-in-out"
-               style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+               style={{ transform: `translateX(-${currentIndex * (100/3)}%)` }}>
             {sampleProducts.map((product) => (
-              <div key={product.id} className="w-full flex-shrink-0 px-2">
-                <div className="max-w-sm mx-auto">
-                  <ProductCard {...product} />
-                </div>
+              <div key={product.id} className="w-1/3 flex-shrink-0 px-2">
+                <ProductCard {...product} />
               </div>
             ))}
           </div>

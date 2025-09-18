@@ -1,20 +1,12 @@
-import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import { ShoppingCart, Minus, Plus, X, Eye } from "lucide-react";
-import candleLit from "@/assets/candle-lit.png";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: { pln: number; eur: number };
-  image: string;
-  size: string;
-  quantity: number;
-}
+import { useCart } from "@/hooks/useCart";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -22,37 +14,10 @@ interface CartSidebarProps {
 }
 
 const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
-  // Mock cart items - will be replaced with real cart state
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Mystic Rose",
-      price: { pln: 89, eur: 21 },
-      image: candleLit,
-      size: "180g",
-      quantity: 2,
-    },
-  ]);
+  const { cartItems, updateQuantity, removeFromCart, totalPLN, totalEUR, itemCount, loading } = useCart();
+  const { t, language } = useLanguage();
+  const { user } = useAuth();
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      setCartItems(items => items.filter(item => item.id !== id));
-    } else {
-      setCartItems(items => 
-        items.map(item => 
-          item.id === id ? { ...item, quantity: newQuantity } : item
-        )
-      );
-    }
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const total = cartItems.reduce((sum, item) => sum + (item.price.pln * item.quantity), 0);
-  const totalEur = cartItems.reduce((sum, item) => sum + (item.price.eur * item.quantity), 0);
-  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -60,7 +25,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
-            Shopping Cart
+            {t('shoppingCart')}
             {itemCount > 0 && (
               <Badge variant="secondary" className="bg-primary text-primary-foreground">
                 {itemCount}
@@ -69,14 +34,29 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
           </SheetTitle>
         </SheetHeader>
 
-        {cartItems.length === 0 ? (
+        {!user ? (
           <div className="flex-1 flex items-center justify-center flex-col text-center py-8">
             <ShoppingCart className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="font-playfair text-xl font-semibold mb-2">Your cart is empty</h3>
-            <p className="text-muted-foreground mb-6">Add some candles to get started</p>
+            <h3 className="font-playfair text-xl font-semibold mb-2">Please Log In</h3>
+            <p className="text-muted-foreground mb-6">You need to be logged in to view your cart</p>
+            <Button asChild>
+              <Link to="/auth" onClick={onClose}>
+                {t('login')}
+              </Link>
+            </Button>
+          </div>
+        ) : loading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : cartItems.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center flex-col text-center py-8">
+            <ShoppingCart className="h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="font-playfair text-xl font-semibold mb-2">{t('emptyCart')}</h3>
+            <p className="text-muted-foreground mb-6">{t('addSomeCandles')}</p>
             <Button asChild>
               <Link to="/shop" onClick={onClose}>
-                Browse Collection
+                {t('browseCollection')}
               </Link>
             </Button>
           </div>
@@ -91,8 +71,8 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                       {/* Product Image */}
                       <div className="relative w-16 h-16 bg-gradient-mystical rounded-lg overflow-hidden flex-shrink-0">
                         <img 
-                          src={item.image}
-                          alt={item.name}
+                          src={item.product.image_url}
+                          alt={language === 'en' ? item.product.name_en : item.product.name_pl}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -102,16 +82,16 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h4 className="font-playfair font-semibold text-sm truncate">
-                              {item.name}
+                              {language === 'en' ? item.product.name_en : item.product.name_pl}
                             </h4>
                             <p className="text-xs text-muted-foreground">
-                              Size: {item.size}
+                              {t('size')}: {item.product.size}
                             </p>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="p-1 h-auto text-muted-foreground hover:text-destructive"
                           >
                             <X className="h-3 w-3" />
@@ -122,10 +102,10 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                         <div className="flex justify-between items-center">
                           <div className="text-sm">
                             <span className="font-semibold text-primary">
-                              {item.price.pln} PLN
+                              {item.product.price_pln} PLN
                             </span>
                             <span className="text-xs text-muted-foreground ml-1">
-                              (~{item.price.eur} EUR)
+                              (~{item.product.price_eur} EUR)
                             </span>
                           </div>
 
@@ -161,9 +141,9 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                             size="sm"
                             className="h-auto p-0 text-xs text-primary hover:text-primary/80"
                           >
-                            <Link to={`/product/${item.id}`} onClick={onClose}>
+                            <Link to={`/product/${item.product.id}`} onClick={onClose}>
                               <Eye className="h-3 w-3 mr-1" />
-                              View Product
+                              {t('viewProduct')}
                             </Link>
                           </Button>
                         </div>
@@ -178,22 +158,22 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
             <div className="border-t border-border pt-4 space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal ({itemCount} items)</span>
-                  <span>{total} PLN</span>
+                  <span>{t('subtotal')} ({itemCount} {t('items')})</span>
+                  <span>{totalPLN} PLN</span>
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span></span>
-                  <span>~{totalEur} EUR</span>
+                  <span>~{totalEUR} EUR</span>
                 </div>
               </div>
 
               <Separator />
 
               <div className="flex justify-between font-semibold text-lg">
-                <span>Total</span>
+                <span>{t('total')}</span>
                 <div className="text-right">
-                  <div className="text-primary">{total} PLN</div>
-                  <div className="text-xs text-muted-foreground">~{totalEur} EUR</div>
+                  <div className="text-primary">{totalPLN} PLN</div>
+                  <div className="text-xs text-muted-foreground">~{totalEUR} EUR</div>
                 </div>
               </div>
 
@@ -203,7 +183,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                   size="lg"
                 >
-                  Checkout Now
+                  {t('checkoutNow')}
                 </Button>
                 <Button 
                   asChild
@@ -212,7 +192,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                   onClick={onClose}
                 >
                   <Link to="/cart">
-                    View Full Cart
+                    {t('viewFullCart')}
                   </Link>
                 </Button>
               </div>

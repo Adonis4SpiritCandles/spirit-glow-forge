@@ -1,30 +1,32 @@
 import { useState } from "react";
-import { ShoppingCart, Menu, Search, User, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ShoppingCart, Menu, Search, User, LogOut } from "lucide-react";
 import spiritLogo from "@/assets/spirit-logo.png";
+import LanguageToggle from "./LanguageToggle";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
-  const [cartItems, setCartItems] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [language, setLanguage] = useState<'EN' | 'PL'>('EN');
+  const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const { itemCount } = useCart();
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Shop", href: "/shop" },
-    { name: "Collections", href: "/collections" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: t('home'), href: '/' },
+    { name: t('shop'), href: '/shop' },
+    { name: t('collections'), href: '/collections' },
+    { name: t('about'), href: '/about' },
+    { name: t('contact'), href: '/contact' },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 mystical-blur">
@@ -61,19 +63,32 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             </Button>
             
             {/* Language Toggle */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setLanguage(language === 'EN' ? 'PL' : 'EN')}
-              className="hidden md:flex items-center space-x-1"
-            >
-              <Globe className="h-4 w-4" />
-              <span className="text-xs font-medium">{language}</span>
-            </Button>
+            <LanguageToggle />
             
-            <Button variant="ghost" size="sm" className="hidden md:flex">
-              <User className="h-4 w-4" />
-            </Button>
+            {/* Auth Buttons */}
+            <div className="hidden md:flex items-center gap-2">
+              {user ? (
+                <>
+                  <Link to="/admin">
+                    <Button variant="ghost" size="sm">
+                      <User className="h-4 w-4 mr-1" />
+                      {t('dashboard')}
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-1" />
+                    {t('logout')}
+                  </Button>
+                </>
+              ) : (
+                <Link to="/auth">
+                  <Button variant="ghost" size="sm">
+                    <User className="h-4 w-4 mr-1" />
+                    {t('login')}
+                  </Button>
+                </Link>
+              )}
+            </div>
 
             <Button 
               variant="ghost" 
@@ -82,12 +97,12 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               onClick={onCartOpen}
             >
               <ShoppingCart className="h-4 w-4" />
-              {cartItems > 0 && (
+              {itemCount > 0 && (
                 <Badge 
                   variant="secondary" 
                   className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
                 >
-                  {cartItems}
+                  {itemCount}
                 </Badge>
               )}
             </Button>
@@ -128,18 +143,51 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                       <Search className="h-4 w-4 mr-2" />
                       Search
                     </Button>
+                    
                     <Button 
-                      variant="outline" 
-                      className="w-full mb-2"
-                      onClick={() => setLanguage(language === 'EN' ? 'PL' : 'EN')}
+                      variant="ghost" 
+                      size="sm" 
+                      className="relative w-full justify-center mb-2"
+                      onClick={onCartOpen}
                     >
-                      <Globe className="h-4 w-4 mr-2" />
-                      {language}
+                      <ShoppingCart className="h-5 w-5 mr-2" />
+                      {t('cart')}
+                      {itemCount > 0 && (
+                        <Badge 
+                          variant="destructive" 
+                          className="ml-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                        >
+                          {itemCount}
+                        </Badge>
+                      )}
                     </Button>
-                    <Button variant="outline" className="w-full">
-                      <User className="h-4 w-4 mr-2" />
-                      Account
-                    </Button>
+
+                    {/* Auth Buttons Mobile */}
+                    {user ? (
+                      <>
+                        <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
+                          <Button variant="outline" className="w-full mb-2">
+                            <User className="h-4 w-4 mr-2" />
+                            {t('dashboard')}
+                          </Button>
+                        </Link>
+                        <Button variant="outline" className="w-full mb-2" onClick={handleSignOut}>
+                          <LogOut className="h-4 w-4 mr-2" />
+                          {t('logout')}
+                        </Button>
+                      </>
+                    ) : (
+                      <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="outline" className="w-full mb-2">
+                          <User className="h-4 w-4 mr-2" />
+                          {t('login')}
+                        </Button>
+                      </Link>
+                    )}
+
+                    <div className="flex justify-center">
+                      <LanguageToggle />
+                    </div>
                   </div>
                 </div>
               </SheetContent>

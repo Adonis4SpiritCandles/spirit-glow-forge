@@ -1,13 +1,71 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/hooks/useCart';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+import { useState, useEffect } from 'react';
 
 const Checkout = () => {
-  const { cartItems, totalPLN, totalEUR, itemCount } = useCart();
+  const { cartItems, totalPLN, totalEUR, itemCount, clearCart } = useCart();
   const { t, language } = useLanguage();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+      toast({
+        title: t('loginRequired') || 'Login Required',
+        description: t('loginToCheckout') || 'You need to log in to complete your purchase',
+        variant: 'destructive',
+      });
+    }
+  }, [user, navigate, t]);
+
+  const handleProceedToPayment = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast({
+        title: t('emptyCart') || 'Cart Empty',
+        description: t('addSomeCandles') || 'Add some candles to your cart first',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { cartItems },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        // Redirect to Stripe Checkout
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create checkout session. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background py-8">
@@ -64,8 +122,13 @@ const Checkout = () => {
                 </div>
               </div>
 
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" size="lg">
-                {t('proceedToPayment') || 'Proceed to Payment'}
+              <Button 
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
+                size="lg"
+                onClick={handleProceedToPayment}
+                disabled={isLoading || !user || cartItems.length === 0}
+              >
+                {isLoading ? t('processing') || 'Processing...' : t('proceedToPayment') || 'Proceed to Payment'}
               </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link to="/cart">{t('backToCart') || 'Back to Cart'}</Link>

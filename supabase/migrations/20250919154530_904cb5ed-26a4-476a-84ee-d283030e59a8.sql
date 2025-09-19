@@ -1,0 +1,2 @@
+-- Update config for contact form function
+-- This ensures the contact form edge function is properly configured

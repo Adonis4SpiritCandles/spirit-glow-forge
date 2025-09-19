@@ -129,6 +129,18 @@ All colors MUST be HSL. Premium luxury aesthetics with mystical elegance.
   
   .candle-glow {
     filter: drop-shadow(0 0 20px hsl(45, 95%, 65%, 0.6));
+    animation: candle-flicker 3s ease-in-out infinite alternate;
+  }
+  
+  @keyframes candle-flicker {
+    0%, 100% {
+      filter: drop-shadow(0 0 20px hsl(45, 95%, 65%, 0.6)) 
+              drop-shadow(0 0 40px hsl(45, 100%, 75%, 0.4));
+    }
+    50% {
+      filter: drop-shadow(0 0 30px hsl(45, 95%, 65%, 0.8)) 
+              drop-shadow(0 0 60px hsl(45, 100%, 75%, 0.6));
+    }
   }
   
   .mystical-blur {

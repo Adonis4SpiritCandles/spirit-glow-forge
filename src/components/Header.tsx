@@ -9,10 +9,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageToggle from '@/components/LanguageToggle';
+import SearchModal from '@/components/SearchModal';
 import spiritLogo from '@/assets/spirit-logo.png';
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { language, t } = useLanguage();
   const { user, signOut } = useAuth();
   const { itemCount } = useCart();
@@ -58,7 +60,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               <img 
                 src={spiritLogo} 
                 alt="SPIRIT CANDLES" 
-                className="h-8 w-auto candle-glow hover:scale-105 transition-transform duration-300"
+                className="h-12 w-auto candle-glow hover:scale-105 transition-transform duration-300"
               />
             </Link>
           </div>
@@ -78,7 +80,12 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
 
           {/* Right Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="hidden md:flex">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="hidden md:flex"
+              onClick={() => setIsSearchOpen(true)}
+            >
               <Search className="h-4 w-4" />
             </Button>
             
@@ -160,9 +167,16 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Link>
                   ))}
                   <div className="border-t border-border pt-4 mt-4">
-                    <Button variant="outline" className="w-full mb-2">
+                    <Button 
+                      variant="outline" 
+                      className="w-full mb-2"
+                      onClick={() => {
+                        setIsSearchOpen(true);
+                        setIsMenuOpen(false);
+                      }}
+                    >
                       <Search className="h-4 w-4 mr-2" />
-                      Search
+                      {t('search')}
                     </Button>
                     
                     <Button 
@@ -216,6 +230,9 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           </div>
         </div>
       </div>
+      
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };

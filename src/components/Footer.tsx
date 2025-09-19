@@ -121,13 +121,13 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                 <div className="text-sm text-muted-foreground">
-                  <p>Via Roma 123</p>
-                  <p>00100 Roma, Italy</p>
+                  <p>Ul. Krakowska 45</p>
+                  <p>30-001 Kraków, Poland</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">+39 06 1234 5678</span>
+                <span className="text-sm text-muted-foreground">+48 12 345 6789</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary flex-shrink-0" />
@@ -146,7 +146,7 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
-            © 2024 SPIRIT CANDLES. All rights reserved.
+            © 2025 SPIRIT CANDLES. Design & Site by AdoniS4U @ Antonio Adonis Gagliardi. All rights reserved.
           </div>
           
           <div className="text-xs text-muted-foreground text-center md:text-right">

@@ -42,6 +42,10 @@ const translations = {
     viewFullCart: 'View Full Cart',
     viewProduct: 'View Product',
     items: 'items',
+    clearCart: 'Clear Cart',
+    continueShopping: 'Continue Shopping',
+    shipping: 'Shipping',
+    freeShipping: 'Free',
 
     // Forms
     email: 'Email',
@@ -53,11 +57,16 @@ const translations = {
     signUp: 'Sign Up',
     dontHaveAccount: "Don't have an account?",
     alreadyHaveAccount: 'Already have an account?',
+    changePassword: 'Change Password',
+    currentPassword: 'Current Password',
+    newPassword: 'New Password',
+    confirmNewPassword: 'Confirm New Password',
 
     // Hero Section
     heroTitle: 'Spirit of Candles',
     heroSubtitle: 'Illuminate Your Soul with Luxury Scented Candles',
     shopNow: 'Shop Now',
+    exploreCollection: 'Explore Full Collection',
 
     // Categories
     luxury: 'Luxury',
@@ -76,6 +85,42 @@ const translations = {
     orders: 'Orders',
     customers: 'Customers',
     settings: 'Settings',
+    addProduct: 'Add Product',
+    editProduct: 'Edit Product',
+    deleteProduct: 'Delete Product',
+    productName: 'Product Name',
+    productDescription: 'Product Description',
+    productPrice: 'Product Price',
+    productCategory: 'Product Category',
+    productSize: 'Product Size',
+    stockQuantity: 'Stock Quantity',
+    imageUrl: 'Image URL',
+    uploadImage: 'Upload Image',
+    save: 'Save',
+    cancel: 'Cancel',
+    
+    // User Dashboard
+    profile: 'Profile',
+    accountStatus: 'Account Status',
+    spiritMembers: 'Spirit Members',
+    editProfile: 'Edit Profile',
+    saveChanges: 'Save Changes',
+    orderHistory: 'Order History',
+    noOrders: 'No orders found',
+    language: 'Language',
+    preferredLanguage: 'Preferred Language',
+    
+    // Search
+    search: 'Search',
+    searchPlaceholder: 'Search products...',
+    searchResults: 'Search Results',
+    noResults: 'No products found',
+    
+    // Contact
+    contactUs: 'Contact Us',
+    name: 'Name',
+    message: 'Message',
+    sendMessage: 'Send Message',
   },
   pl: {
     // Navigation  
@@ -110,6 +155,10 @@ const translations = {
     viewFullCart: 'Zobacz pełny koszyk',
     viewProduct: 'Zobacz produkt',
     items: 'przedmiotów',
+    clearCart: 'Wyczyść koszyk',
+    continueShopping: 'Kontynuuj zakupy',
+    shipping: 'Dostawa',
+    freeShipping: 'Darmowa',
 
     // Forms
     email: 'Email',
@@ -121,11 +170,16 @@ const translations = {
     signUp: 'Zarejestruj się',
     dontHaveAccount: 'Nie masz konta?',
     alreadyHaveAccount: 'Masz już konto?',
+    changePassword: 'Zmień hasło',
+    currentPassword: 'Obecne hasło',
+    newPassword: 'Nowe hasło',
+    confirmNewPassword: 'Potwierdź nowe hasło',
 
     // Hero Section
     heroTitle: 'Duch Świec',
     heroSubtitle: 'Oświetl swoją duszę luksusowymi świecami zapachowymi',
     shopNow: 'Kup teraz',
+    exploreCollection: 'Poznaj pełną kolekcję',
 
     // Categories
     luxury: 'Luksus',
@@ -144,6 +198,42 @@ const translations = {
     orders: 'Zamówienia', 
     customers: 'Klienci',
     settings: 'Ustawienia',
+    addProduct: 'Dodaj produkt',
+    editProduct: 'Edytuj produkt',
+    deleteProduct: 'Usuń produkt',
+    productName: 'Nazwa produktu',
+    productDescription: 'Opis produktu',
+    productPrice: 'Cena produktu',
+    productCategory: 'Kategoria produktu',
+    productSize: 'Rozmiar produktu',
+    stockQuantity: 'Stan magazynowy',
+    imageUrl: 'URL obrazu',
+    uploadImage: 'Prześlij obraz',
+    save: 'Zapisz',
+    cancel: 'Anuluj',
+    
+    // User Dashboard
+    profile: 'Profil',
+    accountStatus: 'Status konta',
+    spiritMembers: 'Członkowie Spirit',
+    editProfile: 'Edytuj profil',
+    saveChanges: 'Zapisz zmiany',
+    orderHistory: 'Historia zamówień',
+    noOrders: 'Nie znaleziono zamówień',
+    language: 'Język',
+    preferredLanguage: 'Preferowany język',
+    
+    // Search
+    search: 'Szukaj',
+    searchPlaceholder: 'Szukaj produktów...',
+    searchResults: 'Wyniki wyszukiwania',
+    noResults: 'Nie znaleziono produktów',
+    
+    // Contact
+    contactUs: 'Skontaktuj się z nami',
+    name: 'Imię',
+    message: 'Wiadomość',
+    sendMessage: 'Wyślij wiadomość',
   }
 };
 

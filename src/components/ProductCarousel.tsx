@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
@@ -199,10 +200,13 @@ const ProductCarousel = () => {
         {/* Call to Action */}
         <div className="text-center mt-12">
           <Button 
+            asChild
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 shadow-luxury hover:scale-105 transition-all duration-300"
           >
-            Explore Full Collection
+            <Link to="/collections">
+              Explore Full Collection
+            </Link>
           </Button>
         </div>
       </div>

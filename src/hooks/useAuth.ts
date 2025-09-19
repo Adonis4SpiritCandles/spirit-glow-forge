@@ -27,7 +27,7 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+  const signUp = async (email: string, password: string, firstName: string, lastName: string, username: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -38,13 +38,24 @@ export const useAuth = () => {
         data: {
           first_name: firstName,
           last_name: lastName,
+          username: username,
         }
       }
     });
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (emailOrUsername: string, password: string) => {
+    // Try to find user by username first, then email
+    const { data: userProfile } = await supabase.rpc('find_user_by_username_or_email', {
+      identifier: emailOrUsername
+    });
+    
+    let email = emailOrUsername;
+    if (userProfile && userProfile.length > 0) {
+      email = userProfile[0].email;
+    }
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,

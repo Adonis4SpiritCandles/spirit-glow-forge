@@ -121,6 +121,48 @@ const translations = {
     name: 'Name',
     message: 'Message',
     sendMessage: 'Send Message',
+    subject: 'Subject',
+    getInTouch: 'Get in Touch',
+    sendUsAMessage: 'Send us a Message',
+    contactInformation: 'Contact Information',
+    emailUs: 'Email Us',
+    callUs: 'Call Us',
+    visitUs: 'Visit Us',
+    responseTime: 'Response Time',
+    frequentlyAskedQuestions: 'Frequently Asked Questions',
+    viewAllFaqs: 'View All FAQs',
+    customerServiceHours: 'Customer Service Hours',
+    emailSupport: 'Email Support',
+    phoneSupport: 'Phone Support',
+    
+    // Dashboard additions
+    revenue: 'Revenue',
+    manageProductInventory: 'Manage your product inventory',
+    addNewProduct: 'Add New Product',
+    editProductTitle: 'Edit Product',
+    updateProduct: 'Update Product',
+    createProduct: 'Create Product',
+    deleteConfirm: 'Are you sure you want to delete this product?',
+    billing: 'Billing',
+    status: 'Status',
+    customerDetails: 'Customer Details',
+    viewDetails: 'View Details',
+    exportData: 'Export Data',
+    statistics: 'Statistics',
+    
+    // Form labels
+    nameEn: 'Name (EN)',
+    namePl: 'Name (PL)',
+    descriptionEn: 'Description (EN)',
+    descriptionPl: 'Description (PL)',
+    pricePln: 'Price PLN (cents)',
+    priceEur: 'Price EUR (cents)',
+    
+    // Animations and UI
+    materializing: 'Materializing',
+    shopCollection: 'Shop Collection',
+    learnOurStory: 'Learn Our Story',
+    rebornYourNature: 'Reborn Your Nature',
   },
   pl: {
     // Navigation  
@@ -234,6 +276,48 @@ const translations = {
     name: 'Imię',
     message: 'Wiadomość',
     sendMessage: 'Wyślij wiadomość',
+    subject: 'Temat',
+    getInTouch: 'Skontaktuj się z nami',
+    sendUsAMessage: 'Wyślij nam wiadomość',
+    contactInformation: 'Informacje kontaktowe',
+    emailUs: 'Napisz do nas',
+    callUs: 'Zadzwoń',
+    visitUs: 'Odwiedź nas',
+    responseTime: 'Czas odpowiedzi',
+    frequentlyAskedQuestions: 'Często zadawane pytania',
+    viewAllFaqs: 'Zobacz wszystkie FAQ',
+    customerServiceHours: 'Godziny obsługi klienta',
+    emailSupport: 'Wsparcie email',
+    phoneSupport: 'Wsparcie telefoniczne',
+    
+    // Dashboard additions
+    revenue: 'Przychody',
+    manageProductInventory: 'Zarządzaj swoim asortymentem',
+    addNewProduct: 'Dodaj nowy produkt',
+    editProductTitle: 'Edytuj produkt',
+    updateProduct: 'Zaktualizuj produkt',
+    createProduct: 'Utwórz produkt',
+    deleteConfirm: 'Czy na pewno chcesz usunąć ten produkt?',
+    billing: 'Płatności',
+    status: 'Status',
+    customerDetails: 'Szczegóły klienta',
+    viewDetails: 'Zobacz szczegóły',
+    exportData: 'Eksportuj dane',
+    statistics: 'Statystyki',
+    
+    // Form labels
+    nameEn: 'Nazwa (EN)',
+    namePl: 'Nazwa (PL)',
+    descriptionEn: 'Opis (EN)',
+    descriptionPl: 'Opis (PL)',
+    pricePln: 'Cena PLN (grosze)',
+    priceEur: 'Cena EUR (centy)',
+    
+    // Animations and UI
+    materializing: 'Materializuje się',
+    shopCollection: 'Kup kolekcję',
+    learnOurStory: 'Poznaj naszą historię',
+    rebornYourNature: 'Odrodzenie twojej natury',
   }
 };
 

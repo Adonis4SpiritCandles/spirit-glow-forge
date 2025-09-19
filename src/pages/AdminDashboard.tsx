@@ -5,11 +5,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import AdminCustomerModal from '@/components/AdminCustomerModal';
+import AdminStatistics from '@/components/AdminStatistics';
+import AdminExport from '@/components/AdminExport';
 
 interface Product {
   id: string;
@@ -82,6 +89,10 @@ const AdminDashboard = () => {
     stock_quantity: 0,
     image_url: ''
   });
+
+  // Customer modal state
+  const [selectedCustomer, setSelectedCustomer] = useState<Profile | null>(null);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
 
   // Check if user is admin
   useEffect(() => {
@@ -231,7 +242,7 @@ const AdminDashboard = () => {
   };
 
   const deleteProduct = async (productId: string) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (!confirm(t('deleteConfirm'))) return;
     
     try {
       const { error } = await supabase
@@ -249,6 +260,11 @@ const AdminDashboard = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleCustomerView = (customer: Profile) => {
+    setSelectedCustomer(customer);
+    setIsCustomerModalOpen(true);
   };
 
   if (authLoading || loading) {
@@ -333,6 +349,8 @@ const AdminDashboard = () => {
             <TabsTrigger value="products">{t('products')}</TabsTrigger>
             <TabsTrigger value="orders">{t('orders')}</TabsTrigger>
             <TabsTrigger value="customers">{t('customers')}</TabsTrigger>
+            <TabsTrigger value="statistics">{t('statistics')}</TabsTrigger>
+            <TabsTrigger value="export">Export</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">
@@ -340,7 +358,7 @@ const AdminDashboard = () => {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>{t('products')}</CardTitle>
-                  <CardDescription>Manage your product inventory</CardDescription>
+                  <CardDescription>{t('manageProductInventory')}</CardDescription>
                 </div>
                 <Button onClick={() => {
                   setEditingProduct(null);
@@ -358,125 +376,119 @@ const AdminDashboard = () => {
                   });
                   setShowProductForm(true);
                 }}>
-                  Add Product
+                  {t('addProduct')}
                 </Button>
               </CardHeader>
               <CardContent>
                 {showProductForm && (
-                  <div className="border rounded-lg p-4 mb-6 space-y-4">
-                    <h3 className="font-semibold">
-                      {editingProduct ? 'Edit Product' : 'Add New Product'}
+                  <div className="border rounded-lg p-6 mb-6 space-y-6 bg-muted/30">
+                    <h3 className="font-playfair font-semibold text-lg">
+                      {editingProduct ? t('editProductTitle') : t('addNewProduct')}
                     </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium">Name (EN)</label>
-                        <input
-                          type="text"
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>{t('nameEn')}</Label>
+                        <Input
                           value={productForm.name_en}
                           onChange={(e) => setProductForm({ ...productForm, name_en: e.target.value })}
-                          className="w-full p-2 border rounded"
                           placeholder="Product name in English"
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Name (PL)</label>
-                        <input
-                          type="text"
+                      <div className="space-y-2">
+                        <Label>{t('namePl')}</Label>
+                        <Input
                           value={productForm.name_pl}
                           onChange={(e) => setProductForm({ ...productForm, name_pl: e.target.value })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Product name in Polish"
+                          placeholder="Nazwa produktu po polsku"
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Price PLN (cents)</label>
-                        <input
+                      <div className="space-y-2">
+                        <Label>{t('pricePln')}</Label>
+                        <Input
                           type="number"
                           value={productForm.price_pln}
-                          onChange={(e) => setProductForm({ ...productForm, price_pln: parseInt(e.target.value) })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Price in PLN cents"
+                          onChange={(e) => setProductForm({ ...productForm, price_pln: parseInt(e.target.value) || 0 })}
+                          placeholder="Price in PLN cents (e.g., 2500 = 25.00 PLN)"
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Price EUR (cents)</label>
-                        <input
+                      <div className="space-y-2">
+                        <Label>{t('priceEur')}</Label>
+                        <Input
                           type="number"
                           value={productForm.price_eur}
-                          onChange={(e) => setProductForm({ ...productForm, price_eur: parseInt(e.target.value) })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Price in EUR cents"
+                          onChange={(e) => setProductForm({ ...productForm, price_eur: parseInt(e.target.value) || 0 })}
+                          placeholder="Price in EUR cents (e.g., 600 = 6.00 EUR)"
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Category</label>
-                        <input
-                          type="text"
-                          value={productForm.category}
-                          onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Product category"
-                        />
+                      <div className="space-y-2">
+                        <Label>{t('category')}</Label>
+                        <Select 
+                          value={productForm.category} 
+                          onValueChange={(value) => setProductForm({ ...productForm, category: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="luxury">{t('luxury')}</SelectItem>
+                            <SelectItem value="nature">{t('nature')}</SelectItem>
+                            <SelectItem value="fresh">{t('fresh')}</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Size</label>
-                        <input
-                          type="text"
+                      <div className="space-y-2">
+                        <Label>{t('size')}</Label>
+                        <Input
                           value={productForm.size}
                           onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Product size"
+                          placeholder="e.g., 180g, 320g"
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Stock Quantity</label>
-                        <input
+                      <div className="space-y-2">
+                        <Label>{t('stockQuantity')}</Label>
+                        <Input
                           type="number"
                           value={productForm.stock_quantity}
-                          onChange={(e) => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Stock quantity"
+                          onChange={(e) => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) || 0 })}
+                          placeholder="Available quantity"
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Image URL</label>
-                        <input
+                      <div className="space-y-2">
+                        <Label>{t('imageUrl')}</Label>
+                        <Input
                           type="url"
                           value={productForm.image_url}
                           onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Product image URL"
+                          placeholder="https://example.com/image.jpg"
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div>
-                        <label className="text-sm font-medium">Description (EN)</label>
-                        <textarea
+                    <div className="grid grid-cols-1 gap-6">
+                      <div className="space-y-2">
+                        <Label>{t('descriptionEn')}</Label>
+                        <Textarea
                           value={productForm.description_en}
                           onChange={(e) => setProductForm({ ...productForm, description_en: e.target.value })}
-                          className="w-full p-2 border rounded"
                           placeholder="Product description in English"
                           rows={3}
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Description (PL)</label>
-                        <textarea
+                      <div className="space-y-2">
+                        <Label>{t('descriptionPl')}</Label>
+                        <Textarea
                           value={productForm.description_pl}
                           onChange={(e) => setProductForm({ ...productForm, description_pl: e.target.value })}
-                          className="w-full p-2 border rounded"
-                          placeholder="Product description in Polish"
+                          placeholder="Opis produktu po polsku"
                           rows={3}
                         />
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button onClick={saveProduct}>
-                        {editingProduct ? 'Update Product' : 'Create Product'}
+                    <div className="flex gap-4">
+                      <Button onClick={saveProduct} size="lg">
+                        {editingProduct ? t('updateProduct') : t('createProduct')}
                       </Button>
-                      <Button variant="outline" onClick={() => setShowProductForm(false)}>
-                        Cancel
+                      <Button variant="outline" onClick={() => setShowProductForm(false)} size="lg">
+                        {t('cancel')}
                       </Button>
                     </div>
                   </div>
@@ -616,6 +628,7 @@ const AdminDashboard = () => {
                       <TableHead>Email</TableHead>
                       <TableHead>Role</TableHead>
                       <TableHead>Join Date</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -634,7 +647,14 @@ const AdminDashboard = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          {new Date(profile.created_at).toLocaleDateString()}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCustomerView(profile)}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            {t('viewDetails')}
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -643,7 +663,33 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="statistics" className="space-y-4">
+            <AdminStatistics stats={{
+              totalProducts: stats.totalProducts,
+              totalOrders: stats.totalOrders,
+              totalCustomers: stats.totalCustomers,
+              revenue: stats.revenue,
+              monthlyOrders: [],
+              categoryBreakdown: []
+            }} />
+          </TabsContent>
+
+          <TabsContent value="export" className="space-y-4">
+            <AdminExport data={{
+              products,
+              orders,
+              customers: profiles
+            }} />
+          </TabsContent>
         </Tabs>
+
+        {/* Customer Modal */}
+        <AdminCustomerModal 
+          customer={selectedCustomer}
+          isOpen={isCustomerModalOpen}
+          onClose={() => setIsCustomerModalOpen(false)}
+        />
       </div>
     </div>
   );

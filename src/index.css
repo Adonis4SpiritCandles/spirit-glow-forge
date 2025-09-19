@@ -132,6 +132,35 @@ All colors MUST be HSL. Premium luxury aesthetics with mystical elegance.
     animation: candle-flicker 3s ease-in-out infinite alternate;
   }
   
+  /* Golden aura animations */
+  .logo-aura {
+    position: relative;
+  }
+
+  .logo-aura::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(45, 95%, 65%, 0.3) 0%, transparent 70%);
+    animation: aura-pulse 2s ease-in-out infinite alternate;
+    z-index: -1;
+  }
+
+  .logo-aura-header {
+    position: relative;
+  }
+
+  .logo-aura-header::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(45, 95%, 65%, 0.2) 0%, transparent 70%);
+    animation: aura-pulse 2.5s ease-in-out infinite alternate;
+    z-index: -1;
+  }
+  
   @keyframes candle-flicker {
     0%, 100% {
       filter: drop-shadow(0 0 20px hsl(45, 95%, 65%, 0.6)) 
@@ -140,6 +169,17 @@ All colors MUST be HSL. Premium luxury aesthetics with mystical elegance.
     50% {
       filter: drop-shadow(0 0 30px hsl(45, 95%, 65%, 0.8)) 
               drop-shadow(0 0 60px hsl(45, 100%, 75%, 0.6));
+    }
+  }
+
+  @keyframes aura-pulse {
+    0% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0.6;
+      transform: scale(1.1);
     }
   }
   

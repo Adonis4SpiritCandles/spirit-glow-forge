@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Contact = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -50,7 +53,7 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Form validation
@@ -63,19 +66,33 @@ const Contact = () => {
       return;
     }
 
-    // Simulate form submission
-    toast({
-      title: "Message Sent Successfully!",
-      description: "Thank you for contacting us. We'll get back to you within 24-48 hours.",
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke('contact-form', {
+        body: formData
+      });
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: ""
-    });
+      if (error) throw error;
+
+      toast({
+        title: "Message Sent Successfully!",
+        description: "Thank you for contacting us. We'll get back to you within 24-48 hours.",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: ""
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again or contact us directly.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -83,9 +100,9 @@ const Contact = () => {
       <div className="container mx-auto px-4 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
-            Get in Touch
-          </h1>
+              <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
+                {t('getInTouch')}
+              </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Have questions about our candles or need personalized recommendations? 
             We'd love to hear from you and help you find the perfect fragrance for your space.
@@ -97,7 +114,7 @@ const Contact = () => {
           <Card className="bg-card border-border/40 shadow-elegant">
             <CardHeader>
               <CardTitle className="text-2xl font-playfair text-foreground">
-                Send us a Message
+                {t('sendUsAMessage')}
               </CardTitle>
             </CardHeader>
             <CardContent>

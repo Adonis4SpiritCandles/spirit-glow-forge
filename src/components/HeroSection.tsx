@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import spiritLogo from "@/assets/spirit-logo.png";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HeroSection = () => {
   const [logoGlow, setLogoGlow] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Simple logo glow effect
@@ -31,7 +33,7 @@ const HeroSection = () => {
               <img 
                 src={spiritLogo} 
                 alt="SPIRIT CANDLES" 
-                className={`h-32 mx-auto transition-all duration-2000 ${logoGlow ? 'candle-glow scale-110' : 'scale-100'}`}
+                className={`h-48 mx-auto logo-aura transition-all duration-2000 ${logoGlow ? 'candle-glow scale-110' : 'scale-100'}`}
               />
             </div>
           </div>
@@ -44,7 +46,7 @@ const HeroSection = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-muted-foreground mb-4 italic">
-              Reborn Your Nature
+              {t('rebornYourNature')}
             </p>
             
             <p className="text-lg text-foreground/80 mb-8 max-w-2xl mx-auto leading-relaxed">
@@ -61,7 +63,7 @@ const HeroSection = () => {
               >
                 <Link to="/shop">
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Shop Collection
+                  {t('shopCollection')}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
@@ -73,7 +75,7 @@ const HeroSection = () => {
                 className="border-border hover:bg-muted px-8 py-4 hover:scale-105 transition-all duration-300"
               >
                 <Link to="/about">
-                  Learn Our Story
+                  {t('learnOurStory')}
                 </Link>
               </Button>
             </div>

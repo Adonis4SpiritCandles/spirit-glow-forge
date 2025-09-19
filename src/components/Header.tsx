@@ -1,20 +1,40 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, Menu, Search, User, LogOut } from "lucide-react";
-import spiritLogo from "@/assets/spirit-logo.png";
-import LanguageToggle from "./LanguageToggle";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/hooks/useCart";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Menu, Search, ShoppingCart, User, LogOut } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useCart } from '@/hooks/useCart';
+import { supabase } from '@/integrations/supabase/client';
+import LanguageToggle from '@/components/LanguageToggle';
+import spiritLogo from '@/assets/spirit-logo.png';
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { user, signOut } = useAuth();
   const { itemCount } = useCart();
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  // Load user profile to check role
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+        setUserProfile(data);
+      } else {
+        setUserProfile(null);
+      }
+    };
+    
+    loadUserProfile();
+  }, [user]);
 
   const navItems = [
     { name: t('home'), href: '/' },
@@ -69,10 +89,11 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <>
-                  <Link to="/admin">
+                  {/* Show different dashboard links based on user role */}
+                  <Link to={userProfile?.role === 'admin' ? '/admin' : '/dashboard'}>
                     <Button variant="ghost" size="sm">
                       <User className="h-4 w-4 mr-1" />
-                      {t('dashboard')}
+                      {userProfile?.role === 'admin' ? 'Admin Dashboard' : t('dashboard')}
                     </Button>
                   </Link>
                   <Button variant="ghost" size="sm" onClick={handleSignOut}>
@@ -165,10 +186,10 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     {/* Auth Buttons Mobile */}
                     {user ? (
                       <>
-                        <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
+                        <Link to={userProfile?.role === 'admin' ? '/admin' : '/dashboard'} onClick={() => setIsMenuOpen(false)}>
                           <Button variant="outline" className="w-full mb-2">
                             <User className="h-4 w-4 mr-2" />
-                            {t('dashboard')}
+                            {userProfile?.role === 'admin' ? 'Admin Dashboard' : t('dashboard')}
                           </Button>
                         </Link>
                         <Button variant="outline" className="w-full mb-2" onClick={handleSignOut}>

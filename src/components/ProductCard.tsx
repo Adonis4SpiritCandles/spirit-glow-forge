@@ -97,26 +97,18 @@ const ProductCard = ({
                 className={`h-4 w-4 ${isWishlisted ? 'fill-current text-primary' : ''}`} 
               />
             </Button>
-            <Button
-              asChild
-              size="sm"
-              variant="secondary"
-              className="w-10 h-10 p-0 rounded-full shadow-elegant"
-            >
-              <Link to={`/product/${id}`}>
-                <Eye className="h-4 w-4" />
-              </Link>
-            </Button>
           </div>
 
-          {/* Quick Add Overlay */}
+          {/* View Product Overlay */}
           <div className={`absolute inset-0 bg-background/80 mystical-blur flex items-center justify-center transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <Button 
-              onClick={handleAddToCart}
+              asChild
               className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-luxury"
             >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Quick Add
+              <Link to={`/product/${id}`}>
+                <Eye className="w-4 h-4 mr-2" />
+                View Product
+              </Link>
             </Button>
           </div>
         </div>

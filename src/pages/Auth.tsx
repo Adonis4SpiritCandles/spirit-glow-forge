@@ -10,10 +10,11 @@ import spiritLogo from '@/assets/spirit-logo.png';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +32,7 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        const { error } = await signIn(email, password);
+        const { error } = await signIn(emailOrUsername, password);
         if (error) {
           toast({
             title: "Error",
@@ -54,7 +55,7 @@ const Auth = () => {
           return;
         }
         
-        const { error } = await signUp(email, password, firstName, lastName);
+        const { error } = await signUp(emailOrUsername, password, firstName, lastName, username);
         if (error) {
           toast({
             title: "Error",
@@ -118,12 +119,25 @@ const Auth = () => {
               </div>
             )}
             
+            {!isLogin && (
+              <div>
+                <Input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="bg-background/50 border-border/40"
+                />
+              </div>
+            )}
+            
             <div>
               <Input
                 type="email"
-                placeholder={t('email')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder={isLogin ? "Email or Username" : t('email')}
+                value={emailOrUsername}
+                onChange={(e) => setEmailOrUsername(e.target.value)}
                 required
                 className="bg-background/50 border-border/40"
               />

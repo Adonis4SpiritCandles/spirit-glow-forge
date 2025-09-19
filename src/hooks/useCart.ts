@@ -23,6 +23,7 @@ interface CartItem {
 
 export const useCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [localCartItems, setLocalCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
@@ -94,10 +95,68 @@ export const useCart = () => {
     }
   };
 
+  // Local cart helpers (fallback when products aren't in DB or for guests)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('local_cart');
+      if (saved) setLocalCartItems(JSON.parse(saved));
+    } catch (e) {
+      console.warn('Failed to parse local cart');
+    }
+  }, []);
+
+  const persistLocalCart = (items: CartItem[]) => {
+    setLocalCartItems(items);
+    localStorage.setItem('local_cart', JSON.stringify(items));
+  };
+
+  const addProductToCart = (product: Product, quantity: number = 1) => {
+    // Use product.id as the local cart item id
+    const existing = localCartItems.find((i) => i.product_id === product.id);
+    let updated: CartItem[];
+    if (existing) {
+      updated = localCartItems.map((i) =>
+        i.product_id === product.id ? { ...i, quantity: i.quantity + quantity } : i
+      );
+    } else {
+      updated = [
+        ...localCartItems,
+        {
+          id: product.id, // local id = product id
+          product_id: product.id,
+          quantity,
+          product,
+        },
+      ];
+    }
+    persistLocalCart(updated);
+    toast({ title: 'Added to cart', description: 'Item has been added to your cart' });
+  };
+
+  const updateQuantityLocal = (localId: string, newQuantity: number) => {
+    if (newQuantity <= 0) return removeFromCartLocal(localId);
+    const updated = localCartItems.map((i) =>
+      i.id === localId ? { ...i, quantity: newQuantity } : i
+    );
+    persistLocalCart(updated);
+  };
+
+  const removeFromCartLocal = (localId: string) => {
+    const updated = localCartItems.filter((i) => i.id !== localId);
+    persistLocalCart(updated);
+  };
+
   // Update item quantity
   const updateQuantity = async (cartItemId: string, newQuantity: number) => {
     if (newQuantity === 0) {
       await removeFromCart(cartItemId);
+      return;
+    }
+
+    // Fallback to local cart if this id doesn't exist in DB cart
+    const isDbItem = cartItems.some((i) => i.id === cartItemId);
+    if (!isDbItem) {
+      updateQuantityLocal(cartItemId, newQuantity);
       return;
     }
 
@@ -120,6 +179,13 @@ export const useCart = () => {
 
   // Remove item from cart
   const removeFromCart = async (cartItemId: string) => {
+    // Fallback to local cart if this id doesn't exist in DB cart
+    const isDbItem = cartItems.some((i) => i.id === cartItemId);
+    if (!isDbItem) {
+      removeFromCartLocal(cartItemId);
+      return;
+    }
+
     const { error } = await supabase
       .from('cart_items')
       .delete()
@@ -139,7 +205,13 @@ export const useCart = () => {
 
   // Clear entire cart
   const clearCart = async () => {
-    if (!user) return;
+    // Always clear local cart
+    persistLocalCart([]);
+
+    if (!user) {
+      setCartItems([]);
+      return;
+    }
 
     const { error } = await supabase
       .from('cart_items')
@@ -158,16 +230,18 @@ export const useCart = () => {
     }
   };
 
-  // Calculate totals
-  const totalPLN = cartItems.reduce((sum, item) => 
+  // Calculate totals using DB cart if available, otherwise local cart
+  const itemsForTotals = cartItems.length > 0 ? cartItems : localCartItems;
+
+  const totalPLN = itemsForTotals.reduce((sum, item) => 
     sum + (item.product.price_pln * item.quantity), 0
   );
   
-  const totalEUR = cartItems.reduce((sum, item) => 
+  const totalEUR = itemsForTotals.reduce((sum, item) => 
     sum + (item.product.price_eur * item.quantity), 0
   );
   
-  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const itemCount = itemsForTotals.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     if (user) {
@@ -178,9 +252,10 @@ export const useCart = () => {
   }, [user]);
 
   return {
-    cartItems,
+    cartItems: cartItems.length > 0 ? cartItems : localCartItems,
     loading,
     addToCart,
+    addProductToCart,
     updateQuantity,
     removeFromCart,
     clearCart,

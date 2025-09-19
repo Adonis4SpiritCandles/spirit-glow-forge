@@ -102,10 +102,10 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                         <div className="flex justify-between items-center">
                           <div className="text-sm">
                             <span className="font-semibold text-primary">
-                              {item.product.price_pln} PLN
+                              {item.product.price_pln * item.quantity} PLN
                             </span>
                             <span className="text-xs text-muted-foreground ml-1">
-                              (~{item.product.price_eur} EUR)
+                              (~{item.product.price_eur * item.quantity} EUR)
                             </span>
                           </div>
 
@@ -180,10 +180,12 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
               {/* Action Buttons */}
               <div className="space-y-2">
                 <Button 
+                  asChild
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                   size="lg"
+                  onClick={onClose}
                 >
-                  {t('checkoutNow')}
+                  <Link to="/checkout">{t('checkoutNow')}</Link>
                 </Button>
                 <Button 
                   asChild

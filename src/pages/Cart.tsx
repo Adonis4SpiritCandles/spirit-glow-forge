@@ -144,13 +144,13 @@ const Cart = () => {
                       {/* Price */}
                       <div>
                         <div className="font-semibold text-primary text-lg">
-                          {(item.product.price_pln * item.quantity) / 100} PLN
+                          {item.product.price_pln * item.quantity} PLN
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          ~{(item.product.price_eur * item.quantity) / 100} EUR
+                          ~{item.product.price_eur * item.quantity} EUR
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {item.product.price_pln / 100} PLN each
+                          {item.product.price_pln} PLN each
                         </div>
                       </div>
 
@@ -208,11 +208,11 @@ const Cart = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>{t('subtotal')} ({itemCount} {t('items')})</span>
-                    <span>{totalPLN / 100} PLN</span>
+                    <span>{totalPLN} PLN</span>
                   </div>
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span></span>
-                    <span>~{totalEUR / 100} EUR</span>
+                    <span>~{totalEUR} EUR</span>
                   </div>
                   
                   <div className="flex justify-between text-sm">
@@ -226,18 +226,19 @@ const Cart = () => {
                 <div className="flex justify-between font-semibold text-lg">
                   <span>{t('total')}</span>
                   <div className="text-right">
-                    <div className="text-primary">{totalPLN / 100} PLN</div>
-                    <div className="text-sm text-muted-foreground">~{totalEUR / 100} EUR</div>
+                    <div className="text-primary">{totalPLN} PLN</div>
+                    <div className="text-sm text-muted-foreground">~{totalEUR} EUR</div>
                   </div>
                 </div>
 
                 <div className="space-y-3 pt-4">
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                    size="lg"
-                  >
-                    {t('checkoutNow')}
-                  </Button>
+                <Button 
+                  asChild
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  size="lg"
+                >
+                  <Link to="/checkout">{t('checkoutNow')}</Link>
+                </Button>
                   <Button 
                     asChild
                     variant="outline" 

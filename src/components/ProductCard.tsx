@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/hooks/useCart";
 
 interface ProductCardProps {
   id: string;
@@ -40,11 +41,25 @@ const ProductCard = ({
   const [selectedSize, setSelectedSize] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { toast } = useToast();
+  const { addProductToCart } = useCart();
 
   const handleAddToCart = () => {
+    const size = sizes[selectedSize];
+    // Map to cart Product shape
+    const cartProduct = {
+      id,
+      name_en: name,
+      name_pl: name,
+      price_pln: size.price.pln,
+      price_eur: size.price.eur,
+      image_url: image,
+      size: size.weight,
+      category: fragrance || "candle",
+    };
+    addProductToCart(cartProduct as any, 1);
     toast({
       title: "Added to Cart",
-      description: `${name} (${sizes[selectedSize].weight}) has been added to your cart.`,
+      description: `${name} (${size.weight}) has been added to your cart.`,
     });
   };
 

@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Shield, Leaf, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/hooks/useCart";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
@@ -43,6 +44,7 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addProductToCart } = useCart();
   
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -65,9 +67,21 @@ const ProductDetail = () => {
   }
 
   const handleAddToCart = () => {
+    const size = product.sizes[selectedSize];
+    const cartProduct = {
+      id: product.id,
+      name_en: product.name,
+      name_pl: product.name,
+      price_pln: size.price.pln,
+      price_eur: size.price.eur,
+      image_url: product.image,
+      size: size.weight,
+      category: product.fragrance || 'candle',
+    };
+    addProductToCart(cartProduct as any, quantity);
     toast({
       title: "Added to Cart",
-      description: `${product.name} (${product.sizes[selectedSize].weight}) x${quantity} has been added to your cart.`,
+      description: `${product.name} (${size.weight}) x${quantity} has been added to your cart.`,
     });
   };
 

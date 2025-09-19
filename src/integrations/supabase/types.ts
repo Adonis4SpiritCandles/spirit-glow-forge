@@ -139,7 +139,7 @@ export type Database = {
           name_pl: string
           price_eur: number
           price_pln: number
-          size: string
+          size: string | null
           stock_quantity: number
           updated_at: string
         }
@@ -154,7 +154,7 @@ export type Database = {
           name_pl: string
           price_eur: number
           price_pln: number
-          size: string
+          size?: string | null
           stock_quantity?: number
           updated_at?: string
         }
@@ -169,7 +169,7 @@ export type Database = {
           name_pl?: string
           price_eur?: number
           price_pln?: number
-          size?: string
+          size?: string | null
           stock_quantity?: number
           updated_at?: string
         }
@@ -228,6 +228,22 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      search_products: {
+        Args: { search_text: string }
+        Returns: {
+          category: string
+          description_en: string
+          description_pl: string
+          id: string
+          image_url: string
+          name_en: string
+          name_pl: string
+          price_eur: number
+          price_pln: number
+          size: string
+          stock_quantity: number
+        }[]
       }
     }
     Enums: {

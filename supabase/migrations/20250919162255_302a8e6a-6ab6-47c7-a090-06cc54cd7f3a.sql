@@ -1,0 +1,2 @@
+-- Add create-checkout function configuration
+-- This configures the create-checkout edge function

@@ -3,6 +3,14 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { useLanguage } from "@/contexts/LanguageContext";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
@@ -88,39 +96,7 @@ const sampleProducts = [
 ];
 
 const ProductCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-
-  // Auto-play functionality
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => 
-        prev >= sampleProducts.length - 3 ? 0 : prev + 1
-      );
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying]);
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => 
-      prev >= sampleProducts.length - 3 ? 0 : prev + 1
-    );
-  };
-
-  const goToPrev = () => {
-    setCurrentIndex((prev) => 
-      prev <= 0 ? sampleProducts.length - 3 : prev - 1
-    );
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 5000);
-  };
+  const { t } = useLanguage();
 
   return (
     <section className="py-16 bg-gradient-secondary">
@@ -128,73 +104,45 @@ const ProductCarousel = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-playfair font-bold text-foreground mb-4">
-            Featured Collection
+            {t('featuredCollection')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover our most beloved luxury soy candles, each inspired by iconic fragrances 
-            and crafted with the finest natural ingredients.
+            {t('featuredCollectionDescription')}
           </p>
         </div>
 
-        {/* Carousel Container */}
-        <div 
-          className="relative overflow-hidden"
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => setIsAutoPlaying(true)}
-        >
-          {/* Main Carousel - 3 items */}
-          <div className="flex transition-transform duration-500 ease-in-out"
-               style={{ transform: `translateX(-${currentIndex * (100/3)}%)` }}>
-            {sampleProducts.map((product) => (
-              <div key={product.id} className="w-1/3 flex-shrink-0 px-2">
-                <ProductCard {...product} />
-              </div>
-            ))}
+        {/* Desktop Carousel */}
+        <div className="hidden lg:block relative">
+          <div className="overflow-hidden">
+            <div className="flex gap-6 justify-center">
+              {sampleProducts.slice(0, 3).map((product) => (
+                <div key={product.id} className="flex-shrink-0 w-80">
+                  <div className="overflow-visible">
+                    <ProductCard {...product} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-
-          {/* Navigation Arrows */}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={goToPrev}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full shadow-elegant z-10 hover:scale-110 transition-transform"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full shadow-elegant z-10 hover:scale-110 transition-transform"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
         </div>
 
-        {/* Dot Indicators */}
-        <div className="flex justify-center space-x-2 mt-8">
-          {sampleProducts.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex
-                  ? 'bg-primary shadow-mystical scale-125'
-                  : 'bg-muted hover:bg-primary/50'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Multi-card View for Desktop */}
-        <div className="hidden lg:block mt-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sampleProducts.slice(0, 3).map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
+        {/* Mobile Carousel with Embla */}
+        <div className="lg:hidden">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {sampleProducts.map((product) => (
+                <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-[70%]">
+                  <ProductCard {...product} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
 
         {/* Call to Action */}
@@ -205,7 +153,7 @@ const ProductCarousel = () => {
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 shadow-luxury hover:scale-105 transition-all duration-300"
           >
             <Link to="/collections">
-              Explore Full Collection
+              {t('exploreFullCollection')}
             </Link>
           </Button>
         </div>

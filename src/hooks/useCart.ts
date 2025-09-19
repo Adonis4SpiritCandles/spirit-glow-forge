@@ -160,6 +160,11 @@ export const useCart = () => {
       return;
     }
 
+    // Optimistic update - update local state immediately
+    setCartItems(prev => prev.map(item => 
+      item.id === cartItemId ? { ...item, quantity: newQuantity } : item
+    ));
+
     const { error } = await supabase
       .from('cart_items')
       .update({ quantity: newQuantity })
@@ -167,13 +172,13 @@ export const useCart = () => {
 
     if (error) {
       console.error('Error updating quantity:', error);
+      // Revert optimistic update on error
+      loadCartItems();
       toast({
         title: "Error",
         description: "Failed to update quantity",
         variant: "destructive",
       });
-    } else {
-      loadCartItems();
     }
   };
 
@@ -186,6 +191,9 @@ export const useCart = () => {
       return;
     }
 
+    // Optimistic update - remove from local state immediately
+    setCartItems(prev => prev.filter(item => item.id !== cartItemId));
+
     const { error } = await supabase
       .from('cart_items')
       .delete()
@@ -193,13 +201,13 @@ export const useCart = () => {
 
     if (error) {
       console.error('Error removing from cart:', error);
+      // Revert optimistic update on error
+      loadCartItems();
       toast({
         title: "Error",
         description: "Failed to remove item from cart",
         variant: "destructive",
       });
-    } else {
-      loadCartItems();
     }
   };
 

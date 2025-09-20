@@ -299,6 +299,9 @@ const translations = {
     sessionId: 'Session ID',
     viewOrders: 'View My Orders',
     emailConfirmation: 'A confirmation email will be sent to you shortly.',
+    
+    addedToWishlist: 'Added to Wishlist',
+    removedFromWishlist: 'Removed from Wishlist',
   },
   pl: {
     // Navigation
@@ -590,6 +593,9 @@ const translations = {
     sessionId: 'ID sesji',
     viewOrders: 'Zobacz moje zamówienia',
     emailConfirmation: 'Wkrótce otrzymasz e-mail z potwierdzeniem.',
+    
+    addedToWishlist: 'Dodano do listy życzeń',
+    removedFromWishlist: 'Usunięto z listy życzeń',
   }
 };
 

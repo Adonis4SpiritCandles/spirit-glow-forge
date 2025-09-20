@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Shield, Leaf, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
+import { useLanguage } from "@/contexts/LanguageContext";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
@@ -45,6 +46,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addProductToCart } = useCart();
+  const { t } = useLanguage();
   
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -57,9 +59,9 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-playfair font-bold mb-4">Product not found</h1>
+          <h1 className="text-2xl font-playfair font-bold mb-4">{t('productNotFound')}</h1>
           <Button asChild>
-            <Link to="/shop">Return to Shop</Link>
+            <Link to="/shop">{t('returnToShop')}</Link>
           </Button>
         </div>
       </div>
@@ -80,7 +82,7 @@ const ProductDetail = () => {
     };
     addProductToCart(cartProduct as any, quantity);
     toast({
-      title: "Added to Cart",
+      title: t('addedToCart'),
       description: `${product.name} (${size.weight}) x${quantity} has been added to your cart.`,
     });
   };
@@ -88,7 +90,7 @@ const ProductDetail = () => {
   const toggleWishlist = () => {
     setIsWishlisted(!isWishlisted);
     toast({
-      title: isWishlisted ? "Removed from Wishlist" : "Added to Wishlist",
+      title: isWishlisted ? t('removedFromWishlist') || "Removed from Wishlist" : t('addedToWishlist') || "Added to Wishlist",
       description: `${product.name} has been ${isWishlisted ? 'removed from' : 'added to'} your wishlist.`,
     });
   };
@@ -104,15 +106,15 @@ const ProductDetail = () => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 lg:px-8 py-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate(-1)}
-            className="p-0 h-auto hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Back to Shop
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate(-1)}
+              className="p-0 h-auto hover:text-primary"
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              {t('backToShop')}
+            </Button>
         </div>
       </div>
 
@@ -142,14 +144,14 @@ const ProductDetail = () => {
                 )}
               </div>
               <p className="text-lg text-muted-foreground italic mb-4">
-                Inspired by {product.fragrance}
+                {t('inspiredBy')} {product.fragrance}
               </p>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-primary text-primary" />
                   ))}
-                  <span className="text-sm text-muted-foreground ml-2">(127 reviews)</span>
+                  <span className="text-sm text-muted-foreground ml-2">(127 {t('reviews')})</span>
                 </div>
               </div>
             </div>
@@ -178,7 +180,7 @@ const ProductDetail = () => {
 
             {/* Size Selection */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Size</h3>
+              <h3 className="font-semibold text-foreground">{t('size')}</h3>
               <div className="flex gap-3">
                 {product.sizes.map((size, index) => (
                   <Button
@@ -196,7 +198,7 @@ const ProductDetail = () => {
 
             {/* Quantity */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Quantity</h3>
+              <h3 className="font-semibold text-foreground">{t('quantity')}</h3>
               <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
@@ -219,41 +221,41 @@ const ProductDetail = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <Button 
-                onClick={handleAddToCart}
-                size="lg"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-              >
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart - {totalPrice.pln} PLN
-              </Button>
-              
-              <Button 
-                size="lg"
-                className="w-full py-6"
-              >
-                Buy Now
-              </Button>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={toggleWishlist}
-                  className="flex-1"
+                <Button 
+                  onClick={handleAddToCart}
+                  size="lg"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
                 >
-                  <Heart className={`w-4 h-4 mr-2 ${isWishlisted ? 'fill-current text-primary' : ''}`} />
-                  Wishlist
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  {t('addToCart')} - {totalPrice.pln} PLN
                 </Button>
-                <Button variant="outline">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share
+                
+                <Button 
+                  size="lg"
+                  className="w-full py-6"
+                >
+                  {t('buyNow')}
                 </Button>
-              </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={toggleWishlist}
+                    className="flex-1"
+                  >
+                    <Heart className={`w-4 h-4 mr-2 ${isWishlisted ? 'fill-current text-primary' : ''}`} />
+                    {t('wishlist')}
+                  </Button>
+                  <Button variant="outline">
+                    <Share2 className="w-4 h-4 mr-2" />
+                    {t('share')}
+                  </Button>
+                </div>
             </div>
 
             {/* Mood & Ambiance */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Mood & Ambiance</h3>
+              <h3 className="font-semibold text-foreground">{t('moodAndAmbiance')}</h3>
               <div className="flex flex-wrap gap-2">
                 {product.moodTags.map((tag) => (
                   <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary">
@@ -273,23 +275,23 @@ const ProductDetail = () => {
               <CardContent className="p-6">
                 <h3 className="font-playfair text-xl font-semibold mb-4 flex items-center">
                   <Shield className="h-5 w-5 mr-2 text-primary" />
-                  Product Details
+                  {t('productDetails')}
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Wax Type:</span>
+                    <span className="text-muted-foreground">{t('waxType')}:</span>
                     <span className="font-medium">{product.waxType}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Wick:</span>
+                    <span className="text-muted-foreground">{t('wick')}:</span>
                     <span className="font-medium">{product.wick}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Hand Poured:</span>
-                    <span className="font-medium">{product.handPoured ? 'Yes' : 'No'}</span>
+                    <span className="text-muted-foreground">{t('handPoured')}:</span>
+                    <span className="font-medium">{product.handPoured ? t('yes') : t('no')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Burn Time:</span>
+                    <span className="text-muted-foreground">{t('burnTime')}:</span>
                     <span className="font-medium">{product.sizes[selectedSize].burnTime}</span>
                   </div>
                 </div>
@@ -301,7 +303,7 @@ const ProductDetail = () => {
               <CardContent className="p-6">
                 <h3 className="font-playfair text-xl font-semibold mb-4 flex items-center">
                   <Leaf className="h-5 w-5 mr-2 text-primary" />
-                  Natural Ingredients
+                  {t('naturalIngredients')}
                 </h3>
                 <ul className="space-y-2 text-sm">
                   {product.ingredients.map((ingredient, index) => (
@@ -319,7 +321,7 @@ const ProductDetail = () => {
               <CardContent className="p-6">
                 <h3 className="font-playfair text-xl font-semibold mb-4 flex items-center">
                   <Clock className="h-5 w-5 mr-2 text-primary" />
-                  Care Instructions
+                  {t('careInstructions')}
                 </h3>
                 <ul className="space-y-2 text-sm">
                   {product.careInstructions.map((instruction, index) => (
@@ -337,8 +339,7 @@ const ProductDetail = () => {
           <Card className="bg-muted/30">
             <CardContent className="p-6">
               <p className="text-sm text-muted-foreground text-center">
-                <strong>Inspiration Notice:</strong> Fragrance references are inspirations only. 
-                SPIRIT CANDLES is not affiliated with or endorsed by the original trademark owners.
+                <strong>{t('inspirationNotice')}</strong> {t('fragranceReferences')}
               </p>
             </CardContent>
           </Card>

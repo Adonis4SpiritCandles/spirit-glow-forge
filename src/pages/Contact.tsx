@@ -21,25 +21,25 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: <Mail className="w-5 h-5 text-primary" />,
-      title: "Email Us",
+      title: t('emailUs'),
       details: "info@spiritcandles.com",
       description: "Send us your questions anytime"
     },
     {
       icon: <Phone className="w-5 h-5 text-primary" />,
-      title: "Call Us",
+      title: t('callUs'),
       details: "+48 123 456 789",
       description: "Mon-Fri 9:00-18:00 CET"
     },
     {
       icon: <MapPin className="w-5 h-5 text-primary" />,
-      title: "Visit Us",
+      title: t('visitUs'),
       details: "Warsaw, Poland",
       description: "Luxury candle studio"
     },
     {
       icon: <Clock className="w-5 h-5 text-primary" />,
-      title: "Response Time",
+      title: t('responseTime'),
       details: "24-48 hours",
       description: "We aim to respond quickly"
     }
@@ -59,8 +59,8 @@ const Contact = () => {
     // Form validation
     if (!formData.name || !formData.email || !formData.message) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: t('missingInformation'),
+        description: t('pleaseFillRequired'),
         variant: "destructive"
       });
       return;
@@ -74,8 +74,8 @@ const Contact = () => {
       if (error) throw error;
 
       toast({
-        title: "Message Sent Successfully!",
-        description: "Thank you for contacting us. We'll get back to you within 24-48 hours.",
+        title: t('messageSentSuccessfully'),
+        description: t('thankYouContact'),
       });
 
       // Reset form
@@ -88,8 +88,8 @@ const Contact = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again or contact us directly.",
+        title: t('error'),
+        description: t('errorSendingMessage'),
         variant: "destructive"
       });
     }
@@ -122,7 +122,7 @@ const Contact = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                      Name *
+                      {t('name')} *
                     </label>
                     <Input
                       id="name"
@@ -130,13 +130,13 @@ const Contact = () => {
                       type="text"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Your full name"
+                      placeholder={t('yourFullName')}
                       required
                     />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                      Email *
+                      {t('email')} *
                     </label>
                     <Input
                       id="email"
@@ -144,7 +144,7 @@ const Contact = () => {
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="your@email.com"
+                      placeholder={t('yourEmail')}
                       required
                     />
                   </div>
@@ -152,7 +152,7 @@ const Contact = () => {
 
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
-                    Subject
+                    {t('subject')}
                   </label>
                   <Input
                     id="subject"
@@ -160,20 +160,20 @@ const Contact = () => {
                     type="text"
                     value={formData.subject}
                     onChange={handleInputChange}
-                    placeholder="What's this about?"
+                    placeholder={t('whatsThisAbout')}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                    Message *
+                    {t('message')} *
                   </label>
                   <Textarea
                     id="message"
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
-                    placeholder="Tell us how we can help you..."
+                    placeholder={t('tellUsHowWeCanHelp')}
                     rows={6}
                     required
                   />
@@ -185,7 +185,7 @@ const Contact = () => {
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-luxury hover:scale-[1.02] transition-all duration-300"
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  Send Message
+                  {t('sendMessage')}
                 </Button>
               </form>
             </CardContent>
@@ -196,7 +196,7 @@ const Contact = () => {
             <Card className="bg-card border-border/40 shadow-elegant">
               <CardHeader>
                 <CardTitle className="text-2xl font-playfair text-foreground">
-                  Contact Information
+                  {t('contactInformation')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -233,36 +233,33 @@ const Contact = () => {
               <CardContent className="space-y-4">
                 <div>
                   <h4 className="font-semibold text-foreground mb-2">
-                    How long do your candles burn?
+                    {t('howLongBurn')}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Our 180g candles burn for approximately 45-50 hours, while our 320g candles 
-                    provide 80-90 hours of beautiful fragrance.
+                    {t('burnTimeAnswer')}
                   </p>
                 </div>
                 
                 <div>
                   <h4 className="font-semibold text-foreground mb-2">
-                    Are your candles eco-friendly?
+                    {t('areEcoFriendly')}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Yes! We use 100% natural soy wax, wooden wicks, and recyclable glass containers. 
-                    Our candles are vegan and cruelty-free.
+                    {t('ecoAnswer')}
                   </p>
                 </div>
                 
                 <div>
                   <h4 className="font-semibold text-foreground mb-2">
-                    Do you ship internationally?
+                    {t('shipInternationally')}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Currently, we ship within Poland and to select EU countries. 
-                    Contact us for specific shipping information.
+                    {t('shippingAnswer')}
                   </p>
                 </div>
 
                 <Button variant="outline" className="w-full mt-4">
-                  View All FAQs
+                  {t('viewAllFaqs')}
                 </Button>
               </CardContent>
             </Card>
@@ -273,21 +270,21 @@ const Contact = () => {
         <Card className="mt-12 bg-card border-border/40 shadow-elegant max-w-2xl mx-auto">
           <CardHeader className="text-center">
             <CardTitle className="text-xl font-playfair text-foreground">
-              Customer Service Hours
+              {t('customerServiceHours')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4 text-center">
               <div>
-                <h4 className="font-semibold text-foreground mb-2">Email Support</h4>
+                <h4 className="font-semibold text-foreground mb-2">{t('emailSupport')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  24/7 - We respond within 24-48 hours
+                  {t('responseTime24')}
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold text-foreground mb-2">Phone Support</h4>
+                <h4 className="font-semibold text-foreground mb-2">{t('phoneSupport')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Monday - Friday: 9:00 AM - 6:00 PM CET
+                  {t('phoneHours')}
                 </p>
               </div>
             </div>

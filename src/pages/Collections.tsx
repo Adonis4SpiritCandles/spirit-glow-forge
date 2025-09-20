@@ -5,52 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Heart, Crown, Leaf } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import { useLanguage } from "@/contexts/LanguageContext";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
 
 // Sample collections data
-const collections = [
-  {
-    id: "luxury",
-    name: "Luxury Collection",
-    description: "Premium fragrances inspired by the world's most exclusive perfumes",
-    icon: Crown,
-    image: candleLit,
-    productCount: 12,
-    color: "from-amber-500/20 to-yellow-500/20",
-    featured: true,
-  },
-  {
-    id: "fresh",
-    name: "Fresh & Clean",
-    description: "Light, airy scents that refresh and energize your space",
-    icon: Leaf,
-    image: candleUnlit,
-    productCount: 8,
-    color: "from-green-500/20 to-emerald-500/20",
-  },
-  {
-    id: "romantic",
-    name: "Romantic Evening",
-    description: "Intimate, warm fragrances perfect for special moments",
-    icon: Heart,
-    image: candleWax,
-    productCount: 10,
-    color: "from-rose-500/20 to-pink-500/20",
-  },
-  {
-    id: "bestsellers",
-    name: "Best Sellers",
-    description: "Our most loved candles chosen by customers worldwide",
-    icon: Sparkles,
-    image: candleLit,
-    productCount: 6,
-    color: "from-purple-500/20 to-violet-500/20",
-    featured: true,
-  },
-];
-
 // Sample products for collections
 const sampleProducts = [
   {
@@ -97,7 +57,49 @@ const sampleProducts = [
 ];
 
 const Collections = () => {
+  const { t } = useLanguage();
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+
+  const collections = [
+    {
+      id: "luxury",
+      name: t('luxuryCollection'),
+      description: t('luxuryCollectionDesc'),
+      icon: Crown,
+      image: candleLit,
+      productCount: 12,
+      color: "from-amber-500/20 to-yellow-500/20",
+      featured: true,
+    },
+    {
+      id: "fresh",
+      name: t('freshAndClean'),
+      description: t('freshDesc'),
+      icon: Leaf,
+      image: candleUnlit,
+      productCount: 8,
+      color: "from-green-500/20 to-emerald-500/20",
+    },
+    {
+      id: "romantic",
+      name: t('romanticEvening'),
+      description: t('romanticDesc'),
+      icon: Heart,
+      image: candleWax,
+      productCount: 10,
+      color: "from-rose-500/20 to-pink-500/20",
+    },
+    {
+      id: "bestsellers",
+      name: t('bestSellers'),
+      description: t('bestSellersDesc'),
+      icon: Sparkles,
+      image: candleLit,
+      productCount: 6,
+      color: "from-purple-500/20 to-violet-500/20",
+      featured: true,
+    },
+  ];
 
   const filteredProducts = selectedCollection 
     ? sampleProducts.filter(product => product.collection === selectedCollection)
@@ -110,11 +112,10 @@ const Collections = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6">
-              Our Collections
+              {t('ourCollections')}
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              Discover carefully curated collections of luxury soy candles, each designed 
-              to create the perfect ambiance for every moment and mood.
+              {t('discoverCuratedCollections')}
             </p>
           </div>
         </div>
@@ -152,7 +153,7 @@ const Collections = () => {
                           </div>
                           {collection.featured && (
                             <Badge className="bg-primary text-primary-foreground">
-                              Featured
+                              {t('featured')}
                             </Badge>
                           )}
                         </div>
@@ -167,14 +168,14 @@ const Collections = () => {
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">
-                            {collection.productCount} products
+                            {collection.productCount} {t('products')}
                           </span>
                           
                           <Button 
                             variant="ghost" 
                             className="text-primary hover:text-primary/80 p-0 h-auto"
                           >
-                            Explore Collection
+                            {t('exploreCollectionPage')}
                             <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                           </Button>
                         </div>
@@ -198,7 +199,7 @@ const Collections = () => {
                   onClick={() => setSelectedCollection(null)}
                   className="mb-8"
                 >
-                  ← Back to All Collections
+                  {t('backToAllCollections')}
                 </Button>
               </div>
               
@@ -211,7 +212,7 @@ const Collections = () => {
               {filteredProducts.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">
-                    More products coming soon to this collection...
+                    {t('moreProductsComingSoon')}
                   </p>
                 </div>
               )}
@@ -222,7 +223,7 @@ const Collections = () => {
           {!selectedCollection && (
             <div className="text-center mt-16">
               <h3 className="text-2xl font-playfair font-bold text-foreground mb-4">
-                Can't decide? Browse all our candles
+                {t('cantDecide')}
               </h3>
               <Button 
                 asChild
@@ -231,7 +232,7 @@ const Collections = () => {
               >
                 <Link to="/shop">
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Shop All Candles
+                  {t('shopAllCandles')}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>

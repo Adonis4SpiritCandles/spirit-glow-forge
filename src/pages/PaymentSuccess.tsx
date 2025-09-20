@@ -26,17 +26,17 @@ const PaymentSuccess = () => {
               <CheckCircle className="w-8 h-8 text-success" />
             </div>
             <CardTitle className="font-playfair text-2xl text-success">
-              {t('paymentSuccessful') || 'Payment Successful!'}
+                {t('paymentSuccessful') || 'Payment Successful!'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <p className="text-muted-foreground">
-                {t('orderConfirmation') || 'Thank you for your purchase! Your order has been confirmed.'}
+                {t('orderConfirmation')}
               </p>
               {sessionId && (
                 <p className="text-xs text-muted-foreground">
-                  {t('sessionId') || 'Session ID'}: {sessionId}
+                  {t('sessionId')}: {sessionId}
                 </p>
               )}
             </div>
@@ -44,19 +44,19 @@ const PaymentSuccess = () => {
             <div className="space-y-3">
               <Button asChild className="w-full" size="lg">
                 <Link to="/shop">
-                  {t('continueShopping') || 'Continue Shopping'}
+                  {t('continueShopping')}
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link to="/user-dashboard">
-                  {t('viewOrders') || 'View My Orders'}
+                  {t('viewOrders')}
                 </Link>
               </Button>
             </div>
 
             <div className="pt-4 border-t border-border">
               <p className="text-xs text-muted-foreground">
-                {t('emailConfirmation') || 'A confirmation email will be sent to you shortly.'}
+                {t('emailConfirmation')}
               </p>
             </div>
           </CardContent>

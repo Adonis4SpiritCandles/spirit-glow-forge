@@ -1,30 +1,33 @@
 import { Flame, Leaf, Heart, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 import candleWax from "@/assets/candle-wax.png";
 import spiritLogo from "@/assets/spirit-logo.png";
 
 const About = () => {
+  const { t } = useLanguage();
+  
   const features = [
     {
       icon: <Leaf className="w-6 h-6 text-primary" />,
-      title: "100% Natural Soy Wax",
-      description: "Crafted from pure soy wax for a clean, eco-friendly burn that lasts longer than traditional paraffin candles."
+      title: t('naturalSoyWax'),
+      description: t('naturalSoyWaxDesc')
     },
     {
       icon: <Flame className="w-6 h-6 text-primary" />,
-      title: "Wooden Wicks",
-      description: "Our crackling wooden wicks create an authentic fireplace ambiance while providing an even, consistent flame."
+      title: t('woodenWicks'),
+      description: t('woodenWicksDesc')
     },
     {
       icon: <Heart className="w-6 h-6 text-primary" />,
-      title: "Hand-Poured with Love",
-      description: "Each candle is carefully hand-poured in small batches to ensure the highest quality and attention to detail."
+      title: t('handPouredWithLove'),
+      description: t('handPouredDesc')
     },
     {
       icon: <Award className="w-6 h-6 text-primary" />,
-      title: "Luxury Fragrances",
-      description: "Inspired by iconic perfumes, our scents are complex, sophisticated, and designed to transform any space."
+      title: t('luxuryFragrances'),
+      description: t('luxuryFragrancesDesc')
     }
   ];
 
@@ -36,7 +39,7 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-foreground leading-tight">
-                Reborn Your Nature
+                {t('rebornYourNature')}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 At SPIRIT CANDLES, we believe that fragrance has the power to transform not just spaces, 
@@ -51,7 +54,7 @@ const About = () => {
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-luxury hover:scale-105 transition-all duration-300"
               >
-                Discover Our Collection
+                {t('discoverOurCollection')}
               </Button>
             </div>
             
@@ -80,7 +83,7 @@ const About = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-foreground mb-4">
-              Why Choose SPIRIT CANDLES
+              {t('whyChooseSpiritCandles')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Every aspect of our candles is designed with intention, from the sustainable 
@@ -118,7 +121,7 @@ const About = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-foreground">
-              Our Story
+              {t('ourStory')}
             </h2>
             
             <div className="space-y-6 text-lg text-foreground/80 leading-relaxed">
@@ -159,7 +162,7 @@ const About = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center text-sm text-muted-foreground">
             <p>
-              <strong>Legal Disclaimer:</strong> Our candles are inspired by popular fragrances for descriptive purposes only. 
+              <strong>{t('legalDisclaimer')}</strong> Our candles are inspired by popular fragrances for descriptive purposes only. 
               We are not affiliated with any original fragrance manufacturers. All trademarks belong to their respective owners.
             </p>
           </div>

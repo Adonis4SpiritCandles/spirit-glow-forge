@@ -40,7 +40,7 @@ const AdminCustomerModal = ({ customer, isOpen, onClose }: AdminCustomerModalPro
             <p className="text-foreground">
               {customer.first_name || customer.last_name 
                 ? `${customer.first_name || ''} ${customer.last_name || ''}`.trim()
-                : 'Not provided'}
+                : t('notProvided')}
             </p>
           </div>
           
@@ -50,8 +50,8 @@ const AdminCustomerModal = ({ customer, isOpen, onClose }: AdminCustomerModalPro
           </div>
           
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Username</label>
-            <p className="text-foreground">{customer.username || 'Not set'}</p>
+            <label className="text-sm font-medium text-muted-foreground">{t('username')}</label>
+            <p className="text-foreground">{customer.username || t('notSet')}</p>
           </div>
           
           <div>
@@ -64,7 +64,7 @@ const AdminCustomerModal = ({ customer, isOpen, onClose }: AdminCustomerModalPro
           </div>
           
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Member since</label>
+            <label className="text-sm font-medium text-muted-foreground">{t('memberSince')}</label>
             <p className="text-foreground">
               {formatDistanceToNow(new Date(customer.created_at), { addSuffix: true })}
             </p>

@@ -10,6 +10,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import ProductCard from "@/components/ProductCard";
+import { useLanguage } from "@/contexts/LanguageContext";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
@@ -94,6 +95,7 @@ const sampleProducts = [
 ];
 
 const Shop = () => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [filterBy, setFilterBy] = useState("all");
@@ -128,13 +130,12 @@ const Shop = () => {
       <div className="container mx-auto px-4 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
-            Our Collection
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover our complete range of luxury soy candles, each inspired by iconic fragrances 
-            and handcrafted with natural ingredients.
-          </p>
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
+              {t('ourCollection')}
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('discoverCompleteRange')}
+            </p>
         </div>
 
         {/* Filters and Search */}

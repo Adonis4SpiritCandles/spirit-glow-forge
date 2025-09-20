@@ -100,7 +100,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                   <Link to={userProfile?.role === 'admin' ? '/admin' : '/dashboard'}>
                     <Button variant="ghost" size="sm">
                       <User className="h-4 w-4 mr-1" />
-                      {userProfile?.role === 'admin' ? 'Admin Dashboard' : t('dashboard')}
+            {userProfile?.role === 'admin' ? t('adminDashboard') : t('dashboard')}
                     </Button>
                   </Link>
                   <Button variant="ghost" size="sm" onClick={handleSignOut}>

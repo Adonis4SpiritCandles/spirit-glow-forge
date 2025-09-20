@@ -12,7 +12,7 @@ const translations = {
   en: {
     // Navigation
     home: 'Home',
-    shop: 'Shop', 
+    shop: 'Shop',
     collections: 'Collections',
     about: 'About',
     contact: 'Contact',
@@ -53,23 +53,6 @@ const translations = {
     freeShipping: 'Free',
     remove: 'Remove',
 
-    // Admin
-    productManagement: 'Product Management',
-    addProduct: 'Add Product',
-    editProduct: 'Edit Product',
-    deleteProduct: 'Delete Product',
-    productName: 'Product Name',
-    productDescription: 'Product Description',
-    productImage: 'Product Image',
-    uploadImage: 'Upload Image',
-    selectImage: 'Select Image',
-    imageUploaded: 'Image uploaded successfully',
-    save: 'Save',
-    cancel: 'Cancel',
-    delete: 'Delete',
-    edit: 'Edit',
-    optional: 'Optional',
-
     // Forms
     email: 'Email',
     password: 'Password',
@@ -87,13 +70,13 @@ const translations = {
 
     // Hero Section
     heroTitle: 'Spirit of Candles',
-    heroSubtitle: 'Illuminate Your Soul with Luxury Scented Candles',
+    heroSubtitle: 'Illuminate your soul with luxury scented candles',
     shopNow: 'Shop Now',
-    exploreCollection: 'Explore Full Collection',
+    exploreCollection: 'Explore Collection',
 
     // Categories
     luxury: 'Luxury',
-    nature: 'Nature', 
+    nature: 'Nature',
     fresh: 'Fresh',
 
     // Footer
@@ -102,42 +85,20 @@ const translations = {
     followUs: 'Follow Us',
     allRightsReserved: 'All rights reserved',
 
-    // Admin (continued)
-    products: 'Products',
-    orders: 'Orders',
-    customers: 'Customers',
-    settings: 'Settings',
-    productPrice: 'Product Price',
-    productCategory: 'Product Category',
-    productSize: 'Product Size',
-    stockQuantity: 'Stock Quantity',
-    imageUrl: 'Image URL',
-    
-    // User Dashboard
-    profile: 'Profile',
-    accountStatus: 'Account Status',
-    spiritMembers: 'Spirit Members',
-    editProfile: 'Edit Profile',
-    saveChanges: 'Save Changes',
-    orderHistory: 'Order History',
-    noOrders: 'No orders found',
-    language: 'Language',
-    preferredLanguage: 'Preferred Language',
-    
     // Search
     search: 'Search',
     searchPlaceholder: 'Search products...',
     searchResults: 'Search Results',
     noResults: 'No products found',
-    
+
     // Contact
     contactUs: 'Contact Us',
     name: 'Name',
     message: 'Message',
     sendMessage: 'Send Message',
     subject: 'Subject',
-    getInTouch: 'Get in Touch',
-    sendUsAMessage: 'Send us a Message',
+    getInTouch: 'Get In Touch',
+    sendUsAMessage: 'Send Us A Message',
     contactInformation: 'Contact Information',
     emailUs: 'Email Us',
     callUs: 'Call Us',
@@ -148,7 +109,7 @@ const translations = {
     customerServiceHours: 'Customer Service Hours',
     emailSupport: 'Email Support',
     phoneSupport: 'Phone Support',
-    
+
     // Dashboard additions
     revenue: 'Revenue',
     manageProductInventory: 'Manage your product inventory',
@@ -163,7 +124,7 @@ const translations = {
     viewDetails: 'View Details',
     exportData: 'Export Data',
     statistics: 'Statistics',
-    
+
     // Form labels
     nameEn: 'Name (EN)',
     namePl: 'Name (PL)',
@@ -171,14 +132,52 @@ const translations = {
     descriptionPl: 'Description (PL)',
     pricePln: 'Price PLN (cents)',
     priceEur: 'Price EUR (cents)',
-    
-     // Animations and UI
+
+    // Animations and UI
     materializing: 'Materializing',
     shopCollection: 'Shop Collection',
     learnOurStory: 'Learn Our Story',
     rebornYourNature: 'Reborn Your Nature',
-    
-    // Missing translations  
+
+    // Admin
+    productManagement: 'Product Management',
+    addProduct: 'Add Product',
+    editProduct: 'Edit Product',
+    deleteProduct: 'Delete Product',
+    productName: 'Product Name',
+    productDescription: 'Product Description',
+    productImage: 'Product Image',
+    uploadImage: 'Upload Image',
+    selectImage: 'Select Image',
+    imageUploaded: 'Image uploaded successfully',
+    productPrice: 'Product Price',
+    productCategory: 'Product Category',
+    productSize: 'Product Size',
+    productWeight: 'Product Weight (Optional)',
+    stockQuantity: 'Stock Quantity',
+    imageUrl: 'Image URL',
+    save: 'Save',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    edit: 'Edit',
+    optional: 'Optional',
+    products: 'Products',
+    orders: 'Orders',
+    customers: 'Customers',
+    settings: 'Settings',
+
+    // User Dashboard
+    profile: 'Profile',
+    accountStatus: 'Account Status',
+    spiritMembers: 'Spirit Members',
+    editProfile: 'Edit Profile',
+    saveChanges: 'Save Changes',
+    orderHistory: 'Order History',
+    noOrders: 'No orders found',
+    language: 'Language',
+    preferredLanguage: 'Preferred Language',
+
+    // Common UI elements
     loading: 'Loading...',
     error: 'Error',
     success: 'Success',
@@ -200,12 +199,112 @@ const translations = {
     accessDenied: 'Access denied',
     noPermission: 'You don\'t have permission to access this page',
     clear: 'Clear',
+    notProvided: 'Not provided',
+    notSet: 'Not set',
+    memberSince: 'Member since',
+    username: 'Username',
+
+    // Contact page specifics
+    missingInformation: 'Missing Information',
+    pleaseFillRequired: 'Please fill in all required fields.',
+    messageSentSuccessfully: 'Message Sent Successfully!',
+    thankYouContact: 'Thank you for contacting us. We\'ll get back to you within 24-48 hours.',
+    errorSendingMessage: 'Failed to send message. Please try again or contact us directly.',
+    yourFullName: 'Your full name',
+    yourEmail: 'your@email.com',
+    whatsThisAbout: 'What\'s this about?',
+    tellUsHowWeCanHelp: 'Tell us how we can help you...',
+    howLongBurn: 'How long do your candles burn?',
+    burnTimeAnswer: 'Our 180g candles burn for approximately 45-50 hours, while our 320g candles provide 80-90 hours of beautiful fragrance.',
+    areEcoFriendly: 'Are your candles eco-friendly?',
+    ecoAnswer: 'Yes! We use 100% natural soy wax, wooden wicks, and recyclable glass containers. Our candles are vegan and cruelty-free.',
+    shipInternationally: 'Do you ship internationally?',
+    shippingAnswer: 'Currently, we ship within Poland and to select EU countries. Contact us for specific shipping information.',
+    responseTime24: '24/7 - We respond within 24-48 hours',
+    phoneHours: 'Monday - Friday: 9:00 AM - 6:00 PM CET',
+
+    // About page
+    discoverOurCollection: 'Discover Our Collection',
+    whyChooseSpiritCandles: 'Why Choose SPIRIT CANDLES',
+    naturalSoyWax: '100% Natural Soy Wax',
+    naturalSoyWaxDesc: 'Crafted from pure soy wax for a clean, eco-friendly burn that lasts longer than traditional paraffin candles.',
+    woodenWicks: 'Wooden Wicks',
+    woodenWicksDesc: 'Our crackling wooden wicks create an authentic fireplace ambiance while providing an even, consistent flame.',
+    handPouredWithLove: 'Hand-Poured with Love',
+    handPouredDesc: 'Each candle is carefully hand-poured in small batches to ensure the highest quality and attention to detail.',
+    luxuryFragrances: 'Luxury Fragrances',
+    luxuryFragrancesDesc: 'Inspired by iconic perfumes, our scents are complex, sophisticated, and designed to transform any space.',
+    ourStory: 'Our Story',
+    legalDisclaimer: 'Legal Disclaimer:',
+
+    // Shop page
+    ourCollection: 'Our Collection',
+    discoverCompleteRange: 'Discover our complete range of luxury soy candles, each inspired by iconic fragrances and handcrafted with natural ingredients.',
+    searchCandles: 'Search candles...',
+    filterBy: 'Filter by',
+    sortBy: 'Sort by',
+    allProducts: 'All Products',
+    newArrivals: 'New Arrivals',
+    bestsellers: 'Bestsellers',
+    featured: 'Featured',
+    priceLowToHigh: 'Price: Low to High',
+    priceHighToLow: 'Price: High to Low',
+    nameAToZ: 'Name: A to Z',
+    product: 'product',
+    noProductsFound: 'No products found',
+    tryAdjustingFilters: 'Try adjusting your search or filter criteria',
+    clearFilters: 'Clear Filters',
+    loadMoreProducts: 'Load More Products',
+
+    // Collections page
+    ourCollections: 'Our Collections',
+    discoverCuratedCollections: 'Discover carefully curated collections of luxury soy candles, each designed to create the perfect ambiance for every moment and mood.',
+    luxuryCollection: 'Luxury Collection',
+    luxuryCollectionDesc: 'Premium fragrances inspired by the world\'s most exclusive perfumes',
+    freshAndClean: 'Fresh & Clean',
+    freshDesc: 'Light, airy scents that refresh and energize your space',
+    romanticEvening: 'Romantic Evening',
+    romanticDesc: 'Intimate, warm fragrances perfect for special moments',
+    bestSellers: 'Best Sellers',
+    bestSellersDesc: 'Our most loved candles chosen by customers worldwide',
+    exploreCollectionPage: 'Explore Collection',
+    backToAllCollections: '← Back to All Collections',
+    moreProductsComingSoon: 'More products coming soon to this collection...',
+    cantDecide: 'Can\'t decide? Browse all our candles',
+    shopAllCandles: 'Shop All Candles',
+
+    // Product Detail page
+    backToShop: 'Back to Shop',
+    productNotFound: 'Product not found',
+    returnToShop: 'Return to Shop',
+    inspiredBy: 'Inspired by',
+    reviews: 'reviews',
+    buyNow: 'Buy Now',
+    wishlist: 'Wishlist',
+    share: 'Share',
+    moodAndAmbiance: 'Mood & Ambiance',
+    productDetails: 'Product Details',
+    waxType: 'Wax Type',
+    wick: 'Wick',
+    handPoured: 'Hand Poured',
+    burnTime: 'Burn Time',
+    naturalIngredients: 'Natural Ingredients',
+    careInstructions: 'Care Instructions',
+    inspirationNotice: 'Inspiration Notice:',
+    fragranceReferences: 'Fragrance references are inspirations only. SPIRIT CANDLES is not affiliated with or endorsed by the original trademark owners.',
+
+    // Payment Success page
+    paymentSuccessful: 'Payment Successful!',
+    orderConfirmation: 'Thank you for your purchase! Your order has been confirmed.',
+    sessionId: 'Session ID',
+    viewOrders: 'View My Orders',
+    emailConfirmation: 'A confirmation email will be sent to you shortly.',
   },
   pl: {
-    // Navigation  
+    // Navigation
     home: 'Strona główna',
     shop: 'Sklep',
-    collections: 'Kolekcje', 
+    collections: 'Kolekcje',
     about: 'O nas',
     contact: 'Kontakt',
     cart: 'Koszyk',
@@ -233,7 +332,7 @@ const translations = {
     shoppingCart: 'Koszyk zakupów',
     emptyCart: 'Twój koszyk jest pusty',
     addSomeCandles: 'Dodaj świece aby rozpocząć',
-    browseCollection: 'Przeglądaj kolekcję', 
+    browseCollection: 'Przeglądaj kolekcję',
     subtotal: 'Suma częściowa',
     total: 'Razem',
     checkoutNow: 'Zamów teraz',
@@ -244,36 +343,6 @@ const translations = {
     shipping: 'Dostawa',
     freeShipping: 'Darmowa',
     remove: 'Usuń',
-
-     // Admin
-    productManagement: 'Zarządzanie produktami',
-    orderManagement: 'Zarządzanie zamówieniami', 
-    customerManagement: 'Zarządzanie klientami',
-    adminSettings: 'Ustawienia administratora',
-    addProduct: 'Dodaj produkt',
-    editProduct: 'Edytuj produkt',
-    deleteProduct: 'Usuń produkt',
-    productName: 'Nazwa produktu',
-    productDescription: 'Opis produktu',
-    productImage: 'Zdjęcie produktu',
-    uploadImage: 'Wgraj zdjęcie',
-    selectImage: 'Wybierz zdjęcie',
-    imageUploaded: 'Zdjęcie wgrane pomyślnie',
-    productPrice: 'Cena produktu',
-    productCategory: 'Kategoria produktu',
-    productSize: 'Rozmiar produktu',
-    productWeight: 'Waga produktu (opcjonalnie)',
-    stockQuantity: 'Stan magazynowy',
-    imageUrl: 'URL obrazu',
-    save: 'Zapisz',
-    cancel: 'Anuluj',
-    delete: 'Usuń',
-    edit: 'Edytuj',
-    optional: 'Opcjonalne',
-    products: 'Produkty',
-    orders: 'Zamówienia',
-    customers: 'Klienci',
-    settings: 'Ustawienia',
 
     // Forms
     email: 'Email',
@@ -301,30 +370,18 @@ const translations = {
     nature: 'Natura',
     fresh: 'Świeżość',
 
-    // Footer  
+    // Footer
     quickLinks: 'Szybkie linki',
     customerService: 'Obsługa klienta',
     followUs: 'Śledź nas',
     allRightsReserved: 'Wszelkie prawa zastrzeżone',
 
-     
-    // User Dashboard
-    profile: 'Profil',
-    accountStatus: 'Status konta',
-    spiritMembers: 'Członkowie Spirit',
-    editProfile: 'Edytuj profil',
-    saveChanges: 'Zapisz zmiany',
-    orderHistory: 'Historia zamówień',
-    noOrders: 'Nie znaleziono zamówień',
-    language: 'Język',
-    preferredLanguage: 'Preferowany język',
-    
     // Search
     search: 'Szukaj',
     searchPlaceholder: 'Szukaj produktów...',
     searchResults: 'Wyniki wyszukiwania',
     noResults: 'Nie znaleziono produktów',
-    
+
     // Contact
     contactUs: 'Skontaktuj się z nami',
     name: 'Imię',
@@ -343,7 +400,7 @@ const translations = {
     customerServiceHours: 'Godziny obsługi klienta',
     emailSupport: 'Wsparcie email',
     phoneSupport: 'Wsparcie telefoniczne',
-    
+
     // Dashboard additions
     revenue: 'Przychody',
     manageProductInventory: 'Zarządzaj swoim asortymentem',
@@ -358,7 +415,7 @@ const translations = {
     viewDetails: 'Zobacz szczegóły',
     exportData: 'Eksportuj dane',
     statistics: 'Statystyki',
-    
+
     // Form labels
     nameEn: 'Nazwa (EN)',
     namePl: 'Nazwa (PL)',
@@ -366,14 +423,52 @@ const translations = {
     descriptionPl: 'Opis (PL)',
     pricePln: 'Cena PLN (grosze)',
     priceEur: 'Cena EUR (centy)',
-    
-     // Animations and UI
+
+    // Animations and UI
     materializing: 'Materializuje się',
     shopCollection: 'Kup kolekcję',
     learnOurStory: 'Poznaj naszą historię',
     rebornYourNature: 'Odrodzenie twojej natury',
-    
-    // Missing translations
+
+    // Admin
+    productManagement: 'Zarządzanie produktami',
+    addProduct: 'Dodaj produkt',
+    editProduct: 'Edytuj produkt',
+    deleteProduct: 'Usuń produkt',
+    productName: 'Nazwa produktu',
+    productDescription: 'Opis produktu',
+    productImage: 'Zdjęcie produktu',
+    uploadImage: 'Wgraj zdjęcie',
+    selectImage: 'Wybierz zdjęcie',
+    imageUploaded: 'Zdjęcie wgrane pomyślnie',
+    productPrice: 'Cena produktu',
+    productCategory: 'Kategoria produktu',
+    productSize: 'Rozmiar produktu',
+    productWeight: 'Waga produktu (opcjonalnie)',
+    stockQuantity: 'Stan magazynowy',
+    imageUrl: 'URL obrazu',
+    save: 'Zapisz',
+    cancel: 'Anuluj',
+    delete: 'Usuń',
+    edit: 'Edytuj',
+    optional: 'Opcjonalne',
+    products: 'Produkty',
+    orders: 'Zamówienia',
+    customers: 'Klienci',
+    settings: 'Ustawienia',
+
+    // User Dashboard
+    profile: 'Profil',
+    accountStatus: 'Status konta',
+    spiritMembers: 'Członkowie Spirit',
+    editProfile: 'Edytuj profil',
+    saveChanges: 'Zapisz zmiany',
+    orderHistory: 'Historia zamówień',
+    noOrders: 'Nie znaleziono zamówień',
+    language: 'Język',
+    preferredLanguage: 'Preferowany język',
+
+    // Common UI elements
     loading: 'Ładowanie...',
     error: 'Błąd',
     success: 'Sukces',
@@ -395,6 +490,106 @@ const translations = {
     accessDenied: 'Dostęp zabroniony',
     noPermission: 'Nie masz uprawnień do tej strony',
     clear: 'Wyczyść',
+    notProvided: 'Nie podano',
+    notSet: 'Nie ustawiono',
+    memberSince: 'Członek od',
+    username: 'Nazwa użytkownika',
+
+    // Contact page specifics
+    missingInformation: 'Brakuje informacji',
+    pleaseFillRequired: 'Wypełnij wszystkie wymagane pola.',
+    messageSentSuccessfully: 'Wiadomość wysłana pomyślnie!',
+    thankYouContact: 'Dziękujemy za kontakt. Odpowiemy w ciągu 24-48 godzin.',
+    errorSendingMessage: 'Nie udało się wysłać wiadomości. Spróbuj ponownie lub skontaktuj się bezpośrednio.',
+    yourFullName: 'Twoje pełne imię i nazwisko',
+    yourEmail: 'twoj@email.com',
+    whatsThisAbout: 'O co chodzi?',
+    tellUsHowWeCanHelp: 'Powiedz nam, jak możemy Ci pomóc...',
+    howLongBurn: 'Jak długo palą się Wasze świece?',
+    burnTimeAnswer: 'Nasze świece 180g palą się około 45-50 godzin, podczas gdy nasze świece 320g zapewniają 80-90 godzin pięknego zapachu.',
+    areEcoFriendly: 'Czy Wasze świece są ekologiczne?',
+    ecoAnswer: 'Tak! Używamy 100% naturalnego wosku sojowego, drewnianych knotów i szklanych pojemników nadających się do recyklingu. Nasze świece są wegańskie i nie testowane na zwierzętach.',
+    shipInternationally: 'Czy wysyłacie międzynarodowo?',
+    shippingAnswer: 'Obecnie wysyłamy w Polsce i do wybranych krajów UE. Skontaktuj się z nami w sprawie szczegółowych informacji o wysyłce.',
+    responseTime24: '24/7 - Odpowiadamy w ciągu 24-48 godzin',
+    phoneHours: 'Poniedziałek - Piątek: 9:00 - 18:00 CET',
+
+    // About page
+    discoverOurCollection: 'Odkryj naszą kolekcję',
+    whyChooseSpiritCandles: 'Dlaczego wybrać SPIRIT CANDLES',
+    naturalSoyWax: '100% naturalny wosk sojowy',
+    naturalSoyWaxDesc: 'Wykonane z czystego wosku sojowego dla czystego, ekologicznego spalania, które trwa dłużej niż tradycyjne świece parafinowe.',
+    woodenWicks: 'Drewniane knoty',
+    woodenWicksDesc: 'Nasze trzaskające drewniane knoty tworzą autentyczną atmosferę kominka, zapewniając równy, stały płomień.',
+    handPouredWithLove: 'Ręcznie odlewane z miłością',
+    handPouredDesc: 'Każda świeca jest starannie odlewana ręcznie w małych partiach, aby zapewnić najwyższą jakość i dbałość o szczegóły.',
+    luxuryFragrances: 'Luksusowe zapachy',
+    luxuryFragrancesDesc: 'Inspirowane kultowymi perfumami, nasze zapachy są złożone, wyrafinowane i zaprojektowane do transformacji każdej przestrzeni.',
+    ourStory: 'Nasza historia',
+    legalDisclaimer: 'Zastrzeżenie prawne:',
+
+    // Shop page
+    ourCollection: 'Nasza kolekcja',
+    discoverCompleteRange: 'Odkryj nasz kompletny asortyment luksusowych świec sojowych, każda inspirowana kultowymi zapachami i wykonana ręcznie z naturalnych składników.',
+    searchCandles: 'Szukaj świec...',
+    filterBy: 'Filtruj według',
+    sortBy: 'Sortuj według',
+    allProducts: 'Wszystkie produkty',
+    newArrivals: 'Nowości',
+    bestsellers: 'Bestsellery',
+    featured: 'Polecane',
+    priceLowToHigh: 'Cena: Od najniższej',
+    priceHighToLow: 'Cena: Od najwyższej',
+    nameAToZ: 'Nazwa: A do Z',
+    product: 'produkt',
+    noProductsFound: 'Nie znaleziono produktów',
+    tryAdjustingFilters: 'Spróbuj dostosować kryteria wyszukiwania lub filtrów',
+    clearFilters: 'Wyczyść filtry',
+    loadMoreProducts: 'Załaduj więcej produktów',
+
+    // Collections page
+    ourCollections: 'Nasze kolekcje',
+    discoverCuratedCollections: 'Odkryj starannie wyselekcjonowane kolekcje luksusowych świec sojowych, każda zaprojektowana, aby stworzyć idealną atmosferę na każdą chwilę i nastrój.',
+    luxuryCollection: 'Kolekcja luksusowa',
+    luxuryCollectionDesc: 'Luksusowe zapachy inspirowane najbardziej ekskluzywnymi perfumami świata',
+    freshAndClean: 'Świeże i czyste',
+    freshDesc: 'Lekkie, przewiewne zapachy, które odświeżają i dodają energii Twojej przestrzeni',
+    romanticEvening: 'Romantyczny wieczór',
+    romanticDesc: 'Intymne, ciepłe zapachy idealne na wyjątkowe chwile',
+    bestSellers: 'Bestsellery',
+    bestSellersDesc: 'Nasze najbardziej lubiane świece wybrane przez klientów z całego świata',
+    exploreCollectionPage: 'Poznaj kolekcję',
+    backToAllCollections: '← Wróć do wszystkich kolekcji',
+    moreProductsComingSoon: 'Więcej produktów wkrótce w tej kolekcji...',
+    cantDecide: 'Nie możesz się zdecydować? Przeglądaj wszystkie nasze świece',
+    shopAllCandles: 'Kup wszystkie świece',
+
+    // Product Detail page
+    backToShop: 'Wróć do sklepu',
+    productNotFound: 'Produkt nie znaleziony',
+    returnToShop: 'Wróć do sklepu',
+    inspiredBy: 'Inspirowane przez',
+    reviews: 'opinii',
+    buyNow: 'Kup teraz',
+    wishlist: 'Lista życzeń',
+    share: 'Udostępnij',
+    moodAndAmbiance: 'Nastrój i atmosfera',
+    productDetails: 'Szczegóły produktu',
+    waxType: 'Typ wosku',
+    wick: 'Knot',
+    handPoured: 'Odlewane ręcznie',
+    burnTime: 'Czas spalania',
+    naturalIngredients: 'Naturalne składniki',
+    careInstructions: 'Instrukcje pielęgnacji',
+    inspirationNotice: 'Uwaga o inspiracji:',
+    fragranceReferences: 'Odniesienia do zapachów to tylko inspiracje. SPIRIT CANDLES nie jest powiązane ani popierane przez pierwotnych właścicieli znaków towarowych.',
+
+    // Payment Success page
+    paymentSuccessful: 'Płatność pomyślna!',
+    orderConfirmation: 'Dziękujemy za zakup! Twoje zamówienie zostało potwierdzone.',
+    sessionId: 'ID sesji',
+    viewOrders: 'Zobacz moje zamówienia',
+    emailConfirmation: 'Wkrótce otrzymasz e-mail z potwierdzeniem.',
   }
 };
 

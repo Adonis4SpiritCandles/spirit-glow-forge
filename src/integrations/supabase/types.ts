@@ -142,6 +142,7 @@ export type Database = {
           size: string | null
           stock_quantity: number
           updated_at: string
+          weight: string | null
         }
         Insert: {
           category: string
@@ -157,6 +158,7 @@ export type Database = {
           size?: string | null
           stock_quantity?: number
           updated_at?: string
+          weight?: string | null
         }
         Update: {
           category?: string
@@ -172,6 +174,7 @@ export type Database = {
           size?: string | null
           stock_quantity?: number
           updated_at?: string
+          weight?: string | null
         }
         Relationships: []
       }

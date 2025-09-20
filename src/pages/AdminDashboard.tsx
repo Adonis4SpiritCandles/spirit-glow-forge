@@ -29,6 +29,7 @@ interface Product {
   category: string;
   size: string;
   stock_quantity: number;
+  weight?: string;
   image_url: string | null;
   created_at: string;
   updated_at: string;
@@ -86,6 +87,7 @@ const AdminDashboard = () => {
     price_eur: 0,
     category: '',
     size: '',
+    weight: '',
     stock_quantity: 0,
     image_url: ''
   });
@@ -235,6 +237,7 @@ const AdminDashboard = () => {
       price_eur: product.price_eur,
       category: product.category,
       size: product.size,
+      weight: product.weight || '',
       stock_quantity: product.stock_quantity,
       image_url: product.image_url || ''
     });
@@ -371,6 +374,7 @@ const AdminDashboard = () => {
                     price_eur: 0,
                     category: '',
                     size: '',
+                    weight: '',
                     stock_quantity: 0,
                     image_url: ''
                   });
@@ -441,6 +445,14 @@ const AdminDashboard = () => {
                         <Input
                           value={productForm.size}
                           onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
+                          placeholder="e.g., 180g, 320g"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t('productWeight')} <span className="text-muted-foreground">({t('optional')})</span></Label>
+                        <Input
+                          value={productForm.weight}
+                          onChange={(e) => setProductForm({ ...productForm, weight: e.target.value })}
                           placeholder="e.g., 180g, 320g"
                         />
                       </div>

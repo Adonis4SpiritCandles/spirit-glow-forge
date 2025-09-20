@@ -222,8 +222,11 @@ const translations = {
     freeShipping: 'Darmowa',
     remove: 'Usuń',
 
-    // Admin
+     // Admin
     productManagement: 'Zarządzanie produktami',
+    orderManagement: 'Zarządzanie zamówieniami', 
+    customerManagement: 'Zarządzanie klientami',
+    adminSettings: 'Ustawienia administratora',
     addProduct: 'Dodaj produkt',
     editProduct: 'Edytuj produkt',
     deleteProduct: 'Usuń produkt',
@@ -233,6 +236,12 @@ const translations = {
     uploadImage: 'Wgraj zdjęcie',
     selectImage: 'Wybierz zdjęcie',
     imageUploaded: 'Zdjęcie wgrane pomyślnie',
+    productPrice: 'Cena produktu',
+    productCategory: 'Kategoria produktu',
+    productSize: 'Rozmiar produktu',
+    productWeight: 'Waga produktu (opcjonalnie)',
+    stockQuantity: 'Stan magazynowy',
+    imageUrl: 'URL obrazu',
     save: 'Zapisz',
     cancel: 'Anuluj',
     delete: 'Usuń',
@@ -242,11 +251,6 @@ const translations = {
     orders: 'Zamówienia',
     customers: 'Klienci',
     settings: 'Ustawienia',
-    productPrice: 'Cena produktu',
-    productCategory: 'Kategoria produktu',
-    productSize: 'Rozmiar produktu',
-    stockQuantity: 'Ilość w magazynie',
-    imageUrl: 'URL zdjęcia',
 
     // Forms
     email: 'Email',
@@ -280,26 +284,7 @@ const translations = {
     followUs: 'Śledź nas',
     allRightsReserved: 'Wszelkie prawa zastrzeżone',
 
-    // Admin
-    adminDashboard: 'Panel administratora',
-    products: 'Produkty',
-    orders: 'Zamówienia', 
-    customers: 'Klienci',
-    settings: 'Ustawienia',
-    addProduct: 'Dodaj produkt',
-    editProduct: 'Edytuj produkt',
-    deleteProduct: 'Usuń produkt',
-    productName: 'Nazwa produktu',
-    productDescription: 'Opis produktu',
-    productPrice: 'Cena produktu',
-    productCategory: 'Kategoria produktu',
-    productSize: 'Rozmiar produktu',
-    stockQuantity: 'Stan magazynowy',
-    imageUrl: 'URL obrazu',
-    uploadImage: 'Prześlij obraz',
-    save: 'Zapisz',
-    cancel: 'Anuluj',
-    
+     
     // User Dashboard
     profile: 'Profil',
     accountStatus: 'Status konta',

@@ -172,11 +172,34 @@ const translations = {
     pricePln: 'Price PLN (cents)',
     priceEur: 'Price EUR (cents)',
     
-    // Animations and UI
+     // Animations and UI
     materializing: 'Materializing',
     shopCollection: 'Shop Collection',
     learnOurStory: 'Learn Our Story',
     rebornYourNature: 'Reborn Your Nature',
+    
+    // Missing translations  
+    loading: 'Loading...',
+    error: 'Error',
+    success: 'Success',
+    confirm: 'Confirm',
+    yes: 'Yes',
+    no: 'No',
+    close: 'Close',
+    back: 'Back',
+    next: 'Next',
+    previous: 'Previous',
+    addedToCart: 'Added to cart',
+    itemAdded: 'Item added to cart',
+    proceedToCheckout: 'Proceed to checkout',
+    checkout: 'Checkout',
+    paymentSuccess: 'Payment successful',
+    orderPlaced: 'Order placed',
+    thankYou: 'Thank you',
+    orderNumber: 'Order number',
+    accessDenied: 'Access denied',
+    noPermission: 'You don\'t have permission to access this page',
+    clear: 'Clear',
   },
   pl: {
     // Navigation  
@@ -344,11 +367,34 @@ const translations = {
     pricePln: 'Cena PLN (grosze)',
     priceEur: 'Cena EUR (centy)',
     
-    // Animations and UI
+     // Animations and UI
     materializing: 'Materializuje się',
     shopCollection: 'Kup kolekcję',
     learnOurStory: 'Poznaj naszą historię',
     rebornYourNature: 'Odrodzenie twojej natury',
+    
+    // Missing translations
+    loading: 'Ładowanie...',
+    error: 'Błąd',
+    success: 'Sukces',
+    confirm: 'Potwierdź',
+    yes: 'Tak',
+    no: 'Nie',
+    close: 'Zamknij',
+    back: 'Wstecz',
+    next: 'Dalej',
+    previous: 'Poprzedni',
+    addedToCart: 'Dodano do koszyka',
+    itemAdded: 'Przedmiot dodany do koszyka',
+    proceedToCheckout: 'Przejdź do kasy',
+    checkout: 'Kasa',
+    paymentSuccess: 'Płatność pomyślna',
+    orderPlaced: 'Zamówienie złożone',
+    thankYou: 'Dziękujemy',
+    orderNumber: 'Numer zamówienia',
+    accessDenied: 'Dostęp zabroniony',
+    noPermission: 'Nie masz uprawnień do tej strony',
+    clear: 'Wyczyść',
   }
 };
 

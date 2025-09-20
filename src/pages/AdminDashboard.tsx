@@ -95,6 +95,7 @@ const AdminDashboard = () => {
   // Customer modal state
   const [selectedCustomer, setSelectedCustomer] = useState<Profile | null>(null);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
 
   // Check if user is admin
   useEffect(() => {
@@ -268,6 +269,46 @@ const AdminDashboard = () => {
   const handleCustomerView = (customer: Profile) => {
     setSelectedCustomer(customer);
     setIsCustomerModalOpen(true);
+  };
+
+  // Image upload handler
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImageUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      setProductForm({ ...productForm, image_url: publicUrl });
+      
+      toast({
+        title: t('imageUploaded'),
+        description: "Image uploaded successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setImageUploading(false);
+    }
   };
 
   if (authLoading || loading) {
@@ -466,13 +507,31 @@ const AdminDashboard = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('imageUrl')}</Label>
-                        <Input
-                          type="url"
-                          value={productForm.image_url}
-                          onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                          placeholder="https://example.com/image.jpg"
-                        />
+                        <Label>{t('uploadImage')}</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="flex-1"
+                          />
+                          <Button 
+                            type="button" 
+                            variant="outline"
+                            onClick={() => setProductForm({ ...productForm, image_url: '' })}
+                          >
+                            Clear
+                          </Button>
+                        </div>
+                        {productForm.image_url && (
+                          <div className="mt-2">
+                            <img 
+                              src={productForm.image_url} 
+                              alt="Product preview" 
+                              className="w-20 h-20 object-cover rounded border"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 gap-6">

@@ -48,7 +48,7 @@ const PaymentSuccess = () => {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
-                <Link to="/dashboard">
+                <Link to="/dashboard?tab=orders">
                   {t('viewOrders')}
                 </Link>
               </Button>

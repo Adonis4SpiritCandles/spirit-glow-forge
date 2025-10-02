@@ -15,10 +15,11 @@ serve(async (req) => {
 
   try {
     const body = await req.text();
-    const event = stripe.webhooks.constructEvent(
+    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") || "";
+    const event = await stripe.webhooks.constructEventAsync(
       body,
       signature,
-      Deno.env.get("STRIPE_WEBHOOK_SECRET") || ""
+      webhookSecret
     );
 
     console.log(`Received event: ${event.type}`);

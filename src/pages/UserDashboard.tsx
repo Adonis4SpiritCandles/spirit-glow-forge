@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { User, Settings, ShoppingBag, CreditCard, Package } from 'lucide-react';
 
 interface UserProfile {
@@ -37,6 +37,8 @@ interface Order {
 const UserDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -160,7 +162,7 @@ const UserDashboard = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="profile" className="w-full">
+        <Tabs defaultValue={tabParam || "profile"} className="w-full">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="w-4 h-4" />

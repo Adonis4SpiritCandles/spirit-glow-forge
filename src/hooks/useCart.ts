@@ -265,6 +265,27 @@ export const useCart = () => {
   useEffect(() => {
     if (user) {
       loadCartItems();
+      
+      // Subscribe to real-time changes in cart_items
+      const channel = supabase
+        .channel('cart_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'cart_items',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            loadCartItems();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     } else {
       setCartItems([]);
     }

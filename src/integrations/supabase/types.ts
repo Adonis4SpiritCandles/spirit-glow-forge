@@ -49,6 +49,33 @@ export type Database = {
           },
         ]
       }
+      furgonetka_tokens: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          refresh_token: string
+          updated_at: string | null
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          refresh_token: string
+          updated_at?: string | null
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          refresh_token?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -96,32 +123,50 @@ export type Database = {
       }
       orders: {
         Row: {
+          carrier: string | null
           created_at: string
+          estimated_delivery_date: string | null
+          furgonetka_package_id: string | null
           id: string
           shipping_address: Json | null
+          shipping_label_url: string | null
+          shipping_status: string | null
           status: string
           total_eur: number
           total_pln: number
+          tracking_number: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          carrier?: string | null
           created_at?: string
+          estimated_delivery_date?: string | null
+          furgonetka_package_id?: string | null
           id?: string
           shipping_address?: Json | null
+          shipping_label_url?: string | null
+          shipping_status?: string | null
           status?: string
           total_eur: number
           total_pln: number
+          tracking_number?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          carrier?: string | null
           created_at?: string
+          estimated_delivery_date?: string | null
+          furgonetka_package_id?: string | null
           id?: string
           shipping_address?: Json | null
+          shipping_label_url?: string | null
+          shipping_status?: string | null
           status?: string
           total_eur?: number
           total_pln?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2 } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import AdminCustomerModal from '@/components/AdminCustomerModal';
 import AdminStatistics from '@/components/AdminStatistics';
@@ -42,6 +42,12 @@ interface Order {
   total_pln: number;
   total_eur: number;
   created_at: string;
+  shipping_status?: string;
+  tracking_number?: string;
+  carrier?: string;
+  shipping_label_url?: string;
+  furgonetka_package_id?: string;
+  shipping_address?: any;
   profiles?: {
     first_name?: string;
     last_name?: string;
@@ -96,6 +102,19 @@ const AdminDashboard = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<Profile | null>(null);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+
+  // Shipping management state
+  const [creatingShipment, setCreatingShipment] = useState<string | null>(null);
+  const [shipmentForm, setShipmentForm] = useState({
+    carrier: 'InPost',
+    service: 'INPOST_STANDARD',
+    weight: 0.5,
+    dimensions: {
+      width: 30,
+      height: 30,
+      length: 30
+    }
+  });
 
   // Check if user is admin
   useEffect(() => {
@@ -309,6 +328,45 @@ const AdminDashboard = () => {
     } finally {
       setImageUploading(false);
     }
+  };
+
+  // Create Furgonetka shipment
+  const createShipment = async (orderId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session');
+
+      const response = await supabase.functions.invoke('create-furgonetka-shipment', {
+        body: {
+          orderId,
+          carrier: shipmentForm.carrier,
+          service: shipmentForm.service,
+          weight: shipmentForm.weight,
+          dimensions: shipmentForm.dimensions
+        }
+      });
+
+      if (response.error) throw response.error;
+
+      toast({
+        title: "Success",
+        description: `Shipment created with tracking number: ${response.data.trackingNumber}`,
+      });
+
+      setCreatingShipment(null);
+      loadDashboardData();
+    } catch (error: any) {
+      console.error('Error creating shipment:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to create shipment',
+        variant: "destructive",
+      });
+    }
+  };
+
+  const downloadLabel = async (labelUrl: string) => {
+    window.open(labelUrl, '_blank');
   };
 
   if (authLoading || loading) {
@@ -623,7 +681,7 @@ const AdminDashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle>{t('orders')}</CardTitle>
-                <CardDescription>Manage customer orders</CardDescription>
+                <CardDescription>Manage customer orders and shipping</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -633,50 +691,189 @@ const AdminDashboard = () => {
                       <TableHead>Customer</TableHead>
                       <TableHead>Total</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Shipping</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {orders.map((order) => (
-                      <TableRow key={order.id}>
-                        <TableCell className="font-mono text-sm">
-                          {order.id.slice(0, 8)}...
-                        </TableCell>
-                        <TableCell>
-                          {order.profiles?.first_name} {order.profiles?.last_name}
-                          <br />
-                          <span className="text-xs text-muted-foreground">
-                            {order.profiles?.email}
-                          </span>
-                        </TableCell>
-                        <TableCell>{order.total_pln} PLN</TableCell>
-                        <TableCell>
-                          <Badge 
-                            variant={
-                              order.status === 'completed' ? 'default' :
-                              order.status === 'pending' ? 'secondary' : 'destructive'
-                            }
-                          >
-                            {order.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(order.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateOrderStatus(order.id, 'completed')}
-                              disabled={order.status === 'completed'}
+                      <>
+                        <TableRow key={order.id}>
+                          <TableCell className="font-mono text-sm">
+                            {order.id.slice(0, 8)}...
+                          </TableCell>
+                          <TableCell>
+                            {order.profiles?.first_name} {order.profiles?.last_name}
+                            <br />
+                            <span className="text-xs text-muted-foreground">
+                              {order.profiles?.email}
+                            </span>
+                          </TableCell>
+                          <TableCell>{order.total_pln} PLN</TableCell>
+                          <TableCell>
+                            <Badge 
+                              variant={
+                                order.status === 'completed' ? 'default' :
+                                order.status === 'pending' ? 'secondary' : 'destructive'
+                              }
                             >
-                              Complete
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
+                              {order.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {order.tracking_number ? (
+                              <div className="space-y-1">
+                                <Badge variant="outline" className="mb-1">
+                                  {order.carrier}
+                                </Badge>
+                                <div className="text-xs">
+                                  <span className="font-mono">{order.tracking_number}</span>
+                                </div>
+                                <Badge variant="secondary" className="text-xs">
+                                  {order.shipping_status || 'pending'}
+                                </Badge>
+                              </div>
+                            ) : (
+                              <Badge variant="outline">No shipment</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {new Date(order.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2 flex-wrap">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => updateOrderStatus(order.id, 'completed')}
+                                disabled={order.status === 'completed'}
+                              >
+                                Complete
+                              </Button>
+                              {order.tracking_number ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => order.shipping_label_url && downloadLabel(order.shipping_label_url)}
+                                >
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Label
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => setCreatingShipment(order.id)}
+                                  disabled={order.status !== 'completed'}
+                                >
+                                  <Truck className="h-4 w-4 mr-1" />
+                                  Create Shipment
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                        {creatingShipment === order.id && (
+                          <TableRow>
+                            <TableCell colSpan={7}>
+                              <Card className="border-2 border-primary">
+                                <CardHeader>
+                                  <CardTitle className="text-lg">Create Shipment for Order {order.id.slice(0, 8)}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                      <Label>Carrier</Label>
+                                      <Select 
+                                        value={shipmentForm.carrier}
+                                        onValueChange={(value) => setShipmentForm({ ...shipmentForm, carrier: value })}
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="InPost">InPost</SelectItem>
+                                          <SelectItem value="FedEx">FedEx</SelectItem>
+                                          <SelectItem value="DHL">DHL</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Service</Label>
+                                      <Select 
+                                        value={shipmentForm.service}
+                                        onValueChange={(value) => setShipmentForm({ ...shipmentForm, service: value })}
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="INPOST_STANDARD">InPost Standard</SelectItem>
+                                          <SelectItem value="FEDEX_STANDARD">FedEx Standard</SelectItem>
+                                          <SelectItem value="DHL_STANDARD">DHL Standard</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Weight (kg)</Label>
+                                      <Input
+                                        type="number"
+                                        step="0.1"
+                                        value={shipmentForm.weight}
+                                        onChange={(e) => setShipmentForm({ ...shipmentForm, weight: parseFloat(e.target.value) })}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                      <Label>Width (cm)</Label>
+                                      <Input
+                                        type="number"
+                                        value={shipmentForm.dimensions.width}
+                                        onChange={(e) => setShipmentForm({ 
+                                          ...shipmentForm, 
+                                          dimensions: { ...shipmentForm.dimensions, width: parseInt(e.target.value) }
+                                        })}
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Height (cm)</Label>
+                                      <Input
+                                        type="number"
+                                        value={shipmentForm.dimensions.height}
+                                        onChange={(e) => setShipmentForm({ 
+                                          ...shipmentForm, 
+                                          dimensions: { ...shipmentForm.dimensions, height: parseInt(e.target.value) }
+                                        })}
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Length (cm)</Label>
+                                      <Input
+                                        type="number"
+                                        value={shipmentForm.dimensions.length}
+                                        onChange={(e) => setShipmentForm({ 
+                                          ...shipmentForm, 
+                                          dimensions: { ...shipmentForm.dimensions, length: parseInt(e.target.value) }
+                                        })}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Button onClick={() => createShipment(order.id)}>
+                                      Create Shipment
+                                    </Button>
+                                    <Button variant="outline" onClick={() => setCreatingShipment(null)}>
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </>
                     ))}
                   </TableBody>
                 </Table>

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Navigate } from 'react-router-dom';
-import { User, Settings, ShoppingBag, CreditCard } from 'lucide-react';
+import { User, Settings, ShoppingBag, CreditCard, Package } from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -28,6 +28,10 @@ interface Order {
   status: string;
   created_at: string;
   shipping_address: any;
+  tracking_number?: string;
+  carrier?: string;
+  shipping_status?: string;
+  shipping_label_url?: string;
 }
 
 const UserDashboard = () => {
@@ -272,7 +276,7 @@ const UserDashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {orders.map((order) => (
-                      <div key={order.id} className="border rounded-lg p-4">
+                      <div key={order.id} className="border rounded-lg p-4 space-y-3">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold">Order #{order.id.slice(-8)}</h3>
@@ -291,6 +295,59 @@ const UserDashboard = () => {
                             </p>
                           </div>
                         </div>
+                        {order.tracking_number && (
+                          <div className="border-t pt-3 mt-3 space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Package className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm font-medium">Shipping Information</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                              <div>
+                                <span className="text-muted-foreground">Carrier:</span>
+                                <Badge variant="outline" className="ml-2">{order.carrier}</Badge>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Status:</span>
+                                <Badge variant="secondary" className="ml-2">
+                                  {order.shipping_status || 'pending'}
+                                </Badge>
+                              </div>
+                              <div className="md:col-span-2">
+                                <span className="text-muted-foreground">Tracking Number:</span>
+                                <code className="ml-2 font-mono text-xs bg-muted px-2 py-1 rounded">
+                                  {order.tracking_number}
+                                </code>
+                              </div>
+                            </div>
+                            {order.carrier === 'InPost' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => window.open(`https://tracking.inpost.pl/${order.tracking_number}`, '_blank')}
+                              >
+                                Track Package
+                              </Button>
+                            )}
+                            {order.carrier === 'DHL' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => window.open(`https://www.dhl.com/pl-pl/home/tracking.html?tracking-id=${order.tracking_number}`, '_blank')}
+                              >
+                                Track Package
+                              </Button>
+                            )}
+                            {order.carrier === 'FedEx' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => window.open(`https://www.fedex.com/fedextrack/?trknbr=${order.tracking_number}`, '_blank')}
+                              >
+                                Track Package
+                              </Button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

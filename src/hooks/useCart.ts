@@ -69,127 +69,87 @@ export const useCart = () => {
       return;
     }
 
-    // Optimistic update - immediately update local state
-    const { data: productData } = await supabase
-      .from('products')
+    setLoading(true);
+
+    // Check if item already exists in cart
+    const { data: existingItem } = await supabase
+      .from('cart_items')
       .select('*')
-      .eq('id', productId)
+      .eq('user_id', user.id)
+      .eq('product_id', productId)
       .single();
 
-    if (productData) {
-      const newItem: CartItem = {
-        id: `temp-${Date.now()}`,
-        product_id: productId,
-        quantity,
-        product: productData as Product,
-      };
-      setCartItems(prev => [...prev, newItem]);
+    if (existingItem) {
+      // Update quantity if item exists
+      const { error } = await supabase
+        .from('cart_items')
+        .update({ quantity: existingItem.quantity + quantity })
+        .eq('id', existingItem.id);
+
+      if (error) {
+        console.error('Error updating cart:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add item to cart",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Added to cart",
+          description: "Item has been added to your cart",
+        });
+        await loadCartItems();
+      }
+    } else {
+      // Insert new item
+      const { error } = await supabase
+        .from('cart_items')
+        .insert({
+          user_id: user.id,
+          product_id: productId,
+          quantity,
+        });
+
+      if (error) {
+        console.error('Error adding to cart:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add item to cart",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Added to cart",
+          description: "Item has been added to your cart",
+        });
+        await loadCartItems();
+      }
     }
 
-    const { error } = await supabase
-      .from('cart_items')
-      .upsert({
-        user_id: user.id,
-        product_id: productId,
-        quantity,
-      }, {
-        onConflict: 'user_id,product_id',
-      });
+    setLoading(false);
+  };
 
-    if (error) {
-      console.error('Error adding to cart:', error);
+  // addProductToCart - only for logged in users
+  const addProductToCart = (product: Product, quantity: number = 1) => {
+    if (!user) {
       toast({
-        title: "Error",
-        description: "Failed to add item to cart",
+        title: "Please log in",
+        description: "You need to be logged in to add items to cart",
         variant: "destructive",
       });
-      // Revert optimistic update on error
-      loadCartItems();
-    } else {
-      toast({
-        title: "Added to cart",
-        description: "Item has been added to your cart",
-      });
-      // Refresh to get correct IDs and data
-      loadCartItems();
-    }
-  };
-
-  // Local cart helpers (fallback when products aren't in DB or for guests)
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('local_cart');
-      if (saved) setLocalCartItems(JSON.parse(saved));
-    } catch (e) {
-      console.warn('Failed to parse local cart');
-    }
-  }, []);
-
-  const persistLocalCart = (items: CartItem[]) => {
-    setLocalCartItems(items);
-    localStorage.setItem('local_cart', JSON.stringify(items));
-  };
-
-  const addProductToCart = (product: Product, quantity: number = 1) => {
-    // If user is logged in, use database cart
-    if (user) {
-      addToCart(product.id, quantity);
       return;
     }
-
-    // Otherwise use local cart for guests
-    const existing = localCartItems.find((i) => i.product_id === product.id);
-    let updated: CartItem[];
-    if (existing) {
-      updated = localCartItems.map((i) =>
-        i.product_id === product.id ? { ...i, quantity: i.quantity + quantity } : i
-      );
-    } else {
-      updated = [
-        ...localCartItems,
-        {
-          id: product.id, // local id = product id
-          product_id: product.id,
-          quantity,
-          product,
-        },
-      ];
-    }
-    persistLocalCart(updated);
-    toast({ title: 'Added to cart', description: 'Item has been added to your cart' });
-  };
-
-  const updateQuantityLocal = (localId: string, newQuantity: number) => {
-    if (newQuantity <= 0) return removeFromCartLocal(localId);
-    const updated = localCartItems.map((i) =>
-      i.id === localId ? { ...i, quantity: newQuantity } : i
-    );
-    persistLocalCart(updated);
-  };
-
-  const removeFromCartLocal = (localId: string) => {
-    const updated = localCartItems.filter((i) => i.id !== localId);
-    persistLocalCart(updated);
+    addToCart(product.id, quantity);
   };
 
   // Update item quantity
   const updateQuantity = async (cartItemId: string, newQuantity: number) => {
+    if (!user) return;
+
     if (newQuantity === 0) {
       await removeFromCart(cartItemId);
       return;
     }
-
-    // Fallback to local cart if this id doesn't exist in DB cart
-    const isDbItem = cartItems.some((i) => i.id === cartItemId);
-    if (!isDbItem) {
-      updateQuantityLocal(cartItemId, newQuantity);
-      return;
-    }
-
-    // Optimistic update - update local state immediately
-    setCartItems(prev => prev.map(item => 
-      item.id === cartItemId ? { ...item, quantity: newQuantity } : item
-    ));
 
     const { error } = await supabase
       .from('cart_items')
@@ -198,27 +158,19 @@ export const useCart = () => {
 
     if (error) {
       console.error('Error updating quantity:', error);
-      // Revert optimistic update on error
-      loadCartItems();
       toast({
         title: "Error",
         description: "Failed to update quantity",
         variant: "destructive",
       });
+    } else {
+      await loadCartItems();
     }
   };
 
   // Remove item from cart
   const removeFromCart = async (cartItemId: string) => {
-    // Fallback to local cart if this id doesn't exist in DB cart
-    const isDbItem = cartItems.some((i) => i.id === cartItemId);
-    if (!isDbItem) {
-      removeFromCartLocal(cartItemId);
-      return;
-    }
-
-    // Optimistic update - remove from local state immediately
-    setCartItems(prev => prev.filter(item => item.id !== cartItemId));
+    if (!user) return;
 
     const { error } = await supabase
       .from('cart_items')
@@ -227,21 +179,18 @@ export const useCart = () => {
 
     if (error) {
       console.error('Error removing from cart:', error);
-      // Revert optimistic update on error
-      loadCartItems();
       toast({
         title: "Error",
         description: "Failed to remove item from cart",
         variant: "destructive",
       });
+    } else {
+      await loadCartItems();
     }
   };
 
   // Clear entire cart
   const clearCart = async () => {
-    // Always clear local cart
-    persistLocalCart([]);
-
     if (!user) {
       setCartItems([]);
       return;
@@ -264,18 +213,16 @@ export const useCart = () => {
     }
   };
 
-  // Calculate totals using DB cart if available, otherwise local cart
-  const itemsForTotals = cartItems.length > 0 ? cartItems : localCartItems;
-
-  const totalPLN = itemsForTotals.reduce((sum, item) => 
+  // Calculate totals
+  const totalPLN = cartItems.reduce((sum, item) => 
     sum + (item.product.price_pln * item.quantity), 0
   );
   
-  const totalEUR = itemsForTotals.reduce((sum, item) => 
+  const totalEUR = cartItems.reduce((sum, item) => 
     sum + (item.product.price_eur * item.quantity), 0
   );
   
-  const itemCount = itemsForTotals.reduce((sum, item) => sum + item.quantity, 0);
+  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     if (user) {
@@ -286,7 +233,7 @@ export const useCart = () => {
   }, [user]);
 
   return {
-    cartItems: cartItems.length > 0 ? cartItems : localCartItems,
+    cartItems,
     loading,
     addToCart,
     addProductToCart,

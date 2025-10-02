@@ -73,7 +73,7 @@ const ProductCard = ({
 
   return (
     <Card 
-      className="group overflow-hidden bg-card border-border/40 hover:border-primary/40 transition-all duration-500 hover:shadow-luxury hover:scale-[1.02]"
+      className="group bg-card border-border/40 hover:border-primary/40 transition-all duration-500 hover:shadow-luxury"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -83,7 +83,7 @@ const ProductCard = ({
           <img 
             src={image}
             alt={`${name} soy candle — ${fragrance}`}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-700"
           />
           
           {/* Badges */}

@@ -203,6 +203,12 @@ const translations = {
     notSet: 'Not set',
     memberSince: 'Member since',
     username: 'Username',
+    loginRequired: 'Login Required',
+    loginToCheckout: 'You need to log in to complete your purchase',
+    proceedToPayment: 'Proceed to Payment',
+    backToCart: 'Back to Cart',
+    processing: 'Processing...',
+    orderSummary: 'Order Summary',
 
     // Contact page specifics
     missingInformation: 'Missing Information',
@@ -497,6 +503,12 @@ const translations = {
     notSet: 'Nie ustawiono',
     memberSince: 'Członek od',
     username: 'Nazwa użytkownika',
+    loginRequired: 'Wymagane logowanie',
+    loginToCheckout: 'Musisz się zalogować, aby dokończyć zakup',
+    proceedToPayment: 'Przejdź do płatności',
+    backToCart: 'Wróć do koszyka',
+    processing: 'Przetwarzanie...',
+    orderSummary: 'Podsumowanie zamówienia',
 
     // Contact page specifics
     missingInformation: 'Brakuje informacji',

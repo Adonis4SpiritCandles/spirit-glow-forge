@@ -111,19 +111,25 @@ const ProductCarousel = () => {
           </p>
         </div>
 
-        {/* Desktop Carousel */}
+        {/* Desktop Carousel with Navigation */}
         <div className="hidden lg:block relative">
-          <div className="overflow-hidden">
-            <div className="flex gap-6 justify-center">
-              {sampleProducts.slice(0, 3).map((product) => (
-                <div key={product.id} className="flex-shrink-0 w-80">
-                  <div className="overflow-visible">
-                    <ProductCard {...product} />
-                  </div>
-                </div>
+          <Carousel
+            opts={{
+              align: "center",
+              loop: true,
+            }}
+            className="w-full max-w-7xl mx-auto"
+          >
+            <CarouselContent className="-ml-6">
+              {sampleProducts.map((product) => (
+                <CarouselItem key={product.id} className="pl-6 basis-1/3">
+                  <ProductCard {...product} />
+                </CarouselItem>
               ))}
-            </div>
-          </div>
+            </CarouselContent>
+            <CarouselPrevious className="left-0 -translate-x-12" />
+            <CarouselNext className="right-0 translate-x-12" />
+          </Carousel>
         </div>
 
         {/* Mobile Carousel with Embla */}

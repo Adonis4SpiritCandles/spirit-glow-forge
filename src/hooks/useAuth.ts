@@ -6,6 +6,7 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
@@ -14,6 +15,7 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        setInitialLoadComplete(true);
       }
     );
 
@@ -22,6 +24,7 @@ export const useAuth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      setInitialLoadComplete(true);
     });
 
     return () => subscription.unsubscribe();
@@ -72,6 +75,7 @@ export const useAuth = () => {
     user,
     session,
     loading,
+    initialLoadComplete,
     signUp,
     signIn,
     signOut,

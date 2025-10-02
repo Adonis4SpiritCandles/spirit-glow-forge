@@ -69,6 +69,23 @@ export const useCart = () => {
       return;
     }
 
+    // Optimistic update - immediately update local state
+    const { data: productData } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', productId)
+      .single();
+
+    if (productData) {
+      const newItem: CartItem = {
+        id: `temp-${Date.now()}`,
+        product_id: productId,
+        quantity,
+        product: productData as Product,
+      };
+      setCartItems(prev => [...prev, newItem]);
+    }
+
     const { error } = await supabase
       .from('cart_items')
       .upsert({
@@ -86,11 +103,14 @@ export const useCart = () => {
         description: "Failed to add item to cart",
         variant: "destructive",
       });
+      // Revert optimistic update on error
+      loadCartItems();
     } else {
       toast({
         title: "Added to cart",
         description: "Item has been added to your cart",
       });
+      // Refresh to get correct IDs and data
       loadCartItems();
     }
   };
@@ -111,7 +131,13 @@ export const useCart = () => {
   };
 
   const addProductToCart = (product: Product, quantity: number = 1) => {
-    // Use product.id as the local cart item id
+    // If user is logged in, use database cart
+    if (user) {
+      addToCart(product.id, quantity);
+      return;
+    }
+
+    // Otherwise use local cart for guests
     const existing = localCartItems.find((i) => i.product_id === product.id);
     let updated: CartItem[];
     if (existing) {

@@ -12,13 +12,13 @@ import { useState, useEffect } from 'react';
 const Checkout = () => {
   const { cartItems, totalPLN, totalEUR, itemCount, clearCart } = useCart();
   const { t, language } = useLanguage();
-  const { user } = useAuth();
+  const { user, initialLoadComplete } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect to auth if not logged in
+  // Redirect to auth if not logged in (only after initial load is complete)
   useEffect(() => {
-    if (!user) {
+    if (initialLoadComplete && !user) {
       navigate('/auth');
       toast({
         title: t('loginRequired') || 'Login Required',
@@ -26,7 +26,7 @@ const Checkout = () => {
         variant: 'destructive',
       });
     }
-  }, [user, navigate, t]);
+  }, [user, initialLoadComplete, navigate, t]);
 
   const handleProceedToPayment = async () => {
     if (!user) {

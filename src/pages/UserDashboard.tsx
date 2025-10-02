@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { User, Settings, ShoppingBag, CreditCard, Package } from 'lucide-react';
@@ -19,6 +20,7 @@ interface UserProfile {
   last_name: string;
   username: string;
   role: string;
+  preferred_language: string;
 }
 
 interface Order {
@@ -27,6 +29,7 @@ interface Order {
   total_eur: number;
   status: string;
   created_at: string;
+  order_number?: number;
   shipping_address: any;
   tracking_number?: string;
   carrier?: string;
@@ -281,7 +284,7 @@ const UserDashboard = () => {
                       <div key={order.id} className="border rounded-lg p-4 space-y-3">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h3 className="font-semibold">Order #{order.id.slice(-8)}</h3>
+                            <h3 className="font-semibold">Order #SPIRIT-{String(order.order_number).padStart(5, '0')}</h3>
                             <p className="text-sm text-muted-foreground">
                               {new Date(order.created_at).toLocaleDateString()}
                             </p>
@@ -293,7 +296,7 @@ const UserDashboard = () => {
                         <div className="flex justify-between items-center">
                           <div>
                             <p className="font-medium">
-                              {order.total_pln / 100} PLN / {order.total_eur / 100} EUR
+                              {order.total_pln} PLN / {order.total_eur} EUR
                             </p>
                           </div>
                         </div>
@@ -366,20 +369,56 @@ const UserDashboard = () => {
                   Manage your account preferences
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold mb-2">Account Status</h3>
-                    <Badge variant={profile?.role === 'admin' ? 'default' : 'secondary'}>
-                      {profile?.role === 'admin' ? 'Administrator' : 'User'}
-                    </Badge>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold mb-2">Account Status</h3>
+                      <Badge variant={profile?.role === 'admin' ? 'default' : 'secondary'}>
+                        {profile?.role === 'admin' ? 'Administrator' : 'User'}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-semibold">Preferred Language</h3>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Choose your preferred language for emails and the website.
+                      </p>
+                      <Select 
+                        value={profile?.preferred_language || 'en'} 
+                        onValueChange={async (value) => {
+                          try {
+                            const { error } = await supabase
+                              .from('profiles')
+                              .update({ preferred_language: value })
+                              .eq('user_id', user?.id);
+                            
+                            if (error) throw error;
+                            
+                            toast({
+                              title: "Language Updated",
+                              description: "Your preferred language has been updated successfully.",
+                            });
+                            
+                            loadUserData();
+                          } catch (error: any) {
+                            toast({
+                              title: "Error",
+                              description: error.message,
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="en">English</SelectItem>
+                          <SelectItem value="pl">Polski</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Language</h3>
-                    <p className="text-muted-foreground">Use the language toggle in the header to change your preferred language.</p>
-                  </div>
-                </div>
-              </CardContent>
+                </CardContent>
             </Card>
           </TabsContent>
 

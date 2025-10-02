@@ -3,6 +3,8 @@ import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
@@ -16,6 +18,7 @@ const Auth = () => {
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState('en');
   const [loading, setLoading] = useState(false);
 
   const { user, signIn, signUp } = useAuth();
@@ -55,7 +58,7 @@ const Auth = () => {
           return;
         }
         
-        const { error } = await signUp(emailOrUsername, password, firstName, lastName, username);
+        const { error } = await signUp(emailOrUsername, password, firstName, lastName, username, preferredLanguage);
         if (error) {
           toast({
             title: "Error",
@@ -164,6 +167,21 @@ const Auth = () => {
                   required
                   className="bg-background/50 border-border/40"
                 />
+              </div>
+            )}
+            
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="language">Preferred Language / Język preferowany</Label>
+                <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
+                  <SelectTrigger id="language" className="bg-background/50 border-border/40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="pl">Polski</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             )}
             

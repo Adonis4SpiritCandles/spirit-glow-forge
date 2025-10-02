@@ -56,7 +56,10 @@ serve(async (req) => {
     // Get order details
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .select('*, profiles!inner(email, first_name, last_name)')
+      .select(`
+        *,
+        profiles!orders_user_id_fkey(email, first_name, last_name)
+      `)
       .eq('id', orderId)
       .single();
 

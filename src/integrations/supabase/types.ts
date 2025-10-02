@@ -128,6 +128,7 @@ export type Database = {
           estimated_delivery_date: string | null
           furgonetka_package_id: string | null
           id: string
+          order_number: number | null
           shipping_address: Json | null
           shipping_label_url: string | null
           shipping_status: string | null
@@ -144,6 +145,7 @@ export type Database = {
           estimated_delivery_date?: string | null
           furgonetka_package_id?: string | null
           id?: string
+          order_number?: number | null
           shipping_address?: Json | null
           shipping_label_url?: string | null
           shipping_status?: string | null
@@ -160,6 +162,7 @@ export type Database = {
           estimated_delivery_date?: string | null
           furgonetka_package_id?: string | null
           id?: string
+          order_number?: number | null
           shipping_address?: Json | null
           shipping_label_url?: string | null
           shipping_status?: string | null
@@ -230,6 +233,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          preferred_language: string
           role: string
           updated_at: string
           user_id: string
@@ -241,6 +245,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          preferred_language?: string
           role?: string
           updated_at?: string
           user_id: string
@@ -252,6 +257,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          preferred_language?: string
           role?: string
           updated_at?: string
           user_id?: string

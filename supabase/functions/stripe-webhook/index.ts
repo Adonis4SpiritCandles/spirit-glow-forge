@@ -114,6 +114,42 @@ serve(async (req) => {
 
       console.log(`Created ${orderItems.length} order items`);
 
+      // Get user profile for preferred language
+      const { data: userProfile } = await supabaseClient
+        .from("profiles")
+        .select("email, preferred_language")
+        .eq("user_id", userId)
+        .single();
+
+      // Prepare order items with product names for email
+      const orderItemsWithNames = cartItems.map((item: any) => ({
+        product_name_en: item.product.name_en,
+        product_name_pl: item.product.name_pl,
+        quantity: item.quantity,
+        price_pln: item.product.price_pln,
+        price_eur: item.product.price_eur,
+      }));
+
+      // Send order confirmation email (background task)
+      try {
+        await supabaseClient.functions.invoke('send-order-confirmation', {
+          body: {
+            orderId: order.id,
+            orderNumber: order.order_number,
+            userEmail: userProfile?.email || session.customer_details?.email,
+            preferredLanguage: userProfile?.preferred_language || 'en',
+            orderItems: orderItemsWithNames,
+            totalPLN: totalPLN,
+            totalEUR: totalEUR,
+            shippingAddress: session.shipping_details?.address,
+          }
+        });
+        console.log("Order confirmation email sent");
+      } catch (emailError) {
+        console.error("Error sending order confirmation email:", emailError);
+        // Don't fail the webhook if email fails
+      }
+
       // Clear cart
       const { error: clearError } = await supabaseClient
         .from("cart_items")

@@ -42,6 +42,7 @@ interface Order {
   total_pln: number;
   total_eur: number;
   created_at: string;
+  order_number?: number;
   shipping_status?: string;
   tracking_number?: string;
   carrier?: string;
@@ -644,7 +645,7 @@ const AdminDashboard = () => {
                             {product.category}
                           </Badge>
                         </TableCell>
-                        <TableCell>{product.price_pln / 100} PLN</TableCell>
+                        <TableCell>{product.price_pln} PLN</TableCell>
                         <TableCell>
                           <Badge variant={product.stock_quantity > 0 ? "default" : "destructive"}>
                             {product.stock_quantity}

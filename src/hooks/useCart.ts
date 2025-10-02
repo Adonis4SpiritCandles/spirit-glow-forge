@@ -130,7 +130,7 @@ export const useCart = () => {
   };
 
   // addProductToCart - only for logged in users
-  const addProductToCart = (product: Product, quantity: number = 1) => {
+  const addProductToCart = async (product: Product, quantity: number = 1) => {
     if (!user) {
       toast({
         title: "Please log in",
@@ -139,7 +139,45 @@ export const useCart = () => {
       });
       return;
     }
-    addToCart(product.id, quantity);
+
+    // Ensure we pass a valid UUID to the DB. Some UI components use sample products with numeric IDs.
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+    let productId = product.id;
+
+    if (!uuidRegex.test(productId)) {
+      // Try to resolve the real product UUID by name
+      let resolvedId: string | undefined;
+      const { data: byEn, error: errEn } = await supabase
+        .from('products')
+        .select('id')
+        .eq('name_en', product.name_en)
+        .limit(1);
+
+      if (byEn && byEn.length > 0) {
+        resolvedId = byEn[0].id as string;
+      } else {
+        const { data: byPl } = await supabase
+          .from('products')
+          .select('id')
+          .eq('name_pl', product.name_pl)
+          .limit(1);
+        if (byPl && byPl.length > 0) {
+          resolvedId = byPl[0].id as string;
+        }
+      }
+
+      if (!resolvedId) {
+        toast({
+          title: "Error",
+          description: "This product is not available yet.",
+          variant: "destructive",
+        });
+        return;
+      }
+      productId = resolvedId;
+    }
+
+    await addToCart(productId, quantity);
   };
 
   // Update item quantity

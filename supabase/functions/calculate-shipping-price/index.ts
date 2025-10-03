@@ -138,10 +138,14 @@ serve(async (req) => {
     const rawServices = servicesJson.services || servicesJson || [];
     const serviceIds = Array.from(new Map((rawServices || []).map((s: any) => {
       const id = s.id ?? s.service_id ?? s.serviceId;
-      return [id, { id }];
+      const type = s.type || s.service_type || 'package';
+      if (!s.type && !s.service_type) {
+        console.warn(`Service ${id} missing type field, using fallback 'package'`);
+      }
+      return [id, { id, type }];
     })).values()).filter(s => s.id);
 
-    console.log('Using services for pricing:', JSON.stringify(serviceIds));
+    console.log('Using services for pricing (with type):', JSON.stringify(serviceIds));
 
     // 3) CALCULATE PRICE (package must be nested and include explicit services)
     const calculateBody = {
@@ -170,9 +174,21 @@ serve(async (req) => {
 
     const priceResult = await priceResponse.json();
     console.log('Price calculation result:', JSON.stringify(priceResult));
+    
+    // Log first 3 service prices for debugging
+    const rawPrices = priceResult.services_prices || priceResult.services || [];
+    console.log('First 3 services_prices (with errors):', JSON.stringify(
+      rawPrices.slice(0, 3).map((sp: any) => ({
+        service_id: sp.service_id,
+        service: sp.service,
+        available: sp.available,
+        errors: sp.errors,
+        pricing: sp.pricing,
+        lowest_price: sp.lowest_price
+      })), null, 2
+    ));
 
     // Transform response to our format with filtering and de-duplication
-    const rawPrices = priceResult.services_prices || priceResult.services || [];
 
     const parsePrice = (item: any) => {
       const net = item.pricing?.net_price ?? item.pricing?.price_net ?? item.price?.net ?? item.net_price ?? 0;
@@ -208,6 +224,14 @@ serve(async (req) => {
     // If nothing valid returned, send a helpful message back
     if (options.length === 0) {
       console.warn('No priced services returned. Raw response:', JSON.stringify(priceResult));
+      return new Response(
+        JSON.stringify({ 
+          options: [], 
+          reason: 'no_priced_services',
+          message: 'No shipping services available for this address. Please verify carrier agreements in sandbox.'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(

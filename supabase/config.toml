@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.calculate-shipping-price]
 verify_jwt = true
+
+[functions.places-autocomplete]
+verify_jwt = true

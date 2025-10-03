@@ -44,6 +44,24 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
 
   const selectedOption = processedOptions.find(opt => opt.service_id === selectedServiceId);
 
+  if (processedOptions.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-playfair">{t('shippingOptions') || 'Shipping Options'}</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center py-8 space-y-4">
+          <p className="text-muted-foreground">
+            {t('noShippingOptions') || 'Nessuna opzione di spedizione disponibile per questo indirizzo.'}
+          </p>
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            {t('changeAddress') || 'Cambia Indirizzo'}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>

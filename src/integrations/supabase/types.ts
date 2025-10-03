@@ -129,6 +129,7 @@ export type Database = {
           furgonetka_package_id: string | null
           id: string
           order_number: number | null
+          service_id: number | null
           shipping_address: Json | null
           shipping_label_url: string | null
           shipping_status: string | null
@@ -146,6 +147,7 @@ export type Database = {
           furgonetka_package_id?: string | null
           id?: string
           order_number?: number | null
+          service_id?: number | null
           shipping_address?: Json | null
           shipping_label_url?: string | null
           shipping_status?: string | null
@@ -163,6 +165,7 @@ export type Database = {
           furgonetka_package_id?: string | null
           id?: string
           order_number?: number | null
+          service_id?: number | null
           shipping_address?: Json | null
           shipping_label_url?: string | null
           shipping_status?: string | null

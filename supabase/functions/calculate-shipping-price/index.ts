@@ -76,6 +76,14 @@ serve(async (req) => {
       ? receiver.country.toUpperCase()
       : (countryNameToCode[receiver.country?.toLowerCase?.() ?? ''] || receiver.country);
 
+    // Normalize postcode for PL (NN-NNN)
+    const normalizedPostcode = (countryCode === 'PL' && receiver.postalCode)
+      ? (() => {
+          const digits = String(receiver.postalCode).replace(/\D/g, '');
+          return digits.length === 5 ? `${digits.slice(0,2)}-${digits.slice(2)}` : receiver.postalCode;
+        })()
+      : receiver.postalCode;
+
     // Build the package payload as required by Furgonetka (must be nested under "package")
     const packagePayload = {
       pickup: sender,
@@ -84,7 +92,7 @@ serve(async (req) => {
         name: receiver.name,
         street: receiver.street,
         city: receiver.city,
-        postcode: receiver.postalCode,
+        postcode: normalizedPostcode,
         country_code: countryCode,
         email: receiver.email || '',
         phone: receiver.phone || ''
@@ -93,15 +101,35 @@ serve(async (req) => {
         weight: p.weight,
         length: p.length,
         width: p.width,
-        depth: p.height
+        height: p.height
       })),
       type: 'package'
     };
-
     console.log('Validating package with:', JSON.stringify(packagePayload));
 
-    // Skipping validate step: we'll directly call calculate-price with services
+    // 1) VALIDATE PACKAGE FIRST
+    const validateResponse = await fetch('https://api.sandbox.furgonetka.pl/packages/validate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/vnd.furgonetka.v1+json',
+        'Accept': 'application/vnd.furgonetka.v1+json',
+        'X-Language': 'en_GB',
+      },
+      body: JSON.stringify({ package: packagePayload }),
+    });
 
+    let validateJson: any = null;
+    try { validateJson = await validateResponse.clone().json(); } catch (_) {}
+
+    if (!validateResponse.ok || (validateJson && Array.isArray(validateJson.errors) && validateJson.errors.length)) {
+      console.warn('Validation failed:', validateResponse.status, validateResponse.statusText, JSON.stringify(validateJson));
+      const details = (validateJson?.errors || []).map((e: any) => ({ path: e.path, message: e.message, code: e.code }));
+      return new Response(
+        JSON.stringify({ reason: 'validation_failed', message: 'Validation failed for the package', validationErrors: details }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // 2) FETCH ACTIVE ACCOUNT SERVICES
     const servicesResponse = await fetch('https://api.sandbox.furgonetka.pl/account/services', {
@@ -121,7 +149,17 @@ serve(async (req) => {
 
     const servicesJson = await servicesResponse.json();
     const rawServices = servicesJson.services || servicesJson || [];
-    const serviceIds = Array.from(new Map((rawServices || []).map((s: any) => {
+
+    // Compute total weight to apply simple whitelist rules (e.g., GLS >= 1kg)
+    const totalWeight = parcels.reduce((sum, p) => sum + Number(p.weight || 0), 0);
+
+    const filteredServices = (rawServices || []).filter((s: any) => {
+      const name = (s.service || s.name || '').toString().toLowerCase();
+      if (totalWeight < 1 && name === 'gls') return false; // GLS requires >= 1kg
+      return true;
+    });
+
+    const serviceIds = Array.from(new Map(filteredServices.map((s: any) => {
       const id = s.id ?? s.service_id ?? s.serviceId;
       const type = s.type || s.service_type || 'package';
       if (!s.type && !s.service_type) {
@@ -209,11 +247,21 @@ serve(async (req) => {
     // If nothing valid returned, send a helpful message back
     if (options.length === 0) {
       console.warn('No priced services returned. Raw response:', JSON.stringify(priceResult));
+      // Collect validation-like errors from carrier responses (if any)
+      const validationErrors = (rawPrices || []).flatMap((sp: any) => Array.isArray(sp.errors) ? sp.errors.map((e: any) => ({
+        service_id: sp.service_id ?? sp.id,
+        carrier: sp.service || sp.name,
+        path: e.path,
+        message: e.message,
+        code: e.code,
+      })) : []);
+
       return new Response(
         JSON.stringify({ 
           options: [], 
-          reason: 'no_priced_services',
-          message: 'No shipping services available for this address. Please verify carrier agreements in sandbox.'
+          reason: 'validation_failed',
+          message: 'Unable to price shipment. Please review address and parcel data.',
+          validationErrors
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );

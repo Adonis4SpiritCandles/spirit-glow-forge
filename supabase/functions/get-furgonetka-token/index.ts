@@ -50,7 +50,8 @@ serve(async (req) => {
     // Get new token using client_credentials grant (recommended for server-to-server)
     console.log('Getting new token with client_credentials grant');
     
-    const basic = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    // Use btoa for base64 encoding (Deno/Web API standard)
+    const basic = btoa(`${clientId}:${clientSecret}`);
     const tokenResponse = await fetch('https://api.sandbox.furgonetka.pl/oauth/token', {
       method: 'POST',
       headers: {

@@ -4,6 +4,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Package, Clock, Truck } from 'lucide-react';
+import { useMemo } from 'react';
 
 interface ShippingOption {
   service_id: number;
@@ -29,7 +30,19 @@ interface ShippingOptionsProps {
 const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLoading }: ShippingOptionsProps) => {
   const { t, language } = useLanguage();
 
-  const selectedOption = options.find(opt => opt.service_id === selectedServiceId);
+  const processedOptions = useMemo(() => {
+    const map = new Map<number, ShippingOption>();
+    for (const opt of options) {
+      if (!opt || !opt.price || opt.price.gross <= 0) continue;
+      const existing = map.get(opt.service_id);
+      if (!existing || opt.price.gross < existing.price.gross) {
+        map.set(opt.service_id, opt);
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => a.price.gross - b.price.gross);
+  }, [options]);
+
+  const selectedOption = processedOptions.find(opt => opt.service_id === selectedServiceId);
 
   return (
     <Card>
@@ -41,11 +54,11 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
       </CardHeader>
       <CardContent className="space-y-4">
         <RadioGroup value={selectedServiceId?.toString()} onValueChange={(value) => {
-          const option = options.find(opt => opt.service_id === parseInt(value));
+          const option = processedOptions.find(opt => opt.service_id === parseInt(value));
           if (option) onSelect(option);
         }}>
           <div className="space-y-3">
-            {options.map((option) => (
+            {processedOptions.map((option) => (
               <div
                 key={option.service_id}
                 className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-colors cursor-pointer ${

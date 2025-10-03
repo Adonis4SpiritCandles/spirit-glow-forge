@@ -64,8 +64,20 @@ serve(async (req) => {
       phone: "+48123456789"
     };
 
-    // Prepare calculate request for Furgonetka API
-    const calculateData = {
+    // Normalize country to ISO-2 if a full name is provided
+    const countryNameToCode: Record<string, string> = {
+      poland: 'PL', italy: 'IT', germany: 'DE', france: 'FR', spain: 'ES',
+      united kingdom: 'GB', uk: 'GB', england: 'GB', portugal: 'PT',
+      netherlands: 'NL', belgium: 'BE', austria: 'AT', switzerland: 'CH',
+      czechia: 'CZ', 'czech republic': 'CZ', slovakia: 'SK', ukraine: 'UA',
+      lithuania: 'LT', latvia: 'LV', estonia: 'EE'
+    };
+    const countryCode = receiver.country?.length === 2
+      ? receiver.country.toUpperCase()
+      : (countryNameToCode[receiver.country?.toLowerCase?.() ?? ''] || receiver.country);
+
+    // Build the package payload as required by Furgonetka (must be nested under "package")
+    const packagePayload = {
       pickup: sender,
       sender: sender,
       receiver: {
@@ -73,7 +85,7 @@ serve(async (req) => {
         street: receiver.street,
         city: receiver.city,
         post_code: receiver.postalCode,
-        country: receiver.country,
+        country: countryCode,
         email: receiver.email || '',
         phone: receiver.phone || ''
       },
@@ -86,9 +98,59 @@ serve(async (req) => {
       type: 'package'
     };
 
-    console.log('Calculating shipping prices with:', JSON.stringify(calculateData));
+    console.log('Validating package with:', JSON.stringify(packagePayload));
 
-    // Call Furgonetka calculate-price API
+    // 1) VALIDATE PACKAGE
+    const validateResponse = await fetch('https://api.sandbox.furgonetka.pl/packages/validate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/vnd.furgonetka.v1+json',
+        'Accept': 'application/vnd.furgonetka.v1+json',
+        'X-Language': 'en_GB',
+      },
+      body: JSON.stringify(packagePayload),
+    });
+
+    if (!validateResponse.ok) {
+      const errorText = await validateResponse.text();
+      console.error('Furgonetka validate error:', validateResponse.status, validateResponse.statusText, errorText);
+      throw new Error(`Validation failed: ${validateResponse.status} ${validateResponse.statusText} ${errorText}`);
+    }
+
+    // 2) FETCH ACTIVE ACCOUNT SERVICES
+    const servicesResponse = await fetch('https://api.sandbox.furgonetka.pl/account/services', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Accept': 'application/vnd.furgonetka.v1+json',
+        'X-Language': 'en_GB',
+      }
+    });
+
+    if (!servicesResponse.ok) {
+      const errorText = await servicesResponse.text();
+      console.error('Furgonetka services error:', servicesResponse.status, servicesResponse.statusText, errorText);
+      throw new Error(`Failed to load services: ${servicesResponse.status} ${servicesResponse.statusText} ${errorText}`);
+    }
+
+    const servicesJson = await servicesResponse.json();
+    const rawServices = servicesJson.services || servicesJson || [];
+    const serviceIds = Array.from(new Map((rawServices || []).map((s: any) => {
+      const id = s.id ?? s.service_id ?? s.serviceId;
+      return [id, { id }];
+    })).values()).filter(s => s.id);
+
+    console.log('Using services for pricing:', JSON.stringify(serviceIds));
+
+    // 3) CALCULATE PRICE (package must be nested and include explicit services)
+    const calculateBody = {
+      package: packagePayload,
+      services: serviceIds,
+    };
+
+    console.log('Calculating shipping prices with:', JSON.stringify(calculateBody));
+
     const priceResponse = await fetch('https://api.sandbox.furgonetka.pl/packages/calculate-price', {
       method: 'POST',
       headers: {
@@ -97,7 +159,7 @@ serve(async (req) => {
         'Accept': 'application/vnd.furgonetka.v1+json',
         'X-Language': 'en_GB',
       },
-      body: JSON.stringify(calculateData),
+      body: JSON.stringify(calculateBody),
     });
 
     if (!priceResponse.ok) {
@@ -109,20 +171,44 @@ serve(async (req) => {
     const priceResult = await priceResponse.json();
     console.log('Price calculation result:', JSON.stringify(priceResult));
 
-    // Transform response to our format
-    const services = priceResult.services_prices || priceResult.services || [];
-    const options = services.map((service: any) => ({
-      service_id: service.service_id || service.id,
-      service_name: service.service_name || service.name,
-      carrier: service.carrier || 'Unknown',
-      delivery_type: service.delivery_type || 'courier',
-      price: {
-        net: service.price?.net || service.net_price || 0,
-        gross: service.price?.gross || service.gross_price || 0,
-        currency: service.price?.currency || service.currency || 'PLN'
-      },
-      eta: service.eta || service.delivery_time || null
-    }));
+    // Transform response to our format with filtering and de-duplication
+    const rawPrices = priceResult.services_prices || priceResult.services || [];
+
+    const parsePrice = (item: any) => {
+      const net = item.pricing?.net_price ?? item.pricing?.price_net ?? item.price?.net ?? item.net_price ?? 0;
+      const gross = item.pricing?.gross_price ?? item.pricing?.price_gross ?? item.price?.gross ?? item.gross_price ?? 0;
+      const currency = item.pricing?.currency ?? item.price?.currency ?? item.currency ?? 'PLN';
+      return { net: Number(net) || 0, gross: Number(gross) || 0, currency };
+    };
+
+    // Deduplicate by service_id and keep the lowest gross price
+    const dedupMap = new Map<number | string, any>();
+    for (const s of rawPrices) {
+      const id = s.service_id ?? s.id;
+      if (!id) continue;
+      const price = parsePrice(s);
+      const available = (typeof s.available === 'boolean') ? s.available : true;
+      if (!available || price.gross <= 0) continue;
+
+      const existing = dedupMap.get(id);
+      if (!existing || price.gross < existing.price.gross) {
+        dedupMap.set(id, {
+          service_id: id,
+          service_name: s.service_name || s.name || s.service || 'Standard Delivery',
+          carrier: s.carrier || s.provider || s.service || 'Unknown',
+          delivery_type: s.delivery_type || 'courier',
+          price,
+          eta: s.eta || s.delivery_time || null,
+        });
+      }
+    }
+
+    const options = Array.from(dedupMap.values());
+
+    // If nothing valid returned, send a helpful message back
+    if (options.length === 0) {
+      console.warn('No priced services returned. Raw response:', JSON.stringify(priceResult));
+    }
 
     return new Response(
       JSON.stringify({ options }),

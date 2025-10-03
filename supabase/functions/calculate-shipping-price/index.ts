@@ -89,12 +89,13 @@ serve(async (req) => {
     console.log('Calculating shipping prices with:', JSON.stringify(calculateData));
 
     // Call Furgonetka calculate-price API
-    const priceResponse = await fetch('https://api.sandbox.furgonetka.pl/api/v1/packages/calculate-price', {
+    const priceResponse = await fetch('https://api.sandbox.furgonetka.pl/packages/calculate-price', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        'Content-Type': 'application/vnd.furgonetka.v1+json',
+        'Accept': 'application/vnd.furgonetka.v1+json',
+        'X-Language': 'en_GB',
       },
       body: JSON.stringify(calculateData),
     });

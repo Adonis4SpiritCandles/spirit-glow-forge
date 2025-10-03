@@ -80,7 +80,7 @@ serve(async (req) => {
       .from('furgonetka_tokens')
       .insert({
         access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
+        refresh_token: tokenData.refresh_token ?? '', // client_credentials may not return a refresh token
         expires_at: expiresAt.toISOString(),
       });
 

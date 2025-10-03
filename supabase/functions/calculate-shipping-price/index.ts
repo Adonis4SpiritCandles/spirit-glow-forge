@@ -36,6 +36,7 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
     const { receiver, parcels }: CalculateRequest = await req.json();
 
@@ -44,18 +45,13 @@ serve(async (req) => {
       throw new Error('Missing receiver address or parcels');
     }
 
-    // Get access token
-    const tokenResponse = await fetch(`${supabaseUrl}/functions/v1/get-furgonetka-token`, {
-      headers: {
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
-    });
-
-    if (!tokenResponse.ok) {
+    // Get access token using Supabase client (no raw HTTP to functions)
+    const { data: tokenData, error: tokenError } = await supabaseClient.functions.invoke('get-furgonetka-token');
+    if (tokenError || !tokenData?.access_token) {
+      console.error('Token fetch error:', tokenError, tokenData);
       throw new Error('Failed to get Furgonetka token');
     }
-
-    const { access_token } = await tokenResponse.json();
+    const access_token = tokenData.access_token;
 
     // Prepare sender/pickup address (your warehouse)
     const sender = {
@@ -98,14 +94,15 @@ serve(async (req) => {
       headers: {
         'Authorization': `Bearer ${access_token}`,
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify(calculateData),
     });
 
     if (!priceResponse.ok) {
       const errorText = await priceResponse.text();
-      console.error('Furgonetka API error:', errorText);
-      throw new Error(`Failed to calculate prices: ${errorText}`);
+      console.error('Furgonetka API error:', priceResponse.status, priceResponse.statusText, errorText);
+      throw new Error(`Failed to calculate prices: ${priceResponse.status} ${priceResponse.statusText} ${errorText}`);
     }
 
     const priceResult = await priceResponse.json();

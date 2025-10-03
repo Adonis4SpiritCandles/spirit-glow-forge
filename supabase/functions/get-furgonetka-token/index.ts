@@ -8,7 +8,7 @@ const corsHeaders = {
 
 interface TokenResponse {
   access_token: string;
-  refresh_token: string;
+  refresh_token?: string;
   expires_in: number;
   token_type: string;
 }
@@ -38,8 +38,8 @@ serve(async (req) => {
       .limit(1)
       .single();
 
-    // If token exists and not expired, return it
-    if (existingToken && new Date(existingToken.expires_at) > new Date()) {
+    // If token exists, not expired, and is a user token (has refresh_token), reuse it
+    if (existingToken && existingToken.refresh_token && existingToken.refresh_token !== '' && new Date(existingToken.expires_at) > new Date()) {
       console.log('Using existing valid token');
       return new Response(
         JSON.stringify({ access_token: existingToken.access_token }),
@@ -47,21 +47,36 @@ serve(async (req) => {
       );
     }
 
-    // Get new token using client_credentials grant (recommended for server-to-server)
-    console.log('Getting new token with client_credentials grant');
-    
-    // Use btoa for base64 encoding (Deno/Web API standard)
+    const email = Deno.env.get('FURGONETKA_EMAIL');
+    const password = Deno.env.get('FURGONETKA_PASSWORD');
+
     const basic = btoa(`${clientId}:${clientSecret}`);
-    const tokenResponse = await fetch('https://api.sandbox.furgonetka.pl/oauth/token', {
+    const url = 'https://api.sandbox.furgonetka.pl/oauth/token';
+
+    let body: URLSearchParams;
+    if (email && password) {
+      console.log('Getting new user token with password grant');
+      body = new URLSearchParams({
+        grant_type: 'password',
+        scope: 'api',
+        username: email,
+        password: password,
+      });
+    } else {
+      console.log('Getting new token with client_credentials grant');
+      body = new URLSearchParams({
+        grant_type: 'client_credentials',
+        scope: 'api',
+      });
+    }
+
+    const tokenResponse = await fetch(url, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basic}`,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: new URLSearchParams({
-        grant_type: 'client_credentials',
-        scope: 'api',
-      }),
+      body,
     });
 
     if (!tokenResponse.ok) {

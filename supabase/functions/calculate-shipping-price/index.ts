@@ -97,12 +97,19 @@ serve(async (req) => {
         email: receiver.email || '',
         phone: receiver.phone || ''
       },
-      parcels: parcels.map(p => ({
-        weight: Math.max(0.1, Number(p.weight || 0)),
-        length: Math.max(1, Number(p.length || 20)),
-        width: Math.max(1, Number(p.width || 20)),
-        height: Math.max(1, Number(p.height || 12))
-      })),
+      parcels: parcels.map(p => {
+        const weight = Math.max(0.1, Number(p.weight || 0));
+        const length = Math.max(1, Number(p.length || 20));
+        const width = Math.max(1, Number(p.width || 20));
+        const height = Math.max(1, Number(p.height || 12));
+        return {
+          weight,
+          length,
+          width,
+          height,
+          depth: height // Furgonetka validate expects `depth` for some carriers
+        };
+      }),
       type: 'package'
     };
     console.log('Validating package with:', JSON.stringify(packagePayload));

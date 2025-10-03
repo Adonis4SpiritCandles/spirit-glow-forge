@@ -84,7 +84,16 @@ const Checkout = () => {
         setShippingOptions(data.options);
         setStep('shipping');
       } else if (data?.reason === 'validation_failed') {
-        const details = (data.validationErrors || []).slice(0, 4).map((e: any) => `${e.path}: ${e.message}`).join('\n') || undefined;
+        const seen = new Set<string>();
+        const details = (data.validationErrors || [])
+          .map((e: any) => `${e.path}: ${e.message}`)
+          .filter((msg: string) => {
+            if (seen.has(msg)) return false;
+            seen.add(msg);
+            return true;
+          })
+          .slice(0, 6)
+          .join('\n') || undefined;
         toast({
           title: t('shippingValidationFailed') || 'Shipping data needs attention',
           description: details || (data?.message || t('shippingCalculationError') || 'Failed to calculate shipping options.'),

@@ -61,7 +61,7 @@ serve(async (req) => {
       postcode: "02-180",
       country: "PL",
       email: "m5moffice@proton.me",
-      phone: "+48123456789"
+      phone: "501234567"
     };
 
     // Normalize country to ISO-2 if a full name is provided
@@ -93,30 +93,15 @@ serve(async (req) => {
         weight: p.weight,
         length: p.length,
         width: p.width,
-        depth: p.height  // Furgonetka uses 'depth' not 'height'
+        height: p.height
       })),
       type: 'package'
     };
 
     console.log('Validating package with:', JSON.stringify(packagePayload));
 
-    // 1) VALIDATE PACKAGE
-    const validateResponse = await fetch('https://api.sandbox.furgonetka.pl/packages/validate', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/vnd.furgonetka.v1+json',
-        'Accept': 'application/vnd.furgonetka.v1+json',
-        'X-Language': 'en_GB',
-      },
-      body: JSON.stringify(packagePayload),
-    });
+    // Skipping validate step: we'll directly call calculate-price with services
 
-    if (!validateResponse.ok) {
-      const errorText = await validateResponse.text();
-      console.error('Furgonetka validate error:', validateResponse.status, validateResponse.statusText, errorText);
-      throw new Error(`Validation failed: ${validateResponse.status} ${validateResponse.statusText} ${errorText}`);
-    }
 
     // 2) FETCH ACTIVE ACCOUNT SERVICES
     const servicesResponse = await fetch('https://api.sandbox.furgonetka.pl/account/services', {
@@ -142,8 +127,8 @@ serve(async (req) => {
       if (!s.type && !s.service_type) {
         console.warn(`Service ${id} missing type field, using fallback 'package'`);
       }
-      return [id, { id, type }];
-    })).values()).filter(s => s.id);
+      return [id, { service_id: id, type }];
+    })).values()).filter(s => s.service_id);
 
     console.log('Using services for pricing (with type):', JSON.stringify(serviceIds));
 

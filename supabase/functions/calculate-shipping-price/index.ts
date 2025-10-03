@@ -67,7 +67,7 @@ serve(async (req) => {
     // Normalize country to ISO-2 if a full name is provided
     const countryNameToCode: Record<string, string> = {
       poland: 'PL', italy: 'IT', germany: 'DE', france: 'FR', spain: 'ES',
-      united kingdom: 'GB', uk: 'GB', england: 'GB', portugal: 'PT',
+      'united kingdom': 'GB', uk: 'GB', england: 'GB', portugal: 'PT',
       netherlands: 'NL', belgium: 'BE', austria: 'AT', switzerland: 'CH',
       czechia: 'CZ', 'czech republic': 'CZ', slovakia: 'SK', ukraine: 'UA',
       lithuania: 'LT', latvia: 'LV', estonia: 'EE'

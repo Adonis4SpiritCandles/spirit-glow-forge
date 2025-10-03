@@ -59,9 +59,9 @@ serve(async (req) => {
       street: "Aleja Krakowska 61",
       city: "Warszawa",
       postcode: "02-180",
-      country: "PL",
+      country_code: "PL",
       email: "m5moffice@proton.me",
-      phone: "501234567"
+      phone: "+48501234567"
     };
 
     // Normalize country to ISO-2 if a full name is provided
@@ -85,7 +85,7 @@ serve(async (req) => {
         street: receiver.street,
         city: receiver.city,
         postcode: receiver.postalCode,
-        country: countryCode,
+        country_code: countryCode,
         email: receiver.email || '',
         phone: receiver.phone || ''
       },
@@ -93,7 +93,7 @@ serve(async (req) => {
         weight: p.weight,
         length: p.length,
         width: p.width,
-        depth: p.height
+        height: p.height
       })),
       type: 'package'
     };

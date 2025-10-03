@@ -11,6 +11,8 @@ import { Loader2 } from 'lucide-react';
 interface ShippingAddress {
   name: string;
   street: string;
+  streetNumber: string;
+  apartmentNumber: string;
   city: string;
   postalCode: string;
   country: string;
@@ -36,6 +38,8 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
   const [address, setAddress] = useState<ShippingAddress>({
     name: '',
     street: '',
+    streetNumber: '',
+    apartmentNumber: '',
     city: '',
     postalCode: '',
     country: 'PL',
@@ -80,12 +84,21 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
       country: suggestion.country
     });
     setShowSuggestions(false);
-    setSuggestions([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(address);
+    // Combine street, streetNumber, and apartmentNumber into full street address
+    const fullStreet = [
+      address.street,
+      address.streetNumber,
+      address.apartmentNumber ? `/${address.apartmentNumber}` : ''
+    ].filter(Boolean).join(' ').trim();
+    
+    onSubmit({
+      ...address,
+      street: fullStreet
+    });
   };
 
   const countries = [
@@ -126,8 +139,8 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                   setAddress({ ...address, street: e.target.value });
                   fetchAddressSuggestions(e.target.value);
                 }}
-                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-                placeholder="Via Roma 123"
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Via Roma"
               />
               {isLoadingSuggestions && (
                 <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -147,6 +160,28 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="streetNumber">{t('streetNumber') || 'Street Number'}</Label>
+              <Input
+                id="streetNumber"
+                required
+                value={address.streetNumber}
+                onChange={(e) => setAddress({ ...address, streetNumber: e.target.value })}
+                placeholder="123"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="apartmentNumber">{t('apartmentNumber') || 'Apartment Number (Optional)'}</Label>
+              <Input
+                id="apartmentNumber"
+                value={address.apartmentNumber}
+                onChange={(e) => setAddress({ ...address, apartmentNumber: e.target.value })}
+                placeholder="22"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

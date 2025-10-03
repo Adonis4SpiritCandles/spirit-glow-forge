@@ -56,9 +56,9 @@ serve(async (req) => {
     // Prepare sender/pickup address (your warehouse)
     const sender = {
       name: "Spirit Candle",
-      street: "Via Example 123",
+      street: "Aleja Krakowska 61",
       city: "Warszawa",
-      post_code: "00-001",
+      postcode: "02-180",
       country: "PL",
       email: "m5moffice@proton.me",
       phone: "+48123456789"
@@ -84,7 +84,7 @@ serve(async (req) => {
         name: receiver.name,
         street: receiver.street,
         city: receiver.city,
-        post_code: receiver.postalCode,
+        postcode: receiver.postalCode,
         country: countryCode,
         email: receiver.email || '',
         phone: receiver.phone || ''
@@ -93,7 +93,7 @@ serve(async (req) => {
         weight: p.weight,
         length: p.length,
         width: p.width,
-        height: p.height
+        depth: p.height  // Furgonetka uses 'depth' not 'height'
       })),
       type: 'package'
     };

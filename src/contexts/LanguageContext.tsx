@@ -177,6 +177,26 @@ const translations = {
     language: 'Language',
     preferredLanguage: 'Preferred Language',
 
+    // Shipping and Checkout
+    shippingAddress: 'Shipping Address',
+    deliveryAddress: 'Delivery Address',
+    changeAddress: 'Change Address',
+    shippingOptions: 'Shipping Options',
+    standardDelivery: 'Standard Delivery',
+    net: 'net',
+    selectedShipping: 'Selected Shipping',
+    confirmAndProceed: 'Confirm and Proceed to Payment',
+    calculatedNext: 'Calculated next',
+    orderItems: 'Order Items',
+    fullName: 'Full Name',
+    streetAddress: 'Street Address',
+    city: 'City',
+    postalCode: 'Postal Code',
+    phone: 'Phone',
+    calculating: 'Calculating...',
+    calculateShipping: 'Calculate Shipping Options',
+    shippingCalculationError: 'Failed to calculate shipping options. Please try again.',
+
     // Common UI elements
     loading: 'Loading...',
     error: 'Error',
@@ -476,6 +496,26 @@ const translations = {
     noOrders: 'Nie znaleziono zamówień',
     language: 'Język',
     preferredLanguage: 'Preferowany język',
+
+    // Shipping and Checkout
+    shippingAddress: 'Adres wysyłki',
+    deliveryAddress: 'Adres dostawy',
+    changeAddress: 'Zmień adres',
+    shippingOptions: 'Opcje wysyłki',
+    standardDelivery: 'Dostawa standardowa',
+    net: 'netto',
+    selectedShipping: 'Wybrana wysyłka',
+    confirmAndProceed: 'Potwierdź i przejdź do płatności',
+    calculatedNext: 'Obliczone dalej',
+    orderItems: 'Pozycje zamówienia',
+    fullName: 'Imię i nazwisko',
+    streetAddress: 'Adres ulicy',
+    city: 'Miasto',
+    postalCode: 'Kod pocztowy',
+    phone: 'Telefon',
+    calculating: 'Obliczanie...',
+    calculateShipping: 'Oblicz opcje wysyłki',
+    shippingCalculationError: 'Nie udało się obliczyć opcji wysyłki. Spróbuj ponownie.',
 
     // Common UI elements
     loading: 'Ładowanie...',

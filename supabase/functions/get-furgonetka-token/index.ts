@@ -25,10 +25,8 @@ serve(async (req) => {
 
     const clientId = Deno.env.get('FURGONETKA_CLIENT_ID');
     const clientSecret = Deno.env.get('FURGONETKA_CLIENT_SECRET');
-    const email = Deno.env.get('FURGONETKA_EMAIL');
-    const password = Deno.env.get('FURGONETKA_PASSWORD');
 
-    if (!clientId || !clientSecret || !email || !password) {
+    if (!clientId || !clientSecret) {
       throw new Error('Missing Furgonetka credentials');
     }
 
@@ -49,64 +47,19 @@ serve(async (req) => {
       );
     }
 
-    // Try to refresh token if we have a refresh_token
-    if (existingToken?.refresh_token) {
-      console.log('Attempting to refresh token');
-      
-      const refreshResponse = await fetch('https://furgonetka.pl/oauth2/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          grant_type: 'refresh_token',
-          client_id: clientId,
-          client_secret: clientSecret,
-          refresh_token: existingToken.refresh_token,
-        }),
-      });
-
-      if (refreshResponse.ok) {
-        const tokenData: TokenResponse = await refreshResponse.json();
-        const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000);
-
-        // Update token in database
-        const { error: updateError } = await supabase
-          .from('furgonetka_tokens')
-          .update({
-            access_token: tokenData.access_token,
-            refresh_token: tokenData.refresh_token,
-            expires_at: expiresAt.toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', existingToken.id);
-
-        if (updateError) {
-          console.error('Error updating token:', updateError);
-        }
-
-        console.log('Token refreshed successfully');
-        return new Response(
-          JSON.stringify({ access_token: tokenData.access_token }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-    }
-
-    // Get new token using password grant
-    console.log('Getting new token with password grant');
+    // Get new token using client_credentials grant (recommended for server-to-server)
+    console.log('Getting new token with client_credentials grant');
     
-    const tokenResponse = await fetch('https://furgonetka.pl/oauth2/token', {
+    const basic = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    const tokenResponse = await fetch('https://api.sandbox.furgonetka.pl/oauth/token', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Authorization': `Basic ${basic}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({
-        grant_type: 'password',
-        client_id: clientId,
-        client_secret: clientSecret,
-        username: email,
-        password: password,
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        scope: 'api',
       }),
     });
 

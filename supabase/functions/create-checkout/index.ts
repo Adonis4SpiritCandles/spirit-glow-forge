@@ -31,7 +31,7 @@ serve(async (req) => {
     }
 
     // Get request body
-    const { cartItems } = await req.json();
+    const { cartItems, shippingAddress, serviceId, shippingCost = 0 } = await req.json();
     
     if (!cartItems || cartItems.length === 0) {
       throw new Error("No cart items provided");
@@ -78,6 +78,20 @@ serve(async (req) => {
       };
     });
 
+    // Add shipping cost as a line item if present
+    if (shippingCost > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'pln',
+          product_data: {
+            name: 'Shipping',
+          },
+          unit_amount: Math.round(shippingCost * 100), // Convert to grosze
+        },
+        quantity: 1,
+      });
+    }
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -88,6 +102,8 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/checkout`,
       metadata: {
         user_id: user.id,
+        shipping_address: shippingAddress ? JSON.stringify(shippingAddress) : undefined,
+        service_id: serviceId?.toString(),
       },
     });
 

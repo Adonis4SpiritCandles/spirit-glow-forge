@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.send-order-confirmation]
 verify_jwt = false
+
+[functions.calculate-shipping-price]
+verify_jwt = true

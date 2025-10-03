@@ -8,6 +8,31 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
+import ShippingAddressForm from '@/components/ShippingAddressForm';
+import ShippingOptions from '@/components/ShippingOptions';
+
+interface ShippingAddress {
+  name: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  email: string;
+  phone: string;
+}
+
+interface ShippingOption {
+  service_id: number;
+  service_name: string;
+  carrier: string;
+  delivery_type: string;
+  price: {
+    net: number;
+    gross: number;
+    currency: string;
+  };
+  eta?: string;
+}
 
 const Checkout = () => {
   const { cartItems, totalPLN, totalEUR, itemCount, clearCart } = useCart();
@@ -15,6 +40,11 @@ const Checkout = () => {
   const { user, initialLoadComplete } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<'address' | 'shipping' | 'payment'>('address');
+  const [shippingAddress, setShippingAddress] = useState<ShippingAddress | null>(null);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   // Redirect to auth if not logged in (only after initial load is complete)
   useEffect(() => {
@@ -28,11 +58,48 @@ const Checkout = () => {
     }
   }, [user, initialLoadComplete, navigate, t]);
 
-  const handleProceedToPayment = async () => {
-    if (!user) {
-      navigate('/auth');
-      return;
+  const handleAddressSubmit = async (address: ShippingAddress) => {
+    setIsCalculating(true);
+    setShippingAddress(address);
+
+    try {
+      // Calculate total weight (assuming 0.5kg per candle)
+      const totalWeight = cartItems.reduce((sum, item) => sum + (item.quantity * 0.5), 0);
+
+      const { data, error } = await supabase.functions.invoke('calculate-shipping-price', {
+        body: {
+          receiver: address,
+          parcels: [{
+            weight: totalWeight,
+            length: 30,
+            width: 30,
+            height: 20
+          }]
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.options && data.options.length > 0) {
+        setShippingOptions(data.options);
+        setStep('shipping');
+      } else {
+        throw new Error('No shipping options available');
+      }
+    } catch (error) {
+      console.error('Error calculating shipping:', error);
+      toast({
+        title: t('error') || 'Error',
+        description: t('shippingCalculationError') || 'Failed to calculate shipping options. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsCalculating(false);
     }
+  };
+
+  const handleShippingConfirm = async () => {
+    if (!user || !shippingAddress || !selectedShipping) return;
 
     if (cartItems.length === 0) {
       toast({
@@ -46,13 +113,17 @@ const Checkout = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { cartItems },
+        body: { 
+          cartItems,
+          shippingAddress,
+          serviceId: selectedShipping.service_id,
+          shippingCost: selectedShipping.price.gross,
+        },
       });
 
       if (error) throw error;
 
       if (data?.url) {
-        // Redirect to Stripe Checkout
         window.open(data.url, '_blank');
       }
     } catch (error) {
@@ -67,33 +138,80 @@ const Checkout = () => {
     }
   };
 
+  const shippingCost = selectedShipping ? selectedShipping.price.gross : 0;
+  const finalTotalPLN = totalPLN + (selectedShipping?.price.currency === 'PLN' ? shippingCost : 0);
+
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         <h1 className="font-playfair text-3xl font-bold mb-6">{t('checkout') || 'Checkout'}</h1>
+        
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item) => (
-              <Card key={item.id} className="p-4">
-                <div className="flex gap-4">
-                  <div className="w-20 h-20 rounded-md overflow-hidden bg-gradient-mystical">
-                    <img src={item.product.image_url} alt={language === 'en' ? item.product.name_en : item.product.name_pl} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <div>
-                        <div className="font-semibold">{language === 'en' ? item.product.name_en : item.product.name_pl}</div>
-                        <div className="text-sm text-muted-foreground">{item.product.size}</div>
+            {step === 'address' && (
+              <ShippingAddressForm onSubmit={handleAddressSubmit} isLoading={isCalculating} />
+            )}
+
+            {step === 'shipping' && shippingOptions.length > 0 && (
+              <>
+                <Card className="p-4 bg-muted/30">
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">{t('deliveryAddress') || 'Delivery Address'}</h3>
+                    {shippingAddress && (
+                      <div className="text-sm space-y-1">
+                        <p>{shippingAddress.name}</p>
+                        <p>{shippingAddress.street}</p>
+                        <p>{shippingAddress.postalCode} {shippingAddress.city}</p>
+                        <p>{shippingAddress.country}</p>
+                        <Button 
+                          variant="link" 
+                          className="p-0 h-auto text-primary"
+                          onClick={() => {
+                            setStep('address');
+                            setShippingOptions([]);
+                            setSelectedShipping(null);
+                          }}
+                        >
+                          {t('changeAddress') || 'Change Address'}
+                        </Button>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-primary">{item.product.price_pln * item.quantity} PLN</div>
-                        <div className="text-xs text-muted-foreground">~{item.product.price_eur * item.quantity} EUR</div>
+                    )}
+                  </div>
+                </Card>
+
+                <ShippingOptions
+                  options={shippingOptions}
+                  selectedServiceId={selectedShipping?.service_id}
+                  onSelect={setSelectedShipping}
+                  onConfirm={handleShippingConfirm}
+                  isLoading={isLoading}
+                />
+              </>
+            )}
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-4">{t('orderItems') || 'Order Items'}</h3>
+              <div className="space-y-3">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex gap-4">
+                    <div className="w-16 h-16 rounded-md overflow-hidden bg-gradient-mystical">
+                      <img src={item.product.image_url} alt={language === 'en' ? item.product.name_en : item.product.name_pl} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <div>
+                          <div className="font-semibold text-sm">{language === 'en' ? item.product.name_en : item.product.name_pl}</div>
+                          <div className="text-xs text-muted-foreground">{item.product.size} × {item.quantity}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold text-primary">{item.product.price_pln * item.quantity} PLN</div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+                ))}
+              </div>
+            </Card>
           </div>
 
           <Card className="lg:col-span-1 sticky top-8 h-fit">
@@ -105,41 +223,28 @@ const Checkout = () => {
                 <span>{t('subtotal')} ({itemCount} {t('items')})</span>
                 <span>{totalPLN} PLN</span>
               </div>
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span></span>
-                <span>~{totalEUR} EUR</span>
-              </div>
               <div className="flex justify-between text-sm">
                 <span>{t('shipping')}</span>
-                <span className="text-success">{t('freeShipping')}</span>
+                {selectedShipping ? (
+                  <span className="font-semibold">{selectedShipping.price.gross.toFixed(2)} {selectedShipping.price.currency}</span>
+                ) : (
+                  <span className="text-muted-foreground">{t('calculatedNext') || 'Calculated next'}</span>
+                )}
               </div>
               <Separator />
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('total')}</span>
                 <div className="text-right">
-                  <div className="text-primary">{totalPLN} PLN</div>
-                  <div className="text-xs text-muted-foreground">~{totalEUR} EUR</div>
+                  <div className="text-primary">{finalTotalPLN.toFixed(2)} PLN</div>
                 </div>
               </div>
 
-              <Button 
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
-                size="lg"
-                onClick={handleProceedToPayment}
-                disabled={isLoading || !user || cartItems.length === 0}
-              >
-                {isLoading ? t('processing') || 'Processing...' : t('proceedToPayment') || 'Proceed to Payment'}
-              </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link to="/cart">{t('backToCart') || 'Back to Cart'}</Link>
               </Button>
             </CardContent>
           </Card>
         </div>
-
-        <p className="text-xs text-muted-foreground mt-6">
-          Nota: per i pagamenti useremo Stripe Checkout. Appena colleghi l'account Stripe, abiliterò il pulsante per aprire la cassa.
-        </p>
       </div>
     </div>
   );

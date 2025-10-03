@@ -51,7 +51,7 @@ serve(async (req) => {
       throw new Error('Admin access required');
     }
 
-    const { orderId, carrier, service, weight, dimensions }: ShipmentRequest = await req.json();
+    const { orderId, weight, dimensions }: ShipmentRequest = await req.json();
 
     // Get order details
     const { data: order, error: orderError } = await supabase
@@ -80,21 +80,21 @@ serve(async (req) => {
 
     const { access_token } = await tokenResponse.json();
 
-    // Map carrier codes to Furgonetka format
-    const carrierMap: Record<string, string> = {
-      'InPost': 'INPOST',
-      'FedEx': 'FEDEX',
-      'DHL': 'DHL'
-    };
-
-    const furgonetkaCarrier = carrierMap[carrier] || carrier.toUpperCase();
+    // Get service_id from order
+    if (!order.service_id) {
+      throw new Error('No shipping service selected for this order');
+    }
 
     // Prepare shipping address
     const shippingAddress = order.shipping_address || {};
     
+    if (!shippingAddress.name || !shippingAddress.street || !shippingAddress.city) {
+      throw new Error('Missing required shipping address fields');
+    }
+
     // Create shipment via Furgonetka API
     const shipmentData = {
-      service: service || `${furgonetkaCarrier}_STANDARD`,
+      service_id: order.service_id,
       sender: {
         name: "Spirit Candle",
         street: "Via Example 123",
@@ -105,12 +105,12 @@ serve(async (req) => {
         phone: "+48123456789"
       },
       receiver: {
-        name: `${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}`.trim() || 'Customer',
-        street: shippingAddress.address || '',
+        name: shippingAddress.name || 'Customer',
+        street: shippingAddress.street || '',
         city: shippingAddress.city || '',
-        zip_code: shippingAddress.postalCode || '',
-        country_code: shippingAddress.country || 'PL',
-        email: order.profiles?.email || '',
+        post_code: shippingAddress.postalCode || shippingAddress.post_code || '',
+        country: shippingAddress.country || 'PL',
+        email: shippingAddress.email || order.profiles?.email || '',
         phone: shippingAddress.phone || ''
       },
       parcels: [{
@@ -125,7 +125,7 @@ serve(async (req) => {
 
     console.log('Creating Furgonetka shipment:', JSON.stringify(shipmentData));
 
-    const shipmentResponse = await fetch('https://furgonetka.pl/api/v1/packages', {
+    const shipmentResponse = await fetch('https://api.sandbox.furgonetka.pl/api/v1/packages', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,
@@ -149,7 +149,7 @@ serve(async (req) => {
       .update({
         furgonetka_package_id: shipmentResult.id || shipmentResult.package_id,
         tracking_number: shipmentResult.tracking_number || shipmentResult.waybill,
-        carrier: carrier,
+        carrier: shipmentResult.carrier || 'Furgonetka',
         shipping_status: 'created',
         shipping_label_url: shipmentResult.label_url || shipmentResult.waybill_url,
         updated_at: new Date().toISOString(),

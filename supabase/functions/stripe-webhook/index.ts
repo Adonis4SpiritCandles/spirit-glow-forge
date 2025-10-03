@@ -74,6 +74,14 @@ serve(async (req) => {
         0
       );
 
+      // Get shipping address and service_id from session metadata
+      const shippingAddress = session.metadata?.shipping_address 
+        ? JSON.parse(session.metadata.shipping_address) 
+        : null;
+      const serviceId = session.metadata?.service_id 
+        ? parseInt(session.metadata.service_id) 
+        : null;
+
       // Create order
       const { data: order, error: orderError } = await supabaseClient
         .from("orders")
@@ -83,6 +91,8 @@ serve(async (req) => {
           total_eur: totalEUR,
           status: "paid",
           shipping_status: "pending",
+          shipping_address: shippingAddress,
+          service_id: serviceId,
         })
         .select()
         .single();
@@ -141,7 +151,7 @@ serve(async (req) => {
             orderItems: orderItemsWithNames,
             totalPLN: totalPLN,
             totalEUR: totalEUR,
-            shippingAddress: session.shipping_details?.address,
+            shippingAddress: shippingAddress,
           }
         });
         console.log("Order confirmation email sent");

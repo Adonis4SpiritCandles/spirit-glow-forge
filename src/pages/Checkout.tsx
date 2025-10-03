@@ -83,8 +83,19 @@ const Checkout = () => {
       if (data?.options && data.options.length > 0) {
         setShippingOptions(data.options);
         setStep('shipping');
+      } else if (data?.reason === 'validation_failed') {
+        const details = (data.validationErrors || []).slice(0, 4).map((e: any) => `${e.path}: ${e.message}`).join('\n') || undefined;
+        toast({
+          title: t('shippingValidationFailed') || 'Shipping data needs attention',
+          description: details || (data?.message || t('shippingCalculationError') || 'Failed to calculate shipping options.'),
+          variant: 'destructive',
+        });
       } else {
-        throw new Error('No shipping options available');
+        toast({
+          title: t('noServices') || 'No services available',
+          description: (data?.message || t('shippingCalculationError') || 'Failed to calculate shipping options.'),
+          variant: 'destructive',
+        });
       }
     } catch (error) {
       console.error('Error calculating shipping:', error);

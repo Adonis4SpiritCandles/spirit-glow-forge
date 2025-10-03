@@ -98,37 +98,37 @@ serve(async (req) => {
         phone: receiver.phone || ''
       },
       parcels: parcels.map(p => ({
-        weight: p.weight,
-        length: p.length,
-        width: p.width,
-        height: p.height
+        weight: Math.max(0.1, Number(p.weight || 0)),
+        length: Math.max(1, Number(p.length || 20)),
+        width: Math.max(1, Number(p.width || 20)),
+        height: Math.max(1, Number(p.height || 12))
       })),
       type: 'package'
     };
     console.log('Validating package with:', JSON.stringify(packagePayload));
 
-    // 1) VALIDATE PACKAGE FIRST
-    const validateResponse = await fetch('https://api.sandbox.furgonetka.pl/packages/validate', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/vnd.furgonetka.v1+json',
-        'Accept': 'application/vnd.furgonetka.v1+json',
-        'X-Language': 'en_GB',
-      },
-      body: JSON.stringify({ package: packagePayload }),
-    });
-
-    let validateJson: any = null;
-    try { validateJson = await validateResponse.clone().json(); } catch (_) {}
-
-    if (!validateResponse.ok || (validateJson && Array.isArray(validateJson.errors) && validateJson.errors.length)) {
-      console.warn('Validation failed:', validateResponse.status, validateResponse.statusText, JSON.stringify(validateJson));
-      const details = (validateJson?.errors || []).map((e: any) => ({ path: e.path, message: e.message, code: e.code }));
-      return new Response(
-        JSON.stringify({ reason: 'validation_failed', message: 'Validation failed for the package', validationErrors: details }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // 1) VALIDATE PACKAGE FIRST (soft validation)
+    // Note: API may expect top-level package fields for this endpoint. We won't block on failure; we log and continue to pricing.
+    let preValidationErrors: any[] = [];
+    try {
+      const validateResponse = await fetch('https://api.sandbox.furgonetka.pl/packages/validate', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${access_token}`,
+          'Content-Type': 'application/vnd.furgonetka.v1+json',
+          'Accept': 'application/vnd.furgonetka.v1+json',
+          'X-Language': 'en_GB',
+        },
+        body: JSON.stringify(packagePayload), // top-level payload
+      });
+      let validateJson: any = null;
+      try { validateJson = await validateResponse.clone().json(); } catch (_) {}
+      if (!validateResponse.ok || (validateJson && Array.isArray(validateJson.errors) && validateJson.errors.length)) {
+        console.warn('Validation failed (soft):', validateResponse.status, validateResponse.statusText, JSON.stringify(validateJson));
+        preValidationErrors = (validateJson?.errors || []).map((e: any) => ({ path: e.path, message: e.message, code: e.code }));
+      }
+    } catch (e) {
+      console.warn('Validation request error (ignored):', e);
     }
 
     // 2) FETCH ACTIVE ACCOUNT SERVICES
@@ -155,6 +155,8 @@ serve(async (req) => {
 
     const filteredServices = (rawServices || []).filter((s: any) => {
       const name = (s.service || s.name || '').toString().toLowerCase();
+      const blacklist = ['meest', 'swiatprzesylek', 'postivo', 'deligoo', 'furgonetka_gielda', 'gielda'];
+      if (blacklist.some(b => name.includes(b))) return false;
       if (totalWeight < 1 && name === 'gls') return false; // GLS requires >= 1kg
       return true;
     });

@@ -93,7 +93,7 @@ serve(async (req) => {
         weight: p.weight,
         length: p.length,
         width: p.width,
-        height: p.height
+        depth: p.height
       })),
       type: 'package'
     };

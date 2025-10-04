@@ -26,8 +26,8 @@ interface Product {
   name_pl: string;
   description_en: string | null;
   description_pl: string | null;
-  price_pln: number;
-  price_eur: number;
+  price_pln: number | string;
+  price_eur: number | string;
   category: string;
   size: string;
   stock_quantity: number;
@@ -35,6 +35,7 @@ interface Product {
   image_url: string | null;
   created_at: string;
   updated_at: string;
+  published?: boolean;
 }
 
 interface Order {
@@ -237,11 +238,17 @@ const AdminDashboard = () => {
 
   const saveProduct = async () => {
     try {
+      const payload = {
+        ...productForm,
+        price_pln: Math.round(Number(productForm.price_pln) * 100) / 100,
+        price_eur: Math.round(Number(productForm.price_eur) * 100) / 100,
+      };
+
       if (editingProduct) {
         // Update existing product
         const { error } = await supabase
           .from('products')
-          .update(productForm)
+          .update(payload)
           .eq('id', editingProduct.id);
         
         if (error) throw error;
@@ -250,7 +257,7 @@ const AdminDashboard = () => {
         // Create new product
         const { error } = await supabase
           .from('products')
-          .insert([productForm]);
+          .insert([payload]);
         
         if (error) throw error;
         toast({ title: "Success", description: "Product created successfully" });
@@ -275,8 +282,8 @@ const AdminDashboard = () => {
       name_pl: product.name_pl,
       description_en: product.description_en || '',
       description_pl: product.description_pl || '',
-      price_pln: product.price_pln,
-      price_eur: product.price_eur,
+      price_pln: Number(product.price_pln),
+      price_eur: Number(product.price_eur),
       category: product.category,
       size: product.size,
       weight: product.weight || '',
@@ -297,6 +304,25 @@ const AdminDashboard = () => {
       
       if (error) throw error;
       toast({ title: "Success", description: "Product deleted successfully" });
+      loadDashboardData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const togglePublish = async (productId: string, publish: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ published: publish })
+        .eq('id', productId);
+
+      if (error) throw error;
+      toast({ title: "Success", description: publish ? "Product published" : "Product unpublished" });
       loadDashboardData();
     } catch (error: any) {
       toast({
@@ -540,21 +566,29 @@ const AdminDashboard = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('pricePln')}</Label>
+<Label>{t('pricePln')}</Label>
                         <Input
-                          type="number"
+                          type="text"
                           value={productForm.price_pln}
-                          onChange={(e) => setProductForm({ ...productForm, price_pln: parseInt(e.target.value) || 0 })}
-                          placeholder="Price in PLN cents (e.g., 2500 = 25.00 PLN)"
+                          onChange={(e) => {
+                            const val = e.target.value.replace(',', '.');
+                            const num = parseFloat(val);
+                            setProductForm({ ...productForm, price_pln: isNaN(num) ? 0 : parseFloat(num.toFixed(2)) });
+                          }}
+                          placeholder="Prezzo in PLN (es. 108,24)"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('priceEur')}</Label>
+<Label>{t('priceEur')}</Label>
                         <Input
-                          type="number"
+                          type="text"
                           value={productForm.price_eur}
-                          onChange={(e) => setProductForm({ ...productForm, price_eur: parseInt(e.target.value) || 0 })}
-                          placeholder="Price in EUR cents (e.g., 600 = 6.00 EUR)"
+                          onChange={(e) => {
+                            const val = e.target.value.replace(',', '.');
+                            const num = parseFloat(val);
+                            setProductForm({ ...productForm, price_eur: isNaN(num) ? 0 : parseFloat(num.toFixed(2)) });
+                          }}
+                          placeholder="Prezzo in EUR (es. 12,30)"
                         />
                       </div>
                       <div className="space-y-2">
@@ -693,6 +727,13 @@ const AdminDashboard = () => {
                               onClick={() => editProduct(product)}
                             >
                               Edit
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant={product.published ? "secondary" : "default"}
+                              onClick={() => togglePublish(product.id, !product.published)}
+                            >
+                              {product.published ? 'Unpublish' : 'Publish'}
                             </Button>
                             <Button 
                               size="sm" 

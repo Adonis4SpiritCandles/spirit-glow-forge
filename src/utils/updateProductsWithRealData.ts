@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 export const fetchProducts = async (category?: string) => {
   let query = supabase.from('products').select('*');
   
+  // Only show published products on the storefront
+  query = query.eq('published', true);
+  
   if (category) {
     query = query.eq('category', category);
   }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Filter, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,89 +11,47 @@ import {
 } from "@/components/ui/select";
 import ProductCard from "@/components/ProductCard";
 import { useLanguage } from "@/contexts/LanguageContext";
-import candleLit from "@/assets/candle-lit.png";
-import candleUnlit from "@/assets/candle-unlit.png";
-import candleWax from "@/assets/candle-wax.png";
+import { supabase } from "@/integrations/supabase/client";
 
-const sampleProducts = [
-  {
-    id: "1",
-    name: "Mystic Rose",
-    fragrance: "Black Opium",
-    price: { pln: 89, eur: 21 },
-    image: candleLit,
-    description: "A captivating blend of black coffee, white flowers, and vanilla with a mysterious edge.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 } }
-    ],
-    isNew: true,
-  },
-  {
-    id: "2",
-    name: "Golden Embrace",
-    fragrance: "Chanel No. 5",
-    price: { pln: 95, eur: 22 },
-    image: candleUnlit,
-    description: "Timeless elegance with aldehydes, ylang-ylang, and sandalwood in perfect harmony.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 95, eur: 22 } }
-    ],
-    isBestseller: true,
-  },
-  {
-    id: "3",
-    name: "Velvet Dreams",
-    fragrance: "Tom Ford Velvet Orchid",
-    price: { pln: 99, eur: 23 },
-    image: candleWax,
-    description: "Luxurious orchid and rose petals wrapped in warm vanilla and sandalwood.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 99, eur: 23 } }
-    ],
-  },
-  {
-    id: "4",
-    name: "Midnight Passion",
-    fragrance: "Dior Sauvage",
-    price: { pln: 92, eur: 21 },
-    image: candleLit,
-    description: "Fresh bergamot meets woody ambroxan for a bold, masculine essence.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 92, eur: 21 } }
-    ],
-  },
-  {
-    id: "5",
-    name: "Royal Essence",
-    fragrance: "Creed Aventus",
-    price: { pln: 109, eur: 25 },
-    image: candleUnlit,
-    description: "Pineapple, birch, and musk create this legendary, powerful fragrance.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 109, eur: 25 } }
-    ],
-    isNew: true,
-  },
-  {
-    id: "6",
-    name: "Divine Femininity",
-    fragrance: "Miss Dior",
-    price: { pln: 87, eur: 20 },
-    image: candleWax,
-    description: "Romantic rose and jasmine with a touch of patchouli elegance.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 87, eur: 20 } }
-    ],
-    isBestseller: true,
-  },
-];
+// Loaded from Supabase
 
 const Shop = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [filterBy, setFilterBy] = useState("all");
-  const [products] = useState(sampleProducts);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+      if (!error && data) {
+        const mapped = data.map((p) => ({
+          id: p.id,
+          name: language === 'en' ? p.name_en : p.name_pl,
+          fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+          price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
+          image: p.image_url,
+          description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+          sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
+          isNew: false,
+          isBestseller: false,
+        }));
+        setProducts(mapped);
+      }
+    };
+    load();
+
+    const channel = supabase
+      .channel('products-shop')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, load)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [language]);
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -38,6 +38,7 @@ const ProductCarousel = () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('published', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -92,7 +93,7 @@ const ProductCarousel = () => {
                     id={product.id}
                     name={language === 'en' ? product.name_en : product.name_pl}
                     fragrance={language === 'en' ? product.description_en : product.description_pl}
-                    price={{ pln: product.price_pln, eur: product.price_eur }}
+price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                     image={product.image_url}
                     description={language === 'en' ? product.description_en : product.description_pl}
                     sizes={[{ size: product.size, weight: product.weight, price: { pln: product.price_pln, eur: product.price_eur } }]}
@@ -121,7 +122,7 @@ const ProductCarousel = () => {
                     id={product.id}
                     name={language === 'en' ? product.name_en : product.name_pl}
                     fragrance={language === 'en' ? product.description_en : product.description_pl}
-                    price={{ pln: product.price_pln, eur: product.price_eur }}
+                    price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                     image={product.image_url}
                     description={language === 'en' ? product.description_en : product.description_pl}
                     sizes={[{ size: product.size, weight: product.weight, price: { pln: product.price_pln, eur: product.price_eur } }]}

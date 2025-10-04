@@ -199,6 +199,7 @@ export type Database = {
           name_pl: string
           price_eur: number
           price_pln: number
+          published: boolean
           size: string | null
           stock_quantity: number
           updated_at: string
@@ -215,6 +216,7 @@ export type Database = {
           name_pl: string
           price_eur: number
           price_pln: number
+          published?: boolean
           size?: string | null
           stock_quantity?: number
           updated_at?: string
@@ -231,6 +233,7 @@ export type Database = {
           name_pl?: string
           price_eur?: number
           price_pln?: number
+          published?: boolean
           size?: string | null
           stock_quantity?: number
           updated_at?: string

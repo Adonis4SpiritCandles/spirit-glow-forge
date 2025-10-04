@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Menu, Search, ShoppingCart, User, LogOut, Heart } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
-import { useCart } from '@/hooks/useCart';
+import { useCartContext } from '@/contexts/CartContext';
 import { useWishlist } from '@/hooks/useWishlist';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -18,7 +18,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { language, t } = useLanguage();
   const { user, signOut } = useAuth();
-  const { itemCount } = useCart();
+  const { itemCount } = useCartContext();
   const { wishlistCount } = useWishlist();
   const [userProfile, setUserProfile] = useState<any>(null);
 

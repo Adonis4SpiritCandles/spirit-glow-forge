@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useCart } from "@/hooks/useCart";
+import { useCartContext } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   id: string;
@@ -41,7 +41,7 @@ const ProductCard = ({
   const [selectedSize, setSelectedSize] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { toast } = useToast();
-  const { addProductToCart } = useCart();
+  const { addProductToCart } = useCartContext();
 
   const handleAddToCart = () => {
     const size = sizes[selectedSize];

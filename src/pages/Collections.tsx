@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,56 +6,47 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Heart, Crown, Leaf } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
 
-// Sample collections data
-// Sample products for collections
-const sampleProducts = [
-  {
-    id: "1",
-    name: "Mystic Rose",
-    fragrance: "Black Opium",
-    price: { pln: 89, eur: 21 },
-    image: candleLit,
-    description: "A captivating blend of black coffee, white flowers, and vanilla with a mysterious edge.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 } }
-    ],
-    isNew: true,
-    collection: "luxury"
-  },
-  {
-    id: "2",
-    name: "Golden Embrace",
-    fragrance: "Chanel No. 5",
-    price: { pln: 95, eur: 22 },
-    image: candleUnlit,
-    description: "Timeless elegance with aldehydes, ylang-ylang, and sandalwood in perfect harmony.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 95, eur: 22 } }
-    ],
-    isBestseller: true,
-    collection: "bestsellers"
-  },
-  {
-    id: "3",
-    name: "Ocean Breeze",
-    fragrance: "Acqua di Gio",
-    price: { pln: 85, eur: 20 },
-    image: candleWax,
-    description: "Fresh marine notes with citrus and aromatic herbs.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 85, eur: 20 } }
-    ],
-    collection: "fresh"
-  }
-];
+// Products loaded from Supabase
 
 const Collections = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+      if (data) {
+        const mapped = data.map((p) => ({
+          id: p.id,
+          name: language === 'en' ? p.name_en : p.name_pl,
+          fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+          price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
+          image: p.image_url,
+          description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+          sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
+          collection: p.category,
+        }));
+        setProducts(mapped);
+      }
+    };
+    load();
+
+    const channel = supabase
+      .channel('products-collections')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, load)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [language]);
 
   const collections = [
     {
@@ -98,9 +89,9 @@ const Collections = () => {
     },
   ];
 
-  const filteredProducts = selectedCollection 
-    ? sampleProducts.filter(product => product.collection === selectedCollection)
-    : [];
+const filteredProducts = selectedCollection 
+  ? products.filter(product => product.collection === selectedCollection)
+  : [];
 
   return (
     <div className="min-h-screen bg-background">

@@ -253,11 +253,11 @@ export const useCart = () => {
 
   // Calculate totals
   const totalPLN = cartItems.reduce((sum, item) => 
-    sum + (item.product.price_pln * item.quantity), 0
+    sum + (Number(item.product.price_pln) * item.quantity), 0
   );
   
   const totalEUR = cartItems.reduce((sum, item) => 
-    sum + (item.product.price_eur * item.quantity), 0
+    sum + (Number(item.product.price_eur) * item.quantity), 0
   );
   
   const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);

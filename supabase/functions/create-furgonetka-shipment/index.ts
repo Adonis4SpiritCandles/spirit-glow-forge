@@ -167,7 +167,7 @@ serve(async (req) => {
       type: 'package'
     };
 
-    console.log('Validating package before creation:', JSON.stringify(packagePayload));
+    console.log('Validating package before creation:', JSON.stringify({ service_id: order.service_id, package: packagePayload }));
 
     // 1) Validate package - if validation returns errors, surface them to client
     try {
@@ -179,7 +179,7 @@ serve(async (req) => {
           'Accept': 'application/vnd.furgonetka.v1+json',
           'X-Language': 'en_GB',
         },
-        body: JSON.stringify(packagePayload),
+        body: JSON.stringify({ service_id: order.service_id, package: packagePayload }),
       });
       let validateJson: any = null;
       try { validateJson = await validateResp.clone().json(); } catch (_) {}

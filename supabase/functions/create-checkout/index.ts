@@ -31,7 +31,7 @@ serve(async (req) => {
     }
 
     // Get request body
-    const { cartItems, shippingAddress, serviceId, shippingCost = 0 } = await req.json();
+    const { cartItems, shippingAddress, serviceId, shippingCost = 0, carrierName } = await req.json();
     
     if (!cartItems || cartItems.length === 0) {
       throw new Error("No cart items provided");
@@ -92,6 +92,10 @@ serve(async (req) => {
       });
     }
 
+    // Calculate shipping costs in both currencies (assuming shippingCost is in PLN)
+    const shippingCostPLN = Math.round(shippingCost);
+    const shippingCostEUR = Math.round(shippingCost / 4.3); // Approximate conversion
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -104,6 +108,9 @@ serve(async (req) => {
         user_id: user.id,
         shipping_address: shippingAddress ? JSON.stringify(shippingAddress) : undefined,
         service_id: serviceId?.toString(),
+        shipping_cost_pln: shippingCostPLN.toString(),
+        shipping_cost_eur: shippingCostEUR.toString(),
+        carrier_name: carrierName || undefined,
       },
     });
 

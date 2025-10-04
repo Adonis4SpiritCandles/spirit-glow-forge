@@ -27,6 +27,9 @@ interface Order {
   id: string;
   total_pln: number;
   total_eur: number;
+  shipping_cost_pln?: number;
+  shipping_cost_eur?: number;
+  carrier_name?: string;
   status: string;
   created_at: string;
   order_number?: number;
@@ -166,7 +169,7 @@ const UserDashboard = () => {
         </div>
 
         <Tabs defaultValue={tabParam || "profile"} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="w-4 h-4" />
               Profile
@@ -178,10 +181,6 @@ const UserDashboard = () => {
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               Settings
-            </TabsTrigger>
-            <TabsTrigger value="billing" className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              Billing
             </TabsTrigger>
           </TabsList>
 
@@ -293,11 +292,26 @@ const UserDashboard = () => {
                             {order.status}
                           </Badge>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">
-                              {order.total_pln} PLN / {order.total_eur} EUR
-                            </p>
+                        <div className="space-y-2 border-t pt-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Products:</span>
+                            <span>{(order.total_pln - (order.shipping_cost_pln || 0))} PLN / {(order.total_eur - (order.shipping_cost_eur || 0))} EUR</span>
+                          </div>
+                          {(order.shipping_cost_pln || 0) > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Shipping:</span>
+                              <span>{order.shipping_cost_pln} PLN / {order.shipping_cost_eur} EUR</span>
+                            </div>
+                          )}
+                          {order.carrier_name && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Carrier:</span>
+                              <Badge variant="outline">{order.carrier_name}</Badge>
+                            </div>
+                          )}
+                          <div className="flex justify-between font-semibold pt-2 border-t">
+                            <span>Total:</span>
+                            <span>{order.total_pln} PLN / {order.total_eur} EUR</span>
                           </div>
                         </div>
                         {order.tracking_number && (
@@ -422,24 +436,6 @@ const UserDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="billing" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Billing Information</CardTitle>
-                <CardDescription>
-                  Manage your payment methods and billing
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No billing information available</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Payment details will appear here after your first purchase
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     </div>

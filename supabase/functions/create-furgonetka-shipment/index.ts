@@ -67,6 +67,14 @@ serve(async (req) => {
       throw new Error('Order not found');
     }
 
+    console.log('Creating Furgonetka shipment with data:', {
+      orderId,
+      service_id: order.service_id,
+      weight,
+      dimensions,
+      shipping_address: order.shipping_address
+    });
+
     // Get access token
     const tokenResponse = await fetch(`${supabaseUrl}/functions/v1/get-furgonetka-token`, {
       headers: {

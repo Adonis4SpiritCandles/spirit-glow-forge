@@ -17,6 +17,7 @@ import { toast } from '@/hooks/use-toast';
 import AdminCustomerModal from '@/components/AdminCustomerModal';
 import AdminStatistics from '@/components/AdminStatistics';
 import AdminExport from '@/components/AdminExport';
+import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 
 interface Product {
   id: string;
@@ -41,6 +42,9 @@ interface Order {
   status: string;
   total_pln: number;
   total_eur: number;
+  shipping_cost_pln?: number;
+  shipping_cost_eur?: number;
+  carrier_name?: string;
   created_at: string;
   order_number?: number;
   shipping_status?: string;
@@ -49,6 +53,7 @@ interface Order {
   shipping_label_url?: string;
   furgonetka_package_id?: string;
   shipping_address?: any;
+  service_id?: number;
   profiles?: {
     first_name?: string;
     last_name?: string;
@@ -103,6 +108,10 @@ const AdminDashboard = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<Profile | null>(null);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+
+  // Order details modal state
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
 
   // Shipping management state
   const [creatingShipment, setCreatingShipment] = useState<string | null>(null);
@@ -746,6 +755,17 @@ const AdminDashboard = () => {
                             <div className="flex gap-2 flex-wrap">
                               <Button
                                 size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setIsOrderDetailsOpen(true);
+                                }}
+                              >
+                                <Eye className="h-4 w-4 mr-1" />
+                                Details
+                              </Button>
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 onClick={() => updateOrderStatus(order.id, 'completed')}
                                 disabled={order.status === 'completed'}
@@ -958,6 +978,13 @@ const AdminDashboard = () => {
           customer={selectedCustomer}
           isOpen={isCustomerModalOpen}
           onClose={() => setIsCustomerModalOpen(false)}
+        />
+
+        {/* Order Details Modal */}
+        <AdminOrderDetailsModal
+          order={selectedOrder}
+          isOpen={isOrderDetailsOpen}
+          onClose={() => setIsOrderDetailsOpen(false)}
         />
       </div>
     </div>

@@ -138,6 +138,7 @@ const Checkout = () => {
           shippingAddress,
           serviceId: selectedShipping.service_id,
           shippingCost: selectedShipping.price.gross,
+          carrierName: selectedShipping.carrier,
         },
       });
 

@@ -124,6 +124,7 @@ export type Database = {
       orders: {
         Row: {
           carrier: string | null
+          carrier_name: string | null
           created_at: string
           estimated_delivery_date: string | null
           furgonetka_package_id: string | null
@@ -131,6 +132,8 @@ export type Database = {
           order_number: number | null
           service_id: number | null
           shipping_address: Json | null
+          shipping_cost_eur: number | null
+          shipping_cost_pln: number | null
           shipping_label_url: string | null
           shipping_status: string | null
           status: string
@@ -142,6 +145,7 @@ export type Database = {
         }
         Insert: {
           carrier?: string | null
+          carrier_name?: string | null
           created_at?: string
           estimated_delivery_date?: string | null
           furgonetka_package_id?: string | null
@@ -149,6 +153,8 @@ export type Database = {
           order_number?: number | null
           service_id?: number | null
           shipping_address?: Json | null
+          shipping_cost_eur?: number | null
+          shipping_cost_pln?: number | null
           shipping_label_url?: string | null
           shipping_status?: string | null
           status?: string
@@ -160,6 +166,7 @@ export type Database = {
         }
         Update: {
           carrier?: string | null
+          carrier_name?: string | null
           created_at?: string
           estimated_delivery_date?: string | null
           furgonetka_package_id?: string | null
@@ -167,6 +174,8 @@ export type Database = {
           order_number?: number | null
           service_id?: number | null
           shipping_address?: Json | null
+          shipping_cost_eur?: number | null
+          shipping_cost_pln?: number | null
           shipping_label_url?: string | null
           shipping_status?: string | null
           status?: string

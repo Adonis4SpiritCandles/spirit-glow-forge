@@ -22,8 +22,13 @@ interface OrderConfirmationRequest {
   userEmail: string;
   preferredLanguage: string;
   orderItems: OrderItem[];
+  subtotalPLN: number;
+  subtotalEUR: number;
+  shippingCostPLN: number;
+  shippingCostEUR: number;
   totalPLN: number;
   totalEUR: number;
+  carrierName?: string;
   shippingAddress: any;
 }
 
@@ -34,12 +39,18 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const {
+      orderId,
       orderNumber,
       userEmail,
       preferredLanguage,
       orderItems,
+      subtotalPLN,
+      subtotalEUR,
+      shippingCostPLN,
+      shippingCostEUR,
       totalPLN,
       totalEUR,
+      carrierName,
       shippingAddress,
     }: OrderConfirmationRequest = await req.json();
 
@@ -76,6 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Numer zamówienia:</strong> ${orderRef}</p>
+          <p><strong>ID zamówienia:</strong> ${orderId}</p>
           <p><strong>Data zamówienia:</strong> ${new Date().toLocaleDateString('pl-PL')}</p>
         </div>
 
@@ -85,7 +97,11 @@ const handler = async (req: Request): Promise<Response> => {
         </ul>
 
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Razem:</strong> ${totalPLN} PLN / ${totalEUR} EUR</p>
+          <p><strong>Subtotal produktów:</strong> ${subtotalPLN} PLN / ${subtotalEUR} EUR</p>
+          <p><strong>Koszt wysyłki:</strong> ${shippingCostPLN} PLN / ${shippingCostEUR} EUR</p>
+          ${carrierName ? `<p><strong>Kurier:</strong> ${carrierName}</p>` : ''}
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;" />
+          <p style="font-size: 18px;"><strong>Razem:</strong> ${totalPLN} PLN / ${totalEUR} EUR</p>
         </div>
 
         <h2 style="color: #333;">Adres dostawy:</h2>
@@ -105,6 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Order Number:</strong> ${orderRef}</p>
+          <p><strong>Order ID:</strong> ${orderId}</p>
           <p><strong>Order Date:</strong> ${new Date().toLocaleDateString('en-US')}</p>
         </div>
 
@@ -114,7 +131,11 @@ const handler = async (req: Request): Promise<Response> => {
         </ul>
 
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Total:</strong> ${totalPLN} PLN / ${totalEUR} EUR</p>
+          <p><strong>Products Subtotal:</strong> ${subtotalPLN} PLN / ${subtotalEUR} EUR</p>
+          <p><strong>Shipping Cost:</strong> ${shippingCostPLN} PLN / ${shippingCostEUR} EUR</p>
+          ${carrierName ? `<p><strong>Carrier:</strong> ${carrierName}</p>` : ''}
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;" />
+          <p style="font-size: 18px;"><strong>Total:</strong> ${totalPLN} PLN / ${totalEUR} EUR</p>
         </div>
 
         <h2 style="color: #333;">Shipping Address:</h2>

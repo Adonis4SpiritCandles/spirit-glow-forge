@@ -74,21 +74,35 @@ serve(async (req) => {
         0
       );
 
-      // Get shipping address and service_id from session metadata
+      // Get shipping address, service_id, shipping costs, and carrier from session metadata
       const shippingAddress = session.metadata?.shipping_address 
         ? JSON.parse(session.metadata.shipping_address) 
         : null;
       const serviceId = session.metadata?.service_id 
         ? parseInt(session.metadata.service_id) 
         : null;
+      const shippingCostPLN = session.metadata?.shipping_cost_pln 
+        ? parseInt(session.metadata.shipping_cost_pln)
+        : 0;
+      const shippingCostEUR = session.metadata?.shipping_cost_eur
+        ? parseInt(session.metadata.shipping_cost_eur)
+        : 0;
+      const carrierName = session.metadata?.carrier_name || null;
+
+      // Calculate total including shipping
+      const orderTotalPLN = totalPLN + shippingCostPLN;
+      const orderTotalEUR = totalEUR + shippingCostEUR;
 
       // Create order
       const { data: order, error: orderError } = await supabaseClient
         .from("orders")
         .insert({
           user_id: userId,
-          total_pln: totalPLN,
-          total_eur: totalEUR,
+          total_pln: orderTotalPLN,
+          total_eur: orderTotalEUR,
+          shipping_cost_pln: shippingCostPLN,
+          shipping_cost_eur: shippingCostEUR,
+          carrier_name: carrierName,
           status: "paid",
           shipping_status: "pending",
           shipping_address: shippingAddress,
@@ -149,8 +163,13 @@ serve(async (req) => {
             userEmail: userProfile?.email || session.customer_details?.email,
             preferredLanguage: userProfile?.preferred_language || 'en',
             orderItems: orderItemsWithNames,
-            totalPLN: totalPLN,
-            totalEUR: totalEUR,
+            subtotalPLN: totalPLN,
+            subtotalEUR: totalEUR,
+            shippingCostPLN: shippingCostPLN,
+            shippingCostEUR: shippingCostEUR,
+            totalPLN: orderTotalPLN,
+            totalEUR: orderTotalEUR,
+            carrierName: carrierName,
             shippingAddress: shippingAddress,
           }
         });

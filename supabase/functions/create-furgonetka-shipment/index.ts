@@ -161,7 +161,9 @@ serve(async (req) => {
         weight,
         length: Number(dimensions.length || 30),
         width: Number(dimensions.width || 30),
-        height: Number(dimensions.height || 30)
+        height: Number(dimensions.height || 30),
+        depth: Number(dimensions.length || 30), // Furgonetka requires depth field
+        description: 'Spirit Candle - Luxury Soy Candle' // Required description field
       }],
       type: 'package'
     };

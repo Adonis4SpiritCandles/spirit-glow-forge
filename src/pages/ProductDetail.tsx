@@ -7,7 +7,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Shield, Leaf, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useReviews } from "@/hooks/useReviews";
 import { useLanguage } from "@/contexts/LanguageContext";
+import ProductReviews from "@/components/ProductReviews";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
@@ -45,11 +48,14 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addProductToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { averageRating, reviewCount } = useReviews(id);
   const { t } = useLanguage();
   
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  
+  const isWishlisted = id ? isInWishlist(id) : false;
 
   // Find product by ID (in real app, this would be a database query)
   const product = sampleProducts.find(p => p.id === id);
@@ -86,11 +92,45 @@ const ProductDetail = () => {
     });
   };
 
-  const toggleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
+  const toggleWishlist = async () => {
+    if (!id) return;
+    
+    if (isWishlisted) {
+      await removeFromWishlist(id);
+    } else {
+      await addToWishlist(id);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.name,
+          text: product.description,
+          url: window.location.href,
+        });
+        toast({
+          title: t('shared'),
+          description: t('productShared'),
+        });
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          // Fallback to clipboard
+          handleCopyLink();
+        }
+      }
+    } else {
+      // Fallback to clipboard
+      handleCopyLink();
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
     toast({
-      title: isWishlisted ? t('removedFromWishlist') || "Removed from Wishlist" : t('addedToWishlist') || "Added to Wishlist",
-      description: `${product.name} has been ${isWishlisted ? 'removed from' : 'added to'} your wishlist.`,
+      title: t('linkCopied'),
+      description: t('productLinkCopied'),
     });
   };
 
@@ -148,9 +188,14 @@ const ProductDetail = () => {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    <Star 
+                      key={i} 
+                      className={`h-4 w-4 ${i < Math.round(averageRating) ? 'fill-primary text-primary' : 'text-muted-foreground'}`}
+                    />
                   ))}
-                  <span className="text-sm text-muted-foreground ml-2">(127 {t('reviews')})</span>
+                  <span className="text-sm text-muted-foreground ml-2">
+                    {averageRating > 0 ? `${averageRating.toFixed(1)} ` : ''}({reviewCount} {t('reviews')})
+                  </span>
                 </div>
               </div>
             </div>
@@ -245,7 +290,7 @@ const ProductDetail = () => {
                     <Heart className={`w-4 h-4 mr-2 ${isWishlisted ? 'fill-current text-primary' : ''}`} />
                     {t('wishlist')}
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={handleShare}>
                     <Share2 className="w-4 h-4 mr-2" />
                     {t('share')}
                   </Button>
@@ -342,6 +387,9 @@ const ProductDetail = () => {
               </p>
             </CardContent>
           </Card>
+
+          {/* Product Reviews */}
+          {id && <ProductReviews productId={id} />}
         </div>
       </div>
     </div>

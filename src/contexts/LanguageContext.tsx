@@ -334,6 +334,23 @@ const translations = {
     
     addedToWishlist: 'Added to Wishlist',
     removedFromWishlist: 'Removed from Wishlist',
+    myWishlist: 'My Wishlist',
+    emptyWishlist: 'Your wishlist is empty',
+    startAddingFavorites: 'Start adding your favorite products',
+    item: 'item',
+
+    // Reviews
+    customerReviews: 'Customer Reviews',
+    noReviewsYet: 'No reviews yet',
+    basedOnReviews: 'Based on {count} reviews',
+    writeReview: 'Write a Review',
+    editReview: 'Edit Review',
+    yourRating: 'Your Rating',
+    yourReview: 'Your Review',
+    shareYourThoughts: 'Share your thoughts...',
+    submitReview: 'Submit Review',
+    updateReview: 'Update Review',
+    allReviews: 'All Reviews',
 
     // Order statuses
     paid: 'Paid',
@@ -685,6 +702,23 @@ const translations = {
     
     addedToWishlist: 'Dodano do listy życzeń',
     removedFromWishlist: 'Usunięto z listy życzeń',
+    myWishlist: 'Moja lista życzeń',
+    emptyWishlist: 'Twoja lista życzeń jest pusta',
+    startAddingFavorites: 'Zacznij dodawać ulubione produkty',
+    item: 'przedmiot',
+
+    // Reviews
+    customerReviews: 'Opinie klientów',
+    noReviewsYet: 'Brak opinii',
+    basedOnReviews: 'Na podstawie {count} opinii',
+    writeReview: 'Napisz opinię',
+    editReview: 'Edytuj opinię',
+    yourRating: 'Twoja ocena',
+    yourReview: 'Twoja opinia',
+    shareYourThoughts: 'Podziel się swoimi przemyśleniami...',
+    submitReview: 'Wyślij opinię',
+    updateReview: 'Zaktualizuj opinię',
+    allReviews: 'Wszystkie opinie',
 
     // Order statuses
     paid: 'Opłacone',

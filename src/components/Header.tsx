@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Search, ShoppingCart, User, LogOut } from 'lucide-react';
+import { Menu, Search, ShoppingCart, User, LogOut, Heart } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
+import { useWishlist } from '@/hooks/useWishlist';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageToggle from '@/components/LanguageToggle';
 import SearchModal from '@/components/SearchModal';
@@ -18,6 +19,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const { language, t } = useLanguage();
   const { user, signOut } = useAuth();
   const { itemCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const [userProfile, setUserProfile] = useState<any>(null);
 
   // Load user profile to check role
@@ -96,6 +98,20 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <>
+                  {/* Wishlist Button */}
+                  <Link to="/wishlist">
+                    <Button variant="ghost" size="sm" className="relative">
+                      <Heart className="h-4 w-4" />
+                      {wishlistCount > 0 && (
+                        <Badge 
+                          variant="secondary" 
+                          className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs"
+                        >
+                          {wishlistCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </Link>
                   {/* Show different dashboard links based on user role */}
                   <Link to={userProfile?.role === 'admin' ? '/admin' : '/dashboard'}>
                     <Button variant="ghost" size="sm">
@@ -200,6 +216,20 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     {/* Auth Buttons Mobile */}
                     {user ? (
                       <>
+                        <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
+                          <Button variant="outline" className="w-full mb-2 relative justify-center">
+                            <Heart className="h-4 w-4 mr-2" />
+                            {t('wishlist')}
+                            {wishlistCount > 0 && (
+                              <Badge 
+                                variant="destructive" 
+                                className="ml-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                              >
+                                {wishlistCount}
+                              </Badge>
+                            )}
+                          </Button>
+                        </Link>
                         <Link to={userProfile?.role === 'admin' ? '/admin' : '/dashboard'} onClick={() => setIsMenuOpen(false)}>
                           <Button variant="outline" className="w-full mb-2">
                             <User className="h-4 w-4 mr-2" />

@@ -114,14 +114,16 @@ const UserDashboard = () => {
 
   const updateProfile = async () => {
     try {
+      const updates: any = {
+        first_name: editForm.first_name,
+        last_name: editForm.last_name,
+        username: editForm.username,
+        email: editForm.email
+      };
+
       const { error } = await supabase
         .from('profiles')
-        .update({
-          first_name: editForm.first_name,
-          last_name: editForm.last_name,
-          username: editForm.username,
-          email: editForm.email
-        })
+        .update(updates)
         .eq('user_id', user?.id);
 
       if (error) throw error;
@@ -132,6 +134,30 @@ const UserDashboard = () => {
       });
       
       setIsEditing(false);
+      loadUserData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateLanguagePreference = async (lang: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ preferred_language: lang })
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Language preference updated",
+      });
+      
       loadUserData();
     } catch (error: any) {
       toast({
@@ -485,29 +511,7 @@ const UserDashboard = () => {
                       </p>
                       <Select 
                         value={profile?.preferred_language || 'en'} 
-                        onValueChange={async (value) => {
-                          try {
-                            const { error } = await supabase
-                              .from('profiles')
-                              .update({ preferred_language: value })
-                              .eq('user_id', user?.id);
-                            
-                            if (error) throw error;
-                            
-                            toast({
-                              title: "Language Updated",
-                              description: "Your preferred language has been updated successfully.",
-                            });
-                            
-                            loadUserData();
-                          } catch (error: any) {
-                            toast({
-                              title: "Error",
-                              description: error.message,
-                              variant: "destructive",
-                            });
-                          }
-                        }}
+                        onValueChange={(value) => updateLanguagePreference(value)}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue />

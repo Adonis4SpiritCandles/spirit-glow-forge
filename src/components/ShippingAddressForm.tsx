@@ -49,6 +49,8 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [phonePrefix, setPhonePrefix] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   const fetchAddressSuggestions = useCallback(async (query: string) => {
     if (query.length < 3) {
@@ -88,16 +90,31 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Combine street, streetNumber, and apartmentNumber into full street address
-    const fullStreet = [
-      address.street,
-      address.streetNumber,
-      address.apartmentNumber ? `/${address.apartmentNumber}` : ''
-    ].filter(Boolean).join(' ').trim();
-    
+    // Helper to escape regex special chars
+    const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // Build full street: "street streetNumber[/apartment]" avoiding duplication
+    const baseStreet = address.street.trim();
+    const num = address.streetNumber.trim();
+    const apt = address.apartmentNumber.trim();
+
+    const hasNumInStreet = num ? new RegExp(`\\b${escapeRegExp(num)}\\b`).test(baseStreet) : false;
+    let fullStreet = hasNumInStreet || !num ? baseStreet : `${baseStreet} ${num}`;
+
+    if (apt) {
+      fullStreet = /\d$/.test(fullStreet) ? `${fullStreet}/${apt}` : `${fullStreet} ${apt}`;
+    }
+
+    // Combine phone: require prefix, keep one field in payload
+    const normalizedPrefix = phonePrefix.trim().startsWith('+')
+      ? phonePrefix.trim()
+      : (phonePrefix.trim() ? `+${phonePrefix.trim()}` : '');
+    const combinedPhone = [normalizedPrefix, phoneNumber.trim()].filter(Boolean).join(' ');
+
     onSubmit({
       ...address,
-      street: fullStreet
+      street: fullStreet,
+      phone: combinedPhone,
     });
   };
 
@@ -140,7 +157,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                   fetchAddressSuggestions(e.target.value);
                 }}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                placeholder="Via Roma"
+                placeholder=""
               />
               {isLoadingSuggestions && (
                 <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -170,7 +187,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 required
                 value={address.streetNumber}
                 onChange={(e) => setAddress({ ...address, streetNumber: e.target.value })}
-                placeholder="123"
+                placeholder=""
               />
             </div>
             <div className="space-y-2">
@@ -179,7 +196,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 id="apartmentNumber"
                 value={address.apartmentNumber}
                 onChange={(e) => setAddress({ ...address, apartmentNumber: e.target.value })}
-                placeholder="22"
+                placeholder=""
               />
             </div>
           </div>
@@ -192,7 +209,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 required
                 value={address.city}
                 onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                placeholder="Rome"
+                placeholder=""
               />
             </div>
             <div className="space-y-2">
@@ -202,7 +219,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 required
                 value={address.postalCode}
                 onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
-                placeholder="00100"
+                placeholder=""
               />
             </div>
           </div>
@@ -237,14 +254,26 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
 
           <div className="space-y-2">
             <Label htmlFor="phone">{t('phone') || 'Phone'}</Label>
-            <Input
-              id="phone"
-              type="tel"
-              required
-              value={address.phone}
-              onChange={(e) => setAddress({ ...address, phone: e.target.value })}
-              placeholder="+39 123 456 7890"
-            />
+            <div className="grid grid-cols-3 gap-2">
+              <Input
+                id="phonePrefix"
+                type="tel"
+                required
+                value={phonePrefix}
+                onChange={(e) => setPhonePrefix(e.target.value)}
+                placeholder=""
+              />
+              <Input
+                id="phoneNumber"
+                type="tel"
+                required
+                className="col-span-2"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder=""
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">{t('phonePrefixHint') || 'Include country prefix (e.g. +48)'}</p>
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>

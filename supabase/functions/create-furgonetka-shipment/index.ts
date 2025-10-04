@@ -161,8 +161,7 @@ serve(async (req) => {
         weight,
         length: Number(dimensions.length || 30),
         width: Number(dimensions.width || 30),
-        height: Number(dimensions.height || 30),
-        depth: Number(dimensions.height || 30)
+        height: Number(dimensions.height || 30)
       }],
       type: 'package'
     };
@@ -175,7 +174,7 @@ serve(async (req) => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${access_token}`,
-          'Content-Type': 'application/vnd.furgonetka.v1+json',
+'Content-Type': 'application/vnd.furgonetka.v1+json',
           'Accept': 'application/vnd.furgonetka.v1+json',
           'X-Language': 'en_GB',
         },
@@ -211,7 +210,7 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/vnd.furgonetka.v1+json',
+        'Content-Type': 'application/json',
         'Accept': 'application/vnd.furgonetka.v1+json',
         'X-Language': 'en_GB',
       },

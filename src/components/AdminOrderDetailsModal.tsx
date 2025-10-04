@@ -116,8 +116,13 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose }: Admin
               {shippingAddress.name && <p className="font-medium">{shippingAddress.name}</p>}
               {shippingAddress.street && (
                 <p>
-                  {shippingAddress.street}
-                  {shippingAddress.apartmentNumber ? `/${shippingAddress.apartmentNumber}` : ''}
+                  {(() => {
+                    const street = String(shippingAddress.street || '');
+                    const apt = String(shippingAddress.apartmentNumber || '').trim();
+                    if (!apt) return street;
+                    const hasApt = new RegExp(`[\\/ ]${apt}(?:\\b|$)`).test(street);
+                    return hasApt ? street : `${street}/${apt}`;
+                  })()}
                 </p>
               )}
               {(shippingAddress.city || shippingAddress.postalCode || shippingAddress.postal_code) && (

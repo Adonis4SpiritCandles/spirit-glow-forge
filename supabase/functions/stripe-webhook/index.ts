@@ -79,21 +79,25 @@ serve(async (req) => {
         ? JSON.parse(session.metadata.shipping_address) 
         : null;
 
-      // Normalize address: create unified street field
+      // Normalize address: create unified street field (avoid duplications)
       if (shippingAddress) {
-        const street = shippingAddress.street || '';
-        const streetNumber = shippingAddress.streetNumber || '';
-        const apartmentNumber = shippingAddress.apartmentNumber || '';
-        
+        const street = (shippingAddress.street || '').trim();
+        const streetNumber = (shippingAddress.streetNumber || '').trim();
+        const apartmentNumber = (shippingAddress.apartmentNumber || '').trim();
+
+        // If street already contains number/apartment, keep as is
+        const hasNum = streetNumber ? new RegExp(`\\b${streetNumber}\\b`).test(street) : false;
+        const hasApt = apartmentNumber ? new RegExp(`[\\\/]${apartmentNumber}(?:\\b|$)`).test(street) : false;
+
         let fullStreet = street;
-        if (streetNumber) {
-          fullStreet = `${street} ${streetNumber}`;
-          if (apartmentNumber) {
-            fullStreet = `${fullStreet}/${apartmentNumber}`;
-          }
+        if (!hasNum && streetNumber) {
+          fullStreet = `${street} ${streetNumber}`.trim();
         }
-        
-        // Update shipping address with unified street while keeping original fields for backward compatibility
+        if (!hasApt && apartmentNumber) {
+          fullStreet = /\d$/.test(fullStreet) ? `${fullStreet}/${apartmentNumber}` : `${fullStreet} ${apartmentNumber}`;
+        }
+
+        // Update unified street while keeping original fields for backward compatibility
         shippingAddress = {
           ...shippingAddress,
           street: fullStreet,

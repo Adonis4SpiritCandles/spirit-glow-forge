@@ -95,8 +95,13 @@ const ShipmentConfirmationModal = ({
                 <div className="bg-muted/50 p-3 rounded-md space-y-1">
                   <p className="font-medium">{shippingAddress.name || 'N/A'}</p>
                   <p>
-                    {shippingAddress.street || ''}
-                    {shippingAddress.apartmentNumber ? `/${shippingAddress.apartmentNumber}` : ''}
+                    {(() => {
+                      const street = String(shippingAddress.street || '');
+                      const apt = String(shippingAddress.apartmentNumber || '').trim();
+                      if (!apt) return street;
+                      const hasApt = new RegExp(`[\\/ ]${apt}(?:\\b|$)`).test(street);
+                      return hasApt ? street : `${street}/${apt}`;
+                    })()}
                   </p>
                   <p>{`${shippingAddress.postalCode || shippingAddress.post_code || ''} ${shippingAddress.city || ''}`.trim()}</p>
                   <p>{shippingAddress.country || 'PL'}</p>

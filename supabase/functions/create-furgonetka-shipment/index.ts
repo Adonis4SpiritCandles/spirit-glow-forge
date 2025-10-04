@@ -204,9 +204,10 @@ serve(async (req) => {
           'Accept': 'application/vnd.furgonetka.v1+json',
           'X-Language': 'en_GB',
         },
+        // IMPORTANT: the validate endpoint expects pickup/sender/receiver/parcels at the TOP level
         body: JSON.stringify({ 
           service_id: order.service_id,
-          package: packagePayload 
+          ...packagePayload 
         }),
       });
       let validateJson: any = null;

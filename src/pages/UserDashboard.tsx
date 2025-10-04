@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
-import { User, Settings, ShoppingBag, CreditCard, Package } from 'lucide-react';
+import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye } from 'lucide-react';
+import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 
 interface UserProfile {
   id: string;
@@ -25,6 +26,7 @@ interface UserProfile {
 
 interface Order {
   id: string;
+  user_id: string;
   total_pln: number;
   total_eur: number;
   shipping_cost_pln?: number;
@@ -38,6 +40,11 @@ interface Order {
   carrier?: string;
   shipping_status?: string;
   shipping_label_url?: string;
+  profiles?: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+  };
 }
 
 const UserDashboard = () => {
@@ -49,6 +56,8 @@ const UserDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     first_name: '',
     last_name: '',
@@ -133,27 +142,46 @@ const UserDashboard = () => {
     }
   };
 
-  const getPaymentBadge = (status: string) => {
-    if (status === 'pending') {
-      return { label: t('processing') || 'Processing', variant: 'bg-yellow-100 text-yellow-800' };
+  const getOrderBadges = (status: string, shippingStatus?: string) => {
+    const badges = [];
+    
+    // Always show "Paid" badge if order is not pending (i.e., payment successful)
+    if (status !== 'pending') {
+      badges.push({ 
+        label: t('paid') || 'Paid', 
+        variant: 'bg-red-500 text-white',
+        icon: null 
+      });
     }
-    return { label: t('paid') || 'Paid', variant: 'bg-green-100 text-green-800' };
-  };
-
-  const getFulfillmentBadge = (status: string, shippingStatus?: string) => {
-    if (status === 'pending') {
-      return { label: t('awaitingApproval') || 'Awaiting Approval', variant: 'bg-gray-100 text-gray-800' };
+    
+    // Show "Completed" badge if admin has completed the order
+    if (status === 'completed') {
+      badges.push({ 
+        label: t('completed') || 'Completed', 
+        variant: 'bg-yellow-500 text-white',
+        icon: null 
+      });
     }
-    if (status === 'completed' && !shippingStatus) {
-      return { label: t('readyToShip') || 'Ready to Ship', variant: 'bg-blue-100 text-blue-800' };
-    }
+    
+    // Show "In Transit" badge if shipment has been created
     if (shippingStatus === 'created' || shippingStatus === 'in_transit') {
-      return { label: t('inTransit') || 'In Transit', variant: 'bg-purple-100 text-purple-800' };
+      badges.push({ 
+        label: t('inTransit') || 'In Transit', 
+        variant: 'bg-green-500 text-white',
+        icon: <Truck className="w-3 h-3" /> 
+      });
     }
+    
+    // Show "Delivered" badge if package delivered
     if (shippingStatus === 'delivered') {
-      return { label: t('delivered') || 'Delivered', variant: 'bg-green-100 text-green-800' };
+      badges.push({ 
+        label: t('delivered') || 'Delivered', 
+        variant: 'bg-green-600 text-white',
+        icon: <Package className="w-3 h-3" /> 
+      });
     }
-    return { label: t('completed') || 'Completed', variant: 'bg-green-100 text-green-800' };
+    
+    return badges;
   };
 
   if (authLoading || loading) {
@@ -295,24 +323,26 @@ const UserDashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {orders.map((order) => (
-                      <div key={order.id} className="border rounded-lg p-4 space-y-3">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="font-semibold">Order #SPIRIT-{String(order.order_number).padStart(5, '0')}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(order.created_at).toLocaleDateString()}
-                            </p>
+                    {orders.map((order) => {
+                      const badges = getOrderBadges(order.status, order.shipping_status);
+                      return (
+                        <div key={order.id} className="border rounded-lg p-4 space-y-3">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h3 className="font-semibold">Order #SPIRIT-{String(order.order_number).padStart(5, '0')}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(order.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="flex gap-2 flex-wrap justify-end">
+                              {badges.map((badge, index) => (
+                                <Badge key={index} className={`${badge.variant} flex items-center gap-1`}>
+                                  {badge.icon}
+                                  {badge.label}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Badge className={getPaymentBadge(order.status).variant}>
-                              {getPaymentBadge(order.status).label}
-                            </Badge>
-                            <Badge className={getFulfillmentBadge(order.status, order.shipping_status).variant}>
-                              {getFulfillmentBadge(order.status, order.shipping_status).label}
-                            </Badge>
-                          </div>
-                        </div>
                         <div className="space-y-2 border-t pt-3">
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Products:</span>
@@ -388,8 +418,23 @@ const UserDashboard = () => {
                             )}
                           </div>
                         )}
+                        <div className="border-t pt-3 mt-3">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setIsOrderModalOpen(true);
+                            }}
+                            className="w-full"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            {t('viewDetails') || 'View Details'}
+                          </Button>
+                        </div>
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                 )}
               </CardContent>
@@ -480,6 +525,15 @@ const UserDashboard = () => {
 
         </Tabs>
       </div>
+
+      <AdminOrderDetailsModal
+        order={selectedOrder}
+        isOpen={isOrderModalOpen}
+        onClose={() => {
+          setIsOrderModalOpen(false);
+          setSelectedOrder(null);
+        }}
+      />
     </div>
   );
 };

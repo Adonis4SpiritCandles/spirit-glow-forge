@@ -121,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
           <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #ffffff;">
             <!-- Header with Logo -->
             <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 30px 20px; text-align: center;">
-              <img src="https://fhtuqmdlgzmpsbflxhra.supabase.co/storage/v1/object/public/products/spirit-logo.png" 
+              <img src="https://i.postimg.cc/Gpm7Mytb/spirit-logo.png" 
                    alt="Spirit Candles" 
                    style="max-width: 180px; height: auto;" />
             </div>

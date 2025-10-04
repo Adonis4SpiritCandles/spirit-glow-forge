@@ -174,11 +174,11 @@ serve(async (req) => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${access_token}`,
-'Content-Type': 'application/vnd.furgonetka.v1+json',
+          'Content-Type': 'application/json',
           'Accept': 'application/vnd.furgonetka.v1+json',
           'X-Language': 'en_GB',
         },
-        body: JSON.stringify({ service_id: order.service_id, package: packagePayload }),
+        body: JSON.stringify({ service_id: order.service_id, ...packagePayload }),
       });
       let validateJson: any = null;
       try { validateJson = await validateResp.clone().json(); } catch (_) {}

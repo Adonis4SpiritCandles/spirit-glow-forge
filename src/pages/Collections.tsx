@@ -21,8 +21,7 @@ const sampleProducts = [
     image: candleLit,
     description: "A captivating blend of black coffee, white flowers, and vanilla with a mysterious edge.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 } },
-      { size: "Large", weight: "320g", price: { pln: 139, eur: 32 } }
+      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 } }
     ],
     isNew: true,
     collection: "luxury"
@@ -35,8 +34,7 @@ const sampleProducts = [
     image: candleUnlit,
     description: "Timeless elegance with aldehydes, ylang-ylang, and sandalwood in perfect harmony.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 95, eur: 22 } },
-      { size: "Large", weight: "320g", price: { pln: 145, eur: 34 } }
+      { size: "Small", weight: "180g", price: { pln: 95, eur: 22 } }
     ],
     isBestseller: true,
     collection: "bestsellers"
@@ -49,8 +47,7 @@ const sampleProducts = [
     image: candleWax,
     description: "Fresh marine notes with citrus and aromatic herbs.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 85, eur: 20 } },
-      { size: "Large", weight: "320g", price: { pln: 135, eur: 31 } }
+      { size: "Small", weight: "180g", price: { pln: 85, eur: 20 } }
     ],
     collection: "fresh"
   }

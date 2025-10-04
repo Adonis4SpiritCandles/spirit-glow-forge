@@ -25,8 +25,7 @@ const sampleProducts = [
     image: candleLit,
     description: "A captivating blend of black coffee, white flowers, and vanilla with a mysterious edge.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 } },
-      { size: "Large", weight: "320g", price: { pln: 139, eur: 32 } }
+      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 } }
     ],
     isNew: true,
   },
@@ -38,8 +37,7 @@ const sampleProducts = [
     image: candleUnlit,
     description: "Timeless elegance with aldehydes, ylang-ylang, and sandalwood in perfect harmony.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 95, eur: 22 } },
-      { size: "Large", weight: "320g", price: { pln: 145, eur: 34 } }
+      { size: "Small", weight: "180g", price: { pln: 95, eur: 22 } }
     ],
     isBestseller: true,
   },
@@ -51,8 +49,7 @@ const sampleProducts = [
     image: candleWax,
     description: "Luxurious orchid and rose petals wrapped in warm vanilla and sandalwood.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 99, eur: 23 } },
-      { size: "Large", weight: "320g", price: { pln: 149, eur: 35 } }
+      { size: "Small", weight: "180g", price: { pln: 99, eur: 23 } }
     ],
   },
   {
@@ -63,8 +60,7 @@ const sampleProducts = [
     image: candleLit,
     description: "Fresh bergamot meets woody ambroxan for a bold, masculine essence.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 92, eur: 21 } },
-      { size: "Large", weight: "320g", price: { pln: 142, eur: 33 } }
+      { size: "Small", weight: "180g", price: { pln: 92, eur: 21 } }
     ],
   },
   {
@@ -75,8 +71,7 @@ const sampleProducts = [
     image: candleUnlit,
     description: "Pineapple, birch, and musk create this legendary, powerful fragrance.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 109, eur: 25 } },
-      { size: "Large", weight: "320g", price: { pln: 159, eur: 37 } }
+      { size: "Small", weight: "180g", price: { pln: 109, eur: 25 } }
     ],
     isNew: true,
   },
@@ -88,8 +83,7 @@ const sampleProducts = [
     image: candleWax,
     description: "Romantic rose and jasmine with a touch of patchouli elegance.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 87, eur: 20 } },
-      { size: "Large", weight: "320g", price: { pln: 137, eur: 32 } }
+      { size: "Small", weight: "180g", price: { pln: 87, eur: 20 } }
     ],
     isBestseller: true,
   },

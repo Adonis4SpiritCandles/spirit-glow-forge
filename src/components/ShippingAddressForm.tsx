@@ -181,7 +181,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="streetNumber">{t('streetNumber') || 'Street Number'}</Label>
+              <Label htmlFor="streetNumber">{t('streetNumber') === 'streetNumber' ? 'Street Number' : t('streetNumber') || 'Street Number'}</Label>
               <Input
                 id="streetNumber"
                 required
@@ -191,7 +191,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="apartmentNumber">{t('apartmentNumber') || 'Apartment Number (Optional)'}</Label>
+              <Label htmlFor="apartmentNumber">{t('apartmentNumber') === 'apartmentNumber' ? 'Apartment Number (Optional)' : t('apartmentNumber') || 'Apartment Number (Optional)'}</Label>
               <Input
                 id="apartmentNumber"
                 value={address.apartmentNumber}
@@ -225,10 +225,10 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country">{t('country') || 'Country'}</Label>
+            <Label htmlFor="country">{t('country') === 'country' ? 'Country' : t('country') || 'Country'}</Label>
             <Select value={address.country} onValueChange={(value) => setAddress({ ...address, country: value })}>
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder={t('country') === 'country' ? 'Country' : t('country')} />
               </SelectTrigger>
               <SelectContent>
                 {countries.map((country) => (
@@ -261,7 +261,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 required
                 value={phonePrefix}
                 onChange={(e) => setPhonePrefix(e.target.value)}
-                placeholder=""
+                placeholder="+48"
               />
               <Input
                 id="phoneNumber"
@@ -273,7 +273,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 placeholder=""
               />
             </div>
-            <p className="text-xs text-muted-foreground">{t('phonePrefixHint') || 'Include country prefix (e.g. +48)'}</p>
+            <p className="text-xs text-muted-foreground">{t('phonePrefixHint') === 'phonePrefixHint' ? "Telephone prefix (include '+', e.g., +48)" : t('phonePrefixHint') || "Telephone prefix (include '+', e.g., +48)"}</p>
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>

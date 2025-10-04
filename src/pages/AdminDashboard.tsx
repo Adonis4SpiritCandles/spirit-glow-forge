@@ -161,6 +161,8 @@ const AdminDashboard = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
+      setProducts(productsData || []);
+
       // Load orders with profile data - using a separate query to avoid relation issues
       const { data: ordersData } = await supabase
         .from('orders')
@@ -576,7 +578,7 @@ const AdminDashboard = () => {
                         <Input
                           value={productForm.size}
                           onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
-                          placeholder="e.g., 180g, 320g"
+                          placeholder="e.g., 180g"
                         />
                       </div>
                       <div className="space-y-2">
@@ -584,7 +586,7 @@ const AdminDashboard = () => {
                         <Input
                           value={productForm.weight}
                           onChange={(e) => setProductForm({ ...productForm, weight: e.target.value })}
-                          placeholder="e.g., 180g, 320g"
+                          placeholder="e.g., 180g"
                         />
                       </div>
                       <div className="space-y-2">

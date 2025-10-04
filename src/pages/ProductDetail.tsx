@@ -23,8 +23,7 @@ const sampleProducts = [
     description: "A captivating blend of black coffee, white flowers, and vanilla with a mysterious edge that transforms any space into a luxurious sanctuary.",
     longDescription: "Inspired by the iconic Black Opium fragrance, our Mystic Rose candle captures the essence of mysterious femininity. The top notes of pink pepper and orange blossom give way to a heart of coffee and jasmine, while the base notes of vanilla, patchouli, and cedar wood create a warm, enveloping finish that lingers beautifully in your space.",
     sizes: [
-      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 }, burnTime: "40-45 hours" },
-      { size: "Large", weight: "320g", price: { pln: 139, eur: 32 }, burnTime: "70-80 hours" }
+      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 }, burnTime: "40-45 hours" }
     ],
     isNew: true,
     waxType: "100% Natural Soy Wax",

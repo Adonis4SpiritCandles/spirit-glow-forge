@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -52,6 +52,9 @@ const ShipmentConfirmationModal = ({
           <DialogTitle className="font-playfair text-2xl">
             {t('shipmentConfirmation')}
           </DialogTitle>
+          <DialogDescription>
+            Review shipment details and confirm.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

@@ -120,13 +120,13 @@ serve(async (req) => {
 
     // Build sender and receiver using the same schema as calculate-shipping-price
     const sender = {
-      name: "Spirit Candle",
-      street: "Aleja Krakowska 61",
-      city: "Warszawa",
-      postcode: "02-180",
+      name: "Spirit Candles - Reborn Your Nature",
+      street: "Kąkolowa 3",
+      city: "Toruń",
+      postcode: "87-100",
       country_code: "PL",
       email: "m5moffice@proton.me",
-      phone: "+48501234567"
+      phone: "729877557"
     };
 
     // Normalize country code and postcode

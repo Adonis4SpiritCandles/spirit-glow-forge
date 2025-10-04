@@ -441,8 +441,9 @@ const AdminDashboard = () => {
       }
 
       toast({
-        title: "Success",
-        description: `Shipment created with tracking number: ${response.data.trackingNumber}`,
+        title: t('success'),
+        description: t('shipmentCreatedSuccess'),
+        className: "bg-green-500 text-white shadow-lg",
       });
 
       setIsShipmentModalOpen(false);

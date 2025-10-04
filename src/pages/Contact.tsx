@@ -4,15 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Link } from "react-router-dom";
 
 const Contact = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    category: "info",
     subject: "",
     message: ""
   });
@@ -22,26 +25,26 @@ const Contact = () => {
     {
       icon: <Mail className="w-5 h-5 text-primary" />,
       title: t('emailUs'),
-      details: "info@spiritcandles.com",
-      description: "Send us your questions anytime"
+      details: "m5moffice@proton.me",
+      description: t('sendUsQuestionsAnytime')
     },
     {
       icon: <Phone className="w-5 h-5 text-primary" />,
       title: t('callUs'),
-      details: "+48 123 456 789",
-      description: "Mon-Fri 9:00-18:00 CET"
+      details: "+48 729877557",
+      description: t('monFri9to18CET')
     },
     {
       icon: <MapPin className="w-5 h-5 text-primary" />,
       title: t('visitUs'),
-      details: "Warsaw, Poland",
-      description: "Luxury candle studio"
+      details: "87-100 Toruń (PL)",
+      description: "M5Moffice"
     },
     {
       icon: <Clock className="w-5 h-5 text-primary" />,
       title: t('responseTime'),
       details: "24-48 hours",
-      description: "We aim to respond quickly"
+      description: t('weAimToRespondQuickly')
     }
   ];
 
@@ -67,8 +70,26 @@ const Contact = () => {
     }
 
     try {
+      // Prepare email with category in subject
+      const categoryLabel = language === 'pl' ? 
+        (formData.category === 'info' ? 'Informacje' :
+         formData.category === 'generic' ? 'Ogólne' :
+         formData.category === 'order' ? 'Zamówienie' :
+         formData.category === 'shipping' ? 'Wysyłka' : 'Inne') :
+        (formData.category === 'info' ? 'Info' :
+         formData.category === 'generic' ? 'Generic' :
+         formData.category === 'order' ? 'Order' :
+         formData.category === 'shipping' ? 'Shipping' : 'Other');
+      
+      const emailSubject = formData.subject ? 
+        `[${categoryLabel}] ${formData.subject}` : 
+        `[${categoryLabel}] New Contact Form Message`;
+
       const { data, error } = await supabase.functions.invoke('contact-form', {
-        body: formData
+        body: {
+          ...formData,
+          subject: emailSubject
+        }
       });
 
       if (error) throw error;
@@ -82,6 +103,7 @@ const Contact = () => {
       setFormData({
         name: "",
         email: "",
+        category: "info",
         subject: "",
         message: ""
       });
@@ -148,6 +170,27 @@ const Contact = () => {
                       required
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
+                    {t('category')} *
+                  </label>
+                  <Select 
+                    value={formData.category} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="info">{t('categoryInfo')}</SelectItem>
+                      <SelectItem value="generic">{t('categoryGeneric')}</SelectItem>
+                      <SelectItem value="order">{t('categoryOrder')}</SelectItem>
+                      <SelectItem value="shipping">{t('categoryShipping')}</SelectItem>
+                      <SelectItem value="other">{t('categoryOther')}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
@@ -258,13 +301,36 @@ const Contact = () => {
                   </p>
                 </div>
 
-                <Button variant="outline" className="w-full mt-4">
-                  {t('viewAllFaqs')}
+                <Button variant="outline" className="w-full mt-4" asChild>
+                  <Link to="/faq">{t('viewAllFaqs')}</Link>
                 </Button>
               </CardContent>
             </Card>
           </div>
         </div>
+
+        {/* Google Maps */}
+        <Card className="mt-12 bg-card border-border/40 shadow-elegant overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-2xl font-playfair text-foreground text-center">
+              {t('visitUs')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="w-full h-[400px]">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2405.7821!2d18.5933!3d53.0238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47033107f3b64e15%3A0x3e0e0e0e0e0e0e0e!2sK%C4%85kolowa%203%2C%2087-100%20Toru%C5%84%2C%20Poland!5e0!3m2!1sen!2sus!4v1234567890"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Spirit Candles Location"
+              ></iframe>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Business Hours */}
         <Card className="mt-12 bg-card border-border/40 shadow-elegant max-w-2xl mx-auto">

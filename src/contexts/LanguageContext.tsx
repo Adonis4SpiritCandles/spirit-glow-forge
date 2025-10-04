@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 type Language = 'en' | 'pl';
 
@@ -779,6 +780,34 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('en');
+  const [isLoadingLanguage, setIsLoadingLanguage] = useState(true);
+
+  // Load user's preferred language from database on mount
+  useEffect(() => {
+    const loadUserLanguage = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          const { data } = await supabase
+            .from('profiles')
+            .select('preferred_language')
+            .eq('user_id', user.id)
+            .single();
+          
+          if (data?.preferred_language) {
+            setLanguage(data.preferred_language as Language);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user language:', error);
+      } finally {
+        setIsLoadingLanguage(false);
+      }
+    };
+
+    loadUserLanguage();
+  }, []);
 
   const t = (key: string): string => {
     return translations[language][key as keyof typeof translations['en']] || key;

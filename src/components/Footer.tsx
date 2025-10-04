@@ -3,8 +3,11 @@ import { Facebook, Instagram, Twitter, Mail, MapPin, Phone, Globe } from "lucide
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import spiritLogo from "@/assets/spirit-logo.png";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
+  
   return (
     <footer className="bg-card border-t border-border/40">
       <div className="container mx-auto px-4 lg:px-8 py-12">
@@ -20,8 +23,7 @@ const Footer = () => {
               />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Luxury soy candles inspired by the world's most beloved fragrances. 
-              Hand-poured with natural ingredients to reborn your nature.
+              {t('brandDescription')}
             </p>
             <div className="flex space-x-3">
               <Button variant="ghost" size="sm" className="p-2">
@@ -38,14 +40,14 @@ const Footer = () => {
 
           {/* Shop Links */}
           <div className="space-y-4">
-            <h3 className="font-playfair font-semibold text-foreground">Shop</h3>
+            <h3 className="font-playfair font-semibold text-foreground">{t('shop')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link 
                   to="/shop" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  All Candles
+                  {t('allCandles')}
                 </Link>
               </li>
               <li>
@@ -53,7 +55,7 @@ const Footer = () => {
                   to="/collections" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Collections
+                  {t('collections')}
                 </Link>
               </li>
               <li>
@@ -61,7 +63,7 @@ const Footer = () => {
                   to="/shop?filter=new" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  New Arrivals
+                  {t('newArrivals')}
                 </Link>
               </li>
               <li>
@@ -69,7 +71,7 @@ const Footer = () => {
                   to="/shop?filter=bestseller" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Best Sellers
+                  {t('bestSellers')}
                 </Link>
               </li>
             </ul>
@@ -77,14 +79,14 @@ const Footer = () => {
 
           {/* Support Links */}
           <div className="space-y-4">
-            <h3 className="font-playfair font-semibold text-foreground">Support</h3>
+            <h3 className="font-playfair font-semibold text-foreground">{t('supportSection')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link 
                   to="/contact" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Contact Us
+                  {t('contactUs')}
                 </Link>
               </li>
               <li>
@@ -92,7 +94,7 @@ const Footer = () => {
                   to="/about" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  About Us
+                  {t('aboutUs')}
                 </Link>
               </li>
               <li>
@@ -100,7 +102,7 @@ const Footer = () => {
                   to="/shipping" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Shipping & Returns
+                  {t('shippingAndReturns')}
                 </Link>
               </li>
               <li>
@@ -108,7 +110,7 @@ const Footer = () => {
                   to="/privacy" 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Privacy Policy
+                  {t('privacyPolicy')}
                 </Link>
               </li>
             </ul>
@@ -116,26 +118,26 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="font-playfair font-semibold text-foreground">Contact</h3>
+            <h3 className="font-playfair font-semibold text-foreground">{t('contact')}</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                 <div className="text-sm text-muted-foreground">
-                  <p>Ul. Krakowska 45</p>
-                  <p>30-001 Kraków, Poland</p>
+                  <p>Kąkolowa 3</p>
+                  <p>87-100 Toruń, Poland</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">+48 12 345 6789</span>
+                <span className="text-sm text-muted-foreground">+48 729877557</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">info@spiritcandles.com</span>
+                <span className="text-sm text-muted-foreground">m5moffice@proton.me</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Globe className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Available in EN / PL</span>
+                <span className="text-sm text-muted-foreground">{t('availableInLanguages')}</span>
               </div>
             </div>
           </div>
@@ -146,15 +148,15 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
-            © 2025 SPIRIT CANDLES. Design & Site by AdoniS4U @ Antonio Adonis Gagliardi. All rights reserved.
+            © 2025 SPIRIT CANDLES. {t('designedBy')}
           </div>
           
           <div className="text-xs text-muted-foreground text-center md:text-right">
             <p className="mb-1">
-              <strong>Inspiration Notice:</strong> Fragrance references are inspirations only.
+              <strong>{t('inspirationNoticeFooter').split(':')[0]}:</strong> {t('inspirationNoticeFooter').split(':')[1]}
             </p>
             <p>
-              SPIRIT CANDLES is not affiliated with or endorsed by the original trademark owners.
+              {t('notAffiliatedDisclaimer')}
             </p>
           </div>
         </div>

@@ -114,7 +114,12 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose }: Admin
             <h3 className="font-semibold mb-3">Shipping Address</h3>
             <div className="text-sm space-y-1">
               {shippingAddress.name && <p className="font-medium">{shippingAddress.name}</p>}
-              {shippingAddress.street && <p>{shippingAddress.street}</p>}
+              {shippingAddress.street && (
+                <p>
+                  {shippingAddress.street}
+                  {shippingAddress.apartmentNumber ? `/${shippingAddress.apartmentNumber}` : ''}
+                </p>
+              )}
               {(shippingAddress.city || shippingAddress.postalCode || shippingAddress.postal_code) && (
                 <p>
                   {(shippingAddress.postalCode || shippingAddress.postal_code) ?? ''} {shippingAddress.city ?? ''}

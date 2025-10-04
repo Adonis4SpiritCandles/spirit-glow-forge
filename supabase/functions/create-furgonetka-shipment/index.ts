@@ -194,7 +194,7 @@ serve(async (req) => {
 
     console.log('Validating package before creation:', JSON.stringify({ service_id: order.service_id, package: packagePayload }));
 
-    // 1) Validate package - if validation returns errors, surface them to client
+    // 1) Validate package with correct payload structure
     try {
       const validateResp = await fetch('https://api.sandbox.furgonetka.pl/packages/validate', {
         method: 'POST',
@@ -204,22 +204,38 @@ serve(async (req) => {
           'Accept': 'application/vnd.furgonetka.v1+json',
           'X-Language': 'en_GB',
         },
-        body: JSON.stringify({ service_id: order.service_id, ...packagePayload }),
+        body: JSON.stringify({ 
+          service_id: order.service_id,
+          package: packagePayload 
+        }),
       });
       let validateJson: any = null;
       try { validateJson = await validateResp.clone().json(); } catch (_) {}
+      
       if (!validateResp.ok || (validateJson && Array.isArray(validateJson.errors) && validateJson.errors.length)) {
         console.error('Package validation failed:', validateResp.status, validateResp.statusText, JSON.stringify(validateJson));
         return new Response(
           JSON.stringify({
-            error: 'Validation failed',
-            details: validateJson?.errors || [{ message: await validateResp.text() }]
+            ok: false,
+            source: 'validation',
+            error: 'Package validation failed',
+            errors: validateJson?.errors || [{ message: await validateResp.text() }]
           }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
+      console.log('Package validation successful');
     } catch (e) {
-      console.warn('Validation request error (continuing to create):', e);
+      console.warn('Validation request error:', e);
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          source: 'validation',
+          error: `Validation request failed: ${e.message}`,
+          errors: []
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // 2) Create package
@@ -247,7 +263,15 @@ serve(async (req) => {
       const rawText = await shipmentResponse.text();
       let errJson: any = null; try { errJson = JSON.parse(rawText); } catch(_) {}
       console.error('Furgonetka create error:', shipmentResponse.status, shipmentResponse.statusText, rawText);
-      throw new Error(`Failed to create shipment: ${shipmentResponse.status} ${shipmentResponse.statusText} ${errJson ? JSON.stringify(errJson) : rawText}`);
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          source: 'create',
+          error: `Failed to create shipment: ${shipmentResponse.status} ${shipmentResponse.statusText}`,
+          errors: errJson?.errors || [{ message: rawText }]
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const shipmentResult = await shipmentResponse.json();

@@ -94,7 +94,10 @@ const ShipmentConfirmationModal = ({
                 <p className="text-muted-foreground mb-1">{t('shippingAddress')}</p>
                 <div className="bg-muted/50 p-3 rounded-md space-y-1">
                   <p className="font-medium">{shippingAddress.name || 'N/A'}</p>
-                  <p>{shippingAddress.street || ''}</p>
+                  <p>
+                    {shippingAddress.street || ''}
+                    {shippingAddress.apartmentNumber ? `/${shippingAddress.apartmentNumber}` : ''}
+                  </p>
                   <p>{`${shippingAddress.postalCode || shippingAddress.post_code || ''} ${shippingAddress.city || ''}`.trim()}</p>
                   <p>{shippingAddress.country || 'PL'}</p>
                   {shippingAddress.phone && <p className="text-muted-foreground">{t('phone')}: {shippingAddress.phone}</p>}

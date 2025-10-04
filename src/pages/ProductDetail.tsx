@@ -48,13 +48,18 @@ const ProductDetail = () => {
         id: data.id,
         name: language === 'en' ? data.name_en : data.name_pl,
         fragrance: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
-        price: { pln: Number(data.price_pln), eur: Number(data.price_eur) },
+        price: { pln: Number(data.price_pln).toFixed(2), eur: Number(data.price_eur).toFixed(2) },
         image: data.image_url || candleLit,
         description: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
         longDescription: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
         sizes: [{ size: data.size, weight: data.size || '180g', price: { pln: Number(data.price_pln), eur: Number(data.price_eur) }, burnTime: '40-45 hours' }],
         isNew: false,
         moodTags: [],
+        careInstructions: [
+          t('trimWickBefore'),
+          t('burnFirstTime'),
+          t('neverLeaveUnattended')
+        ],
         ingredients: ["Soy Wax", "Premium Fragrance Oils", "Cotton Wick"],
         waxType: "100% Natural Soy Wax",
         wick: "Cotton Wick",
@@ -304,16 +309,18 @@ const ProductDetail = () => {
             </div>
 
             {/* Mood & Ambiance */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">{t('moodAndAmbiance')}</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.moodTags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary">
-                    {tag}
-                  </Badge>
-                ))}
+            {product.moodTags && product.moodTags.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground">{t('moodAndAmbiance')}</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.moodTags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -374,7 +381,7 @@ const ProductDetail = () => {
                   {t('careInstructions')}
                 </h3>
                 <ul className="space-y-2 text-sm">
-                  {product.careInstructions.map((instruction, index) => (
+                  {product.careInstructions?.map((instruction, index) => (
                     <li key={index} className="flex items-start">
                       <div className="w-2 h-2 bg-primary rounded-full mr-3 mt-1.5 flex-shrink-0"></div>
                       {instruction}

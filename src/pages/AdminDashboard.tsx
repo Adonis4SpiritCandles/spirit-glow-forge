@@ -236,18 +236,35 @@ const AdminDashboard = () => {
     }
   };
 
+  // Parse price with robust validation
+  const parsePrice = (value: string): number => {
+    const sanitized = String(value).trim().replace(/\s/g, '').replace(',', '.');
+    const parsed = parseFloat(sanitized);
+    if (isNaN(parsed) || parsed < 0) return 0;
+    return Number(parsed.toFixed(2));
+  };
+
   const saveProduct = async () => {
     try {
-      const pricePln = parseFloat(String(productForm.price_pln).replace(',', '.'));
-      const priceEur = parseFloat(String(productForm.price_eur).replace(',', '.'));
+      const pricePln = parsePrice(productForm.price_pln);
+      const priceEur = parsePrice(productForm.price_eur);
+      
+      if (pricePln === 0 || priceEur === 0) {
+        toast({
+          title: "Error",
+          description: "Please enter valid prices",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const payload = {
         ...productForm,
-        price_pln: isNaN(pricePln) ? 0 : Number(pricePln.toFixed(2)),
-        price_eur: isNaN(priceEur) ? 0 : Number(priceEur.toFixed(2)),
+        price_pln: pricePln,
+        price_eur: priceEur,
       };
 
       if (editingProduct) {
-        // Update existing product
         const { error } = await supabase
           .from('products')
           .update(payload)
@@ -256,7 +273,6 @@ const AdminDashboard = () => {
         if (error) throw error;
         toast({ title: "Success", description: "Product updated successfully" });
       } else {
-        // Create new product
         const { error } = await supabase
           .from('products')
           .insert([payload]);
@@ -406,6 +422,15 @@ const AdminDashboard = () => {
       });
 
       if (response.error) throw response.error;
+
+      // Check if response indicates failure
+      if (response.data?.ok === false) {
+        const errorDetails = response.data.errors?.map((e: any) => 
+          e.message || e.error || JSON.stringify(e)
+        ).join('; ') || response.data.error || 'Validation failed';
+        
+        throw new Error(`Furgonetka error: ${errorDetails}`);
+      }
 
       toast({
         title: "Success",

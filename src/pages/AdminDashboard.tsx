@@ -18,6 +18,7 @@ import AdminCustomerModal from '@/components/AdminCustomerModal';
 import AdminStatistics from '@/components/AdminStatistics';
 import AdminExport from '@/components/AdminExport';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
+import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
 
 interface Product {
   id: string;
@@ -114,17 +115,9 @@ const AdminDashboard = () => {
   const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
 
   // Shipping management state
-  const [creatingShipment, setCreatingShipment] = useState<string | null>(null);
-  const [shipmentForm, setShipmentForm] = useState({
-    carrier: 'InPost',
-    service: 'INPOST_STANDARD',
-    weight: 0.5,
-    dimensions: {
-      width: 30,
-      height: 30,
-      length: 30
-    }
-  });
+  const [isShipmentModalOpen, setIsShipmentModalOpen] = useState(false);
+  const [selectedOrderForShipment, setSelectedOrderForShipment] = useState<Order | null>(null);
+  const [creatingShipment, setCreatingShipment] = useState(false);
 
   // Check if user is admin
   useEffect(() => {
@@ -357,14 +350,29 @@ const AdminDashboard = () => {
     }
   };
 
+  // Open shipment confirmation modal
+  const openShipmentModal = (order: Order) => {
+    setSelectedOrderForShipment(order);
+    setIsShipmentModalOpen(true);
+  };
+
   // Create Furgonetka shipment
-  const createShipment = async (orderId: string) => {
+  const createShipment = async (
+    orderId: string, 
+    dimensions?: { width: number; height: number; length: number }, 
+    weight?: number
+  ) => {
+    setCreatingShipment(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session');
 
+      const body: any = { orderId };
+      if (dimensions) body.dimensions = dimensions;
+      if (weight) body.weight = weight;
+
       const response = await supabase.functions.invoke('create-furgonetka-shipment', {
-        body: { orderId }
+        body
       });
 
       if (response.error) throw response.error;
@@ -374,6 +382,8 @@ const AdminDashboard = () => {
         description: `Shipment created with tracking number: ${response.data.trackingNumber}`,
       });
 
+      setIsShipmentModalOpen(false);
+      setSelectedOrderForShipment(null);
       loadDashboardData();
     } catch (error: any) {
       console.error('Error creating shipment:', error);
@@ -382,6 +392,8 @@ const AdminDashboard = () => {
         description: error.message || 'Failed to create shipment',
         variant: "destructive",
       });
+    } finally {
+      setCreatingShipment(false);
     }
   };
 
@@ -801,7 +813,7 @@ const AdminDashboard = () => {
                                 <Button
                                   size="sm"
                                   variant="default"
-                                  onClick={() => createShipment(order.id)}
+                                  onClick={() => openShipmentModal(order)}
                                   disabled={order.status !== 'completed'}
                                 >
                                   <Truck className="h-4 w-4 mr-1" />
@@ -902,6 +914,18 @@ const AdminDashboard = () => {
           order={selectedOrder}
           isOpen={isOrderDetailsOpen}
           onClose={() => setIsOrderDetailsOpen(false)}
+        />
+
+        {/* Shipment Confirmation Modal */}
+        <ShipmentConfirmationModal
+          order={selectedOrderForShipment}
+          isOpen={isShipmentModalOpen}
+          onClose={() => {
+            setIsShipmentModalOpen(false);
+            setSelectedOrderForShipment(null);
+          }}
+          onConfirm={createShipment}
+          isLoading={creatingShipment}
         />
       </div>
     </div>

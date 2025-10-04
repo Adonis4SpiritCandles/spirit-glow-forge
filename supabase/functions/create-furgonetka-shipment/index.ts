@@ -53,19 +53,34 @@ serve(async (req) => {
 
     const { orderId }: { orderId: string } = await req.json();
 
+    console.log('Fetching order:', orderId);
+
     // Get order details
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .select(`
-        *,
-        profiles!orders_user_id_fkey(email, first_name, last_name)
-      `)
+      .select('*')
       .eq('id', orderId)
       .single();
 
     if (orderError || !order) {
+      console.error('Order error:', orderError);
       throw new Error('Order not found');
     }
+
+    console.log('Order found:', order.id);
+
+    // Get user profile separately
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('email, first_name, last_name')
+      .eq('user_id', order.user_id)
+      .single();
+
+    if (profileError) {
+      console.error('Profile error:', profileError);
+    }
+
+    console.log('Profile found:', profile?.email);
 
     // Use defaults for weight and dimensions
     const weight = 0.5; // 500g default for candles
@@ -127,7 +142,7 @@ serve(async (req) => {
         city: shippingAddress.city || '',
         post_code: shippingAddress.postalCode || shippingAddress.post_code || '',
         country: shippingAddress.country || 'PL',
-        email: shippingAddress.email || order.profiles?.email || '',
+        email: shippingAddress.email || profile?.email || '',
         phone: shippingAddress.phone || ''
       },
       parcels: [{

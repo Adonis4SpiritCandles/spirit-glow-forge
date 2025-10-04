@@ -341,6 +341,18 @@ const translations = {
     paymentHistory: 'Payment History',
     billingDescription: 'All payments are processed securely through Stripe. Your payment history is linked to your orders.',
     viewOrdersForPayments: 'View the Orders tab to see your complete payment history.',
+
+    // Shipment modal
+    shipmentConfirmation: 'Shipment Confirmation',
+    orderInformation: 'Order Information',
+    shipmentDetails: 'Shipment Details',
+    carrier: 'Carrier',
+    serviceId: 'Service ID',
+    enableEditingDimensions: 'Enable editing dimensions and weight',
+    width: 'Width',
+    height: 'Height',
+    length: 'Length',
+    confirmAndCreateShipment: 'Confirm and Create Shipment',
   },
   pl: {
     // Navigation
@@ -674,6 +686,18 @@ const translations = {
     paymentHistory: 'Historia płatności',
     billingDescription: 'Wszystkie płatności są przetwarzane bezpiecznie przez Stripe. Twoja historia płatności jest powiązana z zamówieniami.',
     viewOrdersForPayments: 'Zobacz kartę Zamówienia, aby zobaczyć pełną historię płatności.',
+
+    // Shipment modal
+    shipmentConfirmation: 'Potwierdzenie wysyłki',
+    orderInformation: 'Informacje o zamówieniu',
+    shipmentDetails: 'Szczegóły wysyłki',
+    carrier: 'Kurier',
+    serviceId: 'ID usługi',
+    enableEditingDimensions: 'Włącz edycję wymiarów i wagi',
+    width: 'Szerokość',
+    height: 'Wysokość',
+    length: 'Długość',
+    confirmAndCreateShipment: 'Potwierdź i utwórz przesyłkę',
   }
 };
 

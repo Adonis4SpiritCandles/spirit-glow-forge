@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import AdminCustomerModal from '@/components/AdminCustomerModal';
 import AdminStatistics from '@/components/AdminStatistics';
@@ -119,6 +119,9 @@ const AdminDashboard = () => {
   const [isShipmentModalOpen, setIsShipmentModalOpen] = useState(false);
   const [selectedOrderForShipment, setSelectedOrderForShipment] = useState<Order | null>(null);
   const [creatingShipment, setCreatingShipment] = useState(false);
+
+  // Warehouse inline stock edit
+  const [editingStock, setEditingStock] = useState<{ [key: string]: number }>({});
 
   // Check if user is admin
   useEffect(() => {
@@ -454,6 +457,32 @@ const AdminDashboard = () => {
 
   const downloadLabel = async (labelUrl: string) => {
     window.open(labelUrl, '_blank');
+  };
+
+  // Update stock quantity for a product
+  const updateStockQuantity = async (productId: string, newStock: number) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ stock_quantity: newStock })
+        .eq('id', productId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Stock updated successfully",
+      });
+      
+      loadDashboardData();
+      setEditingStock({ ...editingStock, [productId]: newStock });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   if (authLoading || loading) {
@@ -1002,30 +1031,61 @@ const AdminDashboard = () => {
                       <Table>
                         <TableHeader>
                           <TableRow>
+                            <TableHead className="w-12"></TableHead>
                             <TableHead>Product / Produkt</TableHead>
                             <TableHead>Size / Rozmiar</TableHead>
                             <TableHead>Category / Kategoria</TableHead>
                             <TableHead className="text-right">Stock / Zapas</TableHead>
                             <TableHead className="text-right">Status</TableHead>
                             <TableHead>Published / Opublikowany</TableHead>
+                            <TableHead className="text-right">Actions / Azioni</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {products.map((product) => (
                             <TableRow key={product.id}>
+                              <TableCell>
+                                {product.image_url ? (
+                                  <img 
+                                    src={product.image_url} 
+                                    alt={product.name_en}
+                                    className="w-10 h-10 object-cover rounded border"
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 bg-muted rounded border flex items-center justify-center">
+                                    <Package className="h-5 w-5 text-muted-foreground" />
+                                  </div>
+                                )}
+                              </TableCell>
                               <TableCell className="font-medium">{product.name_en}</TableCell>
                               <TableCell>{product.size || "-"}</TableCell>
-                              <TableCell>{product.category}</TableCell>
+                              <TableCell>
+                                <Link 
+                                  to={`/collections?category=${product.category}`}
+                                  className="hover:underline text-primary"
+                                >
+                                  {product.category}
+                                </Link>
+                              </TableCell>
                               <TableCell className="text-right">
-                                <span className={`font-semibold ${
-                                  (product.stock_quantity || 0) === 0 
-                                    ? "text-red-600" 
-                                    : (product.stock_quantity || 0) < 10 
-                                    ? "text-orange-600" 
-                                    : "text-green-600"
-                                }`}>
-                                  {product.stock_quantity || 0}
-                                </span>
+                                <div className="flex items-center justify-end gap-2">
+                                  <Input
+                                    type="number"
+                                    value={editingStock[product.id] ?? product.stock_quantity ?? 0}
+                                    onChange={(e) => setEditingStock({ ...editingStock, [product.id]: parseInt(e.target.value) || 0 })}
+                                    className="w-20 text-right"
+                                    min={0}
+                                  />
+                                  {editingStock[product.id] !== undefined && editingStock[product.id] !== product.stock_quantity && (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => updateStockQuantity(product.id, editingStock[product.id])}
+                                    >
+                                      Save
+                                    </Button>
+                                  )}
+                                </div>
                               </TableCell>
                               <TableCell className="text-right">
                                 {(product.stock_quantity || 0) === 0 ? (
@@ -1042,6 +1102,26 @@ const AdminDashboard = () => {
                                 ) : (
                                   <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">No / Nie</span>
                                 )}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex gap-1 justify-end">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => editProduct(product)}
+                                    title="Edit Product Details"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => window.open(`/product/${product.id}`, '_blank')}
+                                    title="View Product Page"
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}

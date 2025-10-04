@@ -513,6 +513,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="products">{t('products')}</TabsTrigger>
             <TabsTrigger value="orders">{t('orders')}</TabsTrigger>
             <TabsTrigger value="customers">{t('customers')}</TabsTrigger>
+            <TabsTrigger value="warehouse">Warehouse</TabsTrigger>
             <TabsTrigger value="statistics">{t('statistics')}</TabsTrigger>
             <TabsTrigger value="export">Export</TabsTrigger>
           </TabsList>
@@ -927,6 +928,103 @@ const AdminDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="warehouse">
+            <Card>
+              <CardHeader>
+                <CardTitle>Warehouse Management / Zarządzanie Magazynem</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Stock Overview */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Stock Overview / Przegląd Zapasów</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-2xl font-bold">
+                            {products.reduce((sum, p) => sum + (p.stock_quantity || 0), 0)}
+                          </div>
+                          <p className="text-sm text-muted-foreground">Total Items / Przedmioty Ogółem</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-2xl font-bold text-orange-600">
+                            {products.filter(p => (p.stock_quantity || 0) < 10).length}
+                          </div>
+                          <p className="text-sm text-muted-foreground">Low Stock Alerts / Niski Stan</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-2xl font-bold text-red-600">
+                            {products.filter(p => (p.stock_quantity || 0) === 0).length}
+                          </div>
+                          <p className="text-sm text-muted-foreground">Out of Stock / Brak Towaru</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Stock Table */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Product Stock Levels / Poziomy Zapasów Produktów</h3>
+                    <div className="border rounded-lg">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Product / Produkt</TableHead>
+                            <TableHead>Size / Rozmiar</TableHead>
+                            <TableHead>Category / Kategoria</TableHead>
+                            <TableHead className="text-right">Stock / Zapas</TableHead>
+                            <TableHead className="text-right">Status</TableHead>
+                            <TableHead>Published / Opublikowany</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {products.map((product) => (
+                            <TableRow key={product.id}>
+                              <TableCell className="font-medium">{product.name_en}</TableCell>
+                              <TableCell>{product.size || "-"}</TableCell>
+                              <TableCell>{product.category}</TableCell>
+                              <TableCell className="text-right">
+                                <span className={`font-semibold ${
+                                  (product.stock_quantity || 0) === 0 
+                                    ? "text-red-600" 
+                                    : (product.stock_quantity || 0) < 10 
+                                    ? "text-orange-600" 
+                                    : "text-green-600"
+                                }`}>
+                                  {product.stock_quantity || 0}
+                                </span>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {(product.stock_quantity || 0) === 0 ? (
+                                  <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Out of Stock</span>
+                                ) : (product.stock_quantity || 0) < 10 ? (
+                                  <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Low Stock</span>
+                                ) : (
+                                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">In Stock</span>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {product.published ? (
+                                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Yes / Tak</span>
+                                ) : (
+                                  <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">No / Nie</span>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

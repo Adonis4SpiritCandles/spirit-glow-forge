@@ -51,9 +51,9 @@ serve(async (req) => {
       throw new Error('Admin access required');
     }
 
-    const { orderId }: { orderId: string } = await req.json();
+    const { orderId, dimensions: overrideDimensions, weight: overrideWeight }: { orderId: string; dimensions?: { width: number; height: number; length: number }; weight?: number } = await req.json();
 
-    console.log('Fetching order:', orderId);
+    console.log('Fetching order:', orderId, 'with overrides:', { overrideDimensions, overrideWeight });
 
     // Get order details
     const { data: order, error: orderError } = await supabase
@@ -82,12 +82,11 @@ serve(async (req) => {
 
     console.log('Profile found:', orderUserProfile?.email);
 
-    // Use defaults for weight and dimensions
-    const weight = 0.5; // 500g default for candles
+    const weight = Math.max(0.1, Number(overrideWeight ?? 0.5));
     const dimensions = {
-      width: 30,
-      height: 30,
-      length: 30
+      width: Number(overrideDimensions?.width ?? 30),
+      height: Number(overrideDimensions?.height ?? 30),
+      length: Number(overrideDimensions?.length ?? 30)
     };
 
     console.log('Creating Furgonetka shipment with data:', {
@@ -99,18 +98,13 @@ serve(async (req) => {
       shipping_address: order.shipping_address
     });
 
-    // Get access token
-    const tokenResponse = await fetch(`${supabaseUrl}/functions/v1/get-furgonetka-token`, {
-      headers: {
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
-    });
-
-    if (!tokenResponse.ok) {
+    // Get access token via Supabase client
+    const { data: tokenData, error: tokenError } = await supabase.functions.invoke('get-furgonetka-token');
+    if (tokenError || !tokenData?.access_token) {
+      console.error('Token fetch error:', tokenError, tokenData);
       throw new Error('Failed to get Furgonetka token');
     }
-
-    const { access_token } = await tokenResponse.json();
+    const access_token = tokenData.access_token;
 
     // Get service_id from order
     if (!order.service_id) {
@@ -124,52 +118,111 @@ serve(async (req) => {
       throw new Error('Missing required shipping address fields');
     }
 
-    // Create shipment via Furgonetka API
-    const shipmentData = {
-      service_id: order.service_id,
-      sender: {
-        name: "Spirit Candle",
-        street: "Via Example 123",
-        city: "Varsavia",
-        zip_code: "00-001",
-        country_code: "PL",
-        email: "m5moffice@proton.me",
-        phone: "+48123456789"
-      },
-      receiver: {
-        name: shippingAddress.name || 'Customer',
-        street: shippingAddress.street || '',
-        city: shippingAddress.city || '',
-        post_code: shippingAddress.postalCode || shippingAddress.post_code || '',
-        country: shippingAddress.country || 'PL',
-        email: shippingAddress.email || orderUserProfile?.email || '',
-        phone: shippingAddress.phone || ''
-      },
+    // Build sender and receiver using the same schema as calculate-shipping-price
+    const sender = {
+      name: "Spirit Candle",
+      street: "Aleja Krakowska 61",
+      city: "Warszawa",
+      postcode: "02-180",
+      country_code: "PL",
+      email: "m5moffice@proton.me",
+      phone: "+48501234567"
+    };
+
+    // Normalize country code and postcode
+    const countryCode = (shippingAddress.country || 'PL').toString().length === 2
+      ? (shippingAddress.country || 'PL').toUpperCase()
+      : (shippingAddress.country || 'PL');
+
+    const rawPostcode = shippingAddress.postalCode || shippingAddress.post_code || '';
+    const normalizedPostcode = (countryCode === 'PL' && rawPostcode)
+      ? (() => {
+          const digits = String(rawPostcode).replace(/\D/g, '');
+          return digits.length === 5 ? `${digits.slice(0,2)}-${digits.slice(2)}` : rawPostcode;
+        })()
+      : rawPostcode;
+
+    const receiver = {
+      name: shippingAddress.name || 'Customer',
+      street: shippingAddress.street || '',
+      city: shippingAddress.city || '',
+      postcode: normalizedPostcode || '',
+      country_code: countryCode,
+      email: shippingAddress.email || orderUserProfile?.email || '',
+      phone: shippingAddress.phone || ''
+    };
+
+    // Prepare package payload
+    const packagePayload = {
+      pickup: sender,
+      sender: sender,
+      receiver,
       parcels: [{
-        weight: weight,
-        width: dimensions?.width || 30,
-        height: dimensions?.height || 30,
-        length: dimensions?.length || 30
+        weight,
+        length: Number(dimensions.length || 30),
+        width: Number(dimensions.width || 30),
+        height: Number(dimensions.height || 30),
+        depth: Number(dimensions.height || 30)
       }],
+      type: 'package'
+    };
+
+    console.log('Validating package before creation:', JSON.stringify(packagePayload));
+
+    // 1) Validate package - if validation returns errors, surface them to client
+    try {
+      const validateResp = await fetch('https://api.sandbox.furgonetka.pl/packages/validate', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${access_token}`,
+          'Content-Type': 'application/vnd.furgonetka.v1+json',
+          'Accept': 'application/vnd.furgonetka.v1+json',
+          'X-Language': 'en_GB',
+        },
+        body: JSON.stringify(packagePayload),
+      });
+      let validateJson: any = null;
+      try { validateJson = await validateResp.clone().json(); } catch (_) {}
+      if (!validateResp.ok || (validateJson && Array.isArray(validateJson.errors) && validateJson.errors.length)) {
+        console.error('Package validation failed:', validateResp.status, validateResp.statusText, JSON.stringify(validateJson));
+        return new Response(
+          JSON.stringify({
+            error: 'Validation failed',
+            details: validateJson?.errors || [{ message: await validateResp.text() }]
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } catch (e) {
+      console.warn('Validation request error (continuing to create):', e);
+    }
+
+    // 2) Create package
+    const createBody = {
+      service_id: order.service_id,
+      package: packagePayload,
       reference: orderId,
       cod: false
     };
 
-    console.log('Creating Furgonetka shipment:', JSON.stringify(shipmentData));
+    console.log('Creating Furgonetka package with body:', JSON.stringify(createBody));
 
-    const shipmentResponse = await fetch('https://api.sandbox.furgonetka.pl/api/v1/packages', {
+    const shipmentResponse = await fetch('https://api.sandbox.furgonetka.pl/packages', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/vnd.furgonetka.v1+json',
+        'Accept': 'application/vnd.furgonetka.v1+json',
+        'X-Language': 'en_GB',
       },
-      body: JSON.stringify(shipmentData),
+      body: JSON.stringify(createBody),
     });
 
     if (!shipmentResponse.ok) {
-      const errorText = await shipmentResponse.text();
-      console.error('Furgonetka API error:', errorText);
-      throw new Error(`Failed to create shipment: ${errorText}`);
+      const rawText = await shipmentResponse.text();
+      let errJson: any = null; try { errJson = JSON.parse(rawText); } catch(_) {}
+      console.error('Furgonetka create error:', shipmentResponse.status, shipmentResponse.statusText, rawText);
+      throw new Error(`Failed to create shipment: ${shipmentResponse.status} ${shipmentResponse.statusText} ${errJson ? JSON.stringify(errJson) : rawText}`);
     }
 
     const shipmentResult = await shipmentResponse.json();

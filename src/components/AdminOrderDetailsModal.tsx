@@ -114,26 +114,10 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose }: Admin
             <h3 className="font-semibold mb-3">Shipping Address</h3>
             <div className="text-sm space-y-1">
               {shippingAddress.name && <p className="font-medium">{shippingAddress.name}</p>}
-              {(() => {
-                const street = shippingAddress.street || '';
-                const streetNumber = shippingAddress.streetNumber || '';
-                const apartmentNumber = shippingAddress.apartmentNumber || '';
-                
-                let fullStreet = street;
-                if (streetNumber) {
-                  fullStreet = `${street} ${streetNumber}`;
-                  if (apartmentNumber) {
-                    fullStreet = `${fullStreet}/${apartmentNumber}`;
-                  }
-                }
-                return fullStreet && <p>{fullStreet}</p>;
-              })()}
-              {shippingAddress.line1 && <p>{shippingAddress.line1}</p>}
-              {shippingAddress.line2 && <p>{shippingAddress.line2}</p>}
+              {shippingAddress.street && <p>{shippingAddress.street}</p>}
               {(shippingAddress.city || shippingAddress.postalCode || shippingAddress.postal_code) && (
                 <p>
-                  {shippingAddress.city}
-                  {(shippingAddress.postalCode || shippingAddress.postal_code) && `, ${shippingAddress.postalCode || shippingAddress.postal_code}`}
+                  {(shippingAddress.postalCode || shippingAddress.postal_code) ?? ''} {shippingAddress.city ?? ''}
                 </p>
               )}
               {shippingAddress.country && <p>{shippingAddress.country}</p>}

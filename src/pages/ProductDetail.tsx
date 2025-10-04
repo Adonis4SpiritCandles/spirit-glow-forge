@@ -14,35 +14,9 @@ import ProductReviews from "@/components/ProductReviews";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
+import { supabase } from "@/integrations/supabase/client";
 
-// Sample product data - will be replaced with database data
-const sampleProducts = [
-  {
-    id: "1",
-    name: "Mystic Rose",
-    fragrance: "Black Opium",
-    price: { pln: 89, eur: 21 },
-    image: candleLit,
-    description: "A captivating blend of black coffee, white flowers, and vanilla with a mysterious edge that transforms any space into a luxurious sanctuary.",
-    longDescription: "Inspired by the iconic Black Opium fragrance, our Mystic Rose candle captures the essence of mysterious femininity. The top notes of pink pepper and orange blossom give way to a heart of coffee and jasmine, while the base notes of vanilla, patchouli, and cedar wood create a warm, enveloping finish that lingers beautifully in your space.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 }, burnTime: "40-45 hours" }
-    ],
-    isNew: true,
-    waxType: "100% Natural Soy Wax",
-    wick: "Cotton Wick",
-    handPoured: true,
-    moodTags: ["Mysterious", "Romantic", "Evening"],
-    ingredients: ["Soy Wax", "Premium Fragrance Oils", "Cotton Wick"],
-    careInstructions: [
-      "Trim wick to 1/4 inch before each use",
-      "Allow wax to melt evenly across surface",
-      "Never burn for more than 4 hours at a time",
-      "Keep away from drafts and flammable objects"
-    ]
-  }
-];
-
+// Load product from Supabase
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -50,15 +24,47 @@ const ProductDetail = () => {
   const { addProductToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { averageRating, reviewCount } = useReviews(id);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  
+  const [product, setProduct] = useState<any | null>(null);
+
   const isWishlisted = id ? isInWishlist(id) : false;
 
-  // Find product by ID (in real app, this would be a database query)
-  const product = sampleProducts.find(p => p.id === id);
+  useEffect(() => {
+    const load = async () => {
+      if (!id) return;
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (error || !data) {
+        setProduct(null);
+        return;
+      }
+      const mapped = {
+        id: data.id,
+        name: language === 'en' ? data.name_en : data.name_pl,
+        fragrance: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
+        price: { pln: Number(data.price_pln), eur: Number(data.price_eur) },
+        image: data.image_url || candleLit,
+        description: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
+        longDescription: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
+        sizes: [{ size: data.size, weight: data.size || '180g', price: { pln: Number(data.price_pln), eur: Number(data.price_eur) }, burnTime: '40-45 hours' }],
+        isNew: false,
+        moodTags: [],
+        ingredients: ["Soy Wax", "Premium Fragrance Oils", "Cotton Wick"],
+        waxType: "100% Natural Soy Wax",
+        wick: "Cotton Wick",
+        handPoured: true,
+      };
+      setProduct(mapped);
+    };
+    load();
+  }, [id, language]);
+
 
   if (!product) {
     return (

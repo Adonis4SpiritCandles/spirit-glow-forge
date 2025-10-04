@@ -159,6 +159,19 @@ serve(async (req) => {
 
       console.log(`Created ${orderItems.length} order items`);
 
+      // Decrease stock quantities for purchased products
+      for (const item of cartItems as any[]) {
+        const current = Number(item.product?.stock_quantity ?? 0);
+        const newQty = Math.max(0, current - Number(item.quantity));
+        const { error: stockError } = await supabaseClient
+          .from('products')
+          .update({ stock_quantity: newQty })
+          .eq('id', item.product_id);
+        if (stockError) {
+          console.error('Error updating stock for product', item.product_id, stockError);
+        }
+      }
+
       // Get user profile for preferred language
       const { data: userProfile } = await supabaseClient
         .from("profiles")

@@ -97,10 +97,10 @@ const AdminDashboard = () => {
     name_pl: '',
     description_en: '',
     description_pl: '',
-    price_pln: 0,
-    price_eur: 0,
+    price_pln: '', // keep as string to allow comma or dot while typing
+    price_eur: '', // keep as string to allow comma or dot while typing
     category: '',
-    size: '',
+    size: '180g',
     weight: '',
     stock_quantity: 0,
     image_url: ''
@@ -238,10 +238,12 @@ const AdminDashboard = () => {
 
   const saveProduct = async () => {
     try {
+      const pricePln = parseFloat(String(productForm.price_pln).replace(',', '.'));
+      const priceEur = parseFloat(String(productForm.price_eur).replace(',', '.'));
       const payload = {
         ...productForm,
-        price_pln: Math.round(Number(productForm.price_pln) * 100) / 100,
-        price_eur: Math.round(Number(productForm.price_eur) * 100) / 100,
+        price_pln: isNaN(pricePln) ? 0 : Number(pricePln.toFixed(2)),
+        price_eur: isNaN(priceEur) ? 0 : Number(priceEur.toFixed(2)),
       };
 
       if (editingProduct) {
@@ -282,10 +284,10 @@ const AdminDashboard = () => {
       name_pl: product.name_pl,
       description_en: product.description_en || '',
       description_pl: product.description_pl || '',
-      price_pln: Number(product.price_pln),
-      price_eur: Number(product.price_eur),
+      price_pln: Number(product.price_pln).toFixed(2),
+      price_eur: Number(product.price_eur).toFixed(2),
       category: product.category,
-      size: product.size,
+      size: product.size || '180g',
       weight: product.weight || '',
       stock_quantity: product.stock_quantity,
       image_url: product.image_url || ''
@@ -529,10 +531,10 @@ const AdminDashboard = () => {
                     name_pl: '',
                     description_en: '',
                     description_pl: '',
-                    price_pln: 0,
-                    price_eur: 0,
+                    price_pln: '',
+                    price_eur: '',
                     category: '',
-                    size: '',
+                    size: '180g',
                     weight: '',
                     stock_quantity: 0,
                     image_url: ''
@@ -571,22 +573,18 @@ const AdminDashboard = () => {
                           type="text"
                           value={productForm.price_pln}
                           onChange={(e) => {
-                            const val = e.target.value.replace(',', '.');
-                            const num = parseFloat(val);
-                            setProductForm({ ...productForm, price_pln: isNaN(num) ? 0 : parseFloat(num.toFixed(2)) });
+                            setProductForm({ ...productForm, price_pln: e.target.value });
                           }}
                           placeholder="Prezzo in PLN (es. 108,24)"
                         />
                       </div>
                       <div className="space-y-2">
-<Label>{t('priceEur')}</Label>
+                        <Label>{t('priceEur')}</Label>
                         <Input
                           type="text"
                           value={productForm.price_eur}
                           onChange={(e) => {
-                            const val = e.target.value.replace(',', '.');
-                            const num = parseFloat(val);
-                            setProductForm({ ...productForm, price_eur: isNaN(num) ? 0 : parseFloat(num.toFixed(2)) });
+                            setProductForm({ ...productForm, price_eur: e.target.value });
                           }}
                           placeholder="Prezzo in EUR (es. 12,30)"
                         />
@@ -609,14 +607,22 @@ const AdminDashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <Label>{t('size')}</Label>
-                        <Input
+                        <Select 
                           value={productForm.size}
-                          onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
-                          placeholder="e.g., 180g"
-                        />
+                          onValueChange={(value) => setProductForm({ ...productForm, size: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select size" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-popover border-border z-50">
+                            <SelectItem value="180g">180g</SelectItem>
+                            <SelectItem value="320g">320g</SelectItem>
+                            <SelectItem value="180g + 320g">180g + 320g</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('productWeight')} <span className="text-muted-foreground">({t('optional')})</span></Label>
+                        <Label>{t('productWeight')}</Label>
                         <Input
                           value={productForm.weight}
                           onChange={(e) => setProductForm({ ...productForm, weight: e.target.value })}
@@ -712,7 +718,7 @@ const AdminDashboard = () => {
                             {product.category}
                           </Badge>
                         </TableCell>
-                        <TableCell>{product.price_pln} PLN</TableCell>
+                        <TableCell>{Number(product.price_pln).toFixed(2)} PLN</TableCell>
                         <TableCell>
                           <Badge variant={product.stock_quantity > 0 ? "default" : "destructive"}>
                             {product.stock_quantity}

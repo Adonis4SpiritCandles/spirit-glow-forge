@@ -142,14 +142,38 @@ serve(async (req) => {
         })()
       : rawPostcode;
 
+    const normalizeCity = (city: string) => {
+      const c = (city || '').trim();
+      if (countryCode === 'PL') {
+        if (/^warsaw$/i.test(c)) return 'Warszawa';
+      }
+      return c;
+    };
+
+    const normalizePhonePL = (phone: string) => {
+      const digits = (phone || '').replace(/\D/g, '');
+      if (digits.startsWith('48') && digits.length >= 11) return digits.slice(-9);
+      if (digits.length === 9) return digits;
+      return digits.slice(-9); // fallback to last 9
+    };
+
+    const normalizedPhone = countryCode === 'PL' ? normalizePhonePL(shippingAddress.phone || '') : (shippingAddress.phone || '');
+
+    if (countryCode === 'PL' && (!normalizedPhone || normalizedPhone.length !== 9)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid phone number for PL. It must contain exactly 9 digits.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const receiver = {
       name: shippingAddress.name || 'Customer',
       street: shippingAddress.street || '',
-      city: shippingAddress.city || '',
+      city: normalizeCity(shippingAddress.city || ''),
       postcode: normalizedPostcode || '',
       country_code: countryCode,
       email: shippingAddress.email || orderUserProfile?.email || '',
-      phone: shippingAddress.phone || ''
+      phone: normalizedPhone,
     };
 
     // Prepare package payload

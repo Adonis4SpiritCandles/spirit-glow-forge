@@ -134,7 +134,7 @@ const ProductDetail = () => {
     });
   };
 
-  const selectedPrice = product.sizes[selectedSize].price;
+  const selectedPrice = currentPrice;
   const totalPrice = { 
     pln: selectedPrice.pln * quantity, 
     eur: selectedPrice.eur * quantity 

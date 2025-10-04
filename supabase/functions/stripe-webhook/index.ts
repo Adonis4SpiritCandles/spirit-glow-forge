@@ -75,9 +75,30 @@ serve(async (req) => {
       );
 
       // Get shipping address, service_id, shipping costs, and carrier from session metadata
-      const shippingAddress = session.metadata?.shipping_address 
+      let shippingAddress = session.metadata?.shipping_address 
         ? JSON.parse(session.metadata.shipping_address) 
         : null;
+
+      // Normalize address: create unified street field
+      if (shippingAddress) {
+        const street = shippingAddress.street || '';
+        const streetNumber = shippingAddress.streetNumber || '';
+        const apartmentNumber = shippingAddress.apartmentNumber || '';
+        
+        let fullStreet = street;
+        if (streetNumber) {
+          fullStreet = `${street} ${streetNumber}`;
+          if (apartmentNumber) {
+            fullStreet = `${fullStreet}/${apartmentNumber}`;
+          }
+        }
+        
+        // Update shipping address with unified street while keeping original fields for backward compatibility
+        shippingAddress = {
+          ...shippingAddress,
+          street: fullStreet,
+        };
+      }
       const serviceId = session.metadata?.service_id 
         ? parseInt(session.metadata.service_id) 
         : null;

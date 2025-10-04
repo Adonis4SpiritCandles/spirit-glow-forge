@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import {
@@ -11,86 +10,58 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useLanguage } from "@/contexts/LanguageContext";
-import candleLit from "@/assets/candle-lit.png";
-import candleUnlit from "@/assets/candle-unlit.png";
-import candleWax from "@/assets/candle-wax.png";
-
-// Sample product data - will be replaced with database data later
-const sampleProducts = [
-  {
-    id: "1",
-    name: "Mystic Rose",
-    fragrance: "Black Opium",
-    price: { pln: 89, eur: 21 },
-    image: candleLit,
-    description: "A captivating blend of black coffee, white flowers, and vanilla with a mysterious edge.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 89, eur: 21 } }
-    ],
-    isNew: true,
-  },
-  {
-    id: "2",
-    name: "Golden Embrace",
-    fragrance: "Chanel No. 5",
-    price: { pln: 95, eur: 22 },
-    image: candleUnlit,
-    description: "Timeless elegance with aldehydes, ylang-ylang, and sandalwood in perfect harmony.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 95, eur: 22 } }
-    ],
-    isBestseller: true,
-  },
-  {
-    id: "3",
-    name: "Velvet Dreams",
-    fragrance: "Tom Ford Velvet Orchid",
-    price: { pln: 99, eur: 23 },
-    image: candleWax,
-    description: "Luxurious orchid and rose petals wrapped in warm vanilla and sandalwood.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 99, eur: 23 } }
-    ],
-  },
-  {
-    id: "4",
-    name: "Midnight Passion",
-    fragrance: "Dior Sauvage",
-    price: { pln: 92, eur: 21 },
-    image: candleLit,
-    description: "Fresh bergamot meets woody ambroxan for a bold, masculine essence.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 92, eur: 21 } }
-    ],
-  },
-  {
-    id: "5",
-    name: "Royal Essence",
-    fragrance: "Creed Aventus",
-    price: { pln: 109, eur: 25 },
-    image: candleUnlit,
-    description: "Pineapple, birch, and musk create this legendary, powerful fragrance.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 109, eur: 25 } }
-    ],
-    isNew: true,
-  },
-  {
-    id: "6",
-    name: "Divine Femininity",
-    fragrance: "Miss Dior",
-    price: { pln: 87, eur: 20 },
-    image: candleWax,
-    description: "Romantic rose and jasmine with a touch of patchouli elegance.",
-    sizes: [
-      { size: "Small", weight: "180g", price: { pln: 87, eur: 20 } }
-    ],
-    isBestseller: true,
-  },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 const ProductCarousel = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadProducts();
+
+    // Subscribe to product changes
+    const channel = supabase
+      .channel('product-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+        loadProducts();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error loading products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gradient-secondary">
+        <div className="container mx-auto px-4 lg:px-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </section>
+    );
+  }
+
+  if (products.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-16 bg-gradient-secondary">
@@ -115,9 +86,17 @@ const ProductCarousel = () => {
             className="w-full max-w-7xl mx-auto"
           >
             <CarouselContent className="-ml-6">
-              {sampleProducts.map((product) => (
+              {products.map((product) => (
                 <CarouselItem key={product.id} className="pl-6 basis-1/3">
-                  <ProductCard {...product} />
+                  <ProductCard
+                    id={product.id}
+                    name={language === 'en' ? product.name_en : product.name_pl}
+                    fragrance={language === 'en' ? product.description_en : product.description_pl}
+                    price={{ pln: product.price_pln, eur: product.price_eur }}
+                    image={product.image_url}
+                    description={language === 'en' ? product.description_en : product.description_pl}
+                    sizes={[{ size: product.size, weight: product.weight, price: { pln: product.price_pln, eur: product.price_eur } }]}
+                  />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -136,9 +115,17 @@ const ProductCarousel = () => {
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {sampleProducts.map((product) => (
+              {products.map((product) => (
                 <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-[70%]">
-                  <ProductCard {...product} />
+                  <ProductCard
+                    id={product.id}
+                    name={language === 'en' ? product.name_en : product.name_pl}
+                    fragrance={language === 'en' ? product.description_en : product.description_pl}
+                    price={{ pln: product.price_pln, eur: product.price_eur }}
+                    image={product.image_url}
+                    description={language === 'en' ? product.description_en : product.description_pl}
+                    sizes={[{ size: product.size, weight: product.weight, price: { pln: product.price_pln, eur: product.price_eur } }]}
+                  />
                 </CarouselItem>
               ))}
             </CarouselContent>

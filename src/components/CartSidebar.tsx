@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import { ShoppingCart, Minus, Plus, X, Eye } from "lucide-react";
-import { useCart } from "@/hooks/useCart";
+import { useCartContext } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -14,7 +14,7 @@ interface CartSidebarProps {
 }
 
 const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
-  const { cartItems, updateQuantity, removeFromCart, totalPLN, totalEUR, itemCount, loading } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, totalPLN, totalEUR, itemCount, loading } = useCartContext();
   const { t, language } = useLanguage();
   const { user } = useAuth();
 

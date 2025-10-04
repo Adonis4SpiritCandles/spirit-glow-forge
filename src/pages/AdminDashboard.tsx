@@ -168,11 +168,30 @@ const AdminDashboard = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Load orders without profile data for now - fix relation later
+      // Load orders with profile data - using a separate query to avoid relation issues
       const { data: ordersData } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
+
+      // Fetch profile data for each order
+      if (ordersData && ordersData.length > 0) {
+        const userIds = [...new Set(ordersData.map(o => o.user_id))];
+        const { data: profilesForOrders } = await supabase
+          .from('profiles')
+          .select('user_id, first_name, last_name, email')
+          .in('user_id', userIds);
+
+        // Attach profile data to orders
+        const ordersWithProfiles = ordersData.map(order => ({
+          ...order,
+          profiles: profilesForOrders?.find(p => p.user_id === order.user_id)
+        }));
+        
+        setOrders(ordersWithProfiles as Order[]);
+      } else {
+        setOrders([]);
+      }
 
       // Load profiles
       const { data: profilesData } = await supabase
@@ -180,9 +199,7 @@ const AdminDashboard = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      setProducts(productsData || []);
-      setOrders(ordersData || []);
-      setProfiles(profilesData || []);
+       setProfiles(profilesData || []);
 
       // Calculate stats
       const revenue = ordersData?.reduce((sum, order) => sum + order.total_pln, 0) || 0;
@@ -347,13 +364,7 @@ const AdminDashboard = () => {
       if (!session) throw new Error('No session');
 
       const response = await supabase.functions.invoke('create-furgonetka-shipment', {
-        body: {
-          orderId,
-          carrier: shipmentForm.carrier,
-          service: shipmentForm.service,
-          weight: shipmentForm.weight,
-          dimensions: shipmentForm.dimensions
-        }
+        body: { orderId }
       });
 
       if (response.error) throw response.error;
@@ -363,7 +374,6 @@ const AdminDashboard = () => {
         description: `Shipment created with tracking number: ${response.data.trackingNumber}`,
       });
 
-      setCreatingShipment(null);
       loadDashboardData();
     } catch (error: any) {
       console.error('Error creating shipment:', error);
@@ -720,7 +730,13 @@ const AdminDashboard = () => {
                               {order.profiles?.email}
                             </span>
                           </TableCell>
-                          <TableCell>{order.total_pln} PLN</TableCell>
+                           <TableCell>
+                             {order.total_pln} PLN
+                             <br />
+                             <span className="text-xs text-muted-foreground">
+                               ({(order.total_pln - (order.shipping_cost_pln || 0))} + {order.shipping_cost_pln || 0} shipping)
+                             </span>
+                           </TableCell>
                           <TableCell>
                             <Badge 
                               variant={
@@ -781,11 +797,11 @@ const AdminDashboard = () => {
                                   <Download className="h-4 w-4 mr-1" />
                                   Label
                                 </Button>
-                              ) : (
+                               ) : (
                                 <Button
                                   size="sm"
                                   variant="default"
-                                  onClick={() => setCreatingShipment(order.id)}
+                                  onClick={() => createShipment(order.id)}
                                   disabled={order.status !== 'completed'}
                                 >
                                   <Truck className="h-4 w-4 mr-1" />
@@ -795,105 +811,6 @@ const AdminDashboard = () => {
                             </div>
                           </TableCell>
                         </TableRow>
-                        {creatingShipment === order.id && (
-                          <TableRow>
-                            <TableCell colSpan={7}>
-                              <Card className="border-2 border-primary">
-                                <CardHeader>
-                                  <CardTitle className="text-lg">Create Shipment for Order {order.id.slice(0, 8)}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                      <Label>Carrier</Label>
-                                      <Select 
-                                        value={shipmentForm.carrier}
-                                        onValueChange={(value) => setShipmentForm({ ...shipmentForm, carrier: value })}
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="InPost">InPost</SelectItem>
-                                          <SelectItem value="FedEx">FedEx</SelectItem>
-                                          <SelectItem value="DHL">DHL</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                      <Label>Service</Label>
-                                      <Select 
-                                        value={shipmentForm.service}
-                                        onValueChange={(value) => setShipmentForm({ ...shipmentForm, service: value })}
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="INPOST_STANDARD">InPost Standard</SelectItem>
-                                          <SelectItem value="FEDEX_STANDARD">FedEx Standard</SelectItem>
-                                          <SelectItem value="DHL_STANDARD">DHL Standard</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                      <Label>Weight (kg)</Label>
-                                      <Input
-                                        type="number"
-                                        step="0.1"
-                                        value={shipmentForm.weight}
-                                        onChange={(e) => setShipmentForm({ ...shipmentForm, weight: parseFloat(e.target.value) })}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="grid grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                      <Label>Width (cm)</Label>
-                                      <Input
-                                        type="number"
-                                        value={shipmentForm.dimensions.width}
-                                        onChange={(e) => setShipmentForm({ 
-                                          ...shipmentForm, 
-                                          dimensions: { ...shipmentForm.dimensions, width: parseInt(e.target.value) }
-                                        })}
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <Label>Height (cm)</Label>
-                                      <Input
-                                        type="number"
-                                        value={shipmentForm.dimensions.height}
-                                        onChange={(e) => setShipmentForm({ 
-                                          ...shipmentForm, 
-                                          dimensions: { ...shipmentForm.dimensions, height: parseInt(e.target.value) }
-                                        })}
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <Label>Length (cm)</Label>
-                                      <Input
-                                        type="number"
-                                        value={shipmentForm.dimensions.length}
-                                        onChange={(e) => setShipmentForm({ 
-                                          ...shipmentForm, 
-                                          dimensions: { ...shipmentForm.dimensions, length: parseInt(e.target.value) }
-                                        })}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Button onClick={() => createShipment(order.id)}>
-                                      Create Shipment
-                                    </Button>
-                                    <Button variant="outline" onClick={() => setCreatingShipment(null)}>
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </TableCell>
-                          </TableRow>
-                        )}
                       </>
                     ))}
                   </TableBody>

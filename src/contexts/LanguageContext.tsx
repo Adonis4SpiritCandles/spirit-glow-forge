@@ -328,6 +328,19 @@ const translations = {
     
     addedToWishlist: 'Added to Wishlist',
     removedFromWishlist: 'Removed from Wishlist',
+
+    // Order statuses
+    paid: 'Paid',
+    awaitingApproval: 'Awaiting Approval',
+    readyToShip: 'Ready to Ship',
+    inTransit: 'In Transit',
+    delivered: 'Delivered',
+    completed: 'Completed',
+    
+    // Billing
+    paymentHistory: 'Payment History',
+    billingDescription: 'All payments are processed securely through Stripe. Your payment history is linked to your orders.',
+    viewOrdersForPayments: 'View the Orders tab to see your complete payment history.',
   },
   pl: {
     // Navigation
@@ -648,6 +661,19 @@ const translations = {
     
     addedToWishlist: 'Dodano do listy życzeń',
     removedFromWishlist: 'Usunięto z listy życzeń',
+
+    // Order statuses
+    paid: 'Opłacone',
+    awaitingApproval: 'Oczekuje na zatwierdzenie',
+    readyToShip: 'Gotowe do wysyłki',
+    inTransit: 'W drodze',
+    delivered: 'Dostarczone',
+    completed: 'Zakończone',
+    
+    // Billing
+    paymentHistory: 'Historia płatności',
+    billingDescription: 'Wszystkie płatności są przetwarzane bezpiecznie przez Stripe. Twoja historia płatności jest powiązana z zamówieniami.',
+    viewOrdersForPayments: 'Zobacz kartę Zamówienia, aby zobaczyć pełną historię płatności.',
   }
 };
 

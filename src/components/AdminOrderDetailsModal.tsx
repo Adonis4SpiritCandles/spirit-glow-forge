@@ -94,6 +94,16 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose }: Admin
                 <span className="text-muted-foreground">Email:</span>
                 <p className="mt-1">{order.profiles?.email || 'N/A'}</p>
               </div>
+              <div>
+                <span className="text-muted-foreground">User ID:</span>
+                <p className="font-mono text-xs mt-1">{order.user_id}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Role:</span>
+                <div className="mt-1">
+                  <Badge variant="secondary">USER</Badge>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -105,11 +115,14 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose }: Admin
             <div className="text-sm space-y-1">
               {shippingAddress.name && <p className="font-medium">{shippingAddress.name}</p>}
               {shippingAddress.street && <p>{shippingAddress.street}</p>}
+              {shippingAddress.streetNumber && <p>Number: {shippingAddress.streetNumber}</p>}
+              {shippingAddress.apartmentNumber && <p>Apartment: {shippingAddress.apartmentNumber}</p>}
+              {shippingAddress.line1 && <p>{shippingAddress.line1}</p>}
               {shippingAddress.line2 && <p>{shippingAddress.line2}</p>}
-              {(shippingAddress.city || shippingAddress.postal_code) && (
+              {(shippingAddress.city || shippingAddress.postalCode || shippingAddress.postal_code) && (
                 <p>
                   {shippingAddress.city}
-                  {shippingAddress.postal_code && `, ${shippingAddress.postal_code}`}
+                  {(shippingAddress.postalCode || shippingAddress.postal_code) && `, ${shippingAddress.postalCode || shippingAddress.postal_code}`}
                 </p>
               )}
               {shippingAddress.country && <p>{shippingAddress.country}</p>}

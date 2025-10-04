@@ -133,15 +133,27 @@ const UserDashboard = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const colors = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      processing: 'bg-blue-100 text-blue-800',
-      shipped: 'bg-green-100 text-green-800',
-      delivered: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800'
-    };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  const getPaymentBadge = (status: string) => {
+    if (status === 'pending') {
+      return { label: t('processing') || 'Processing', variant: 'bg-yellow-100 text-yellow-800' };
+    }
+    return { label: t('paid') || 'Paid', variant: 'bg-green-100 text-green-800' };
+  };
+
+  const getFulfillmentBadge = (status: string, shippingStatus?: string) => {
+    if (status === 'pending') {
+      return { label: t('awaitingApproval') || 'Awaiting Approval', variant: 'bg-gray-100 text-gray-800' };
+    }
+    if (status === 'completed' && !shippingStatus) {
+      return { label: t('readyToShip') || 'Ready to Ship', variant: 'bg-blue-100 text-blue-800' };
+    }
+    if (shippingStatus === 'created' || shippingStatus === 'in_transit') {
+      return { label: t('inTransit') || 'In Transit', variant: 'bg-purple-100 text-purple-800' };
+    }
+    if (shippingStatus === 'delivered') {
+      return { label: t('delivered') || 'Delivered', variant: 'bg-green-100 text-green-800' };
+    }
+    return { label: t('completed') || 'Completed', variant: 'bg-green-100 text-green-800' };
   };
 
   if (authLoading || loading) {
@@ -169,18 +181,22 @@ const UserDashboard = () => {
         </div>
 
         <Tabs defaultValue={tabParam || "profile"} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              Profile
+              {t('profile')}
             </TabsTrigger>
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <ShoppingBag className="w-4 h-4" />
-              Orders
+              {t('orders')}
+            </TabsTrigger>
+            <TabsTrigger value="billing" className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4" />
+              {t('billing')}
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
-              Settings
+              {t('settings')}
             </TabsTrigger>
           </TabsList>
 
@@ -288,9 +304,14 @@ const UserDashboard = () => {
                               {new Date(order.created_at).toLocaleDateString()}
                             </p>
                           </div>
-                          <Badge className={getStatusBadge(order.status)}>
-                            {order.status}
-                          </Badge>
+                          <div className="flex gap-2">
+                            <Badge className={getPaymentBadge(order.status).variant}>
+                              {getPaymentBadge(order.status).label}
+                            </Badge>
+                            <Badge className={getFulfillmentBadge(order.status, order.shipping_status).variant}>
+                              {getFulfillmentBadge(order.status, order.shipping_status).label}
+                            </Badge>
+                          </div>
                         </div>
                         <div className="space-y-2 border-t pt-3">
                           <div className="flex justify-between text-sm">
@@ -371,6 +392,27 @@ const UserDashboard = () => {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="billing" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('billing')}</CardTitle>
+                <CardDescription>
+                  {t('paymentHistory') || 'View your payment history'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground mb-4">
+                    {t('billingDescription') || 'All payments are processed securely through Stripe. Your payment history is linked to your orders.'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {t('viewOrdersForPayments') || 'View the Orders tab to see your complete payment history.'}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

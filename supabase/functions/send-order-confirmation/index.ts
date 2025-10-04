@@ -29,7 +29,19 @@ interface OrderConfirmationRequest {
   totalPLN: number;
   totalEUR: number;
   carrierName?: string;
-  shippingAddress: any;
+  shippingAddress?: {
+    name?: string;
+    street?: string;
+    streetNumber?: string;
+    apartmentNumber?: string;
+    line1?: string;
+    line2?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+    email?: string;
+    phone?: string;
+  };
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -59,102 +71,160 @@ const handler = async (req: Request): Promise<Response> => {
     const isPolish = preferredLanguage === 'pl';
     const orderRef = `SPIRIT-${String(orderNumber).padStart(5, '0')}`;
 
-    // Build products list
-    const productsListHTML = orderItems.map(item => {
-      const productName = isPolish ? item.product_name_pl : item.product_name_en;
-      return `<li>${productName} x ${item.quantity} - ${item.price_pln} PLN</li>`;
-    }).join('');
+    // Build shipping address HTML
+    let addressHTML = '';
+    if (shippingAddress) {
+      const addr = shippingAddress;
+      addressHTML = `
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin: 0 0 10px 0; color: #333;">${isPolish ? 'Adres dostawy:' : 'Shipping Address:'}</h3>
+          ${addr.name ? `<p style="margin: 5px 0;"><strong>${addr.name}</strong></p>` : ''}
+          ${addr.street ? `<p style="margin: 5px 0;">${addr.street}${addr.streetNumber ? ' ' + addr.streetNumber : ''}${addr.apartmentNumber ? ' / ' + addr.apartmentNumber : ''}</p>` : ''}
+          ${addr.line1 ? `<p style="margin: 5px 0;">${addr.line1}</p>` : ''}
+          ${addr.line2 ? `<p style="margin: 5px 0;">${addr.line2}</p>` : ''}
+          ${addr.city || addr.postalCode ? `<p style="margin: 5px 0;">${addr.city || ''}${addr.city && addr.postalCode ? ', ' : ''}${addr.postalCode || ''}</p>` : ''}
+          ${addr.country ? `<p style="margin: 5px 0;">${addr.country}</p>` : ''}
+          ${addr.email ? `<p style="margin: 5px 0;">${isPolish ? 'Email:' : 'Email:'} ${addr.email}</p>` : ''}
+          ${addr.phone ? `<p style="margin: 5px 0;">${isPolish ? 'Telefon:' : 'Phone:'} ${addr.phone}</p>` : ''}
+        </div>
+      `;
+    }
 
-    // Build shipping address
-    const addressHTML = shippingAddress ? `
-      <p>
-        ${shippingAddress.name || ''}<br/>
-        ${shippingAddress.line1 || ''}<br/>
-        ${shippingAddress.line2 ? shippingAddress.line2 + '<br/>' : ''}
-        ${shippingAddress.city || ''}, ${shippingAddress.postal_code || ''}<br/>
-        ${shippingAddress.country || ''}
-      </p>
-    ` : 'N/A';
+    const itemsHTML = orderItems
+      .map((item) => {
+        const productName = isPolish ? item.product_name_pl : item.product_name_en;
+        return `
+        <tr>
+          <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${productName}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; text-align: center;">${item.quantity}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; text-align: right;">${(item.price_pln / 100).toFixed(2)} PLN</td>
+        </tr>
+      `;
+      })
+      .join("");
 
-    const subject = isPolish
-      ? `Potwierdzenie zamówienia ${orderRef}`
+    const subject = isPolish 
+      ? `Potwierdzenie zamówienia ${orderRef}` 
       : `Order Confirmation ${orderRef}`;
-
-    const html = isPolish ? `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #333;">Dziękujemy za zamówienie!</h1>
-        <p>Twoje zamówienie zostało pomyślnie złożone.</p>
-        
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Numer zamówienia:</strong> ${orderRef}</p>
-          <p><strong>ID zamówienia:</strong> ${orderId}</p>
-          <p><strong>Data zamówienia:</strong> ${new Date().toLocaleDateString('pl-PL')}</p>
-        </div>
-
-        <h2 style="color: #333;">Produkty:</h2>
-        <ul style="list-style: none; padding: 0;">
-          ${productsListHTML}
-        </ul>
-
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Subtotal produktów:</strong> ${subtotalPLN} PLN / ${subtotalEUR} EUR</p>
-          <p><strong>Koszt wysyłki:</strong> ${shippingCostPLN} PLN / ${shippingCostEUR} EUR</p>
-          ${carrierName ? `<p><strong>Kurier:</strong> ${carrierName}</p>` : ''}
-          <hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;" />
-          <p style="font-size: 18px;"><strong>Razem:</strong> ${totalPLN} PLN / ${totalEUR} EUR</p>
-        </div>
-
-        <h2 style="color: #333;">Adres dostawy:</h2>
-        ${addressHTML}
-
-        <p style="margin-top: 30px;">Prześlemy Ci informacje o śledzeniu przesyłki po wysłaniu zamówienia.</p>
-
-        <p style="margin-top: 30px; color: #666;">
-          Dziękujemy za wybranie Spirit Candles!<br/>
-          <a href="mailto:m5moffice@proton.me" style="color: #333;">m5moffice@proton.me</a>
-        </p>
-      </div>
-    ` : `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #333;">Thank you for your order!</h1>
-        <p>Your order has been successfully placed.</p>
-        
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Order Number:</strong> ${orderRef}</p>
-          <p><strong>Order ID:</strong> ${orderId}</p>
-          <p><strong>Order Date:</strong> ${new Date().toLocaleDateString('en-US')}</p>
-        </div>
-
-        <h2 style="color: #333;">Products:</h2>
-        <ul style="list-style: none; padding: 0;">
-          ${productsListHTML}
-        </ul>
-
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Products Subtotal:</strong> ${subtotalPLN} PLN / ${subtotalEUR} EUR</p>
-          <p><strong>Shipping Cost:</strong> ${shippingCostPLN} PLN / ${shippingCostEUR} EUR</p>
-          ${carrierName ? `<p><strong>Carrier:</strong> ${carrierName}</p>` : ''}
-          <hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;" />
-          <p style="font-size: 18px;"><strong>Total:</strong> ${totalPLN} PLN / ${totalEUR} EUR</p>
-        </div>
-
-        <h2 style="color: #333;">Shipping Address:</h2>
-        ${addressHTML}
-
-        <p style="margin-top: 30px;">We'll send you tracking information once your order ships.</p>
-
-        <p style="margin-top: 30px; color: #666;">
-          Thank you for choosing Spirit Candles!<br/>
-          <a href="mailto:m5moffice@proton.me" style="color: #333;">m5moffice@proton.me</a>
-        </p>
-      </div>
-    `;
 
     const emailResponse = await resend.emails.send({
       from: "Spirit Candles <onboarding@resend.dev>",
       to: [userEmail],
       subject: subject,
-      html: html,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #ffffff;">
+            <!-- Header with Logo -->
+            <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 30px 20px; text-align: center;">
+              <img src="https://fhtuqmdlgzmpsbflxhra.supabase.co/storage/v1/object/public/products/spirit-logo.png" 
+                   alt="Spirit Candles" 
+                   style="max-width: 180px; height: auto;" />
+            </div>
+            
+            <!-- Main Content -->
+            <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+              <h1 style="color: #333; font-size: 28px; margin-bottom: 10px; font-weight: 600;">
+                ${isPolish ? 'Dziękujemy za Twoje zamówienie!' : 'Thank You for Your Order!'}
+              </h1>
+              <p style="color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+                ${isPolish 
+                  ? 'Twoje zamówienie zostało pomyślnie złożone. Poniżej znajdują się szczegóły zamówienia:'
+                  : 'Your order has been successfully placed. Below are your order details:'}
+              </p>
+
+              <!-- Order Info -->
+              <div style="background: #f9f9f9; border-left: 4px solid #d4af37; padding: 20px; margin-bottom: 30px; border-radius: 8px;">
+                <p style="margin: 5px 0; color: #333;">
+                  <strong>${isPolish ? 'Numer zamówienia:' : 'Order Number:'}</strong> ${orderRef}
+                </p>
+                <p style="margin: 5px 0; color: #333;">
+                  <strong>${isPolish ? 'ID zamówienia:' : 'Order ID:'}</strong> 
+                  <span style="font-family: monospace; font-size: 12px;">${orderId}</span>
+                </p>
+                ${carrierName ? `
+                  <p style="margin: 5px 0; color: #333;">
+                    <strong>${isPolish ? 'Kurier:' : 'Carrier:'}</strong> ${carrierName}
+                  </p>
+                ` : ''}
+              </div>
+
+              ${addressHTML}
+
+              <!-- Order Items -->
+              <h2 style="color: #333; font-size: 20px; margin-top: 30px; margin-bottom: 15px;">
+                ${isPolish ? 'Pozycje zamówienia:' : 'Order Items:'}
+              </h2>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <thead>
+                  <tr style="background: #f5f5f5;">
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d4af37;">
+                      ${isPolish ? 'Produkt' : 'Product'}
+                    </th>
+                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid #d4af37;">
+                      ${isPolish ? 'Ilość' : 'Quantity'}
+                    </th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #d4af37;">
+                      ${isPolish ? 'Cena' : 'Price'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHTML}
+                  <tr>
+                    <td colspan="2" style="padding: 12px; text-align: right; font-weight: 600;">
+                      ${isPolish ? 'Suma częściowa:' : 'Subtotal:'}
+                    </td>
+                    <td style="padding: 12px; text-align: right;">
+                      ${(subtotalPLN / 100).toFixed(2)} PLN / ${(subtotalEUR / 100).toFixed(2)} EUR
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding: 12px; text-align: right; font-weight: 600;">
+                      ${isPolish ? 'Koszt dostawy:' : 'Shipping Cost:'}
+                    </td>
+                    <td style="padding: 12px; text-align: right;">
+                      ${(shippingCostPLN / 100).toFixed(2)} PLN / ${(shippingCostEUR / 100).toFixed(2)} EUR
+                    </td>
+                  </tr>
+                  <tr style="background: #f9f9f9;">
+                    <td colspan="2" style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px; border-top: 2px solid #d4af37;">
+                      ${isPolish ? 'Razem:' : 'Total:'}
+                    </td>
+                    <td style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px; color: #d4af37; border-top: 2px solid #d4af37;">
+                      ${(totalPLN / 100).toFixed(2)} PLN / ${(totalEUR / 100).toFixed(2)} EUR
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
+                <p style="color: #333; line-height: 1.6; margin: 0;">
+                  ${isPolish 
+                    ? 'Przetwarzamy Twoje zamówienie i wkrótce otrzymasz powiadomienie o wysyłce z numerem śledzenia przesyłki.'
+                    : 'We are processing your order and you will receive a shipping notification with tracking number shortly.'}
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background: #f5f5f5; padding: 30px 20px; text-align: center; margin-top: 40px;">
+              <p style="color: #666; font-size: 14px; margin: 0;">
+                ${isPolish ? 'Dziękujemy za zakupy w' : 'Thank you for shopping with'} <strong>Spirit Candles</strong>
+              </p>
+              <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
+                ${isPolish 
+                  ? 'Jeśli masz pytania, skontaktuj się z nami pod adresem m5moffice@proton.me'
+                  : 'If you have any questions, contact us at m5moffice@proton.me'}
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
     });
 
     console.log("Order confirmation email sent successfully:", emailResponse);

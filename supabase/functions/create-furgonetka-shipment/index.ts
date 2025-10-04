@@ -51,7 +51,7 @@ serve(async (req) => {
       throw new Error('Admin access required');
     }
 
-    const { orderId, weight, dimensions }: ShipmentRequest = await req.json();
+    const { orderId }: { orderId: string } = await req.json();
 
     // Get order details
     const { data: order, error: orderError } = await supabase
@@ -67,9 +67,18 @@ serve(async (req) => {
       throw new Error('Order not found');
     }
 
+    // Use defaults for weight and dimensions
+    const weight = 0.5; // 500g default for candles
+    const dimensions = {
+      width: 30,
+      height: 30,
+      length: 30
+    };
+
     console.log('Creating Furgonetka shipment with data:', {
       orderId,
       service_id: order.service_id,
+      carrier_name: order.carrier_name,
       weight,
       dimensions,
       shipping_address: order.shipping_address

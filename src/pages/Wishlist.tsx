@@ -72,24 +72,30 @@ const Wishlist = () => {
         </div>
 
         {products.length === 0 ? (
-          <Card>
+          <Card className="border-2 border-dashed">
             <CardContent className="p-12 text-center">
-              <Heart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="font-playfair text-2xl font-bold mb-2">{t('emptyWishlist')}</h2>
-              <p className="text-muted-foreground mb-6">{t('startAddingFavorites')}</p>
-              <Button asChild>
-                <Link to="/shop">{t('browseCollection')}</Link>
-              </Button>
+              <div className="animate-fade-in">
+                <Heart className="w-16 h-16 text-muted-foreground mx-auto mb-4 animate-pulse" />
+                <h2 className="font-playfair text-2xl font-bold mb-2">{t('emptyWishlist')}</h2>
+                <p className="text-muted-foreground mb-6">{t('startAddingFavorites')}</p>
+                <Button asChild size="lg">
+                  <Link to="/shop">{t('browseCollection')}</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <Card key={product.id} className="group relative overflow-hidden hover:shadow-lg transition-shadow">
+            {products.map((product, index) => (
+              <Card 
+                key={product.id} 
+                className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 animate-fade-in hover:scale-[1.02]"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="absolute top-2 right-2 z-10 bg-background/80 hover:bg-background"
+                  className="absolute top-2 right-2 z-10 bg-background/80 hover:bg-destructive hover:text-destructive-foreground transition-colors"
                   onClick={() => removeFromWishlist(product.id)}
                 >
                   <X className="w-4 h-4" />

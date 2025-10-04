@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AdminCustomerModal from '@/components/AdminCustomerModal';
 import AdminStatistics from '@/components/AdminStatistics';
 import AdminExport from '@/components/AdminExport';
@@ -122,6 +123,9 @@ const AdminDashboard = () => {
 
   // Warehouse inline stock edit
   const [editingStock, setEditingStock] = useState<{ [key: string]: number }>({});
+  
+  // Product edit modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Check if user is admin
   useEffect(() => {
@@ -285,6 +289,7 @@ const AdminDashboard = () => {
       }
       
       setShowProductForm(false);
+      setIsEditModalOpen(false);
       setEditingProduct(null);
       loadDashboardData();
     } catch (error: any) {
@@ -311,7 +316,7 @@ const AdminDashboard = () => {
       stock_quantity: product.stock_quantity,
       image_url: product.image_url || ''
     });
-    setShowProductForm(true);
+    setIsEditModalOpen(true);
   };
 
   const deleteProduct = async (productId: string) => {
@@ -1032,13 +1037,13 @@ const AdminDashboard = () => {
                         <TableHeader>
                           <TableRow>
                             <TableHead className="w-12"></TableHead>
-                            <TableHead>Product / Produkt</TableHead>
-                            <TableHead>Size / Rozmiar</TableHead>
-                            <TableHead>Category / Kategoria</TableHead>
-                            <TableHead className="text-right">Stock / Zapas</TableHead>
+                            <TableHead>{t('product')} / Produkt</TableHead>
+                            <TableHead>{t('actions')} / {t('actions')}</TableHead>
+                            <TableHead>{t('size')} / Rozmiar</TableHead>
+                            <TableHead>{t('category')} / Kategoria</TableHead>
+                            <TableHead className="text-right">{t('stockQuantity')} / Zapas</TableHead>
                             <TableHead className="text-right">Status</TableHead>
-                            <TableHead>Published / Opublikowany</TableHead>
-                            <TableHead className="text-right">Actions / Azioni</TableHead>
+                            <TableHead>{t('published')} / Opublikowany</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -1058,6 +1063,30 @@ const AdminDashboard = () => {
                                 )}
                               </TableCell>
                               <TableCell className="font-medium">{product.name_en}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => editProduct(product)}
+                                    title={`${t('editProductDetails')} / ${t('editProductDetails')}`}
+                                    className="h-8 px-2"
+                                  >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    <span className="text-xs">{t('editProductDetails')}</span>
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => window.open(`/product/${product.id}`, '_blank')}
+                                    title={`${t('viewProductPage')} / ${t('viewProductPage')}`}
+                                    className="h-8 px-2"
+                                  >
+                                    <ExternalLink className="h-4 w-4 mr-1" />
+                                    <span className="text-xs">{t('viewProductPage')}</span>
+                                  </Button>
+                                </div>
+                              </TableCell>
                               <TableCell>{product.size || "-"}</TableCell>
                               <TableCell>
                                 <Link 
@@ -1102,26 +1131,6 @@ const AdminDashboard = () => {
                                 ) : (
                                   <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">No / Nie</span>
                                 )}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex gap-1 justify-end">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => editProduct(product)}
-                                    title="Edit Product Details"
-                                  >
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => window.open(`/product/${product.id}`, '_blank')}
-                                    title="View Product Page"
-                                  >
-                                    <ExternalLink className="h-4 w-4" />
-                                  </Button>
-                                </div>
                               </TableCell>
                             </TableRow>
                           ))}
@@ -1179,6 +1188,159 @@ const AdminDashboard = () => {
           onConfirm={createShipment}
           isLoading={creatingShipment}
         />
+
+        {/* Product Edit Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-playfair text-2xl">
+                {t('editProductTitle')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>{t('nameEn')}</Label>
+                  <Input
+                    value={productForm.name_en}
+                    onChange={(e) => setProductForm({ ...productForm, name_en: e.target.value })}
+                    placeholder="Product name in English"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('namePl')}</Label>
+                  <Input
+                    value={productForm.name_pl}
+                    onChange={(e) => setProductForm({ ...productForm, name_pl: e.target.value })}
+                    placeholder="Nazwa produktu po polsku"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('pricePln')}</Label>
+                  <Input
+                    type="text"
+                    value={productForm.price_pln}
+                    onChange={(e) => setProductForm({ ...productForm, price_pln: e.target.value })}
+                    placeholder="Prezzo in PLN (es. 108,24)"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('priceEur')}</Label>
+                  <Input
+                    type="text"
+                    value={productForm.price_eur}
+                    onChange={(e) => setProductForm({ ...productForm, price_eur: e.target.value })}
+                    placeholder="Prezzo in EUR (es. 12,30)"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('category')}</Label>
+                  <Select 
+                    value={productForm.category} 
+                    onValueChange={(value) => setProductForm({ ...productForm, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="luxury">{t('luxury')}</SelectItem>
+                      <SelectItem value="nature">{t('nature')}</SelectItem>
+                      <SelectItem value="fresh">{t('fresh')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('size')}</Label>
+                  <Select 
+                    value={productForm.size}
+                    onValueChange={(value) => setProductForm({ ...productForm, size: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border-border z-50">
+                      <SelectItem value="180g">180g</SelectItem>
+                      <SelectItem value="320g">320g</SelectItem>
+                      <SelectItem value="180g + 320g">180g + 320g</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('productWeight')}</Label>
+                  <Input
+                    value={productForm.weight}
+                    onChange={(e) => setProductForm({ ...productForm, weight: e.target.value })}
+                    placeholder="e.g., 180g"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('stockQuantity')}</Label>
+                  <Input
+                    type="number"
+                    value={productForm.stock_quantity}
+                    onChange={(e) => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) || 0 })}
+                    placeholder="Available quantity"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label>{t('uploadImage')}</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="flex-1"
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => setProductForm({ ...productForm, image_url: '' })}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  {productForm.image_url && (
+                    <div className="mt-2">
+                      <img 
+                        src={productForm.image_url} 
+                        alt="Product preview" 
+                        className="w-20 h-20 object-cover rounded border"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-6">
+                <div className="space-y-2">
+                  <Label>{t('descriptionEn')}</Label>
+                  <Textarea
+                    value={productForm.description_en}
+                    onChange={(e) => setProductForm({ ...productForm, description_en: e.target.value })}
+                    placeholder="Product description in English"
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('descriptionPl')}</Label>
+                  <Textarea
+                    value={productForm.description_pl}
+                    onChange={(e) => setProductForm({ ...productForm, description_pl: e.target.value })}
+                    placeholder="Opis produktu po polsku"
+                    rows={3}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-4 justify-end pt-4">
+                <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                  {t('cancel')}
+                </Button>
+                <Button onClick={saveProduct}>
+                  {t('updateProduct')}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

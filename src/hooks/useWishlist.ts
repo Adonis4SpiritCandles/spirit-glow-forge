@@ -67,7 +67,8 @@ export const useWishlist = () => {
         title: "Added to wishlist",
         description: "Item has been added to your wishlist",
       });
-      await loadWishlist();
+      // Reload immediately for instant UI update
+      loadWishlist();
     }
   };
 
@@ -92,7 +93,8 @@ export const useWishlist = () => {
         title: "Removed from wishlist",
         description: "Item has been removed from your wishlist",
       });
-      await loadWishlist();
+      // Reload immediately for instant UI update
+      loadWishlist();
     }
   };
 
@@ -104,9 +106,9 @@ export const useWishlist = () => {
     if (user) {
       loadWishlist();
 
-      // Subscribe to real-time changes
+      // Subscribe to real-time changes with unique channel
       const channel = supabase
-        .channel('wishlist_changes')
+        .channel(`wishlist_changes_${user.id}`)
         .on(
           'postgres_changes',
           {
@@ -115,7 +117,8 @@ export const useWishlist = () => {
             table: 'wishlist',
             filter: `user_id=eq.${user.id}`
           },
-          () => {
+          (payload) => {
+            console.log('Wishlist change detected:', payload);
             loadWishlist();
           }
         )

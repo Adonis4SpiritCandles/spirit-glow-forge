@@ -376,6 +376,20 @@ const translations = {
     height: 'Height',
     length: 'Length',
     confirmAndCreateShipment: 'Confirm and Create Shipment',
+    
+    // Warehouse Management
+    actions: 'Actions',
+    editProductDetails: 'Edit',
+    viewProductPage: 'View',
+    warehouse: 'Warehouse',
+    warehouseManagement: 'Warehouse Management',
+    stockOverview: 'Stock Overview',
+    productStockLevels: 'Product Stock Levels',
+    totalItems: 'Total Items',
+    lowStockAlerts: 'Low Stock Alerts',
+    updateStock: 'Update Stock',
+    published: 'Published',
+    unpublished: 'Unpublished',
   },
   pl: {
     // Navigation
@@ -744,6 +758,20 @@ const translations = {
     height: 'Wysokość',
     length: 'Długość',
     confirmAndCreateShipment: 'Potwierdź i utwórz przesyłkę',
+    
+    // Warehouse Management
+    actions: 'Akcje',
+    editProductDetails: 'Edytuj',
+    viewProductPage: 'Zobacz',
+    warehouse: 'Magazyn',
+    warehouseManagement: 'Zarządzanie Magazynem',
+    stockOverview: 'Przegląd Zapasów',
+    productStockLevels: 'Poziomy Zapasów Produktów',
+    totalItems: 'Przedmioty Ogółem',
+    lowStockAlerts: 'Niski Stan',
+    updateStock: 'Aktualizuj Stan',
+    published: 'Opublikowany',
+    unpublished: 'Nieopublikowany',
   }
 };
 

@@ -239,11 +239,15 @@ serve(async (req) => {
       );
     }
 
-    // 2) Create package
+    // 2) Create package with flattened structure (same as validation)
     const createBody = {
       service_id: order.service_id,
-      package: packagePayload,
-      reference: orderId,
+      pickup: packagePayload.pickup,
+      sender: packagePayload.sender,
+      receiver: packagePayload.receiver,
+      parcels: packagePayload.parcels,
+      type: 'package',
+      user_reference_number: orderId,
       cod: false
     };
 

@@ -94,7 +94,7 @@ All colors MUST be HSL. Premium luxury aesthetics with mystical elegance.
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-colors duration-200;
   }
 
   body {

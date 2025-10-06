@@ -120,17 +120,16 @@ const translations = {
     customerServiceHours: 'Customer Service Hours',
     emailSupport: 'Email Support',
     phoneSupport: 'Phone Support',
-    // Contact details helpers
     sendUsQuestionsAnytime: 'Send us your questions anytime! ;)',
     monFri9to18CET: 'Mon-Fri 9:00-18:00 CET',
     weAimToRespondQuickly: 'We aim to respond quickly.',
-    // Contact category
     categoryInfo: 'Info',
     categoryGeneric: 'Generic',
     categoryOrder: 'Order',
     categoryShipping: 'Shipping',
     categoryOther: 'Other',
     contactIntro: "Have questions about our candles or need personalized recommendations? We'd love to hear from you and help you find the perfect fragrance for your space.",
+    selectCategory: 'Select a category',
 
     // Dashboard additions
     revenue: 'Revenue',
@@ -488,6 +487,16 @@ const translations = {
     customerService: 'Obsługa klienta',
     followUs: 'Śledź nas',
     allRightsReserved: 'Wszelkie prawa zastrzeżone',
+    brandDescription: 'Luksusowe świece sojowe inspirowane najbardziej lubianymi zapachami świata. Ręcznie wylewane z naturalnych składników, aby odrodzić Twoją naturę.',
+    supportSection: 'Wsparcie',
+    shippingAndReturns: 'Wysyłka i zwroty',
+    privacyPolicy: 'Polityka prywatności',
+    availableInLanguages: 'Dostępne w języku angielskim i polskim',
+    designedBy: 'Projekt i strona: AdoniS4U @ Antonio Adonis Gagliardi. Wszelkie prawa zastrzeżone.',
+    inspirationNoticeFooter: 'Inspiracja zapachowa: odniesienia są jedynie inspiracjami.',
+    notAffiliatedDisclaimer: 'SPIRIT CANDLES nie jest powiązane ani zatwierdzone przez pierwotnych właścicieli znaków towarowych.',
+    allCandles: 'Wszystkie świece',
+    aboutUs: 'O nas',
 
     // Search
     search: 'Szukaj',
@@ -513,6 +522,16 @@ const translations = {
     customerServiceHours: 'Godziny obsługi klienta',
     emailSupport: 'Wsparcie email',
     phoneSupport: 'Wsparcie telefoniczne',
+    sendUsQuestionsAnytime: 'Wyślij nam swoje pytania w każdej chwili! ;)',
+    monFri9to18CET: 'Pon-Pią 9:00-18:00 CET',
+    weAimToRespondQuickly: 'Staramy się szybko odpowiadać.',
+    categoryInfo: 'Info',
+    categoryGeneric: 'Ogólne',
+    categoryOrder: 'Zamówienie',
+    categoryShipping: 'Wysyłka',
+    categoryOther: 'Inne',
+    contactIntro: 'Masz pytania dotyczące naszych świec lub potrzebujesz spersonalizowanych rekomendacji? Chętnie Cię wysłuchamy i pomożemy znaleźć idealny zapach dla Twojej przestrzeni.',
+    selectCategory: 'Wybierz kategorię',
 
     // Dashboard additions
     revenue: 'Przychody',

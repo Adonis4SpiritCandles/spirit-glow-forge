@@ -126,8 +126,7 @@ const Contact = () => {
                 {t('getInTouch')}
               </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have questions about our candles or need personalized recommendations? 
-            We'd love to hear from you and help you find the perfect fragrance for your space.
+            {t('contactIntro')}
           </p>
         </div>
 
@@ -181,7 +180,7 @@ const Contact = () => {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder={t('selectCategory')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="info">{t('categoryInfo')}</SelectItem>

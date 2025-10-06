@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-  import { BrowserRouter, Routes, Route } from "react-router-dom";
+  import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import LoadingSpinner from "./components/LoadingSpinner";
   import Index from "./pages/Index";
   import Shop from "./pages/Shop";
   import About from "./pages/About";
@@ -27,6 +28,19 @@ import { CartProvider } from "./contexts/CartContext";
 
 const queryClient = new QueryClient();
 
+const RouteChangeHandler = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+  return isLoading ? <LoadingSpinner /> : null;
+};
+
 const App = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -39,6 +53,7 @@ const App = () => {
             <Sonner />
             <BrowserRouter>
               <div className="min-h-screen bg-background">
+                <RouteChangeHandler />
                 <Header onCartOpen={() => setIsCartOpen(true)} />
                 <Routes>
                   <Route path="/" element={<Index />} />

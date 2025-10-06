@@ -85,6 +85,16 @@ const translations = {
     customerService: 'Customer Service',
     followUs: 'Follow Us',
     allRightsReserved: 'All rights reserved',
+    brandDescription: "Luxury soy candles inspired by the world's most beloved fragrances. Hand-poured with natural ingredients to reborn your nature.",
+    supportSection: 'Support',
+    shippingAndReturns: 'Shipping & Returns',
+    privacyPolicy: 'Privacy Policy',
+    availableInLanguages: 'Available in English and Polish',
+    designedBy: 'Design & Site by AdoniS4U @ Antonio Adonis Gagliardi. All rights reserved.',
+    inspirationNoticeFooter: 'Fragrance inspiration: references are inspirations only.',
+    notAffiliatedDisclaimer: 'SPIRIT CANDLES is not affiliated with or endorsed by the original trademark owners.',
+    allCandles: 'All Candles',
+    aboutUs: 'About Us',
 
     // Search
     search: 'Search',
@@ -110,6 +120,17 @@ const translations = {
     customerServiceHours: 'Customer Service Hours',
     emailSupport: 'Email Support',
     phoneSupport: 'Phone Support',
+    // Contact details helpers
+    sendUsQuestionsAnytime: 'Send us your questions anytime! ;)',
+    monFri9to18CET: 'Mon-Fri 9:00-18:00 CET',
+    weAimToRespondQuickly: 'We aim to respond quickly.',
+    // Contact category
+    categoryInfo: 'Info',
+    categoryGeneric: 'Generic',
+    categoryOrder: 'Order',
+    categoryShipping: 'Shipping',
+    categoryOther: 'Other',
+    contactIntro: "Have questions about our candles or need personalized recommendations? We'd love to hear from you and help you find the perfect fragrance for your space.",
 
     // Dashboard additions
     revenue: 'Revenue',

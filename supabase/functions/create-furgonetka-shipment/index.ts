@@ -177,6 +177,7 @@ serve(async (req) => {
     };
 
     // Prepare package payload
+    const safeDesc = 'Spirit Candle'.slice(0, 20); // enforce max 20 chars for Furgonetka
     const packagePayload = {
       pickup: sender,
       sender: sender,
@@ -187,7 +188,7 @@ serve(async (req) => {
         width: Number(dimensions.width || 30),
         height: Number(dimensions.height || 30),
         depth: Number(dimensions.length || 30), // Furgonetka requires depth field
-        description: 'Spirit Candle - Luxury Soy Candle' // Required description field
+        description: safeDesc // Required description field, max 20 chars
       }],
       type: 'package'
     };

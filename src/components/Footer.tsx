@@ -82,36 +82,54 @@ const Footer = () => {
             <h3 className="font-playfair font-semibold text-foreground">{t('supportSection')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link 
-                  to="/contact" 
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {t('contactUs')}
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/about" 
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {t('aboutUs')}
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* Legal Links */}
+          <div className="space-y-4">
+            <h3 className="font-playfair font-semibold text-foreground">{t('legal')}</h3>
+            <ul className="space-y-2">
               <li>
-                <Link 
-                  to="/shipping" 
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {t('shippingAndReturns')}
+                <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('privacyPolicy')}
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/privacy" 
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {t('privacyPolicy')}
+                <Link to="/cookie-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('cookiePolicy')}
                 </Link>
+              </li>
+              <li>
+                <Link to="/terms-of-sale" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('termsOfSale')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal-notice" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('legalNotice')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/accessibility" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('accessibility')}
+                </Link>
+              </li>
+              <li>
+                <button 
+                  onClick={() => window.SC_openCookiePreferences?.()} 
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                >
+                  {t('manageCookies')}
+                </button>
               </li>
             </ul>
           </div>

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -19,6 +20,8 @@ const Auth = () => {
   const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState('en');
+  const [termsConsent, setTermsConsent] = useState(false);
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { user, signIn, signUp } = useAuth();
@@ -53,6 +56,15 @@ const Auth = () => {
           toast({
             title: "Error",
             description: "Passwords do not match",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (!termsConsent) {
+          toast({
+            title: t('consentRequired') || "Consent Required",
+            description: t('mustAcceptTerms') || "You must accept the Terms of Sale and Privacy Policy",
             variant: "destructive",
           });
           return;
@@ -182,6 +194,33 @@ const Auth = () => {
                     <SelectItem value="pl">Polski</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            )}
+
+            {!isLogin && (
+              <div className="space-y-3 pt-2">
+                <div className="flex items-start space-x-2">
+                  <Checkbox 
+                    id="terms-consent"
+                    checked={termsConsent}
+                    onCheckedChange={(checked) => setTermsConsent(checked as boolean)}
+                    required
+                  />
+                  <Label htmlFor="terms-consent" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                    {t('iAccept')} <Link to="/terms-of-sale" className="text-primary hover:underline">{t('termsOfSale')}</Link> {t('and')} <Link to="/privacy-policy" className="text-primary hover:underline">{t('privacyPolicy')}</Link> *
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-2">
+                  <Checkbox 
+                    id="newsletter-consent-auth"
+                    checked={newsletterConsent}
+                    onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
+                  />
+                  <Label htmlFor="newsletter-consent-auth" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                    {t('newsletterOptIn')}
+                  </Label>
+                </div>
               </div>
             )}
             

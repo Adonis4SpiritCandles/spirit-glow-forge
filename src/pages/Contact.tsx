@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,6 +21,8 @@ const Contact = () => {
     subject: "",
     message: ""
   });
+  const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const { toast } = useToast();
 
   const contactInfo = [
@@ -69,6 +73,15 @@ const Contact = () => {
       return;
     }
 
+    if (!privacyConsent) {
+      toast({
+        title: t('consentRequired') || 'Consent Required',
+        description: t('mustAcceptPrivacy') || 'You must accept the Privacy Policy to continue',
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       // Prepare email with category in subject
       const categoryLabel = language === 'pl' ? 
@@ -88,7 +101,8 @@ const Contact = () => {
       const { data, error } = await supabase.functions.invoke('contact-form', {
         body: {
           ...formData,
-          subject: emailSubject
+          subject: emailSubject,
+          newsletterConsent
         }
       });
 
@@ -107,6 +121,8 @@ const Contact = () => {
         subject: "",
         message: ""
       });
+      setPrivacyConsent(false);
+      setNewsletterConsent(false);
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
@@ -219,6 +235,31 @@ const Contact = () => {
                     rows={6}
                     required
                   />
+                </div>
+
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-start space-x-2">
+                    <Checkbox 
+                      id="privacy-consent"
+                      checked={privacyConsent}
+                      onCheckedChange={(checked) => setPrivacyConsent(checked as boolean)}
+                      required
+                    />
+                    <Label htmlFor="privacy-consent" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                      {t('iAccept')} <Link to="/privacy-policy" className="text-primary hover:underline">{t('privacyPolicy')}</Link> *
+                    </Label>
+                  </div>
+
+                  <div className="flex items-start space-x-2">
+                    <Checkbox 
+                      id="newsletter-consent"
+                      checked={newsletterConsent}
+                      onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
+                    />
+                    <Label htmlFor="newsletter-consent" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                      {t('newsletterOptIn')}
+                    </Label>
+                  </div>
                 </div>
 
                 <Button 

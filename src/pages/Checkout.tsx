@@ -2,6 +2,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { useCart } from '@/hooks/useCart';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -45,6 +47,7 @@ const Checkout = () => {
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [termsConsent, setTermsConsent] = useState(false);
 
   // Redirect to auth if not logged in (only after initial load is complete)
   useEffect(() => {
@@ -130,6 +133,15 @@ const Checkout = () => {
       return;
     }
 
+    if (!termsConsent) {
+      toast({
+        title: t('consentRequired') || 'Consent Required',
+        description: t('mustAcceptTermsCheckout') || 'You must accept the Terms of Sale to complete your purchase',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
@@ -197,6 +209,20 @@ const Checkout = () => {
                         </Button>
                       </div>
                     )}
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-muted/30">
+                  <div className="flex items-start space-x-2">
+                    <Checkbox 
+                      id="terms-consent-checkout"
+                      checked={termsConsent}
+                      onCheckedChange={(checked) => setTermsConsent(checked as boolean)}
+                      required
+                    />
+                    <Label htmlFor="terms-consent-checkout" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                      {t('iAccept')} <Link to="/terms-of-sale" className="text-primary hover:underline" target="_blank">{t('termsOfSale')}</Link> *
+                    </Label>
                   </div>
                 </Card>
 

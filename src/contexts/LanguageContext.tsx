@@ -536,7 +536,6 @@ const translations = {
     childrenPrivacy: 'Children\'s Privacy',
     childrenPrivacyDesc: 'Our services are not intended for individuals under 16 years of age. We do not knowingly collect data from children.',
     policyChanges: 'Changes to This Policy',
-    policyChanges: 'Changes to This Policy',
     policyChangesDesc: 'We may update this Privacy Policy periodically. Significant changes will be communicated via email or website notification.',
     privacyContactIntro: 'For privacy-related questions or to exercise your rights:',
     supervisoryAuthority: 'Supervisory Authority',

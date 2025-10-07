@@ -49,6 +49,57 @@ export type Database = {
           },
         ]
       }
+      consent_logs: {
+        Row: {
+          analytics: boolean
+          banner_version: string
+          consent_method: string
+          created_at: string
+          functional: boolean
+          id: string
+          ip_address: string | null
+          language: string
+          marketing: boolean
+          session_id: string
+          strictly_necessary: boolean
+          timestamp: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          analytics?: boolean
+          banner_version?: string
+          consent_method: string
+          created_at?: string
+          functional?: boolean
+          id?: string
+          ip_address?: string | null
+          language: string
+          marketing?: boolean
+          session_id: string
+          strictly_necessary?: boolean
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          analytics?: boolean
+          banner_version?: string
+          consent_method?: string
+          created_at?: string
+          functional?: boolean
+          id?: string
+          ip_address?: string | null
+          language?: string
+          marketing?: boolean
+          session_id?: string
+          strictly_necessary?: boolean
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       furgonetka_tokens: {
         Row: {
           access_token: string
@@ -248,6 +299,10 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          marketing_consent: boolean | null
+          marketing_consent_date: string | null
+          newsletter_consent: boolean | null
+          newsletter_consent_date: string | null
           preferred_language: string
           role: string
           updated_at: string
@@ -260,6 +315,10 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          marketing_consent?: boolean | null
+          marketing_consent_date?: string | null
+          newsletter_consent?: boolean | null
+          newsletter_consent_date?: string | null
           preferred_language?: string
           role?: string
           updated_at?: string
@@ -272,6 +331,10 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          marketing_consent?: boolean | null
+          marketing_consent_date?: string | null
+          newsletter_consent?: boolean | null
+          newsletter_consent_date?: string | null
           preferred_language?: string
           role?: string
           updated_at?: string

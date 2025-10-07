@@ -114,6 +114,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('shippingAndReturns')}
+                </Link>
+              </li>
+              <li>
                 <Link to="/legal-notice" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {t('legalNotice')}
                 </Link>

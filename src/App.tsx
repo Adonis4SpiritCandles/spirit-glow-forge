@@ -20,9 +20,17 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import Auth from "./pages/Auth";
   import Wishlist from "./pages/Wishlist";
   import NotFound from "./pages/NotFound";
+  import PrivacyPolicy from "./pages/PrivacyPolicy";
+  import CookiePolicy from "./pages/CookiePolicy";
+  import TermsOfSale from "./pages/TermsOfSale";
+  import ShippingReturns from "./pages/ShippingReturns";
+  import LegalNotice from "./pages/LegalNotice";
+  import DataRequest from "./pages/DataRequest";
+  import Accessibility from "./pages/Accessibility";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
+  import { CookieBanner } from "./components/CookieBanner";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -70,11 +78,19 @@ const App = () => {
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/faq" element={<FAQ />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/cookie-policy" element={<CookiePolicy />} />
+                  <Route path="/terms-of-sale" element={<TermsOfSale />} />
+                  <Route path="/shipping-returns" element={<ShippingReturns />} />
+                  <Route path="/legal-notice" element={<LegalNotice />} />
+                  <Route path="/data-request" element={<DataRequest />} />
+                  <Route path="/accessibility" element={<Accessibility />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Footer />
                 <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+                <CookieBanner />
               </div>
             </BrowserRouter>
           </TooltipProvider>

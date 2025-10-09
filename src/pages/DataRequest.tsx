@@ -8,10 +8,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Download } from 'lucide-react';
 
 const DataRequest = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
+  const pdfUrl = language === 'pl' 
+    ? '/documents/wniosek-o-dane-pl.pdf' 
+    : '/documents/data-request-en.pdf';
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -64,6 +68,15 @@ const DataRequest = () => {
     <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">{t('dataRequestForm')}</h1>
+        
+        <div className="mb-6 text-center">
+          <Button asChild variant="outline">
+            <a href={pdfUrl} download>
+              <Download className="mr-2 h-4 w-4" />
+              {t('downloadPDF')}
+            </a>
+          </Button>
+        </div>
         
         <Card className="p-8 space-y-6">
           <section>

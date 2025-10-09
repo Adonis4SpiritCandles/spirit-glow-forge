@@ -5,6 +5,9 @@ import { FileText, Cookie, ShoppingCart, Truck, Scale, Shield, Download } from '
 
 const AllNotices = () => {
   const { t, language } = useLanguage();
+  const allNoticesPdfUrl = language === 'pl' 
+    ? '/documents/all-notices-pl.pdf' 
+    : '/documents/all-notices-en.pdf';
 
   const notices = [
     {

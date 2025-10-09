@@ -27,6 +27,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import LegalNotice from "./pages/LegalNotice";
   import DataRequest from "./pages/DataRequest";
   import Accessibility from "./pages/Accessibility";
+  import AllNotices from "./pages/AllNotices";
+  import PrivacyRegistration from "./pages/PrivacyRegistration";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
@@ -85,6 +87,8 @@ const App = () => {
                   <Route path="/legal-notice" element={<LegalNotice />} />
                   <Route path="/data-request" element={<DataRequest />} />
                   <Route path="/accessibility" element={<Accessibility />} />
+                  <Route path="/all-notices" element={<AllNotices />} />
+                  <Route path="/privacy-registration" element={<PrivacyRegistration />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

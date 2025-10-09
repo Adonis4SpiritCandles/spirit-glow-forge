@@ -36,7 +36,7 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold mb-4">1. {t('dataController')}</h2>
             <p className="mb-2">M5M Limited sp. z o.o. oddział w Polsce</p>
             <p className="mb-2">Grzybowska 2/31, 00-131 Warszawa, Poland</p>
-            <p className="mb-2">NIP: PL5252998035</p>
+            <p className="mb-2">NIP: PL5252998035 – REGON: 528769795</p>
             <p className="mb-2">Email: m5moffice@proton.me</p>
             <p>Phone: +48 729877557</p>
           </section>
@@ -47,7 +47,9 @@ const PrivacyPolicy = () => {
               <li><strong>{t('accountData')}:</strong> {t('accountDataDesc')}</li>
               <li><strong>{t('orderData')}:</strong> {t('orderDataDesc')}</li>
               <li><strong>{t('technicalData')}:</strong> {t('technicalDataDesc')}</li>
-              <li><strong>{t('cookieData')}:</strong> {t('cookieDataDesc')}</li>
+              <li><strong>{language === 'pl' ? 'Komunikacja' : 'Communications'}:</strong> {language === 'pl' ? 'Wiadomości e‑mail, formularze kontaktowe, żądania danych' : 'Emails, contact forms, data requests'}</li>
+              <li><strong>{language === 'pl' ? 'Dane marketingowe' : 'Marketing Data'}:</strong> {language === 'pl' ? 'Preferencje komunikacji marketingowej i interakcje' : 'Marketing communication preferences and interactions'}</li>
+              <li><strong>{language === 'pl' ? 'Dane generowane przez użytkowników' : 'User-Generated Data'}:</strong> {language === 'pl' ? 'Recenzje, oceny gwiazdkowe, lista życzeń' : 'Reviews, star ratings, wishlist items'}</li>
             </ul>
           </section>
 
@@ -76,11 +78,15 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold mb-4">5. {t('dataSharing')}</h2>
             <p className="mb-2">{t('dataSharingIntro')}</p>
             <ul className="list-disc pl-6 space-y-2">
-              <li><strong>{t('paymentProcessors')}:</strong> Stripe</li>
-              <li><strong>{t('shippingProviders')}:</strong> Furgonetka</li>
-              <li><strong>{t('analyticsServices')}:</strong> Google Analytics</li>
-              <li><strong>{t('emailServices')}:</strong> Resend</li>
-              <li><strong>{t('hostingServices')}:</strong> Supabase, Lovable</li>
+              <li><strong>Stripe:</strong> {t('paymentProcessors')}</li>
+              <li><strong>Furgonetka:</strong> {t('shippingProviders')}</li>
+              <li><strong>Google Analytics:</strong> {t('analyticsServices')}</li>
+              <li><strong>Meta Platforms:</strong> {language === 'pl' ? 'Reklamy (Facebook, Instagram)' : 'Advertising (Facebook, Instagram)'}</li>
+              <li><strong>Resend:</strong> {t('emailServices')}</li>
+              <li><strong>Supabase:</strong> {t('hostingServices')}</li>
+              <li><strong>Lovable:</strong> {language === 'pl' ? 'Platforma sklepu' : 'Website platform'}</li>
+              <li><strong>TikTok:</strong> {language === 'pl' ? 'Reklamy' : 'Advertising'}</li>
+              <li><strong>Twitter:</strong> {language === 'pl' ? 'Reklamy' : 'Advertising'}</li>
             </ul>
           </section>
 
@@ -93,7 +99,7 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold mb-4">7. {t('dataRetention')}</h2>
             <ul className="list-disc pl-6 space-y-2">
               <li>{t('accountDataRetention')}</li>
-              <li>{t('orderDataRetention')}</li>
+              <li>{language === 'pl' ? 'Dane zamówień: 6 lat (wymogi podatkowe)' : 'Order data: 6 years (tax requirements)'}</li>
               <li>{t('marketingDataRetention')}</li>
               <li>{t('cookieDataRetention')}</li>
             </ul>

@@ -129,6 +129,21 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/data-request" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('dataRequest')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-registration" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('privacyRegistration')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/all-notices" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('allNotices')}
+                </Link>
+              </li>
+              <li>
                 <button 
                   onClick={() => window.SC_openCookiePreferences?.()} 
                   className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"

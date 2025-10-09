@@ -70,6 +70,20 @@ export const useCookieConsent = () => {
     } else if (typeof window.fbq !== 'undefined') {
       window.fbq('consent', 'revoke');
     }
+
+    // TikTok Pixel
+    if (typeof window.ttq !== 'undefined') {
+      if (consentData.marketing) {
+        window.ttq('enableCookie');
+      } else {
+        window.ttq('disableCookie');
+      }
+    }
+
+    // Twitter Pixel (no consent API, controlled by loading)
+    if (consentData.marketing && typeof window.twq !== 'undefined') {
+      window.twq('track', 'PageView');
+    }
   };
 
   // Save consent
@@ -156,5 +170,7 @@ declare global {
     SC_openCookiePreferences?: () => void;
     gtag?: (...args: any[]) => void;
     fbq?: (...args: any[]) => void;
+    ttq?: (...args: any[]) => void;
+    twq?: (...args: any[]) => void;
   }
 }

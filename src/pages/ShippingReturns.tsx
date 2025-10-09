@@ -1,8 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const ShippingReturns = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const pdfUrl = language === 'pl' 
+    ? '/documents/dostawa-zwroty-pl.pdf' 
+    : '/documents/shipping-returns-en.pdf';
 
   return (
     <main className="min-h-screen bg-gradient-mystical py-16">
@@ -10,6 +15,15 @@ const ShippingReturns = () => {
         <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-8 text-center">
           {t('shippingReturnsTitle')}
         </h1>
+
+        <div className="mb-6 text-center">
+          <Button asChild variant="outline">
+            <a href={pdfUrl} download>
+              <Download className="mr-2 h-4 w-4" />
+              {t('downloadPDF')}
+            </a>
+          </Button>
+        </div>
 
         <Card className="bg-card border-border/40 shadow-elegant">
           <CardContent className="p-8 space-y-8">

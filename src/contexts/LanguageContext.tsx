@@ -497,10 +497,13 @@ const translations = {
     persistentCookiesDesc: 'Remain on your device for a set period (up to 12 months)',
     updatesCookiePolicy: 'Updates to This Policy',
     updatesCookiePolicyDesc: 'We may update this Cookie Policy from time to time. The "Last Updated" date at the top indicates when changes were last made.',
-    cookiePolicyContactIntro: 'If you have questions about our use of cookies:',
-    
-    // Privacy Policy Page
-    privacyIntro: 'M5M Limited sp. z o.o. oddział w Polsce ("we," "our," or "SPIRIT CANDLES") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal data in accordance with the GDPR and Polish data protection laws.',
+      cookiePolicyContactIntro: 'If you have questions about our use of cookies:',
+      
+      // PDF Download
+      downloadPDF: "Download PDF",
+      
+      // Privacy Policy Page
+      privacyIntro: 'M5M Limited sp. z o.o. oddział w Polsce ("we," "our," or "SPIRIT CANDLES") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal data in accordance with the GDPR and Polish data protection laws.',
     dataController: 'Data Controller',
     dataWeCollect: 'Data We Collect',
     accountData: 'Account Data',
@@ -1228,10 +1231,13 @@ const translations = {
     persistentCookiesDesc: 'Pozostają na Twoim urządzeniu przez określony czas (do 12 miesięcy)',
     updatesCookiePolicy: 'Aktualizacje Niniejszej Polityki',
     updatesCookiePolicyDesc: 'Możemy od czasu do czasu aktualizować tę Politykę Cookie. Data "Ostatnia Aktualizacja" na górze wskazuje, kiedy ostatnio dokonano zmian.',
-    cookiePolicyContactIntro: 'Jeśli masz pytania dotyczące naszego wykorzystania plików cookie:',
-    
-    // Privacy Policy Page (PL)
-    privacyIntro: 'M5M Limited sp. z o.o. oddział w Polsce ("my", "nasze" lub "SPIRIT CANDLES") zobowiązuje się do ochrony Twojej prywatności. Niniejsza Polityka Prywatności wyjaśnia, w jaki sposób zbieramy, wykorzystujemy i chronimy Twoje dane osobowe zgodnie z RODO i polskim prawem ochrony danych.',
+      cookiePolicyContactIntro: 'Jeśli masz pytania dotyczące naszego wykorzystania plików cookie:',
+      
+      // PDF Download (PL)
+      downloadPDF: "Pobierz PDF",
+      
+      // Privacy Policy Page (PL)
+      privacyIntro: 'M5M Limited sp. z o.o. oddział w Polsce ("my", "nasze" lub "SPIRIT CANDLES") zobowiązuje się do ochrony Twojej prywatności. Niniejsza Polityka Prywatności wyjaśnia, w jaki sposób zbieramy, wykorzystujemy i chronimy Twoje dane osobowe zgodnie z RODO i polskim prawem ochrony danych.',
     dataController: 'Administrator Danych',
     dataWeCollect: 'Dane, Które Zbieramy',
     accountData: 'Dane Konta',

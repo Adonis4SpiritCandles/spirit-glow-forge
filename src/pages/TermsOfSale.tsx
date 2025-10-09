@@ -1,13 +1,27 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 const TermsOfSale = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const pdfUrl = language === 'pl' 
+    ? '/documents/regulamin-sprzedazy-pl.pdf' 
+    : '/documents/terms-of-sale-en.pdf';
 
   return (
     <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">{t('termsOfSale')}</h1>
+        
+        <div className="mb-6 text-center">
+          <Button asChild variant="outline">
+            <a href={pdfUrl} download>
+              <Download className="mr-2 h-4 w-4" />
+              {t('downloadPDF')}
+            </a>
+          </Button>
+        </div>
         
         <Card className="p-8 space-y-6">
           <section>

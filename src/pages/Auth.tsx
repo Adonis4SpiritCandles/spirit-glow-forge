@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
+import { Eye, EyeOff } from 'lucide-react';
 import spiritLogo from '@/assets/spirit-logo.png';
 
 const Auth = () => {
@@ -22,10 +23,13 @@ const Auth = () => {
   const [preferredLanguage, setPreferredLanguage] = useState('en');
   const [termsConsent, setTermsConsent] = useState(false);
   const [newsletterConsent, setNewsletterConsent] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { user, signIn, signUp } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Redirect if already logged in
   if (user) {
@@ -97,14 +101,14 @@ const Auth = () => {
             <img 
               src={spiritLogo} 
               alt="Spirit Logo" 
-              className="h-16 w-16 object-contain filter brightness-0 invert"
+              className="h-24 w-24 object-contain filter brightness-0 invert candle-glow"
             />
           </div>
           <CardTitle className="font-playfair text-2xl text-foreground">
             {isLogin ? t('signIn') : t('signUp')}
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            {isLogin ? 'Welcome back to Spirit of Candles' : 'Join the Spirit of Candles family'}
+            {isLogin ? t('welcomeBack') : t('joinFamily')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -158,27 +162,45 @@ const Auth = () => {
               />
             </div>
             
-            <div>
+            <div className="relative">
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder={t('password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-background/50 border-border/40"
+                className="bg-background/50 border-border/40 pr-10"
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
             </div>
             
             {!isLogin && (
-              <div>
+              <div className="relative">
                 <Input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder={t('confirmPassword')}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="bg-background/50 border-border/40"
+                  className="bg-background/50 border-border/40 pr-10"
                 />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
               </div>
             )}
             
@@ -224,12 +246,25 @@ const Auth = () => {
               </div>
             )}
             
+            {isLogin && (
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="remember-me"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                />
+                <Label htmlFor="remember-me" className="text-sm text-muted-foreground cursor-pointer">
+                  {t('rememberMe')}
+                </Label>
+              </div>
+            )}
+            
             <Button 
               type="submit" 
               className="w-full bg-primary hover:bg-primary/90"
               disabled={loading}
             >
-              {loading ? 'Loading...' : (isLogin ? t('signIn') : t('signUp'))}
+              {loading ? t('loading') : (isLogin ? t('signIn') : t('signUp'))}
             </Button>
           </form>
           

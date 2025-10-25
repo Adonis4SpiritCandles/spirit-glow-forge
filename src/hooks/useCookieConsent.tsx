@@ -30,17 +30,24 @@ export const useCookieConsent = () => {
   // Load consent from cookie
   useEffect(() => {
     const loadConsent = () => {
+      // Check both cookie and localStorage for consent
       const cookieValue = document.cookie
         .split('; ')
         .find(row => row.startsWith(`${COOKIE_NAME}=`));
       
-      if (cookieValue) {
+      const localStorageValue = localStorage.getItem(COOKIE_NAME);
+      
+      if (cookieValue || localStorageValue) {
         try {
-          const consentData = JSON.parse(decodeURIComponent(cookieValue.split('=')[1]));
+          const consentData = cookieValue 
+            ? JSON.parse(decodeURIComponent(cookieValue.split('=')[1]))
+            : JSON.parse(localStorageValue!);
+          
           setConsent(consentData);
+          setShowBanner(false);
           applyConsent(consentData);
         } catch (e) {
-          console.error('Error parsing consent cookie:', e);
+          console.error('Error parsing consent:', e);
           setShowBanner(true);
         }
       } else {
@@ -54,7 +61,7 @@ export const useCookieConsent = () => {
   // Apply consent to third-party scripts
   const applyConsent = (consentData: CookieConsent) => {
     // Google Consent Mode v2
-    if (typeof window.gtag !== 'undefined') {
+    if (typeof window.gtag === 'function') {
       window.gtag('consent', 'update', {
         'analytics_storage': consentData.analytics ? 'granted' : 'denied',
         'ad_storage': consentData.marketing ? 'granted' : 'denied',
@@ -65,14 +72,16 @@ export const useCookieConsent = () => {
     }
 
     // Meta Pixel
-    if (consentData.marketing && typeof window.fbq !== 'undefined') {
-      window.fbq('consent', 'grant');
-    } else if (typeof window.fbq !== 'undefined') {
-      window.fbq('consent', 'revoke');
+    if (typeof window.fbq === 'function') {
+      if (consentData.marketing) {
+        window.fbq('consent', 'grant');
+      } else {
+        window.fbq('consent', 'revoke');
+      }
     }
 
     // TikTok Pixel
-    if (typeof window.ttq !== 'undefined') {
+    if (typeof window.ttq === 'function') {
       if (consentData.marketing) {
         window.ttq('enableCookie');
       } else {
@@ -81,7 +90,7 @@ export const useCookieConsent = () => {
     }
 
     // Twitter Pixel (no consent API, controlled by loading)
-    if (consentData.marketing && typeof window.twq !== 'undefined') {
+    if (consentData.marketing && typeof window.twq === 'function') {
       window.twq('track', 'PageView');
     }
   };

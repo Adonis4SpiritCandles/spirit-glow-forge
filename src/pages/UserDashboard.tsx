@@ -49,7 +49,7 @@ interface Order {
 
 const UserDashboard = () => {
   const { user, loading: authLoading } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -311,20 +311,20 @@ const UserDashboard = () => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">First Name</label>
-                        <p className="text-foreground">{profile?.first_name || 'Not set'}</p>
+                        <label className="text-sm font-medium text-muted-foreground">{t('firstName')}</label>
+                        <p className="text-foreground">{profile?.first_name || (t('notAvailable') || (t('language') === 'pl' ? 'Nie ustawiono' : 'Not set'))}</p>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">Last Name</label>
-                        <p className="text-foreground">{profile?.last_name || 'Not set'}</p>
+                        <label className="text-sm font-medium text-muted-foreground">{t('lastName')}</label>
+                        <p className="text-foreground">{profile?.last_name || (t('notAvailable') || (t('language') === 'pl' ? 'Nie ustawiono' : 'Not set'))}</p>
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Username</label>
-                      <p className="text-foreground">{profile?.username || 'Not set'}</p>
+                      <label className="text-sm font-medium text-muted-foreground">{t('username')}</label>
+                      <p className="text-foreground">{profile?.username || (t('notAvailable') || (t('language') === 'pl' ? 'Nie ustawiono' : 'Not set'))}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                      <label className="text-sm font-medium text-muted-foreground">{t('email')}</label>
                       <p className="text-foreground">{profile?.email}</p>
                     </div>
                     <Button onClick={() => setIsEditing(true)}>{t('editProfile')}</Button>

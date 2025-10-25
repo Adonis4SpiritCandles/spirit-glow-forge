@@ -69,6 +69,7 @@ const translations = {
     newPassword: 'New Password',
     confirmNewPassword: 'Confirm New Password',
     welcomeBack: 'Welcome back to Spirit of Candles',
+    welcomeBackShort: 'Welcome back',
     joinFamily: 'Join the Spirit of Candles family',
     rememberMe: 'Remember me',
 

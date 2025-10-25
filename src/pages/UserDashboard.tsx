@@ -312,16 +312,16 @@ const UserDashboard = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">{t('firstName')}</label>
-                        <p className="text-foreground">{profile?.first_name || (t('notAvailable') || (t('language') === 'pl' ? 'Nie ustawiono' : 'Not set'))}</p>
+                        <p className="text-foreground">{profile?.first_name || t('notSet')}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">{t('lastName')}</label>
-                        <p className="text-foreground">{profile?.last_name || (t('notAvailable') || (t('language') === 'pl' ? 'Nie ustawiono' : 'Not set'))}</p>
+                        <p className="text-foreground">{profile?.last_name || t('notSet')}</p>
                       </div>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">{t('username')}</label>
-                      <p className="text-foreground">{profile?.username || (t('notAvailable') || (t('language') === 'pl' ? 'Nie ustawiono' : 'Not set'))}</p>
+                      <p className="text-foreground">{profile?.username || t('notSet')}</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">{t('email')}</label>

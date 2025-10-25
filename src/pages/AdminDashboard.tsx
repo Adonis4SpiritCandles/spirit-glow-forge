@@ -558,7 +558,7 @@ const AdminDashboard = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('revenue')}</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -945,18 +945,18 @@ const AdminDashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle>{t('customers')}</CardTitle>
-                <CardDescription>View and manage customers</CardDescription>
+                <CardDescription>{t('manageCustomerOrders')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Username</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Join Date</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead>{t('name')}</TableHead>
+                      <TableHead>{t('username')}</TableHead>
+                      <TableHead>{t('email')}</TableHead>
+                      <TableHead>{t('role')}</TableHead>
+                      <TableHead>{t('joinDate')}</TableHead>
+                      <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -966,7 +966,7 @@ const AdminDashboard = () => {
                           {profile.first_name} {profile.last_name}
                         </TableCell>
                         <TableCell>
-                          {profile.username || 'Not set'}
+                          {profile.username || t('notSet')}
                         </TableCell>
                         <TableCell>{profile.email}</TableCell>
                         <TableCell>
@@ -975,14 +975,44 @@ const AdminDashboard = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleCustomerView(profile)}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            {t('viewDetails')}
-                          </Button>
+                          {new Date(profile.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCustomerView(profile)}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              {t('viewDetails')}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                toast({
+                                  title: t('success'),
+                                  description: `${t('edit')} ${profile.email}`
+                                });
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              {t('edit')}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant={profile.role === 'admin' ? 'secondary' : 'default'}
+                              onClick={() => {
+                                toast({
+                                  title: t('success'),
+                                  description: profile.role === 'admin' ? t('demoteToUser') : t('promoteToAdmin')
+                                });
+                              }}
+                            >
+                              {profile.role === 'admin' ? t('demoteToUser') : t('promoteToAdmin')}
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

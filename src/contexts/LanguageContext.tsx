@@ -155,9 +155,21 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'delete') return language === 'pl' ? 'Usuń' : 'Delete';
     if (key === 'clear') return language === 'pl' ? 'Wyczyść' : 'Clear';
     if (key === 'notAvailable') return language === 'pl' ? 'Niedostępne' : 'N/A';
+    if (key === 'notSet') return language === 'pl' ? 'Nie ustawiono' : 'Not set';
     if (key === 'loading') return language === 'pl' ? 'Ładowanie...' : 'Loading...';
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
     if (key === 'error') return language === 'pl' ? 'Błąd' : 'Error';
+    if (key === 'joinDate') return language === 'pl' ? 'Data rejestracji' : 'Join Date';
+    if (key === 'promoteToAdmin') return language === 'pl' ? 'Awansuj na Admina' : 'Promote to Admin';
+    if (key === 'demoteToUser') return language === 'pl' ? 'Obniż do Użytkownika' : 'Demote to User';
+    if (key === 'product') return language === 'pl' ? 'Produkt' : 'Product';
+    if (key === 'published') return language === 'pl' ? 'Opublikowany' : 'Published';
+    if (key === 'editProductDetails') return language === 'pl' ? 'Edytuj szczegóły' : 'Edit Details';
+    if (key === 'viewProductPage') return language === 'pl' ? 'Zobacz stronę' : 'View Page';
+    if (key === 'billingDescription') return language === 'pl' ? 'Zarządzaj swoimi metodami płatności' : 'Manage your payment methods';
+    if (key === 'viewOrdersForPayments') return language === 'pl' ? 'Zobacz swoje zamówienia, aby uzyskać szczegóły płatności' : 'View your orders for payment details';
+    if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
+    if (key === 'completeInformation') return language === 'pl' ? 'Pełne informacje dla zamówienia' : 'Complete information for order';
 
     // Product form fields
     if (key === 'nameEn') return language === 'pl' ? 'Nazwa (EN)' : 'Name (EN)';

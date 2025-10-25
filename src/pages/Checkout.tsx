@@ -66,17 +66,23 @@ const Checkout = () => {
     setShippingAddress(address);
 
     try {
-      // Calculate total weight (assuming 0.5kg per candle)
-      const totalWeight = cartItems.reduce((sum, item) => sum + (item.quantity * 0.5), 0);
+      // Calculate total weight with minimum of 1kg (aligned with shipment creation)
+      const totalWeight = Math.max(1, cartItems.reduce((sum, item) => sum + (item.quantity * 0.5), 0));
+
+      console.log('Checkout - Shipping calculation params:', {
+        weight: totalWeight,
+        dimensions: { length: 10, width: 10, height: 10 },
+        address: address
+      });
 
       const { data, error } = await supabase.functions.invoke('calculate-shipping-price', {
         body: {
           receiver: address,
           parcels: [{
             weight: totalWeight,
-            length: 30,
-            width: 30,
-            height: 20
+            length: 10,
+            width: 10,
+            height: 10
           }]
         },
       });

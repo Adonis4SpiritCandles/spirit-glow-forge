@@ -184,10 +184,10 @@ serve(async (req) => {
       receiver,
       parcels: [{
         weight,
-        length: Number(dimensions.length || 30),
-        width: Number(dimensions.width || 30),
-        height: Number(dimensions.height || 30),
-        depth: Number(dimensions.length || 30), // Furgonetka requires depth field
+        length: dimensions.length,
+        width: dimensions.width,
+        height: dimensions.height,
+        depth: dimensions.length, // Furgonetka requires depth field
         description: safeDesc // Required description field, max 20 chars
       }],
       type: 'package'

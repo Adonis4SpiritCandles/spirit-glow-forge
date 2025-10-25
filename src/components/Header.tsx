@@ -57,14 +57,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-4">
+           <div className="flex items-center space-x-4">
             <Link to="/">
               <img 
                 src={spiritLogo} 
                 alt="SPIRIT CANDLES" 
-                className="h-10 w-auto hover:scale-105 transition-all duration-500"
+                className="h-12 w-auto hover:scale-105 transition-all duration-500"
                 style={{
-                  filter: 'brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))'
+                  filter: 'brightness(0) invert(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.8))'
                 }}
               />
             </Link>

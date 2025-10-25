@@ -97,11 +97,11 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border/40">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-6">
             <img 
               src={spiritLogo} 
               alt="Spirit Logo" 
-              className="h-24 w-24 object-contain filter brightness-0 invert candle-glow"
+              className="h-32 w-32 object-contain filter brightness-0 invert candle-glow"
             />
           </div>
           <CardTitle className="font-playfair text-2xl text-foreground">

@@ -230,7 +230,7 @@ const UserDashboard = () => {
             {t('dashboard') || 'Dashboard'}
           </h1>
           <p className="text-muted-foreground">
-            Welcome back, {profile?.first_name || profile?.username}!
+            {t('welcomeBackUser')}, {profile?.first_name || profile?.username}!
           </p>
         </div>
 
@@ -257,9 +257,9 @@ const UserDashboard = () => {
           <TabsContent value="profile" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
+                <CardTitle>{t('profileInformation')}</CardTitle>
                 <CardDescription>
-                  View and edit your personal information
+                  {t('viewAndEdit')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -301,9 +301,9 @@ const UserDashboard = () => {
                       />
                     </div>
                     <div className="flex gap-2">
-                      <Button onClick={updateProfile}>Save Changes</Button>
+                      <Button onClick={updateProfile}>{t('saveChanges')}</Button>
                       <Button variant="outline" onClick={() => setIsEditing(false)}>
-                        Cancel
+                        {t('cancel')}
                       </Button>
                     </div>
                   </div>
@@ -327,7 +327,7 @@ const UserDashboard = () => {
                       <label className="text-sm font-medium text-muted-foreground">Email</label>
                       <p className="text-foreground">{profile?.email}</p>
                     </div>
-                    <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+                    <Button onClick={() => setIsEditing(true)}>{t('editProfile')}</Button>
                   </div>
                 )}
               </CardContent>
@@ -337,15 +337,15 @@ const UserDashboard = () => {
           <TabsContent value="orders" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Order History</CardTitle>
+                <CardTitle>{t('orderHistory')}</CardTitle>
                 <CardDescription>
-                  View your past orders and their status
+                  {t('orderHistoryDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {orders.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-muted-foreground">No orders found</p>
+                    <p className="text-muted-foreground">{t('noOrders')}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -395,7 +395,7 @@ const UserDashboard = () => {
                           <div className="border-t pt-3 mt-3 space-y-2">
                             <div className="flex items-center gap-2">
                               <Package className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm font-medium">Shipping Information</span>
+                              <span className="text-sm font-medium">{t('shippingInformation')}</span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                               <div>
@@ -421,7 +421,7 @@ const UserDashboard = () => {
                                 variant="outline"
                                 onClick={() => window.open(`https://tracking.inpost.pl/${order.tracking_number}`, '_blank')}
                               >
-                                Track Package
+                                {t('trackPackage')}
                               </Button>
                             )}
                             {order.carrier === 'DHL' && (
@@ -430,7 +430,7 @@ const UserDashboard = () => {
                                 variant="outline"
                                 onClick={() => window.open(`https://www.dhl.com/pl-pl/home/tracking.html?tracking-id=${order.tracking_number}`, '_blank')}
                               >
-                                Track Package
+                                {t('trackPackage')}
                               </Button>
                             )}
                             {order.carrier === 'FedEx' && (
@@ -439,7 +439,7 @@ const UserDashboard = () => {
                                 variant="outline"
                                 onClick={() => window.open(`https://www.fedex.com/fedextrack/?trknbr=${order.tracking_number}`, '_blank')}
                               >
-                                Track Package
+                                {t('trackPackage')}
                               </Button>
                             )}
                           </div>

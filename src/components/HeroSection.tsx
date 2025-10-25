@@ -33,7 +33,7 @@ const HeroSection = () => {
               <img 
                 src={spiritLogo} 
                 alt="SPIRIT CANDLES" 
-                className={`h-48 mx-auto logo-aura transition-all duration-2000 ${logoGlow ? 'candle-glow scale-110' : 'scale-100'}`}
+                className={`h-64 mx-auto logo-aura transition-all duration-2000 ${logoGlow ? 'candle-glow scale-105 drop-shadow-[0_0_35px_rgba(255,255,255,0.8)]' : 'scale-100'}`}
               />
             </div>
           </div>

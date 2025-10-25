@@ -120,7 +120,7 @@ serve(async (req) => {
 
     // Build sender and receiver using the same schema as calculate-shipping-price
     const sender = {
-      name: "Spirit Candles - Reborn Your Nature",
+      name: "Spirit Candles",
       street: "Kąkolowa 3",
       city: "Toruń",
       postcode: "87-100",

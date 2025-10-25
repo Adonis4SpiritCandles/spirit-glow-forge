@@ -45,6 +45,64 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'register') return language === 'pl' ? 'Zarejestruj się' : 'Register';
     if (key === 'logout') return language === 'pl' ? 'Wyloguj' : 'Logout';
     if (key === 'dashboard') return language === 'pl' ? 'Panel' : 'Dashboard';
+    if (key === 'search') return language === 'pl' ? 'Szukaj' : 'Search';
+    if (key === 'wishlist') return language === 'pl' ? 'Lista życzeń' : 'Wishlist';
+
+    // Hero Section
+    if (key === 'rebornYourNature') return language === 'pl' ? 'Odrodzenie Twojej Natury' : 'Reborn Your Nature';
+    if (key === 'heroDescription') return language === 'pl' ? 'Odkryj luksusowe świece sojowe ręcznie wykonane z pasją. Każda świeca to podróż do spokoju i harmonii.' : 'Discover luxurious soy candles handcrafted with passion. Each candle is a journey to peace and harmony.';
+    if (key === 'shopCollection') return language === 'pl' ? 'Kup Kolekcję' : 'Shop Collection';
+    if (key === 'learnOurStory') return language === 'pl' ? 'Poznaj naszą historię' : 'Learn Our Story';
+
+    // Footer
+    if (key === 'brandDescription') return language === 'pl' ? 'SPIRIT CANDLES - Luksusowe świece sojowe ręcznie wykonane dla Twojego spokoju i harmonii.' : 'SPIRIT CANDLES - Luxury soy candles handcrafted for your peace and harmony.';
+    if (key === 'allCandles') return language === 'pl' ? 'Wszystkie świece' : 'All Candles';
+    if (key === 'newArrivals') return language === 'pl' ? 'Nowości' : 'New Arrivals';
+    if (key === 'bestSellers') return language === 'pl' ? 'Bestsellery' : 'Best Sellers';
+    if (key === 'supportSection') return language === 'pl' ? 'Wsparcie' : 'Support';
+    if (key === 'contactUs') return language === 'pl' ? 'Skontaktuj się z nami' : 'Contact Us';
+    if (key === 'aboutUs') return language === 'pl' ? 'O nas' : 'About Us';
+    if (key === 'legal') return language === 'pl' ? 'Informacje prawne' : 'Legal';
+    if (key === 'cookiePolicy') return language === 'pl' ? 'Polityka plików cookie' : 'Cookie Policy';
+    if (key === 'shippingAndReturns') return language === 'pl' ? 'Dostawa i zwroty' : 'Shipping & Returns';
+    if (key === 'legalNotice') return language === 'pl' ? 'Nota prawna' : 'Legal Notice';
+    if (key === 'accessibility') return language === 'pl' ? 'Dostępność' : 'Accessibility';
+    if (key === 'dataRequest') return language === 'pl' ? 'Wniosek o dane' : 'Data Request';
+    if (key === 'privacyRegistration') return language === 'pl' ? 'Polityka prywatności rejestracji' : 'Privacy Registration';
+    if (key === 'allNotices') return language === 'pl' ? 'Wszystkie informacje' : 'All Notices';
+    if (key === 'manageCookies') return language === 'pl' ? 'Zarządzaj ciasteczkami' : 'Manage Cookies';
+    if (key === 'availableInLanguages') return language === 'pl' ? 'Dostępne w języku polskim i angielskim' : 'Available in Polish and English';
+    if (key === 'designedBy') return language === 'pl' ? 'Zaprojektowane z pasją' : 'Designed with passion';
+    if (key === 'inspirationNoticeFooter') return language === 'pl' ? 'Inspiracja: Wszystkie produkty Spirit Candles są inspirowane popularnymi zapachami znanych marek, ale nie są z nimi powiązane.' : 'Inspiration: All Spirit Candles products are inspired by popular fragrances from well-known brands but are not affiliated with them.';
+    if (key === 'notAffiliatedDisclaimer') return language === 'pl' ? 'Spirit Candles to niezależna marka. Nie jesteśmy powiązani z żadnymi znakami towarowymi wspomnianych marek.' : 'Spirit Candles is an independent brand. We are not affiliated with any trademarks of the mentioned brands.';
+
+    // Product Cards & Shopping
+    if (key === 'viewProduct') return language === 'pl' ? 'Zobacz produkt' : 'View Product';
+    if (key === 'addToCart') return language === 'pl' ? 'Dodaj do koszyka' : 'Add to Cart';
+    if (key === 'inspiredBy') return language === 'pl' ? 'Inspirowane przez' : 'Inspired by';
+
+    // Cart Sidebar
+    if (key === 'shoppingCart') return language === 'pl' ? 'Koszyk' : 'Shopping Cart';
+    if (key === 'emptyCart') return language === 'pl' ? 'Twój koszyk jest pusty' : 'Your cart is empty';
+    if (key === 'addSomeCandles') return language === 'pl' ? 'Dodaj piękne świece do swojego koszyka' : 'Add some beautiful candles to your cart';
+    if (key === 'browseCollection') return language === 'pl' ? 'Przeglądaj kolekcję' : 'Browse Collection';
+    if (key === 'subtotal') return language === 'pl' ? 'Suma częściowa' : 'Subtotal';
+    if (key === 'items') return language === 'pl' ? 'produktów' : 'items';
+    if (key === 'checkoutNow') return language === 'pl' ? 'Przejdź do kasy' : 'Checkout Now';
+    if (key === 'viewFullCart') return language === 'pl' ? 'Zobacz pełny koszyk' : 'View Full Cart';
+
+    // Product Detail
+    if (key === 'trimWickBefore') return language === 'pl' ? 'Przytnij knot do 5mm przed każdym użyciem' : 'Trim wick to 5mm before each use';
+    if (key === 'burnFirstTime') return language === 'pl' ? 'Pal przez 2-3 godziny przy pierwszym użyciu' : 'Burn for 2-3 hours on first use';
+    if (key === 'neverLeaveUnattended') return language === 'pl' ? 'Nigdy nie zostawiaj bez nadzoru' : 'Never leave unattended';
+    if (key === 'productNotFound') return language === 'pl' ? 'Produkt nie znaleziony' : 'Product Not Found';
+    if (key === 'returnToShop') return language === 'pl' ? 'Wróć do sklepu' : 'Return to Shop';
+    if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to Cart';
+    if (key === 'shared') return language === 'pl' ? 'Udostępniono' : 'Shared';
+    if (key === 'productShared') return language === 'pl' ? 'Produkt został udostępniony' : 'Product has been shared';
+    if (key === 'linkCopied') return language === 'pl' ? 'Link skopiowany' : 'Link Copied';
+    if (key === 'productLinkCopied') return language === 'pl' ? 'Link do produktu został skopiowany' : 'Product link copied to clipboard';
+    if (key === 'backToShop') return language === 'pl' ? 'Powrót do sklepu' : 'Back to Shop';
 
     // Admin Dashboard
     if (key === 'adminDashboard') return language === 'pl' ? 'Panel administratora' : 'Admin Dashboard';
@@ -206,6 +264,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'deleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć ten produkt?' : 'Are you sure you want to delete this product?';
     if (key === 'productWeight') return language === 'pl' ? 'Waga produktu' : 'Product Weight';
     if (key === 'shipmentCreatedSuccess') return language === 'pl' ? 'Przesyłka utworzona pomyślnie' : 'Shipment created successfully';
+    if (key === 'admin') return language === 'pl' ? 'Administrator' : 'Admin';
 
     // Categories
     if (key === 'luxury') return language === 'pl' ? 'Luksus' : 'Luxury';
@@ -219,6 +278,9 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'completed') return language === 'pl' ? 'Zakończone' : 'Completed';
     if (key === 'trackPackage') return language === 'pl' ? 'Śledź paczkę' : 'Track Package';
     if (key === 'billing') return language === 'pl' ? 'Płatności' : 'Billing';
+    if (key === 'pending') return language === 'pl' ? 'Oczekujące' : 'Pending';
+    if (key === 'shipped') return language === 'pl' ? 'Wysłano' : 'Shipped';
+    if (key === 'cancelled') return language === 'pl' ? 'Anulowano' : 'Cancelled';
 
     // Privacy/Legal
     if (key === 'termsOfSale') return language === 'pl' ? 'Regulamin sprzedaży' : 'Terms of Sale';

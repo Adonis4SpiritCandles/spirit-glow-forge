@@ -41,8 +41,8 @@ const Contact = () => {
     {
       icon: <MapPin className="w-5 h-5 text-primary" />,
       title: t('visitUs'),
-      details: "87-100 Toruń (PL)",
-      description: "M5Moffice"
+      details: "Grzybowska 2/31, 00‑131 Warszawa",
+      description: "SPIRIT CANDLE"
     },
     {
       icon: <Clock className="w-5 h-5 text-primary" />,
@@ -245,9 +245,9 @@ const Contact = () => {
                       onCheckedChange={(checked) => setPrivacyConsent(checked as boolean)}
                       required
                     />
-                    <Label htmlFor="privacy-consent" className="text-sm text-muted-foreground leading-tight cursor-pointer">
-                      {t('iAccept')} <Link to="/privacy-policy" className="text-primary hover:underline">{t('privacyPolicy')}</Link> *
-                    </Label>
+                     <Label htmlFor="privacy-consent" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                       {t('iAcceptPrivacy')} <Link to="/privacy-policy" className="text-primary hover:underline">{t('privacyPolicy')}</Link> *
+                     </Label>
                   </div>
 
                   <div className="flex items-start space-x-2">
@@ -353,13 +353,13 @@ const Contact = () => {
         <Card className="mt-12 bg-card border-border/40 shadow-elegant overflow-hidden">
           <CardHeader>
             <CardTitle className="text-2xl font-playfair text-foreground text-center">
-              {t('visitUs')}
+              {t('spiritCandleSite')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="w-full h-[400px]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2405.7821!2d18.5933!3d53.0238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47033107f3b64e15%3A0x3e0e0e0e0e0e0e0e!2sK%C4%85kolowa%203%2C%2087-100%20Toru%C5%84%2C%20Poland!5e0!3m2!1sen!2sus!4v1234567890"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2443.5784631089843!2d21.00042!3d52.23291!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ecc8c2e2c5555%3A0x5555555555555555!2sGrzybowska%202%2C%2000-131%20Warszawa%2C%20Poland!5e0!3m2!1sen!2sus!4v1234567890"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

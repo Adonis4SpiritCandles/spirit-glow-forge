@@ -180,7 +180,7 @@ const Checkout = () => {
         <h1 className="font-playfair text-3xl font-bold mb-6">{t('checkout') || 'Checkout'}</h1>
         
         <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
             {step === 'address' && (
               <ShippingAddressForm onSubmit={handleAddressSubmit} isLoading={isCalculating} />
             )}
@@ -220,9 +220,9 @@ const Checkout = () => {
                       onCheckedChange={(checked) => setTermsConsent(checked as boolean)}
                       required
                     />
-                    <Label htmlFor="terms-consent-checkout" className="text-sm text-muted-foreground leading-tight cursor-pointer">
-                      {t('iAccept')} <Link to="/terms-of-sale" className="text-primary hover:underline" target="_blank">{t('termsOfSale')}</Link> *
-                    </Label>
+                     <Label htmlFor="terms-consent-checkout" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                       {t('iAcceptTerms')} <Link to="/terms-of-sale" className="text-primary hover:underline" target="_blank">{t('termsOfSale')}</Link> *
+                     </Label>
                   </div>
                 </Card>
 
@@ -261,7 +261,7 @@ const Checkout = () => {
             </Card>
           </div>
 
-          <Card className="lg:col-span-1 sticky top-8 h-fit">
+          <Card className="lg:col-span-1 lg:sticky lg:top-8 h-fit order-1 lg:order-2">
             <CardHeader>
               <CardTitle className="font-playfair">{t('orderSummary') || 'Order Summary'}</CardTitle>
             </CardHeader>

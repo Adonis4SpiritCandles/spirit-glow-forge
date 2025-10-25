@@ -42,13 +42,10 @@ const About = () => {
                 {t('rebornYourNature')}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                At SPIRIT CANDLES, we believe that fragrance has the power to transform not just spaces, 
-                but souls. Our luxury soy candles are more than just beautiful objects—they're portals 
-                to memories, emotions, and deeper connections with yourself and your environment.
+                {t('aboutIntro1')}
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Each candle is inspired by iconic fragrances and handcrafted with the finest natural 
-                ingredients, creating an elevated sensory experience that awakens your inner spirit.
+                {t('aboutIntro2')}
               </p>
               <Button 
                 size="lg"
@@ -86,8 +83,7 @@ const About = () => {
               {t('whyChooseSpiritCandles')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Every aspect of our candles is designed with intention, from the sustainable 
-              materials we use to the mystical fragrances that inspire transformation.
+              {t('whyChooseDesc')}
             </p>
           </div>
 
@@ -126,32 +122,23 @@ const About = () => {
             
             <div className="space-y-6 text-lg text-foreground/80 leading-relaxed">
               <p>
-                SPIRIT CANDLES was born from a simple yet profound belief: that the right fragrance 
-                can unlock the deepest parts of our being. Our founder, inspired by the transformative 
-                power of scent, embarked on a journey to create candles that would not just fill rooms 
-                with beautiful aromas, but awaken the spirit within.
+                {t('storyPara1')}
               </p>
               
               <p>
-                Drawing inspiration from the world's most iconic fragrances, we carefully craft each 
-                candle using traditional techniques and modern innovation. Our soy wax base ensures 
-                a clean burn, while our wooden wicks provide the gentle crackling sound of a cozy 
-                fireplace, creating an atmosphere of warmth and tranquility.
+                {t('storyPara2')}
               </p>
               
               <p>
-                Every SPIRIT CANDLE is a invitation to pause, breathe deeply, and reconnect with 
-                your inner nature. Whether you're seeking motivation, relaxation, or simply a moment 
-                of beauty in your day, our candles are designed to be your companion on the journey 
-                of self-discovery.
+                {t('storyPara3')}
               </p>
             </div>
 
             <div className="bg-card border border-border/40 rounded-lg p-8 shadow-elegant">
               <blockquote className="text-xl font-playfair italic text-foreground mb-4">
-                "Light a candle, ignite your spirit, and let your true nature emerge."
+                {t('philosophyQuote')}
               </blockquote>
-              <cite className="text-sm text-muted-foreground">— SPIRIT CANDLES Philosophy</cite>
+              <cite className="text-sm text-muted-foreground">— {t('philosophyCite')}</cite>
             </div>
           </div>
         </div>
@@ -162,8 +149,7 @@ const About = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center text-sm text-muted-foreground">
             <p>
-              <strong>{t('legalDisclaimer')}</strong> Our candles are inspired by popular fragrances for descriptive purposes only. 
-              We are not affiliated with any original fragrance manufacturers. All trademarks belong to their respective owners.
+              <strong>{t('legalDisclaimer')}</strong> {t('legalDisclaimerText')}
             </p>
           </div>
         </div>

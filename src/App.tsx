@@ -43,6 +43,9 @@ const RouteChangeHandler = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Scroll to top when route changes
+    window.scrollTo(0, 0);
+    
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);

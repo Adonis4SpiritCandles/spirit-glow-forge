@@ -50,9 +50,7 @@ const HeroSection = () => {
             </p>
             
             <p className="text-lg text-foreground/80 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover our luxury collection of soy candles inspired by the world's most 
-              beloved fragrances. Each candle is hand-poured with natural soy wax and 
-              premium fragrance oils.
+              {t('heroDescription')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

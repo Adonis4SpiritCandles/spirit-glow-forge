@@ -161,8 +161,10 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                 <div className="text-sm text-muted-foreground">
-                  <p>Kąkolowa 3</p>
-                  <p>87-100 Toruń, Poland</p>
+                  <p>M5M Limited Sp. z o.o. oddział w Polsce</p>
+                  <p>SPIRIT CANDLE</p>
+                  <p>Grzybowska 2/31, 00‑131 Warszawa</p>
+                  <p>NIP: 5252998035, REGON: 528769795</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

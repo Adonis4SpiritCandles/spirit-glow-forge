@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCartContext } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ProductCardProps {
   id: string;
@@ -42,6 +43,7 @@ const ProductCard = ({
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { toast } = useToast();
   const { addProductToCart } = useCartContext();
+  const { t } = useLanguage();
 
   const handleAddToCart = () => {
     const size = sizes[selectedSize];
@@ -122,7 +124,7 @@ const ProductCard = ({
             >
               <Link to={`/product/${id}`}>
                 <Eye className="w-4 h-4 mr-2" />
-                View Product
+                {t('viewProduct')}
               </Link>
             </Button>
           </div>
@@ -176,7 +178,7 @@ const ProductCard = ({
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Add to Cart
+                {t('addToCart')}
               </Button>
             </div>
           </div>

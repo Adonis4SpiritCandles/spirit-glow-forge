@@ -717,6 +717,27 @@ const translations = {
     newsletterOptional: '(optional)',
     requiredField: 'This field is required',
     consentRequired: 'You must accept the terms to continue',
+    iAccept: 'I accept',
+    iAcceptPrivacy: 'I accept',
+    iAcceptTerms: 'I accept',
+    newsletterOptIn: 'I want to receive news, promotions, and exclusive offers via email',
+    spiritCandleSite: 'Spirit Candle Site',
+    mustAcceptTermsCheckout: 'You must accept the Terms of Sale to complete your purchase',
+    mustAcceptPrivacy: 'You must accept the Privacy Policy to continue',
+    
+    // Hero Section
+    heroDescription: 'Discover our luxury collection of soy candles inspired by the world\'s most beloved fragrances. Each candle is hand-poured with natural soy wax and premium fragrance oils.',
+    
+    // About Page
+    aboutIntro1: 'At SPIRIT CANDLES, we believe that fragrance has the power to transform not just spaces, but souls. Our luxury soy candles are more than just beautiful objects—they\'re portals to memories, emotions, and deeper connections with yourself and your environment.',
+    aboutIntro2: 'Each candle is inspired by iconic fragrances and handcrafted with the finest natural ingredients, creating an elevated sensory experience that awakens your inner spirit.',
+    whyChooseDesc: 'Every aspect of our candles is designed with intention, from the sustainable materials we use to the mystical fragrances that inspire transformation.',
+    storyPara1: 'SPIRIT CANDLES was born from a simple yet profound belief: that the right fragrance can unlock the deepest parts of our being. Our founder, inspired by the transformative power of scent, embarked on a journey to create candles that would not just fill rooms with beautiful aromas, but awaken the spirit within.',
+    storyPara2: 'Drawing inspiration from the world\'s most iconic fragrances, we carefully craft each candle using traditional techniques and modern innovation. Our soy wax base ensures a clean burn, while our wooden wicks provide the gentle crackling sound of a cozy fireplace, creating an atmosphere of warmth and tranquility.',
+    storyPara3: 'Every SPIRIT CANDLE is a invitation to pause, breathe deeply, and reconnect with your inner nature. Whether you\'re seeking motivation, relaxation, or simply a moment of beauty in your day, our candles are designed to be your companion on the journey of self-discovery.',
+    philosophyQuote: '"Light a candle, ignite your spirit, and let your true nature emerge."',
+    philosophyCite: 'SPIRIT CANDLES Philosophy',
+    legalDisclaimerText: 'Our candles are inspired by popular fragrances for descriptive purposes only. We are not affiliated with any original fragrance manufacturers. All trademarks belong to their respective owners.',
     
     // Shipping & Returns Page
     shippingReturnsTitle: 'Shipping & Returns',
@@ -864,6 +885,29 @@ const translations = {
     categoryOther: 'Inne',
     contactIntro: 'Masz pytania dotyczące naszych świec lub potrzebujesz spersonalizowanych rekomendacji? Chętnie Cię wysłuchamy i pomożemy znaleźć idealny zapach dla Twojej przestrzeni.',
     selectCategory: 'Wybierz kategorię',
+
+    // Form Consent & Contact
+    iAccept: 'Akceptuję',
+    iAcceptPrivacy: 'Akceptuję',
+    iAcceptTerms: 'Akceptuję',
+    newsletterOptIn: 'Chcę otrzymywać wiadomości, promocje i ekskluzywne oferty przez e-mail',
+    spiritCandleSite: 'Strona Spirit Candle',
+    mustAcceptTermsCheckout: 'Musisz zaakceptować Regulamin sprzedaży, aby dokończyć zakup',
+    mustAcceptPrivacy: 'Musisz zaakceptować Politykę Prywatności, aby kontynuować',
+    
+    // Hero Section
+    heroDescription: 'Odkryj naszą luksusową kolekcję świec sojowych inspirowanych najbardziej lubianymi zapachami świata. Każda świeca jest ręcznie wlewana z naturalnego wosku sojowego i wysokiej jakości olejków zapachowych.',
+    
+    // About Page
+    aboutIntro1: 'W SPIRIT CANDLES wierzymy, że zapach ma moc transformacji nie tylko przestrzeni, ale i dusz. Nasze luksusowe świece sojowe to coś więcej niż piękne obiekty — to portale do wspomnień, emocji i głębszych połączeń z samym sobą i otoczeniem.',
+    aboutIntro2: 'Każda świeca jest inspirowana kultowymi zapachami i wykonana ręcznie z najlepszych naturalnych składników, tworząc wzniosłe doświadczenie zmysłowe, które budzi Twojego wewnętrznego ducha.',
+    whyChooseDesc: 'Każdy aspekt naszych świec jest zaprojektowany z intencją, od zrównoważonych materiałów, których używamy, po mistyczne zapachy, które inspirują transformację.',
+    storyPara1: 'SPIRIT CANDLES narodziły się z prostego, ale głębokiego przekonania: że odpowiedni zapach może odblokować najgłębsze części naszego bytu. Nasz założyciel, zainspirowany transformacyjną mocą zapachu, wyruszył w podróż, aby stworzyć świece, które nie tylko wypełnią pokoje pięknymi aromatami, ale obudzą ducha w środku.',
+    storyPara2: 'Czerpiąc inspirację z najbardziej kultowych zapachów świata, starannie tworzymy każdą świecę, wykorzystując tradycyjne techniki i nowoczesne innowacje. Nasza baza z wosku sojowego zapewnia czyste spalanie, podczas gdy nasze drewniane knoty zapewniają delikatny trzaskający dźwięk przytulnego kominka, tworząc atmosferę ciepła i spokoju.',
+    storyPara3: 'Każda SPIRIT CANDLE to zaproszenie do zatrzymania się, głębokiego oddechu i ponownego połączenia z Twoją wewnętrzną naturą. Niezależnie od tego, czy szukasz motywacji, relaksu, czy po prostu chwili piękna w swoim dniu, nasze świece są zaprojektowane, aby być Twoim towarzyszem w podróży odkrywania siebie.',
+    philosophyQuote: '"Zapal świecę, rozpal swojego ducha i pozwól swojej prawdziwej naturze się ujawnić."',
+    philosophyCite: 'Filozofia SPIRIT CANDLES',
+    legalDisclaimerText: 'Nasze świece są inspirowane popularnymi zapachami wyłącznie w celach opisowych. Nie jesteśmy powiązani z oryginalnymi producentami zapachów. Wszystkie znaki towarowe należą do ich właścicieli.',
 
     // Dashboard additions
     revenue: 'Przychody',

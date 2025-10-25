@@ -387,7 +387,6 @@ const translations = {
     wick: 'Wick',
     handPoured: 'Hand Poured',
     burnTime: 'Burn Time',
-    naturalIngredients: 'Natural Ingredients',
     careInstructions: 'Care Instructions',
     inspirationNotice: 'Inspiration Notice:',
     fragranceReferences: 'Fragrance references are inspirations only. SPIRIT CANDLES is not affiliated with or endorsed by the original trademark owners.',
@@ -420,12 +419,8 @@ const translations = {
     allReviews: 'All Reviews',
 
     // Order statuses
-    paid: 'Paid',
     awaitingApproval: 'Awaiting Approval',
     readyToShip: 'Ready to Ship',
-    inTransit: 'In Transit',
-    delivered: 'Delivered',
-    completed: 'Completed',
     
     // Billing
     paymentHistory: 'Payment History',
@@ -1086,7 +1081,6 @@ const translations = {
     paymentSuccess: 'Płatność pomyślna',
     orderPlaced: 'Zamówienie złożone',
     thankYou: 'Dziękujemy',
-    orderNumber: 'Numer zamówienia',
     accessDenied: 'Dostęp zabroniony',
     noPermission: 'Nie masz uprawnień do tej strony',
     clear: 'Wyczyść',
@@ -1185,7 +1179,6 @@ const translations = {
     wick: 'Knot',
     handPoured: 'Odlewane ręcznie',
     burnTime: 'Czas spalania',
-    naturalIngredients: 'Naturalne składniki',
     careInstructions: 'Instrukcje pielęgnacji',
     inspirationNotice: 'Uwaga o inspiracji:',
     fragranceReferences: 'Odniesienia do zapachów to tylko inspiracje. SPIRIT CANDLES nie jest powiązane ani popierane przez pierwotnych właścicieli znaków towarowych.',
@@ -1218,12 +1211,8 @@ const translations = {
     allReviews: 'Wszystkie opinie',
 
     // Order statuses
-    paid: 'Opłacone',
     awaitingApproval: 'Oczekuje na zatwierdzenie',
     readyToShip: 'Gotowe do wysyłki',
-    inTransit: 'W drodze',
-    delivered: 'Dostarczone',
-    completed: 'Zakończone',
     
     // Billing
     paymentHistory: 'Historia płatności',

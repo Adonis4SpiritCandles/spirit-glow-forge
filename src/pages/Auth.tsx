@@ -108,7 +108,7 @@ const Auth = () => {
             {isLogin ? t('signIn') : t('signUp')}
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            {isLogin ? t('welcomeBack') : t('joinFamily')}
+            {isLogin ? (language === 'pl' ? 'Witamy ponownie w Spirit of Candles' : 'Welcome back to Spirit of Candles') : (language === 'pl' ? 'Dołącz do rodziny Spirit of Candles' : 'Join the Spirit of Candles family')}
           </CardDescription>
         </CardHeader>
         <CardContent>

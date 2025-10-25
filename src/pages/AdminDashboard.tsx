@@ -573,7 +573,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="products">{t('products')}</TabsTrigger>
             <TabsTrigger value="orders">{t('orders')}</TabsTrigger>
             <TabsTrigger value="customers">{t('customers')}</TabsTrigger>
-            <TabsTrigger value="warehouse">Warehouse</TabsTrigger>
+            <TabsTrigger value="warehouse">{t('warehouse')}</TabsTrigger>
             <TabsTrigger value="statistics">{t('statistics')}</TabsTrigger>
             <TabsTrigger value="export">Export</TabsTrigger>
           </TabsList>
@@ -713,7 +713,7 @@ const AdminDashboard = () => {
                             variant="outline"
                             onClick={() => setProductForm({ ...productForm, image_url: '' })}
                           >
-                            Clear
+                            {t('clear')}
                           </Button>
                         </div>
                         {productForm.image_url && (
@@ -760,12 +760,12 @@ const AdminDashboard = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Price (PLN)</TableHead>
-                      <TableHead>Stock</TableHead>
-                      <TableHead>Size</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead>{t('name')}</TableHead>
+                      <TableHead>{t('category')}</TableHead>
+                      <TableHead>{t('pricePln')}</TableHead>
+                      <TableHead>{t('stock')}</TableHead>
+                      <TableHead>{t('size')}</TableHead>
+                      <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -793,21 +793,21 @@ const AdminDashboard = () => {
                               variant="outline" 
                               onClick={() => editProduct(product)}
                             >
-                              Edit
+                              {t('edit')}
                             </Button>
                             <Button 
                               size="sm" 
                               variant={product.published ? "secondary" : "default"}
                               onClick={() => togglePublish(product.id, !product.published)}
                             >
-                              {product.published ? 'Unpublish' : 'Publish'}
+                              {product.published ? t('unpublish') : t('publish')}
                             </Button>
                             <Button 
                               size="sm" 
                               variant="destructive" 
                               onClick={() => deleteProduct(product.id)}
                             >
-                              Delete
+                              {t('delete')}
                             </Button>
                           </div>
                         </TableCell>
@@ -823,19 +823,19 @@ const AdminDashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle>{t('orders')}</CardTitle>
-                <CardDescription>Manage customer orders and shipping</CardDescription>
+                <CardDescription>{t('manageCustomerOrders')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Order ID</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Total</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Shipping</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead>{t('orderId')}</TableHead>
+                      <TableHead>{t('customer')}</TableHead>
+                      <TableHead>{t('total')}</TableHead>
+                      <TableHead>{t('status')}</TableHead>
+                      <TableHead>{t('shipping')}</TableHead>
+                      <TableHead>{t('date')}</TableHead>
+                      <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -883,7 +883,7 @@ const AdminDashboard = () => {
                                 </Badge>
                               </div>
                             ) : (
-                              <Badge variant="outline">No shipment</Badge>
+                              <Badge variant="outline">{t('noShipment')}</Badge>
                             )}
                           </TableCell>
                           <TableCell>

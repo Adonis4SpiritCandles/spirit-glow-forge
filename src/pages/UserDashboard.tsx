@@ -267,36 +267,36 @@ const UserDashboard = () => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-medium">First Name</label>
+                        <label className="text-sm font-medium">{t('firstName')}</label>
                         <Input
                           value={editForm.first_name}
                           onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
-                          placeholder="First Name"
+                          placeholder={t('firstName')}
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium">Last Name</label>
+                        <label className="text-sm font-medium">{t('lastName')}</label>
                         <Input
                           value={editForm.last_name}
                           onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
-                          placeholder="Last Name"
+                          placeholder={t('lastName')}
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-medium">Username</label>
+                      <label className="text-sm font-medium">{t('username')}</label>
                       <Input
                         value={editForm.username}
                         onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                        placeholder="Username"
+                        placeholder={t('username')}
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium">Email</label>
+                      <label className="text-sm font-medium">{t('email')}</label>
                       <Input
                         value={editForm.email}
                         onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                        placeholder="Email"
+                        placeholder={t('email')}
                         type="email"
                       />
                     </div>
@@ -370,24 +370,24 @@ const UserDashboard = () => {
                             </div>
                           </div>
                         <div className="space-y-2 border-t pt-3">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Products:</span>
-                            <span>{(order.total_pln - (order.shipping_cost_pln || 0))} PLN / {(order.total_eur - (order.shipping_cost_eur || 0))} EUR</span>
-                          </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">{t('products')}:</span>
+                              <span>{(order.total_pln - (order.shipping_cost_pln || 0))} PLN / {(order.total_eur - (order.shipping_cost_eur || 0))} EUR</span>
+                            </div>
                           {(order.shipping_cost_pln || 0) > 0 && (
                             <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Shipping:</span>
+                              <span className="text-muted-foreground">{t('shipping')}:</span>
                               <span>{order.shipping_cost_pln} PLN / {order.shipping_cost_eur} EUR</span>
                             </div>
                           )}
                           {order.carrier_name && (
                             <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Carrier:</span>
+                              <span className="text-muted-foreground">{t('carrier')}:</span>
                               <Badge variant="outline">{order.carrier_name}</Badge>
                             </div>
                           )}
                           <div className="flex justify-between font-semibold pt-2 border-t">
-                            <span>Total:</span>
+                            <span>{t('total')}:</span>
                             <span>{order.total_pln} PLN / {order.total_eur} EUR</span>
                           </div>
                         </div>

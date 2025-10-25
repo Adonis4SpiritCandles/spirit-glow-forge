@@ -138,7 +138,7 @@ const AdminExport = ({ data }: AdminExportProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-sm font-medium mb-2 block">Data Type</label>
+          <label className="text-sm font-medium mb-2 block">{t('dataType')}</label>
           <Select value={exportType} onValueChange={(value: any) => setExportType(value)}>
             <SelectTrigger>
               <SelectValue />
@@ -167,7 +167,7 @@ const AdminExport = ({ data }: AdminExportProps) => {
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Format</label>
+          <label className="text-sm font-medium mb-2 block">{t('format')}</label>
           <Select value={format} onValueChange={(value: any) => setFormat(value)}>
             <SelectTrigger>
               <SelectValue />
@@ -195,7 +195,7 @@ const AdminExport = ({ data }: AdminExportProps) => {
           size="lg"
         >
           <Download className="h-4 w-4 mr-2" />
-          Export {exportType} as {format.toUpperCase()}
+          {t('exportOrdersCsv')}
         </Button>
       </CardContent>
     </Card>

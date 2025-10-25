@@ -9,1624 +9,198 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
-const translations = {
-  en: {
-    // Navigation
-    home: 'Home',
-    shop: 'Shop',
-    collections: 'Collections',
-    about: 'About',
-    contact: 'Contact',
-    cart: 'Cart',
-    login: 'Login',
-    register: 'Register',
-    logout: 'Logout',
-    dashboard: 'Dashboard',
-    adminDashboard: 'Admin Dashboard',
-
-    // Product
-    addToCart: 'Add to Cart',
-    price: 'Price',
-    size: 'Size',
-    weight: 'Weight',
-    category: 'Category',
-    inStock: 'In Stock',
-    outOfStock: 'Out of Stock',
-    quantity: 'Quantity',
-    viewProduct: 'View Product',
-    featuredCollection: 'Featured Collection',
-    featuredCollectionDescription: 'Discover our most beloved luxury soy candles, each inspired by iconic fragrances and crafted with the finest natural ingredients.',
-    exploreFullCollection: 'Explore Full Collection',
-
-    // Cart
-    shoppingCart: 'Shopping Cart',
-    emptyCart: 'Your cart is empty',
-    addSomeCandles: 'Add some candles to get started',
-    browseCollection: 'Browse Collection',
-    subtotal: 'Subtotal',
-    total: 'Total',
-    checkoutNow: 'Checkout Now',
-    viewFullCart: 'View Full Cart',
-    items: 'items',
-    clearCart: 'Clear Cart',
-    continueShopping: 'Continue Shopping',
-    shipping: 'Shipping',
-    freeShipping: 'Free',
-    remove: 'Remove',
-
-    // Forms
-    email: 'Email',
-    password: 'Password',
-    firstName: 'First Name',
-    lastName: 'Last Name',
-    confirmPassword: 'Confirm Password',
-    signIn: 'Sign In',
-    signUp: 'Sign Up',
-    dontHaveAccount: "Don't have an account?",
-    alreadyHaveAccount: 'Already have an account?',
-    changePassword: 'Change Password',
-    currentPassword: 'Current Password',
-    newPassword: 'New Password',
-    confirmNewPassword: 'Confirm New Password',
-    welcomeBack: 'Welcome back to Spirit of Candles',
-    joinFamily: 'Join the Spirit of Candles family',
-    rememberMe: 'Remember me',
-    chooseFile: 'Choose file',
-    noFileSelected: 'No file selected',
-    trackPackage: 'Track Package',
-
-    // Hero Section
-    heroTitle: 'Spirit of Candles',
-    heroSubtitle: 'Illuminate your soul with luxury scented candles',
-    shopNow: 'Shop Now',
-    exploreCollection: 'Explore Collection',
-
-    // Categories
-    luxury: 'Luxury',
-    nature: 'Nature',
-    fresh: 'Fresh',
-
-    // Footer
-    quickLinks: 'Quick Links',
-    customerService: 'Customer Service',
-    followUs: 'Follow Us',
-    allRightsReserved: 'All rights reserved',
-    brandDescription: "Luxury soy candles inspired by the world's most beloved fragrances. Hand-poured with natural ingredients to reborn your nature.",
-    supportSection: 'Support',
-    shippingAndReturns: 'Shipping & Returns',
-    privacyPolicy: 'Privacy Policy',
-    availableInLanguages: 'Available in English and Polish',
-    designedBy: 'Design & Site by AdoniS4U @ Antonio Adonis Gagliardi. All rights reserved.',
-    inspirationNoticeFooter: 'Fragrance inspiration: references are inspirations only.',
-    notAffiliatedDisclaimer: 'SPIRIT CANDLES is not affiliated with or endorsed by the original trademark owners.',
-    allCandles: 'All Candles',
-    aboutUs: 'About Us',
-
-    // Search
-    search: 'Search',
-    searchPlaceholder: 'Search products...',
-    searchResults: 'Search Results',
-    noResults: 'No products found',
-
-    // Contact
-    contactUs: 'Contact Us',
-    name: 'Name',
-    message: 'Message',
-    sendMessage: 'Send Message',
-    subject: 'Subject',
-    getInTouch: 'Get In Touch',
-    sendUsAMessage: 'Send Us A Message',
-    contactInformation: 'Contact Information',
-    emailUs: 'Email Us',
-    callUs: 'Call Us',
-    visitUs: 'Visit Us',
-    responseTime: 'Response Time',
-    frequentlyAskedQuestions: 'Frequently Asked Questions',
-    viewAllFaqs: 'View All FAQs',
-    customerServiceHours: 'Customer Service Hours',
-    emailSupport: 'Email Support',
-    phoneSupport: 'Phone Support',
-    sendUsQuestionsAnytime: 'Send us your questions anytime! ;)',
-    monFri9to18CET: 'Mon-Fri 9:00-18:00 CET',
-    weAimToRespondQuickly: 'We aim to respond quickly.',
-    categoryInfo: 'Info',
-    categoryGeneric: 'Generic',
-    categoryOrder: 'Order',
-    categoryShipping: 'Shipping',
-    categoryOther: 'Other',
-    contactIntro: "Have questions about our candles or need personalized recommendations? We'd love to hear from you and help you find the perfect fragrance for your space.",
-    selectCategory: 'Select a category',
-
-    // Dashboard additions
-    revenue: 'Revenue',
-    manageProductInventory: 'Manage your product inventory',
-    addNewProduct: 'Add New Product',
-    editProductTitle: 'Edit Product',
-    updateProduct: 'Update Product',
-    createProduct: 'Create Product',
-    deleteConfirm: 'Are you sure you want to delete this product?',
-    billing: 'Billing',
-    status: 'Status',
-    customerDetails: 'Customer Details',
-    viewDetails: 'View Details',
-    exportData: 'Export Data',
-    statistics: 'Statistics',
-    accountSettings: 'Account Settings',
-    manageAccountPreferences: 'Manage your account preferences',
-    chooseLanguagePreference: 'Choose your preferred language for emails and the website.',
-    profileInformation: 'Profile Information',
-    viewEditPersonalInfo: 'View and edit your personal information',
-    orderHistoryDesc: 'View your past orders and their status',
-    paid: 'Paid',
-    completed: 'Completed',
-    inTransit: 'In Transit',
-    delivered: 'Delivered',
-    products: 'Products',
-    shippingCost: 'Shipping Cost',
-    carrierSelected: 'Carrier Selected',
-    serviceId: 'Service ID',
-    orderInformation: 'Order Information',
-    orderId: 'Order ID',
-    date: 'Date',
-    completeInformation: 'Complete information for order',
-    customerInformation: 'Customer Information',
-    role: 'Role',
-    pricingDetails: 'Pricing Details',
-    productsSubtotal: 'Products Subtotal',
-    shippingStatus: 'Shipping Status',
-    carrier: 'Carrier',
-    trackingNumber: 'Tracking Number',
-    packageId: 'Package ID',
-
-    // Form labels
-    nameEn: 'Name (EN)',
-    namePl: 'Name (PL)',
-    descriptionEn: 'Description (EN)',
-    descriptionPl: 'Description (PL)',
-    pricePln: 'Price PLN (cents)',
-    priceEur: 'Price EUR (cents)',
-
-    // Animations and UI
-    materializing: 'Materializing',
-    shopCollection: 'Shop Collection',
-    learnOurStory: 'Learn Our Story',
-    rebornYourNature: 'Reborn Your Nature',
-
-    // Admin
-    productManagement: 'Product Management',
-    addProduct: 'Add Product',
-    editProduct: 'Edit Product',
-    deleteProduct: 'Delete Product',
-    productName: 'Product Name',
-    productDescription: 'Product Description',
-    productImage: 'Product Image',
-    uploadImage: 'Upload Image',
-    selectImage: 'Select Image',
-    imageUploaded: 'Image uploaded successfully',
-    productPrice: 'Product Price',
-    productCategory: 'Product Category',
-    productSize: 'Product Size',
-    productWeight: 'Product Weight (Optional)',
-    stockQuantity: 'Stock Quantity',
-    imageUrl: 'Image URL',
-    save: 'Save',
-    cancel: 'Cancel',
-    delete: 'Delete',
-    edit: 'Edit',
-    optional: 'Optional',
-    manageCustomerOrders: 'Manage customer orders and shipping',
-    customerEmail: 'Customer Email',
-    actions: 'Actions',
-    details: 'Details',
-    complete: 'Complete',
-    createShipment: 'Create Shipment',
-    noShipment: 'No shipment',
-    monthlyOrders: 'Monthly Orders',
-    salesByCategory: 'Sales by Category',
-    monthlyRevenue: 'Monthly Revenue (PLN)',
-    fromLastMonth: 'from last month',
-    dataType: 'Data Type',
-    format: 'Format',
-    exportOrdersAsCSV: 'Export orders as CSV',
-    stock: 'Stock',
-    publish: 'Publish',
-    unpublish: 'Unpublish',
-    manageYourProductInventory: 'Manage your product inventory',
-
-    // User Dashboard
-    profile: 'Profile',
-    accountStatus: 'Account Status',
-    spiritMembers: 'Spirit Members',
-    editProfile: 'Edit Profile',
-    saveChanges: 'Save Changes',
-    orderHistory: 'Order History',
-    noOrders: 'No orders found',
-    language: 'Language',
-    preferredLanguage: 'Preferred Language',
-
-    // Shipping and Checkout
-    shippingAddress: 'Shipping Address',
-    deliveryAddress: 'Delivery Address',
-    changeAddress: 'Change Address',
-    shippingOptions: 'Shipping Options',
-    standardDelivery: 'Standard Delivery',
-    net: 'net',
-    selectedShipping: 'Selected Shipping',
-    confirmAndProceed: 'Confirm and Proceed to Payment',
-    calculatedNext: 'Calculated next',
-    orderItems: 'Order Items',
-    fullName: 'Full Name',
-    streetAddress: 'Street Address',
-    streetNumber: 'Street Number',
-    apartmentNumber: 'Apartment Number (Optional)',
-    city: 'City',
-    postalCode: 'Postal Code',
-    country: 'Country',
-    phone: 'Phone',
-    phonePrefix: "Prefix",
-    phoneNumber: "Phone Number",
-    phonePrefixHint: "Telephone prefix (include '+', e.g., +48)",
-    calculating: 'Calculating...',
-    calculateShipping: 'Calculate Shipping Options',
-    shippingCalculationError: 'Failed to calculate shipping options. Please try again.',
-
-    // Common UI elements
-    loading: 'Loading...',
-    error: 'Error',
-    success: 'Success',
-    confirm: 'Confirm',
-    yes: 'Yes',
-    no: 'No',
-    close: 'Close',
-    back: 'Back',
-    next: 'Next',
-    previous: 'Previous',
-    addedToCart: 'Added to cart',
-    itemAdded: 'Item added to cart',
-    proceedToCheckout: 'Proceed to checkout',
-    checkout: 'Checkout',
-    paymentSuccess: 'Payment successful',
-    orderPlaced: 'Order placed',
-    thankYou: 'Thank you',
-    orderNumber: 'Order number',
-    accessDenied: 'Access denied',
-    clear: 'Clear',
-    notProvided: 'Not provided',
-    notSet: 'Not set',
-    memberSince: 'Member since',
-    username: 'Username',
-    loginRequired: 'Login Required',
-    loginToCheckout: 'You need to log in to complete your purchase',
-    proceedToPayment: 'Proceed to Payment',
-    backToCart: 'Back to Cart',
-    processing: 'Processing...',
-    orderSummary: 'Order Summary',
-
-    // Contact page specifics
-    missingInformation: 'Missing Information',
-    pleaseFillRequired: 'Please fill in all required fields.',
-    messageSentSuccessfully: 'Message Sent Successfully!',
-    thankYouContact: 'Thank you for contacting us. We\'ll get back to you within 24-48 hours.',
-    errorSendingMessage: 'Failed to send message. Please try again or contact us directly.',
-    yourFullName: 'Your full name',
-    yourEmail: 'your@email.com',
-    whatsThisAbout: 'What\'s this about?',
-    tellUsHowWeCanHelp: 'Tell us how we can help you...',
-    howLongBurn: 'How long do your candles burn?',
-    burnTimeAnswer: 'Our 180g candles burn for approximately 45-50 hours.',
-    areEcoFriendly: 'Are your candles eco-friendly?',
-    ecoAnswer: 'Yes! We use 100% natural soy wax, wooden wicks, and recyclable glass containers. Our candles are vegan and cruelty-free.',
-    shipInternationally: 'Do you ship internationally?',
-    shippingAnswer: 'Currently, we ship within Poland and to select EU countries. Contact us for specific shipping information.',
-    responseTime24: '24/7 - We respond within 24-48 hours',
-    phoneHours: 'Monday - Friday: 9:00 AM - 6:00 PM CET',
-
-    // About page
-    discoverOurCollection: 'Discover Our Collection',
-    whyChooseSpiritCandles: 'Why Choose SPIRIT CANDLES',
-    naturalSoyWax: '100% Natural Soy Wax',
-    naturalSoyWaxDesc: 'Crafted from pure soy wax for a clean, eco-friendly burn that lasts longer than traditional paraffin candles.',
-    woodenWicks: 'Wooden Wicks',
-    woodenWicksDesc: 'Our crackling wooden wicks create an authentic fireplace ambiance while providing an even, consistent flame.',
-    handPouredWithLove: 'Hand-Poured with Love',
-    handPouredDesc: 'Each candle is carefully hand-poured in small batches to ensure the highest quality and attention to detail.',
-    soyWaxDescription: 'Crafted from pure soy wax for a clean, eco-friendly burn that lasts longer than traditional paraffin candles.',
-    woodenWicksDescription: 'Our crackling wooden wicks create an authentic fireplace ambiance while providing an even, consistent flame.',
-    handPouredDescription: 'Each candle is carefully hand-poured in small batches to ensure the highest quality and attention to detail.',
-    luxuryFragrancesDescription: 'Inspired by iconic perfumes, our scents are complex, sophisticated, and designed to transform any space.',
-    naturalIngredients: 'Natural Ingredients',
-    naturalIngredientsDescription: 'We use only the finest natural soy wax and premium fragrance oils, free from harsh chemicals and toxins.',
-
-    // Shop page
-    ourCollection: 'Our Collection',
-    discoverCompleteRange: 'Discover our complete range of luxury soy candles, each inspired by iconic fragrances and handcrafted with natural ingredients.',
-    searchCandles: 'Search candles...',
-    filterBy: 'Filter by',
-    sortBy: 'Sort by',
-    allProducts: 'All Products',
-    newArrivals: 'New Arrivals',
-    bestsellers: 'Bestsellers',
-    featured: 'Featured',
-    priceLowToHigh: 'Price: Low to High',
-    priceHighToLow: 'Price: High to Low',
-    nameAToZ: 'Name: A to Z',
-    product: 'product',
-    noProductsFound: 'No products found',
-    tryAdjustingFilters: 'Try adjusting your search or filter criteria',
-    clearFilters: 'Clear Filters',
-    loadMoreProducts: 'Load More Products',
-
-    // Collections page
-    ourCollections: 'Our Collections',
-    discoverCuratedCollections: 'Discover carefully curated collections of luxury soy candles, each designed to create the perfect ambiance for every moment and mood.',
-    luxuryCollection: 'Luxury Collection',
-    luxuryCollectionDesc: 'Premium fragrances inspired by the world\'s most exclusive perfumes',
-    freshAndClean: 'Fresh & Clean',
-    freshDesc: 'Light, airy scents that refresh and energize your space',
-    romanticEvening: 'Romantic Evening',
-    romanticDesc: 'Intimate, warm fragrances perfect for special moments',
-    bestSellers: 'Best Sellers',
-    bestSellersDesc: 'Our most loved candles chosen by customers worldwide',
-    exploreCollectionPage: 'Explore Collection',
-    backToAllCollections: '← Back to All Collections',
-    moreProductsComingSoon: 'More products coming soon to this collection...',
-    cantDecide: 'Can\'t decide? Browse all our candles',
-    shopAllCandles: 'Shop All Candles',
-
-    // Product Detail page
-    backToShop: 'Back to Shop',
-    productNotFound: 'Product not found',
-    returnToShop: 'Return to Shop',
-    inspiredBy: 'Inspired by',
-    reviews: 'reviews',
-    buyNow: 'Buy Now',
-    wishlist: 'Wishlist',
-    share: 'Share',
-    moodAndAmbiance: 'Mood & Ambiance',
-    productDetails: 'Product Details',
-    waxType: 'Wax Type',
-    wick: 'Wick',
-    handPoured: 'Hand Poured',
-    burnTime: 'Burn Time',
-    careInstructions: 'Care Instructions',
-    inspirationNotice: 'Inspiration Notice:',
-    fragranceReferences: 'Fragrance references are inspirations only. SPIRIT CANDLES is not affiliated with or endorsed by the original trademark owners.',
-
-    // Payment Success page
-    paymentSuccessful: 'Payment Successful!',
-    orderConfirmation: 'Thank you for your purchase! Your order has been confirmed.',
-    sessionId: 'Session ID',
-    viewOrders: 'View My Orders',
-    emailConfirmation: 'A confirmation email will be sent to you shortly.',
-    
-    addedToWishlist: 'Added to Wishlist',
-    removedFromWishlist: 'Removed from Wishlist',
-    myWishlist: 'My Wishlist',
-    emptyWishlist: 'Your wishlist is empty',
-    startAddingFavorites: 'Start adding your favorite products',
-    item: 'item',
-
-    // Reviews
-    customerReviews: 'Customer Reviews',
-    noReviewsYet: 'No reviews yet',
-    basedOnReviews: 'Based on {count} reviews',
-    writeReview: 'Write a Review',
-    editReview: 'Edit Review',
-    yourRating: 'Your Rating',
-    yourReview: 'Your Review',
-    shareYourThoughts: 'Share your thoughts...',
-    submitReview: 'Submit Review',
-    updateReview: 'Update Review',
-    allReviews: 'All Reviews',
-
-    // Order statuses
-    awaitingApproval: 'Awaiting Approval',
-    readyToShip: 'Ready to Ship',
-    
-    // Billing
-    paymentHistory: 'Payment History',
-    billingDescription: 'All payments are processed securely through Stripe. Your payment history is linked to your orders.',
-    viewOrdersForPayments: 'View the Orders tab to see your complete payment history.',
-
-    // Shipment modal
-    shipmentConfirmation: 'Shipment Confirmation',
-    shipmentDetails: 'Shipment Details',
-    enableEditingDimensions: 'Enable editing dimensions and weight',
-    width: 'Width',
-    height: 'Height',
-    length: 'Length',
-    confirmAndCreateShipment: 'Confirm and Create Shipment',
-    
-    // Warehouse Management
-    editProductDetails: 'Edit',
-    viewProductPage: 'View',
-    warehouse: 'Warehouse',
-    warehouseManagement: 'Warehouse Management',
-    stockOverview: 'Stock Overview',
-    productStockLevels: 'Product Stock Levels',
-    totalItems: 'Total Items',
-    lowStockAlerts: 'Low Stock Alerts',
-    updateStock: 'Update Stock',
-    published: 'Published',
-    unpublished: 'Unpublished',
-
-    // GDPR & Cookie Consent
-    cookieBannerTitle: 'We Value Your Privacy',
-    cookieBannerDescription: 'We use cookies to enhance your browsing experience and analyze our traffic. You can customize your preferences at any time. For more information, please read our',
-    and: 'and',
-    acceptAllCookies: 'Accept All',
-    rejectAllCookies: 'Reject All',
-    customizeSettings: 'Customize',
-    savePreferences: 'Save Preferences',
-    manageCookiePreferences: 'Manage Cookie Preferences',
-    strictlyNecessaryCookies: 'Strictly Necessary Cookies',
-    alwaysActive: 'Always Active',
-    strictlyNecessaryDescription: 'Essential for website functionality, including authentication, shopping cart, and security features. Cannot be disabled.',
-    functionalCookies: 'Functional Cookies',
-    functionalDescription: 'Enable enhanced functionality such as language preferences, saved addresses, and personalized features.',
-    analyticsCookies: 'Analytics Cookies',
-    analyticsDescription: 'Help us understand how visitors interact with our website to improve performance and user experience.',
-    marketingCookies: 'Marketing Cookies',
-    marketingDescription: 'Used to display personalized advertisements and measure campaign effectiveness across platforms.',
-    socialMediaCookies: 'Social Media Cookies',
-    socialMediaDescription: 'Allow you to interact with embedded content and share on social platforms.',
-    
-    // Cookie Services
-    supabaseService: 'Supabase',
-    supabaseServiceDesc: 'Keeps you logged in and manages your session.',
-    stripeService: 'Stripe',
-    stripeServiceDesc: 'Processes payments securely and prevents fraud.',
-    furgonetkaService: 'Furgonetka',
-    furgonetkaServiceDesc: 'Lets you choose shipping methods and track your parcel.',
-    resendService: 'Resend',
-    resendServiceDesc: 'Sends transactional emails such as order confirmations.',
-    ga4Service: 'Google Analytics 4',
-    ga4ServiceDesc: 'Helps us analyse website traffic and improve our services.',
-    metaPixelService: 'Meta Pixel',
-    metaPixelServiceDesc: 'Tracks conversions and enables targeted advertising.',
-    youtubeService: 'YouTube',
-    youtubeServiceDesc: 'Embeds videos and stores your preferences.',
-    tiktokService: 'TikTok Pixel',
-    tiktokServiceDesc: 'Measures ad performance and builds custom audiences on TikTok.',
-    twitterService: 'Twitter Pixel',
-    twitterServiceDesc: 'Tracks conversions from Twitter ads and personalises advertising.',
-    learnMore: 'Learn more',
-    alwaysOn: 'Always on',
-    
-    // Legal Pages Common
-    lastUpdated: 'Last Updated',
-    cookiePolicy: 'Cookie Policy',
-    termsOfSale: 'Terms of Sale',
-    legalNotice: 'Legal Notice',
-    dataRequest: 'Data Request',
-    accessibility: 'Accessibility',
-    allNotices: 'All Notices',
-    privacyRegistration: 'Privacy Notice - Registration',
-    legal: 'Legal',
-    manageCookies: 'Manage Cookies',
-    
-    // Cookie Policy Page
-    cookiePolicyIntro: 'This Cookie Policy explains how SPIRIT CANDLES uses cookies and similar technologies when you visit our website. By continuing to use our site, you consent to our use of cookies in accordance with this policy.',
-    whatAreCookies: 'What Are Cookies?',
-    whatAreCookiesDesc: 'Cookies are small text files stored on your device when you visit websites. They help websites remember your preferences and improve your browsing experience.',
-    cookiesWeUse: 'Cookies We Use',
-    scConsentDesc: 'Stores your cookie preferences',
-    authTokenDesc: 'Manages your authentication session',
-    languageCookieDesc: 'Remembers your language preference',
-    cartCookieDesc: 'Maintains your shopping cart items',
-    googleAnalyticsDesc: 'Google Analytics cookies for site analytics',
-    gidDesc: 'Google Analytics identifier',
-    facebookPixelDesc: 'Facebook Pixel for advertising analytics',
-    facebookRetargetingDesc: 'Facebook retargeting cookie',
-    thirdPartyCookies: 'Third-Party Cookies',
-    thirdPartyCookiesDesc: 'We use the following third-party services that may set cookies:',
-    googleAnalyticsThirdParty: 'Used for website analytics and performance monitoring',
-    metaThirdParty: 'Used for advertising and conversion tracking',
-    stripeThirdParty: 'Used for secure payment processing',
-    managingCookies: 'Managing Your Cookies',
-    managingCookiesDesc: 'You can control and manage cookies through our cookie banner or your browser settings:',
-    browserSettingsInfo: 'Most browsers allow you to block or delete cookies. Please note that blocking essential cookies may affect website functionality.',
-    cookieConsent: 'Your Cookie Consent',
-    cookieConsentDesc: 'When you first visit our website, you will see a cookie banner asking for your consent. You can change your preferences at any time by clicking the "Manage Cookies" button in the footer.',
-    cookieDuration: 'Cookie Duration',
-    sessionCookies: 'Session Cookies',
-    sessionCookiesDesc: 'Temporary cookies that expire when you close your browser',
-    persistentCookies: 'Persistent Cookies',
-    persistentCookiesDesc: 'Remain on your device for a set period (up to 12 months)',
-    updatesCookiePolicy: 'Updates to This Policy',
-    updatesCookiePolicyDesc: 'We may update this Cookie Policy from time to time. The "Last Updated" date at the top indicates when changes were last made.',
-      cookiePolicyContactIntro: 'If you have questions about our use of cookies:',
-      
-      // PDF Download
-      downloadPDF: "Download PDF",
-      
-      // Privacy Policy Page
-      privacyIntro: 'M5M Limited sp. z o.o. oddział w Polsce ("we," "our," or "SPIRIT CANDLES") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal data in accordance with the GDPR and Polish data protection laws.',
-    dataController: 'Data Controller',
-    dataWeCollect: 'Data We Collect',
-    accountData: 'Account Data',
-    accountDataDesc: 'Email, name, username, password (encrypted), language preference',
-    orderData: 'Order Data',
-    orderDataDesc: 'Shipping address, phone number, order history, payment information (processed by Stripe)',
-    technicalData: 'Technical Data',
-    technicalDataDesc: 'IP address, browser type, device information, cookies',
-    cookieData: 'Cookie & Consent Data',
-    cookieDataDesc: 'Cookie preferences, consent timestamps, user agent',
-    legalBasis: 'Legal Basis for Processing',
-    contractPerformance: 'Contract Performance',
-    contractPerformanceDesc: 'Processing necessary to fulfill orders and provide services',
-    consent: 'Consent',
-    consentDesc: 'Marketing communications, optional cookies, newsletter subscription',
-    legitimateInterest: 'Legitimate Interest',
-    legitimateInterestDesc: 'Fraud prevention, website analytics, service improvement',
-    legalObligation: 'Legal Obligation',
-    legalObligationDesc: 'Tax records, accounting, legal compliance',
-    howWeUseData: 'How We Use Your Data',
-    processOrders: 'Process and fulfill your orders',
-    provideCommunication: 'Provide customer support and communication',
-    improveServices: 'Improve our products, services, and website',
-    sendMarketing: 'Send marketing communications (with your consent)',
-    fraudPrevention: 'Prevent fraud and ensure security',
-    dataSharing: 'Data Sharing',
-    dataSharingIntro: 'We share data with trusted service providers who help us operate:',
-    paymentProcessors: 'Payment Processors',
-    shippingProviders: 'Shipping Providers',
-    analyticsServices: 'Analytics Services',
-    emailServices: 'Email Services',
-    hostingServices: 'Hosting Services',
-    internationalTransfers: 'International Data Transfers',
-    internationalTransfersDesc: 'Some service providers may be located outside the EU. We ensure appropriate safeguards (Standard Contractual Clauses) are in place.',
-    dataRetention: 'Data Retention',
-    accountDataRetention: 'Account data: Until account deletion + 30 days',
-    orderDataRetention: 'Order data: 10 years (tax/legal requirements)',
-    marketingDataRetention: 'Marketing data: Until consent withdrawn',
-    cookieDataRetention: 'Cookie consent: 12 months',
-    yourRights: 'Your Rights Under GDPR',
-    rightAccess: 'Right to Access',
-    rightAccessDesc: 'Request a copy of your personal data',
-    rightRectification: 'Right to Rectification',
-    rightRectificationDesc: 'Correct inaccurate data',
-    rightErasure: 'Right to Erasure',
-    rightErasureDesc: 'Request deletion of your data ("right to be forgotten")',
-    rightRestrict: 'Right to Restrict Processing',
-    rightRestrictDesc: 'Limit how we use your data',
-    rightPortability: 'Right to Data Portability',
-    rightPortabilityDesc: 'Receive your data in a machine-readable format',
-    rightObject: 'Right to Object',
-    rightObjectDesc: 'Object to processing based on legitimate interests',
-    rightWithdraw: 'Right to Withdraw Consent',
-    rightWithdrawDesc: 'Withdraw consent at any time',
-    exerciseRights: 'To exercise your rights, use our',
-    dataRequestForm: 'Data Request Form',
-    security: 'Security',
-    securityDesc: 'We implement industry-standard security measures including encryption, secure servers, and regular security audits to protect your data.',
-    childrenPrivacy: 'Children\'s Privacy',
-    childrenPrivacyDesc: 'Our services are not intended for individuals under 16 years of age. We do not knowingly collect data from children.',
-    policyChanges: 'Changes to This Policy',
-    policyChangesDesc: 'We may update this Privacy Policy periodically. Significant changes will be communicated via email or website notification.',
-    privacyContactIntro: 'For privacy-related questions or to exercise your rights:',
-    supervisoryAuthority: 'Supervisory Authority',
-    supervisoryAuthorityDesc: 'You have the right to lodge a complaint with the Polish Data Protection Authority (UODO) if you believe your data rights have been violated.',
-    
-    // Terms of Sale Page
-    termsIntro: 'These Terms of Sale govern the purchase of products from SPIRIT CANDLES. By placing an order, you agree to these terms.',
-    seller: 'Seller',
-    contractFormation: 'Contract Formation',
-    contractFormationDesc: 'A binding contract is formed when we confirm your order via email. We reserve the right to refuse orders in cases of pricing errors, stock unavailability, or suspected fraud.',
-    productInformation: 'Product Information',
-    productInformationDesc: 'All product descriptions, images, and specifications are provided for guidance. While we strive for accuracy, variations may occur.',
-    pricingPayment: 'Pricing & Payment',
-    pricesShowEUR: 'Prices are shown in EUR and PLN',
-    pricesShownEUR: 'Prices displayed in EUR and PLN',
-    paymentMethods: 'We accept major credit cards, debit cards, and bank transfers via Stripe',
-    paymentProcessedStripe: 'Payment is securely processed through Stripe',
-    orderConfirmedPayment: 'Your order is confirmed once payment is successfully processed',
-    deliveryShipping: 'Delivery & Shipping',
-    deliveryShippingIntro: 'We offer reliable shipping across Poland and the European Union.',
-    shippingEUWide: 'We ship throughout Poland and to EU countries',
-    shippingCostsCalculated: 'Shipping costs are calculated based on destination and weight',
-    trackingProvided: 'Tracking number provided for all shipments',
-    rightOfWithdrawalIntro: 'Under EU consumer law, you have the right to withdraw from your purchase within 14 days.',
-    withdrawalPeriod: 'Withdrawal Period',
-    withdrawalPeriodDesc: 'You have 14 days from delivery to withdraw from the purchase without giving any reason.',
-    exercisingWithdrawal: 'Exercising Your Right of Withdrawal',
-    exercisingWithdrawalDesc: 'To exercise your right of withdrawal, please contact us at m5moffice@proton.me with a clear statement of your decision.',
-    returnConditions: 'Return Conditions',
-    returnConditionsDesc: 'Products must be unused, in original packaging, with all tags attached',
-    refunds: 'Refunds',
-    refundTimeframe: 'Refunds will be processed within 14 days of receiving the return',
-    warranty: 'Warranty',
-    warrantyDesc: 'All products come with a standard warranty covering manufacturing defects. Contact us if you experience any issues.',
-    liability: 'Liability',
-    liabilityDesc: 'Our liability is limited to the purchase price of the product, except in cases of gross negligence or intentional misconduct.',
-    onlineDisputeResolution: 'EU consumers may use the Online Dispute Resolution platform at:',
-    applicableLaw: 'Applicable Law',
-    applicableLawDesc: 'These Terms of Sale are governed by and construed in accordance with the laws of Poland.',
-    
-    // Legal Notice (Impressum) Page
-    legalNoticeIntro: 'This page contains legally required information about the operator of this website.',
-    companyInformation: 'Company Information',
-    companyInformationLegal: 'Company Information',
-    companyName: 'Company Name',
-    legalForm: 'Legal Form',
-    limitedLiability: 'Limited Liability Company (sp. z o.o.)',
-    registeredOffice: 'Registered Office',
-    taxId: 'Tax ID (NIP)',
-    registrationCourt: 'Registration Court',
-    registrationNumber: 'Registration Number',
-    managingDirectors: 'Managing Directors',
-    responsibleContent: 'Responsible for Content',
-    responsiblePerson: 'Content Responsibility',
-    websiteOperator: 'Website Operator',
-    websiteOperatorDesc: 'This website is operated by M5M Limited sp. z o.o. oddział w Polsce.',
-    hostingProvider: 'Hosting Provider',
-    intellectualProperty: 'Intellectual Property',
-    intellectualPropertyDesc: 'All content on this website (text, images, logos, designs) is protected by copyright and intellectual property laws. All trademarks and brand names mentioned are the property of their respective owners.',
-    disclaimer: 'Disclaimer',
-    disclaimerDesc: 'We strive to keep information on our website accurate and up-to-date. However, we cannot guarantee completeness or accuracy. We are not liable for damages arising from the use of information on this website.',
-    externalLinks: 'External Links',
-    externalLinksDesc: 'Our website contains links to external websites. We have no control over the content of these external sites and accept no responsibility for them.',
-    legalNoticeApplicableLaw: 'This website is governed by Polish law. Any disputes shall be resolved in the courts of Warsaw, Poland.',
-    legalNoticeContactIntro: 'For legal inquiries or concerns about this website:',
-    disputeResolutionPlatform: 'EU Dispute Resolution Platform',
-    odrInfo: 'The European Commission provides a platform for online dispute resolution (ODR):',
-    odrNotObligated: 'We are not obligated to participate in dispute resolution procedures before a consumer arbitration board, but we are willing to do so.',
-    trademarksIntellectual: 'Trademarks & Intellectual Property',
-    trademarksNotice: 'All trademarks, product names, and company names mentioned on this website are the property of their respective owners. SPIRIT CANDLES fragrance references are inspirational only and do not imply affiliation or endorsement.',
-    copyrightTitle: 'Copyright',
-    copyrightNotice: 'All content on this website (text, images, graphics, logos) is protected by copyright. Unauthorized use is prohibited.',
-    
-    // Data Request (DSAR) Form Page
-    dataRequestIntro: 'Use this form to exercise your GDPR rights. We will respond within 30 days.',
-    requestType: 'Request Type',
-    selectRequestType: 'Select your request type',
-    dataAccess: 'Data Access',
-    dataAccessDesc: 'Request a copy of all data we have about you',
-    dataRectification: 'Data Rectification',
-    dataRectificationDesc: 'Correct inaccurate or incomplete data',
-    dataErasure: 'Data Erasure',
-    dataErasureDesc: 'Delete your personal data ("right to be forgotten")',
-    dataPortability: 'Data Portability',
-    dataPortabilityDesc: 'Receive your data in a machine-readable format',
-    restrictProcessing: 'Restrict Processing',
-    restrictProcessingDesc: 'Limit how we process your data',
-    objectProcessing: 'Object to Processing',
-    objectProcessingDesc: 'Object to data processing based on legitimate interests',
-    withdrawConsentRequest: 'Withdraw Consent',
-    withdrawConsentDesc: 'Withdraw previously given consent (e.g., marketing)',
-    additionalDetails: 'Additional Details',
-    explainRequest: 'Please explain your request in detail...',
-    identityVerification: 'Identity Verification',
-    identityNote: 'To protect your privacy, we may require identity verification before processing your request.',
-    submitRequest: 'Submit Request',
-    dataRequestSuccess: 'Request Submitted Successfully',
-    dataRequestSuccessMsg: 'We have received your data request and will respond within 30 days as required by GDPR.',
-    dataRequestError: 'Failed to submit request. Please contact us directly at m5moffice@proton.me',
-    
-    // Accessibility Page
-    accessibilityStatement: 'Accessibility Statement',
-    accessibilityIntro: 'SPIRIT CANDLES is committed to ensuring digital accessibility for all users, including those with disabilities.',
-    ourCommitment: 'Our Commitment',
-    ourCommitmentDesc: 'We are committed to making our website accessible and user-friendly for everyone. We strive to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards.',
-    accessibilityCommitment: 'Our Commitment',
-    accessibilityCommitmentDesc: 'We strive to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards.',
-    accessibilityFeatures: 'Accessibility Features',
-    keyboardNavigation: 'Full keyboard navigation support',
-    screenReaderCompatibility: 'Screen reader compatibility with ARIA labels',
-    textScaling: 'Text size adjustment without loss of functionality',
-    colorContrast: 'Sufficient color contrast between text and backgrounds',
-    altTextImages: 'Alternative text for all images',
-    descriptiveLinks: 'Descriptive link text',
-    keyboardDesc: 'Full keyboard navigation support for all interactive elements',
-    altText: 'Alt Text for Images',
-    altTextDesc: 'Descriptive alternative text for all product and content images',
-    colorContrastDesc: 'High contrast ratios between text and backgrounds for readability',
-    responsiveDesign: 'Responsive Design',
-    responsiveDesc: 'Mobile-friendly design that adapts to different screen sizes and devices',
-    semanticHTML: 'Semantic HTML',
-    semanticDesc: 'Proper heading structure and semantic markup for screen readers',
-    wcagCompliance: 'WCAG Compliance',
-    wcagComplianceDesc: 'We aim to achieve WCAG 2.1 Level AA compliance across our website.',
-    knownLimitations: 'Known Limitations',
-    knownLimitationsIntro: 'Despite our efforts, some limitations may exist:',
-    thirdPartyContent: 'Some third-party content may not be fully accessible',
-    complexInteractions: 'Complex interactive features may present challenges',
-    workingToImprove: 'We are actively working to improve these areas.',
-    technicalSpecifications: 'Technical Specifications',
-    technicalSpecificationsIntro: 'Our website relies on the following technologies:',
-    assistiveTechnologies: 'Compatible Assistive Technologies',
-    assistiveTechnologiesDesc: 'Our website is designed to be compatible with:',
-    screenMagnifiers: 'Screen magnification software',
-    speechRecognition: 'Speech recognition software',
-    feedback: 'Feedback',
-    accessibilityFeedback: 'Feedback & Support',
-    accessibilityFeedbackDesc: 'If you encounter accessibility barriers on our website, please contact us:',
-    respondAccessibility: 'We aim to respond to accessibility feedback within 5 business days.',
-    continuousImprovement: 'Continuous Improvement',
-    continuousImprovementDesc: 'We regularly review and improve our accessibility features. Your feedback helps us make our website better for everyone.',
-    alternativeFormats: 'Alternative Formats',
-    alternativeFormatsDesc: 'If you need information from this website in a different format, please contact us and we will do our best to assist you.',
-    
-    // Form Consent Labels
-    agreeToTerms: 'I agree to the',
-    termsAndConditions: 'Terms of Sale',
-    agreeToPrivacy: 'I have read and agree to the',
-    subscribeNewsletter: 'I want to receive news, promotions, and exclusive offers via email',
-    newsletterOptional: '(optional)',
-    requiredField: 'This field is required',
-    consentRequired: 'You must accept the terms to continue',
-    iAccept: 'I accept',
-    iAcceptPrivacy: 'I accept',
-    iAcceptTerms: 'I accept',
-    newsletterOptIn: 'I want to receive news, promotions, and exclusive offers via email',
-    spiritCandleSite: 'Spirit Candle Site',
-    mustAcceptTermsCheckout: 'You must accept the Terms of Sale to complete your purchase',
-    mustAcceptPrivacy: 'You must accept the Privacy Policy to continue',
-    
-    // Hero Section
-    heroDescription: 'Discover our luxury collection of soy candles inspired by the world\'s most beloved fragrances. Each candle is hand-poured with natural soy wax and premium fragrance oils.',
-    
-    // About Page
-    aboutIntro1: 'At SPIRIT CANDLES, we believe that fragrance has the power to transform not just spaces, but souls. Our luxury soy candles are more than just beautiful objects—they\'re portals to memories, emotions, and deeper connections with yourself and your environment.',
-    aboutIntro2: 'Each candle is inspired by iconic fragrances and handcrafted with the finest natural ingredients, creating an elevated sensory experience that awakens your inner spirit.',
-    whyChooseDesc: 'Every aspect of our candles is designed with intention, from the sustainable materials we use to the mystical fragrances that inspire transformation.',
-    storyPara1: 'SPIRIT CANDLES was born from a simple yet profound belief: that the right fragrance can unlock the deepest parts of our being. Our founder, inspired by the transformative power of scent, embarked on a journey to create candles that would not just fill rooms with beautiful aromas, but awaken the spirit within.',
-    storyPara2: 'Drawing inspiration from the world\'s most iconic fragrances, we carefully craft each candle using traditional techniques and modern innovation. Our soy wax base ensures a clean burn, while our wooden wicks provide the gentle crackling sound of a cozy fireplace, creating an atmosphere of warmth and tranquility.',
-    storyPara3: 'Every SPIRIT CANDLE is a invitation to pause, breathe deeply, and reconnect with your inner nature. Whether you\'re seeking motivation, relaxation, or simply a moment of beauty in your day, our candles are designed to be your companion on the journey of self-discovery.',
-    philosophyQuote: '"Light a candle, ignite your spirit, and let your true nature emerge."',
-    philosophyCite: 'SPIRIT CANDLES Philosophy',
-    legalDisclaimerText: 'Our candles are inspired by popular fragrances for descriptive purposes only. We are not affiliated with any original fragrance manufacturers. All trademarks belong to their respective owners.',
-    
-    // Shipping & Returns Page
-    shippingReturnsTitle: 'Shipping & Returns',
-    shippingInfo: 'Shipping Information',
-    shippingInfoDesc: 'We offer reliable shipping services across Poland and Europe through trusted carriers.',
-    shippingItem1: 'Shipping rates calculated at checkout based on destination and carrier',
-    shippingItem2: 'All orders are carefully packaged to ensure your candles arrive safely',
-    shippingItem3: 'Tracking numbers provided for all shipments',
-    deliveryTimes: 'Delivery Times',
-    deliveryTimesDesc: 'Estimated delivery times vary by location and selected carrier (typically 2-7 business days within Poland, 5-14 days for international orders).',
-    orderTracking: 'Order Tracking',
-    orderTrackingDesc: 'Once your order ships, you will receive a confirmation email with tracking information. You can also track your order from your account dashboard.',
-    returnsPolicy: 'Returns Policy',
-    returnsPolicyDesc: 'We want you to love your SPIRIT CANDLES purchase. If you are not completely satisfied, we accept returns within 14 days of delivery under the following conditions:',
-    returnsItem1: 'Products must be unused and in original packaging',
-    returnsItem2: 'No signs of burning or tampering',
-    returnsItem3: 'Return shipping costs are the responsibility of the customer (unless the product is defective)',
-    returnsItem4: 'Sale and customized items cannot be returned',
-    howToReturn: 'How to Return',
-    returnStep1: 'Contact us at m5moffice@proton.me within 14 days of delivery',
-    returnStep2: 'We will provide return instructions and authorization',
-    returnStep3: 'Ship the item back using a tracked service',
-    refundsPolicy: 'Refunds',
-    refundsDesc: 'Once we receive and inspect your return, we will process your refund within 7-14 business days to your original payment method.',
-    needHelp: 'Need Help?',
-    needHelpDesc: 'For questions about shipping or returns, please contact our customer service:',
-  },
-  pl: {
-    // Navigation
-    home: 'Strona główna',
-    shop: 'Sklep',
-    collections: 'Kolekcje',
-    about: 'O nas',
-    contact: 'Kontakt',
-    cart: 'Koszyk',
-    login: 'Zaloguj',
-    register: 'Rejestracja',
-    logout: 'Wyloguj',
-    dashboard: 'Panel',
-    adminDashboard: 'Panel administratora',
-
-    // Product
-    addToCart: 'Dodaj do koszyka',
-    price: 'Cena',
-    size: 'Rozmiar',
-    weight: 'Waga',
-    category: 'Kategoria',
-    inStock: 'Dostępny',
-    outOfStock: 'Wyprzedany',
-    quantity: 'Ilość',
-    viewProduct: 'Zobacz produkt',
-    featuredCollection: 'Kolekcja wyróżniona',
-    featuredCollectionDescription: 'Odkryj nasze najbardziej ukochane luksusowe świece sojowe, każda inspirowana kultowymi zapachami i stworzona z najlepszych naturalnych składników.',
-    exploreFullCollection: 'Poznaj pełną kolekcję',
-
-    // Cart
-    shoppingCart: 'Koszyk zakupów',
-    emptyCart: 'Twój koszyk jest pusty',
-    addSomeCandles: 'Dodaj świece aby rozpocząć',
-    browseCollection: 'Przeglądaj kolekcję',
-    subtotal: 'Suma częściowa',
-    total: 'Razem',
-    checkoutNow: 'Zamów teraz',
-    viewFullCart: 'Zobacz pełny koszyk',
-    items: 'przedmiotów',
-    clearCart: 'Wyczyść koszyk',
-    continueShopping: 'Kontynuuj zakupy',
-    shipping: 'Dostawa',
-    freeShipping: 'Darmowa',
-    remove: 'Usuń',
-
-    // Forms
-    email: 'Email',
-    password: 'Hasło',
-    firstName: 'Imię',
-    lastName: 'Nazwisko',
-    confirmPassword: 'Potwierdź hasło',
-    signIn: 'Zaloguj się',
-    signUp: 'Zarejestruj się',
-    dontHaveAccount: 'Nie masz konta?',
-    alreadyHaveAccount: 'Masz już konto?',
-    changePassword: 'Zmień hasło',
-    currentPassword: 'Obecne hasło',
-    newPassword: 'Nowe hasło',
-    confirmNewPassword: 'Potwierdź nowe hasło',
-
-    // Hero Section
-    heroTitle: 'Duch Świec',
-    heroSubtitle: 'Oświetl swoją duszę luksusowymi świecami zapachowymi',
-    shopNow: 'Kup teraz',
-    exploreCollection: 'Poznaj pełną kolekcję',
-
-    // Categories
-    luxury: 'Luksus',
-    nature: 'Natura',
-    fresh: 'Świeżość',
-
-    // Footer
-    quickLinks: 'Szybkie linki',
-    customerService: 'Obsługa klienta',
-    followUs: 'Śledź nas',
-    allRightsReserved: 'Wszelkie prawa zastrzeżone',
-    brandDescription: 'Luksusowe świece sojowe inspirowane najbardziej lubianymi zapachami świata. Ręcznie wylewane z naturalnych składników, aby odrodzić Twoją naturę.',
-    supportSection: 'Wsparcie',
-    shippingAndReturns: 'Wysyłka i zwroty',
-    privacyPolicy: 'Polityka prywatności',
-    availableInLanguages: 'Dostępne w języku angielskim i polskim',
-    designedBy: 'Projekt i strona: AdoniS4U @ Antonio Adonis Gagliardi. Wszelkie prawa zastrzeżone.',
-    inspirationNoticeFooter: 'Inspiracja zapachowa: odniesienia są jedynie inspiracjami.',
-    notAffiliatedDisclaimer: 'SPIRIT CANDLES nie jest powiązane ani zatwierdzone przez pierwotnych właścicieli znaków towarowych.',
-    allCandles: 'Wszystkie świece',
-    aboutUs: 'O nas',
-
-    // Search
-    search: 'Szukaj',
-    searchPlaceholder: 'Szukaj produktów...',
-    searchResults: 'Wyniki wyszukiwania',
-    noResults: 'Nie znaleziono produktów',
-
-    // Contact
-    contactUs: 'Skontaktuj się z nami',
-    name: 'Imię',
-    message: 'Wiadomość',
-    sendMessage: 'Wyślij wiadomość',
-    subject: 'Temat',
-    getInTouch: 'Skontaktuj się z nami',
-    sendUsAMessage: 'Wyślij nam wiadomość',
-    contactInformation: 'Informacje kontaktowe',
-    emailUs: 'Napisz do nas',
-    callUs: 'Zadzwoń',
-    visitUs: 'Odwiedź nas',
-    responseTime: 'Czas odpowiedzi',
-    frequentlyAskedQuestions: 'Często zadawane pytania',
-    viewAllFaqs: 'Zobacz wszystkie FAQ',
-    customerServiceHours: 'Godziny obsługi klienta',
-    emailSupport: 'Wsparcie email',
-    phoneSupport: 'Wsparcie telefoniczne',
-    sendUsQuestionsAnytime: 'Wyślij nam swoje pytania w każdej chwili! ;)',
-    monFri9to18CET: 'Pon-Pią 9:00-18:00 CET',
-    weAimToRespondQuickly: 'Staramy się szybko odpowiadać.',
-    categoryInfo: 'Info',
-    categoryGeneric: 'Ogólne',
-    categoryOrder: 'Zamówienie',
-    categoryShipping: 'Wysyłka',
-    categoryOther: 'Inne',
-    contactIntro: 'Masz pytania dotyczące naszych świec lub potrzebujesz spersonalizowanych rekomendacji? Chętnie Cię wysłuchamy i pomożemy znaleźć idealny zapach dla Twojej przestrzeni.',
-    selectCategory: 'Wybierz kategorię',
-
-    // Form Consent & Contact
-    iAccept: 'Akceptuję',
-    iAcceptPrivacy: 'Akceptuję',
-    iAcceptTerms: 'Akceptuję',
-    newsletterOptIn: 'Chcę otrzymywać wiadomości, promocje i ekskluzywne oferty przez e-mail',
-    spiritCandleSite: 'Strona Spirit Candle',
-    mustAcceptTermsCheckout: 'Musisz zaakceptować Regulamin sprzedaży, aby dokończyć zakup',
-    mustAcceptPrivacy: 'Musisz zaakceptować Politykę Prywatności, aby kontynuować',
-    
-    // Hero Section
-    heroDescription: 'Odkryj naszą luksusową kolekcję świec sojowych inspirowanych najbardziej lubianymi zapachami świata. Każda świeca jest ręcznie wlewana z naturalnego wosku sojowego i wysokiej jakości olejków zapachowych.',
-    
-    // About Page
-    aboutIntro1: 'W SPIRIT CANDLES wierzymy, że zapach ma moc transformacji nie tylko przestrzeni, ale i dusz. Nasze luksusowe świece sojowe to coś więcej niż piękne obiekty — to portale do wspomnień, emocji i głębszych połączeń z samym sobą i otoczeniem.',
-    aboutIntro2: 'Każda świeca jest inspirowana kultowymi zapachami i wykonana ręcznie z najlepszych naturalnych składników, tworząc wzniosłe doświadczenie zmysłowe, które budzi Twojego wewnętrznego ducha.',
-    whyChooseDesc: 'Każdy aspekt naszych świec jest zaprojektowany z intencją, od zrównoważonych materiałów, których używamy, po mistyczne zapachy, które inspirują transformację.',
-    storyPara1: 'SPIRIT CANDLES narodziły się z prostego, ale głębokiego przekonania: że odpowiedni zapach może odblokować najgłębsze części naszego bytu. Nasz założyciel, zainspirowany transformacyjną mocą zapachu, wyruszył w podróż, aby stworzyć świece, które nie tylko wypełnią pokoje pięknymi aromatami, ale obudzą ducha w środku.',
-    storyPara2: 'Czerpiąc inspirację z najbardziej kultowych zapachów świata, starannie tworzymy każdą świecę, wykorzystując tradycyjne techniki i nowoczesne innowacje. Nasza baza z wosku sojowego zapewnia czyste spalanie, podczas gdy nasze drewniane knoty zapewniają delikatny trzaskający dźwięk przytulnego kominka, tworząc atmosferę ciepła i spokoju.',
-    storyPara3: 'Każda SPIRIT CANDLE to zaproszenie do zatrzymania się, głębokiego oddechu i ponownego połączenia z Twoją wewnętrzną naturą. Niezależnie od tego, czy szukasz motywacji, relaksu, czy po prostu chwili piękna w swoim dniu, nasze świece są zaprojektowane, aby być Twoim towarzyszem w podróży odkrywania siebie.',
-    philosophyQuote: '"Zapal świecę, rozpal swojego ducha i pozwól swojej prawdziwej naturze się ujawnić."',
-    philosophyCite: 'Filozofia SPIRIT CANDLES',
-    legalDisclaimerText: 'Nasze świece są inspirowane popularnymi zapachami wyłącznie w celach opisowych. Nie jesteśmy powiązani z oryginalnymi producentami zapachów. Wszystkie znaki towarowe należą do ich właścicieli.',
-
-    // Dashboard additions
-    revenue: 'Przychody',
-    manageProductInventory: 'Zarządzaj swoim asortymentem',
-    addNewProduct: 'Dodaj nowy produkt',
-    editProductTitle: 'Edytuj produkt',
-    updateProduct: 'Zaktualizuj produkt',
-    createProduct: 'Utwórz produkt',
-    deleteConfirm: 'Czy na pewno chcesz usunąć ten produkt?',
-    billing: 'Płatności',
-    status: 'Status',
-    customerDetails: 'Szczegóły klienta',
-    viewDetails: 'Zobacz szczegóły',
-    exportData: 'Eksportuj dane',
-    statistics: 'Statystyki',
-    accountSettings: 'Ustawienia konta',
-    manageAccountPreferences: 'Zarządzaj preferencjami swojego konta',
-    chooseLanguagePreference: 'Wybierz preferowany język dla e-maili i strony internetowej.',
-    profileInformation: 'Informacje o profilu',
-    viewEditPersonalInfo: 'Wyświetl i edytuj swoje dane osobowe',
-    viewAndEdit: 'Wyświetl i edytuj swoje dane osobowe',
-    saveChanges: 'Zapisz zmiany',
-    editProfile: 'Edytuj profil',
-    notSet: 'Nie ustawiono',
-    orderHistoryDesc: 'Zobacz swoje poprzednie zamówienia i ich status',
-    noOrders: 'Nie znaleziono zamówień',
-    shippingInformation: 'Informacje o wysyłce',
-    paid: 'Opłacone',
-    completed: 'Zakończone',
-    inTransit: 'W drodze',
-    delivered: 'Dostarczono',
-    trackPackage: 'Śledź paczkę',
-    products: 'Produkty',
-    shippingCost: 'Koszt wysyłki',
-    carrierSelected: 'Wybrany kurier',
-    serviceId: 'ID usługi',
-    totalPaid: 'Łącznie zapłacono',
-    orderInformation: 'Informacje o zamówieniu',
-    orderId: 'ID zamówienia',
-    orderNumber: 'Numer zamówienia',
-    date: 'Data',
-    completeInformation: 'Pełne informacje o zamówieniu',
-    customerInformation: 'Informacje o kliencie',
-    role: 'Rola',
-    pricingDetails: 'Szczegóły cenowe',
-    productsSubtotal: 'Suma częściowa produktów',
-    shippingStatus: 'Status wysyłki',
-    carrier: 'Kurier',
-    trackingNumber: 'Numer śledzenia',
-    packageId: 'ID paczki',
-    welcomeBackUser: 'Witaj ponownie',
-
-    // Form labels
-    nameEn: 'Nazwa (EN)',
-    namePl: 'Nazwa (PL)',
-    descriptionEn: 'Opis (EN)',
-    descriptionPl: 'Opis (PL)',
-    pricePln: 'Cena PLN (grosze)',
-    priceEur: 'Cena EUR (centy)',
-
-    // Animations and UI
-    materializing: 'Materializuje się',
-    shopCollection: 'Kup kolekcję',
-    learnOurStory: 'Poznaj naszą historię',
-    rebornYourNature: 'Odrodzenie twojej natury',
-
-    // Admin
-    productManagement: 'Zarządzanie produktami',
-    addProduct: 'Dodaj produkt',
-    editProduct: 'Edytuj produkt',
-    deleteProduct: 'Usuń produkt',
-    productName: 'Nazwa produktu',
-    productDescription: 'Opis produktu',
-    productImage: 'Zdjęcie produktu',
-    uploadImage: 'Wgraj zdjęcie',
-    selectImage: 'Wybierz zdjęcie',
-    imageUploaded: 'Zdjęcie wgrane pomyślnie',
-    productPrice: 'Cena produktu',
-    productCategory: 'Kategoria produktu',
-    productSize: 'Rozmiar produktu',
-    productWeight: 'Waga produktu (opcjonalnie)',
-    stockQuantity: 'Stan magazynowy',
-    imageUrl: 'URL obrazu',
-    save: 'Zapisz',
-    cancel: 'Anuluj',
-    delete: 'Usuń',
-    edit: 'Edytuj',
-
-    // User Dashboard
-    profile: 'Profil',
-    accountStatus: 'Status konta',
-    spiritMembers: 'Członkowie Spirit',
-    orderHistory: 'Historia zamówień',
-    language: 'Język',
-    preferredLanguage: 'Preferowany język',
-
-    // Shipping and Checkout
-    shippingAddress: 'Adres wysyłki',
-    deliveryAddress: 'Adres dostawy',
-    changeAddress: 'Zmień adres',
-    shippingOptions: 'Opcje wysyłki',
-    standardDelivery: 'Dostawa standardowa',
-    net: 'netto',
-    selectedShipping: 'Wybrana wysyłka',
-    confirmAndProceed: 'Potwierdź i przejdź do płatności',
-    calculatedNext: 'Obliczone dalej',
-    orderItems: 'Pozycje zamówienia',
-    fullName: 'Imię i nazwisko',
-    streetAddress: 'Adres ulicy',
-    streetNumber: 'Numer domu',
-    apartmentNumber: 'Numer mieszkania (opcjonalnie)',
-    city: 'Miasto',
-    postalCode: 'Kod pocztowy',
-    country: 'Kraj',
-    phone: 'Telefon',
-    phonePrefix: 'Prefiks',
-    phoneNumber: 'Numer telefonu',
-    phonePrefixHint: "Prefiks telefonu (wpisz '+', np. +48)",
-    calculating: 'Obliczanie...',
-    calculateShipping: 'Oblicz opcje wysyłki',
-    shippingCalculationError: 'Nie udało się obliczyć opcji wysyłki. Spróbuj ponownie.',
-
-    // Common UI elements
-    loading: 'Ładowanie...',
-    error: 'Błąd',
-    success: 'Sukces',
-    confirm: 'Potwierdź',
-    yes: 'Tak',
-    no: 'Nie',
-    close: 'Zamknij',
-    back: 'Wstecz',
-    next: 'Dalej',
-    previous: 'Poprzedni',
-    addedToCart: 'Dodano do koszyka',
-    itemAdded: 'Przedmiot dodany do koszyka',
-    proceedToCheckout: 'Przejdź do kasy',
-    checkout: 'Kasa',
-    paymentSuccess: 'Płatność pomyślna',
-    orderPlaced: 'Zamówienie złożone',
-    thankYou: 'Dziękujemy',
-    accessDenied: 'Dostęp zabroniony',
-    noPermission: 'Nie masz uprawnień do tej strony',
-    clear: 'Wyczyść',
-    notProvided: 'Nie podano',
-    memberSince: 'Członek od',
-    username: 'Nazwa użytkownika',
-    loginRequired: 'Wymagane logowanie',
-    loginToCheckout: 'Musisz się zalogować, aby dokończyć zakup',
-    proceedToPayment: 'Przejdź do płatności',
-    backToCart: 'Wróć do koszyka',
-    processing: 'Przetwarzanie...',
-    orderSummary: 'Podsumowanie zamówienia',
-
-    // Contact page specifics
-    missingInformation: 'Brakuje informacji',
-    pleaseFillRequired: 'Wypełnij wszystkie wymagane pola.',
-    messageSentSuccessfully: 'Wiadomość wysłana pomyślnie!',
-    thankYouContact: 'Dziękujemy za kontakt. Odpowiemy w ciągu 24-48 godzin.',
-    errorSendingMessage: 'Nie udało się wysłać wiadomości. Spróbuj ponownie lub skontaktuj się bezpośrednio.',
-    yourFullName: 'Twoje pełne imię i nazwisko',
-    yourEmail: 'twoj@email.com',
-    whatsThisAbout: 'O co chodzi?',
-    tellUsHowWeCanHelp: 'Powiedz nam, jak możemy Ci pomóc...',
-    howLongBurn: 'Jak długo palą się Wasze świece?',
-    burnTimeAnswer: 'Nasze świece 180g palą się około 45-50 godzin.',
-    areEcoFriendly: 'Czy Wasze świece są ekologiczne?',
-    ecoAnswer: 'Tak! Używamy 100% naturalnego wosku sojowego, drewnianych knotów i szklanych pojemników nadających się do recyklingu. Nasze świece są wegańskie i nie testowane na zwierzętach.',
-    shipInternationally: 'Czy wysyłacie międzynarodowo?',
-    shippingAnswer: 'Obecnie wysyłamy w Polsce i do wybranych krajów UE. Skontaktuj się z nami w sprawie szczegółowych informacji o wysyłce.',
-    responseTime24: '24/7 - Odpowiadamy w ciągu 24-48 godzin',
-    phoneHours: 'Poniedziałek - Piątek: 9:00 - 18:00 CET',
-
-    // About page
-    discoverOurCollection: 'Odkryj naszą kolekcję',
-    whyChooseSpiritCandles: 'Dlaczego wybrać SPIRIT CANDLES',
-    naturalSoyWax: '100% naturalny wosk sojowy',
-    naturalSoyWaxDesc: 'Wykonane z czystego wosku sojowego dla czystego, ekologicznego spalania, które trwa dłużej niż tradycyjne świece parafinowe.',
-    woodenWicks: 'Drewniane knoty',
-    woodenWicksDesc: 'Nasze trzaskające drewniane knoty tworzą autentyczną atmosferę kominka, zapewniając równy, stały płomień.',
-    handPouredWithLove: 'Ręcznie odlewane z miłością',
-    handPouredDesc: 'Każda świeca jest starannie odlewana ręcznie w małych partiach, aby zapewnić najwyższą jakość i dbałość o szczegóły.',
-    luxuryFragrances: 'Luksusowe zapachy',
-    luxuryFragrancesDesc: 'Inspirowane kultowymi perfumami, nasze zapachy są złożone, wyrafinowane i zaprojektowane do transformacji każdej przestrzeni.',
-    ourStory: 'Nasza historia',
-    legalDisclaimer: 'Zastrzeżenie prawne:',
-
-    // Shop page
-    ourCollection: 'Nasza kolekcja',
-    discoverCompleteRange: 'Odkryj nasz kompletny asortyment luksusowych świec sojowych, każda inspirowana kultowymi zapachami i wykonana ręcznie z naturalnych składników.',
-    searchCandles: 'Szukaj świec...',
-    filterBy: 'Filtruj według',
-    sortBy: 'Sortuj według',
-    allProducts: 'Wszystkie produkty',
-    newArrivals: 'Nowości',
-    bestsellers: 'Bestsellery',
-    featured: 'Polecane',
-    priceLowToHigh: 'Cena: Od najniższej',
-    priceHighToLow: 'Cena: Od najwyższej',
-    nameAToZ: 'Nazwa: A do Z',
-    product: 'produkt',
-    noProductsFound: 'Nie znaleziono produktów',
-    tryAdjustingFilters: 'Spróbuj dostosować kryteria wyszukiwania lub filtrów',
-    clearFilters: 'Wyczyść filtry',
-    loadMoreProducts: 'Załaduj więcej produktów',
-
-    // Collections page
-    ourCollections: 'Nasze kolekcje',
-    discoverCuratedCollections: 'Odkryj starannie wyselekcjonowane kolekcje luksusowych świec sojowych, każda zaprojektowana, aby stworzyć idealną atmosferę na każdą chwilę i nastrój.',
-    luxuryCollection: 'Kolekcja luksusowa',
-    luxuryCollectionDesc: 'Luksusowe zapachy inspirowane najbardziej ekskluzywnymi perfumami świata',
-    freshAndClean: 'Świeże i czyste',
-    freshDesc: 'Lekkie, przewiewne zapachy, które odświeżają i dodają energii Twojej przestrzeni',
-    romanticEvening: 'Romantyczny wieczór',
-    romanticDesc: 'Intymne, ciepłe zapachy idealne na wyjątkowe chwile',
-    bestSellers: 'Bestsellery',
-    bestSellersDesc: 'Nasze najbardziej lubiane świece wybrane przez klientów z całego świata',
-    exploreCollectionPage: 'Poznaj kolekcję',
-    backToAllCollections: '← Wróć do wszystkich kolekcji',
-    moreProductsComingSoon: 'Więcej produktów wkrótce w tej kolekcji...',
-    cantDecide: 'Nie możesz się zdecydować? Przeglądaj wszystkie nasze świece',
-    shopAllCandles: 'Kup wszystkie świece',
-
-    // Product Detail page
-    backToShop: 'Wróć do sklepu',
-    productNotFound: 'Produkt nie znaleziony',
-    returnToShop: 'Wróć do sklepu',
-    inspiredBy: 'Inspirowane przez',
-    reviews: 'opinii',
-    buyNow: 'Kup teraz',
-    wishlist: 'Lista życzeń',
-    share: 'Udostępnij',
-    moodAndAmbiance: 'Nastrój i atmosfera',
-    productDetails: 'Szczegóły produktu',
-    waxType: 'Typ wosku',
-    wick: 'Knot',
-    handPoured: 'Odlewane ręcznie',
-    burnTime: 'Czas spalania',
-    careInstructions: 'Instrukcje pielęgnacji',
-    inspirationNotice: 'Uwaga o inspiracji:',
-    fragranceReferences: 'Odniesienia do zapachów to tylko inspiracje. SPIRIT CANDLES nie jest powiązane ani popierane przez pierwotnych właścicieli znaków towarowych.',
-
-    // Payment Success page
-    paymentSuccessful: 'Płatność pomyślna!',
-    orderConfirmation: 'Dziękujemy za zakup! Twoje zamówienie zostało potwierdzone.',
-    sessionId: 'ID sesji',
-    viewOrders: 'Zobacz moje zamówienia',
-    emailConfirmation: 'Wkrótce otrzymasz e-mail z potwierdzeniem.',
-    
-    addedToWishlist: 'Dodano do listy życzeń',
-    removedFromWishlist: 'Usunięto z listy życzeń',
-    myWishlist: 'Moja lista życzeń',
-    emptyWishlist: 'Twoja lista życzeń jest pusta',
-    startAddingFavorites: 'Zacznij dodawać ulubione produkty',
-    item: 'przedmiot',
-
-    // Reviews
-    customerReviews: 'Opinie klientów',
-    noReviewsYet: 'Brak opinii',
-    basedOnReviews: 'Na podstawie {count} opinii',
-    writeReview: 'Napisz opinię',
-    editReview: 'Edytuj opinię',
-    yourRating: 'Twoja ocena',
-    yourReview: 'Twoja opinia',
-    shareYourThoughts: 'Podziel się swoimi przemyśleniami...',
-    submitReview: 'Wyślij opinię',
-    updateReview: 'Zaktualizuj opinię',
-    allReviews: 'Wszystkie opinie',
-
-    // Order statuses
-    awaitingApproval: 'Oczekuje na zatwierdzenie',
-    readyToShip: 'Gotowe do wysyłki',
-    
-    // Billing
-    paymentHistory: 'Historia płatności',
-    billingDescription: 'Wszystkie płatności są przetwarzane bezpiecznie przez Stripe. Twoja historia płatności jest powiązana z zamówieniami.',
-    viewOrdersForPayments: 'Zobacz kartę Zamówienia, aby zobaczyć pełną historię płatności.',
-
-    // Shipment modal
-    shipmentConfirmation: 'Potwierdzenie wysyłki',
-    shipmentDetails: 'Szczegóły wysyłki',
-    enableEditingDimensions: 'Włącz edycję wymiarów i wagi',
-    width: 'Szerokość',
-    height: 'Wysokość',
-    length: 'Długość',
-    confirmAndCreateShipment: 'Potwierdź i utwórz przesyłkę',
-    
-    // Warehouse Management
-    editProductDetails: 'Edytuj',
-    viewProductPage: 'Zobacz',
-    warehouse: 'Magazyn',
-    warehouseManagement: 'Zarządzanie Magazynem',
-    stockOverview: 'Przegląd Zapasów',
-    productStockLevels: 'Poziomy Zapasów Produktów',
-    totalItems: 'Przedmioty Ogółem',
-    lowStockAlerts: 'Niski Stan',
-    updateStock: 'Aktualizuj Stan',
-    published: 'Opublikowany',
-    unpublished: 'Nieopublikowany',
-
-    // GDPR & Cookie Consent (PL)
-    cookieBannerTitle: 'Cenimy Twoją Prywatność',
-    cookieBannerDescription: 'Używamy plików cookie, aby poprawić Twoje doświadczenia podczas przeglądania i analizować nasz ruch. Możesz dostosować swoje preferencje w dowolnym momencie. Aby uzyskać więcej informacji, przeczytaj naszą',
-    and: 'i',
-    acceptAllCookies: 'Zaakceptuj wszystkie',
-    rejectAllCookies: 'Odrzuć wszystkie',
-    customizeSettings: 'Dostosuj',
-    savePreferences: 'Zapisz Preferencje',
-    manageCookiePreferences: 'Zarządzaj Preferencjami Cookie',
-    strictlyNecessaryCookies: 'Niezbędne Pliki Cookie',
-    alwaysActive: 'Zawsze Aktywne',
-    strictlyNecessaryDescription: 'Niezbędne dla funkcjonalności witryny, w tym uwierzytelniania, koszyka zakupów i funkcji bezpieczeństwa. Nie można wyłączyć.',
-    functionalCookies: 'Funkcjonalne Pliki Cookie',
-    functionalDescription: 'Włączają ulepszone funkcje, takie jak preferencje językowe, zapisane adresy i spersonalizowane funkcje.',
-    analyticsCookies: 'Analityczne Pliki Cookie',
-    analyticsDescription: 'Pomagają nam zrozumieć, jak odwiedzający wchodzą w interakcję z naszą witryną, aby poprawić wydajność i doświadczenie użytkownika.',
-    marketingCookies: 'Marketingowe Pliki Cookie',
-    marketingDescription: 'Używane do wyświetlania spersonalizowanych reklam i mierzenia efektywności kampanii na różnych platformach.',
-    socialMediaCookies: 'Pliki Cookie Mediów Społecznościowych',
-    socialMediaDescription: 'Umożliwiają interakcję z osadzonymi treściami i udostępnianie w mediach społecznościowych.',
-    
-    // Cookie Services (PL)
-    supabaseService: 'Supabase',
-    supabaseServiceDesc: 'Utrzymuje Twoją sesję i logowanie.',
-    stripeService: 'Stripe',
-    stripeServiceDesc: 'Przetwarza płatności i zapobiega oszustwom.',
-    furgonetkaService: 'Furgonetka',
-    furgonetkaServiceDesc: 'Pozwala wybrać metodę dostawy i śledzić paczkę.',
-    resendService: 'Resend',
-    resendServiceDesc: 'Wysyła wiadomości e-mail, np. potwierdzenia zamówień.',
-    ga4Service: 'Google Analytics 4',
-    ga4ServiceDesc: 'Pomaga analizować ruch na stronie i ulepszać nasze usługi.',
-    metaPixelService: 'Piksel Meta',
-    metaPixelServiceDesc: 'Śledzi konwersje i umożliwia spersonalizowaną reklamę.',
-    youtubeService: 'YouTube',
-    youtubeServiceDesc: 'Odtwarza filmy i zapisuje Twoje preferencje.',
-    tiktokService: 'Piksel TikTok',
-    tiktokServiceDesc: 'Mierzy skuteczność reklam i tworzy grupy odbiorców na TikToku.',
-    twitterService: 'Piksel Twitter',
-    twitterServiceDesc: 'Śledzi konwersje z reklam Twittera i personalizuje reklamy.',
-    learnMore: 'Dowiedz się więcej',
-    alwaysOn: 'Zawsze aktywne',
-    
-    // Legal Pages Common (PL)
-    lastUpdated: 'Ostatnia Aktualizacja',
-    cookiePolicy: 'Polityka Cookie',
-    termsOfSale: 'Regulamin Sprzedaży',
-    legalNotice: 'Informacje Prawne',
-    dataRequest: 'Żądanie Danych',
-    accessibility: 'Dostępność',
-    allNotices: 'Wszystkie Informacje',
-    privacyRegistration: 'Polityka Prywatności - Rejestracja',
-    legal: 'Prawne',
-    manageCookies: 'Zarządzaj Cookie',
-    
-    // Cookie Policy Page (PL)
-    cookiePolicyIntro: 'Niniejsza Polityka Cookie wyjaśnia, w jaki sposób SPIRIT CANDLES używa plików cookie i podobnych technologii podczas odwiedzania naszej witryny. Kontynuując korzystanie z naszej witryny, wyrażasz zgodę na nasze wykorzystanie plików cookie zgodnie z tą polityką.',
-    whatAreCookies: 'Czym Są Pliki Cookie?',
-    whatAreCookiesDesc: 'Pliki cookie to małe pliki tekstowe przechowywane na Twoim urządzeniu podczas odwiedzania witryn internetowych. Pomagają witrynom zapamiętać Twoje preferencje i poprawiać doświadczenia podczas przeglądania.',
-    cookiesWeUse: 'Pliki Cookie, Których Używamy',
-    scConsentDesc: 'Przechowuje Twoje preferencje cookie',
-    authTokenDesc: 'Zarządza sesją uwierzytelniania',
-    languageCookieDesc: 'Zapamiętuje Twoje preferencje językowe',
-    cartCookieDesc: 'Przechowuje przedmioty w koszyku',
-    googleAnalyticsDesc: 'Pliki cookie Google Analytics do analityki witryny',
-    gidDesc: 'Identyfikator Google Analytics',
-    facebookPixelDesc: 'Facebook Pixel do analityki reklamowej',
-    facebookRetargetingDesc: 'Plik cookie retargetingu Facebook',
-    thirdPartyCookies: 'Pliki Cookie Stron Trzecich',
-    thirdPartyCookiesDesc: 'Używamy następujących usług stron trzecich, które mogą ustawiać pliki cookie:',
-    googleAnalyticsThirdParty: 'Używane do analityki witryny i monitorowania wydajności',
-    metaThirdParty: 'Używane do reklamy i śledzenia konwersji',
-    stripeThirdParty: 'Używane do bezpiecznego przetwarzania płatności',
-    managingCookies: 'Zarządzanie Plikami Cookie',
-    managingCookiesDesc: 'Możesz kontrolować i zarządzać plikami cookie za pomocą naszego banera cookie lub ustawień przeglądarki:',
-    browserSettingsInfo: 'Większość przeglądarek umożliwia blokowanie lub usuwanie plików cookie. Należy pamiętać, że blokowanie niezbędnych plików cookie może wpłynąć na funkcjonalność witryny.',
-    cookieConsent: 'Twoja Zgoda na Pliki Cookie',
-    cookieConsentDesc: 'Podczas pierwszej wizyty w naszej witrynie zobaczysz baner cookie proszący o zgodę. Możesz zmienić swoje preferencje w dowolnym momencie, klikając przycisk "Zarządzaj Cookie" w stopce.',
-    cookieDuration: 'Czas Trwania Plików Cookie',
-    sessionCookies: 'Pliki Cookie Sesji',
-    sessionCookiesDesc: 'Tymczasowe pliki cookie, które wygasają po zamknięciu przeglądarki',
-    persistentCookies: 'Trwałe Pliki Cookie',
-    persistentCookiesDesc: 'Pozostają na Twoim urządzeniu przez określony czas (do 12 miesięcy)',
-    updatesCookiePolicy: 'Aktualizacje Niniejszej Polityki',
-    updatesCookiePolicyDesc: 'Możemy od czasu do czasu aktualizować tę Politykę Cookie. Data "Ostatnia Aktualizacja" na górze wskazuje, kiedy ostatnio dokonano zmian.',
-      cookiePolicyContactIntro: 'Jeśli masz pytania dotyczące naszego wykorzystania plików cookie:',
-      
-      // PDF Download (PL)
-      downloadPDF: "Pobierz PDF",
-      
-      // Privacy Policy Page (PL)
-      privacyIntro: 'M5M Limited sp. z o.o. oddział w Polsce ("my", "nasze" lub "SPIRIT CANDLES") zobowiązuje się do ochrony Twojej prywatności. Niniejsza Polityka Prywatności wyjaśnia, w jaki sposób zbieramy, wykorzystujemy i chronimy Twoje dane osobowe zgodnie z RODO i polskim prawem ochrony danych.',
-    dataController: 'Administrator Danych',
-    dataWeCollect: 'Dane, Które Zbieramy',
-    accountData: 'Dane Konta',
-    accountDataDesc: 'Email, imię, nazwisko użytkownika, hasło (zaszyfrowane), preferencje językowe',
-    orderData: 'Dane Zamówienia',
-    orderDataDesc: 'Adres wysyłki, numer telefonu, historia zamówień, informacje o płatności (przetwarzane przez Stripe)',
-    technicalData: 'Dane Techniczne',
-    technicalDataDesc: 'Adres IP, typ przeglądarki, informacje o urządzeniu, pliki cookie',
-    cookieData: 'Dane Cookie i Zgody',
-    cookieDataDesc: 'Preferencje cookie, znaczniki czasowe zgody, agent użytkownika',
-    legalBasis: 'Podstawa Prawna Przetwarzania',
-    contractPerformance: 'Wykonanie Umowy',
-    contractPerformanceDesc: 'Przetwarzanie niezbędne do realizacji zamówień i świadczenia usług',
-    consent: 'Zgoda',
-    consentDesc: 'Komunikacja marketingowa, opcjonalne pliki cookie, subskrypcja newslettera',
-    legitimateInterest: 'Prawnie Uzasadniony Interes',
-    legitimateInterestDesc: 'Zapobieganie oszustwom, analityka witryny, poprawa usług',
-    legalObligation: 'Obowiązek Prawny',
-    legalObligationDesc: 'Dokumentacja podatkowa, rachunkowość, zgodność z przepisami',
-    howWeUseData: 'Jak Wykorzystujemy Twoje Dane',
-    processOrders: 'Przetwarzamy i realizujemy Twoje zamówienia',
-    provideCommunication: 'Zapewniamy obsługę klienta i komunikację',
-    improveServices: 'Poprawiamy nasze produkty, usługi i witrynę',
-    sendMarketing: 'Wysyłamy komunikaty marketingowe (za Twoją zgodą)',
-    fraudPrevention: 'Zapobiegamy oszustwom i zapewniamy bezpieczeństwo',
-    dataSharing: 'Udostępnianie Danych',
-    dataSharingIntro: 'Udostępniamy dane zaufanym dostawcom usług, którzy pomagają nam działać:',
-    paymentProcessors: 'Procesory Płatności',
-    shippingProviders: 'Dostawcy Wysyłki',
-    analyticsServices: 'Usługi Analityczne',
-    emailServices: 'Usługi Email',
-    hostingServices: 'Usługi Hostingowe',
-    internationalTransfers: 'Międzynarodowe Transfery Danych',
-    internationalTransfersDesc: 'Niektórzy dostawcy usług mogą znajdować się poza UE. Zapewniamy odpowiednie zabezpieczenia (Standardowe Klauzule Umowne).',
-    dataRetention: 'Przechowywanie Danych',
-    accountDataRetention: 'Dane konta: Do usunięcia konta + 30 dni',
-    orderDataRetention: 'Dane zamówienia: 10 lat (wymogi podatkowe/prawne)',
-    marketingDataRetention: 'Dane marketingowe: Do czasu wycofania zgody',
-    cookieDataRetention: 'Zgoda cookie: 12 miesięcy',
-    yourRights: 'Twoje Prawa Zgodnie z RODO',
-    rightAccess: 'Prawo Dostępu',
-    rightAccessDesc: 'Żądanie kopii Twoich danych osobowych',
-    rightRectification: 'Prawo do Sprostowania',
-    rightRectificationDesc: 'Poprawienie nieprawidłowych danych',
-    rightErasure: 'Prawo do Usunięcia',
-    rightErasureDesc: 'Żądanie usunięcia Twoich danych ("prawo do bycia zapomnianym")',
-    rightRestrict: 'Prawo do Ograniczenia Przetwarzania',
-    rightRestrictDesc: 'Ograniczenie sposobu, w jaki wykorzystujemy Twoje dane',
-    rightPortability: 'Prawo do Przenoszenia Danych',
-    rightPortabilityDesc: 'Otrzymanie Twoich danych w formacie możliwym do odczytu maszynowego',
-    rightObject: 'Prawo Sprzeciwu',
-    rightObjectDesc: 'Sprzeciw wobec przetwarzania opartego na prawnie uzasadnionym interesie',
-    rightWithdraw: 'Prawo do Wycofania Zgody',
-    rightWithdrawDesc: 'Wycofanie zgody w dowolnym momencie',
-    exerciseRights: 'Aby skorzystać ze swoich praw, użyj naszego',
-    dataRequestForm: 'Formularza Żądania Danych',
-    security: 'Bezpieczeństwo',
-    securityDesc: 'Wdrażamy branżowe standardy bezpieczeństwa, w tym szyfrowanie, bezpieczne serwery i regularne audyty bezpieczeństwa, aby chronić Twoje dane.',
-    childrenPrivacy: 'Prywatność Dzieci',
-    childrenPrivacyDesc: 'Nasze usługi nie są przeznaczone dla osób poniżej 16 roku życia. Nie zbieramy świadomie danych od dzieci.',
-    policyChanges: 'Zmiany w Niniejszej Polityce',
-    policyChangesDesc: 'Możemy okresowo aktualizować tę Politykę Prywatności. Istotne zmiany zostaną zakomunikowane przez email lub powiadomienie na stronie.',
-    privacyContactIntro: 'W sprawach związanych z prywatnością lub aby skorzystać ze swoich praw:',
-    supervisoryAuthority: 'Organ Nadzorczy',
-    supervisoryAuthorityDesc: 'Masz prawo złożyć skargę do Urzędu Ochrony Danych Osobowych (UODO), jeśli uważasz, że Twoje prawa dotyczące danych zostały naruszone.',
-    
-    // Terms of Sale Page (PL)
-    termsIntro: 'Niniejszy Regulamin Sprzedaży reguluje zakup produktów od SPIRIT CANDLES. Składając zamówienie, akceptujesz te warunki.',
-    seller: 'Sprzedawca',
-    contractFormation: 'Zawarcie Umowy',
-    contractFormationDesc: 'Wiążąca umowa zostaje zawarta, gdy potwierdzimy Twoje zamówienie przez email. Zastrzegamy sobie prawo do odrzucenia zamówień w przypadku błędów cenowych, braku dostępności lub podejrzenia oszustwa.',
-    productInformation: 'Informacje o Produkcie',
-    productInformationDesc: 'Wszystkie opisy produktów, obrazy i specyfikacje są dostarczane w celach informacyjnych. Chociaż staramy się zapewnić dokładność, mogą wystąpić różnice.',
-    pricingPayment: 'Ceny i Płatność',
-    pricesShowEUR: 'Ceny są pokazane w EUR i PLN',
-    pricesShownEUR: 'Ceny wyświetlane w EUR i PLN',
-    paymentMethods: 'Akceptujemy główne karty kredytowe, karty debetowe i przelewy bankowe przez Stripe',
-    paymentProcessedStripe: 'Płatności są bezpiecznie przetwarzane przez Stripe',
-    orderConfirmedPayment: 'Twoje zamówienie jest potwierdzone po pomyślnym przetworzeniu płatności',
-    deliveryShipping: 'Dostawa i Wysyłka',
-    deliveryShippingIntro: 'Oferujemy niezawodną wysyłkę w całej Polsce i Unii Europejskiej.',
-    shippingEUWide: 'Wysyłamy w całej Polsce i do krajów UE',
-    shippingCostsCalculated: 'Koszty wysyłki są obliczane na podstawie miejsca docelowego i wagi',
-    trackingProvided: 'Numer śledzenia dostarczony dla wszystkich przesyłek',
-    rightOfWithdrawalIntro: 'Zgodnie z prawem konsumenckim UE masz prawo odstąpić od zakupu w ciągu 14 dni.',
-    withdrawalPeriod: 'Okres Odstąpienia',
-    withdrawalPeriodDesc: 'Masz 14 dni od dostawy na odstąpienie od zakupu bez podania przyczyny.',
-    exercisingWithdrawal: 'Wykonywanie Prawa Odstąpienia',
-    exercisingWithdrawalDesc: 'Aby skorzystać z prawa odstąpienia, skontaktuj się z nami pod adresem m5moffice@proton.me z wyraźnym oświadczeniem o swojej decyzji.',
-    returnConditions: 'Warunki Zwrotu',
-    returnConditionsDesc: 'Produkty muszą być nieużywane, w oryginalnym opakowaniu, ze wszystkimi metkami',
-    refunds: 'Zwroty Pieniędzy',
-    refundTimeframe: 'Zwroty pieniędzy będą przetwarzane w ciągu 14 dni od otrzymania zwrotu',
-    warranty: 'Gwarancja',
-    warrantyDesc: 'Wszystkie produkty są objęte standardową gwarancją pokrywającą wady produkcyjne. Skontaktuj się z nami, jeśli napotkasz jakiekolwiek problemy.',
-    liability: 'Odpowiedzialność',
-    liabilityDesc: 'Nasza odpowiedzialność jest ograniczona do ceny zakupu produktu, z wyjątkiem przypadków rażącego niedbalstwa lub umyślnego wykroczenia.',
-    onlineDisputeResolution: 'Konsumenci UE mogą korzystać z platformy internetowego rozstrzygania sporów pod adresem:',
-    applicableLaw: 'Prawo Właściwe',
-    applicableLawDesc: 'Niniejszy Regulamin Sprzedaży podlega i jest interpretowany zgodnie z prawem polskim.',
-    
-    // Legal Notice (Impressum) Page (PL)
-    legalNoticeIntro: 'Ta strona zawiera prawnie wymagane informacje o operatorze tej witryny.',
-    companyInformation: 'Informacje o Firmie',
-    companyInformationLegal: 'Informacje o Firmie',
-    companyName: 'Nazwa Firmy',
-    legalForm: 'Forma Prawna',
-    limitedLiability: 'Spółka z Ograniczoną Odpowiedzialnością (sp. z o.o.)',
-    registeredOffice: 'Siedziba Rejestrowa',
-    taxId: 'NIP',
-    registrationCourt: 'Sąd Rejestrowy',
-    registrationNumber: 'Numer Rejestracyjny',
-    managingDirectors: 'Zarządzający Dyrektorzy',
-    responsibleContent: 'Odpowiedzialny za Treść',
-    responsiblePerson: 'Odpowiedzialność za Treść',
-    websiteOperator: 'Operator Witryny',
-    websiteOperatorDesc: 'Ta witryna jest prowadzona przez M5M Limited sp. z o.o. oddział w Polsce.',
-    hostingProvider: 'Dostawca Hostingu',
-    intellectualProperty: 'Własność Intelektualna',
-    intellectualPropertyDesc: 'Wszystkie treści na tej stronie (tekst, obrazy, logo, projekty) są chronione prawami autorskimi i przepisami dotyczącymi własności intelektualnej. Wszystkie znaki towarowe i nazwy marek wymienione są własnością odpowiednich właścicieli.',
-    disclaimer: 'Zastrzeżenie',
-    disclaimerDesc: 'Staramy się utrzymywać informacje na naszej stronie dokładne i aktualne. Nie możemy jednak zagwarantować kompletności ani dokładności. Nie ponosimy odpowiedzialności za szkody wynikające z korzystania z informacji na tej stronie.',
-    externalLinks: 'Linki Zewnętrzne',
-    externalLinksDesc: 'Nasza strona zawiera linki do zewnętrznych witryn. Nie mamy kontroli nad zawartością tych zewnętrznych stron i nie przyjmujemy za nie odpowiedzialności.',
-    legalNoticeApplicableLaw: 'Niniejsza witryna podlega prawu polskiemu. Wszelkie spory będą rozstrzygane w sądach w Warszawie, Polska.',
-    legalNoticeContactIntro: 'W sprawach prawnych lub wątpliwości dotyczących tej witryny:',
-    disputeResolutionPlatform: 'Platforma Rozwiązywania Sporów UE',
-    odrInfo: 'Komisja Europejska udostępnia platformę do internetowego rozstrzygania sporów (ODR):',
-    odrNotObligated: 'Nie jesteśmy zobowiązani do udziału w postępowaniu w sprawie rozstrzygania sporów przed komisją arbitrażową konsumenckiego, ale jesteśmy gotowi to zrobić.',
-    trademarksIntellectual: 'Znaki Towarowe i Własność Intelektualna',
-    trademarksNotice: 'Wszystkie znaki towarowe, nazwy produktów i nazwy firm wymienione na tej stronie są własnością odpowiednich właścicieli. Odniesienia zapachowe SPIRIT CANDLES są jedynie inspiracją i nie oznaczają powiązania ani poparcia.',
-    copyrightTitle: 'Prawa Autorskie',
-    copyrightNotice: 'Wszystkie treści na tej stronie (tekst, obrazy, grafika, logo) są chronione prawami autorskimi. Nieautoryzowane użycie jest zabronione.',
-    
-    // Data Request (DSAR) Form Page (PL)
-    dataRequestIntro: 'Użyj tego formularza, aby skorzystać ze swoich praw RODO. Odpowiemy w ciągu 30 dni.',
-    requestType: 'Typ Żądania',
-    selectRequestType: 'Wybierz typ żądania',
-    dataAccess: 'Dostęp do Danych',
-    dataAccessDesc: 'Żądanie kopii wszystkich danych, które o Tobie posiadamy',
-    dataRectification: 'Sprostowanie Danych',
-    dataRectificationDesc: 'Poprawienie nieprawidłowych lub niepełnych danych',
-    dataErasure: 'Usunięcie Danych',
-    dataErasureDesc: 'Usunięcie Twoich danych osobowych ("prawo do bycia zapomnianym")',
-    dataPortability: 'Przenoszenie Danych',
-    dataPortabilityDesc: 'Otrzymanie Twoich danych w formacie możliwym do odczytu maszynowego',
-    restrictProcessing: 'Ograniczenie Przetwarzania',
-    restrictProcessingDesc: 'Ograniczenie sposobu przetwarzania Twoich danych',
-    objectProcessing: 'Sprzeciw wobec Przetwarzania',
-    objectProcessingDesc: 'Sprzeciw wobec przetwarzania danych na podstawie prawnie uzasadnionego interesu',
-    withdrawConsentRequest: 'Wycofanie Zgody',
-    withdrawConsentDesc: 'Wycofanie wcześniej udzielonej zgody (np. marketingowej)',
-    additionalDetails: 'Dodatkowe Szczegóły',
-    explainRequest: 'Proszę szczegółowo wyjaśnić swoje żądanie...',
-    identityVerification: 'Weryfikacja Tożsamości',
-    identityNote: 'Aby chronić Twoją prywatność, możemy wymagać weryfikacji tożsamości przed przetworzeniem Twojego żądania.',
-    submitRequest: 'Prześlij Żądanie',
-    dataRequestSuccess: 'Żądanie Przesłane Pomyślnie',
-    dataRequestSuccessMsg: 'Otrzymaliśmy Twoje żądanie danych i odpowiemy w ciągu 30 dni zgodnie z wymogami RODO.',
-    dataRequestError: 'Nie udało się przesłać żądania. Skontaktuj się z nami bezpośrednio pod adresem m5moffice@proton.me',
-    
-    // Accessibility Page (PL)
-    accessibilityStatement: 'Deklaracja Dostępności',
-    accessibilityIntro: 'SPIRIT CANDLES zobowiązuje się do zapewnienia dostępności cyfrowej dla wszystkich użytkowników, w tym osób z niepełnosprawnościami.',
-    ourCommitment: 'Nasze Zobowiązanie',
-    ourCommitmentDesc: 'Zobowiązujemy się do zapewnienia dostępności i przyjazności naszej witryny dla każdego. Dążymy do zgodności ze standardami WCAG 2.1 Poziom AA (Wytyczne dotyczące dostępności treści internetowych).',
-    accessibilityCommitment: 'Nasze Zobowiązanie',
-    accessibilityCommitmentDesc: 'Dążymy do zgodności ze standardami WCAG 2.1 Poziom AA (Wytyczne dotyczące dostępności treści internetowych).',
-    accessibilityFeatures: 'Funkcje Dostępności',
-    keyboardNavigation: 'Pełna obsługa nawigacji klawiaturowej',
-    screenReaderCompatibility: 'Kompatybilność z czytnikami ekranu z etykietami ARIA',
-    textScaling: 'Dostosowanie rozmiaru tekstu bez utraty funkcjonalności',
-    colorContrast: 'Wystarczający kontrast kolorów między tekstem a tłem',
-    altTextImages: 'Tekst alternatywny dla wszystkich obrazów',
-    descriptiveLinks: 'Opisowy tekst linków',
-    keyboardDesc: 'Pełne wsparcie nawigacji klawiaturowej dla wszystkich elementów interaktywnych',
-    altText: 'Tekst Alternatywny dla Obrazów',
-    altTextDesc: 'Opisowy tekst alternatywny dla wszystkich obrazów produktów i treści',
-    colorContrastDesc: 'Wysokie współczynniki kontrastu między tekstem a tłem dla czytelności',
-    responsiveDesign: 'Responsywny Design',
-    responsiveDesc: 'Przyjazny dla urządzeń mobilnych design, który dostosowuje się do różnych rozmiarów ekranu',
-    semanticHTML: 'Semantyczny HTML',
-    semanticDesc: 'Prawidłowa struktura nagłówków i semantyczne znaczniki dla czytników ekranu',
-    wcagCompliance: 'Zgodność z WCAG',
-    wcagComplianceDesc: 'Dążymy do osiągnięcia zgodności z WCAG 2.1 Poziom AA w całej naszej witrynie.',
-    knownLimitations: 'Znane Ograniczenia',
-    knownLimitationsIntro: 'Pomimo naszych wysiłków, mogą istnieć pewne ograniczenia:',
-    thirdPartyContent: 'Niektóre treści stron trzecich mogą nie być w pełni dostępne',
-    complexInteractions: 'Złożone funkcje interaktywne mogą stanowić wyzwanie',
-    workingToImprove: 'Aktywnie pracujemy nad poprawą tych obszarów.',
-    technicalSpecifications: 'Specyfikacje Techniczne',
-    technicalSpecificationsIntro: 'Nasza witryna opiera się na następujących technologiach:',
-    assistiveTechnologies: 'Kompatybilne Technologie Wspomagające',
-    assistiveTechnologiesDesc: 'Nasza witryna jest zaprojektowana tak, aby była kompatybilna z:',
-    screenMagnifiers: 'Oprogramowanie do powiększania ekranu',
-    speechRecognition: 'Oprogramowanie do rozpoznawania mowy',
-    feedback: 'Opinie',
-    accessibilityFeedback: 'Opinie i Wsparcie',
-    accessibilityFeedbackDesc: 'Jeśli napotkasz bariery dostępności na naszej stronie, skontaktuj się z nami:',
-    respondAccessibility: 'Staramy się odpowiedzieć na opinie dotyczące dostępności w ciągu 5 dni roboczych.',
-    continuousImprovement: 'Ciągłe Doskonalenie',
-    continuousImprovementDesc: 'Regularnie przeglądamy i ulepszamy nasze funkcje dostępności. Twoje opinie pomagają nam uczynić naszą stronę lepszą dla każdego.',
-    alternativeFormats: 'Formaty Alternatywne',
-    alternativeFormatsDesc: 'Jeśli potrzebujesz informacji z tej witryny w innym formacie, skontaktuj się z nami, a zrobimy wszystko, aby Ci pomóc.',
-    
-    // Form Consent Labels (PL)
-    agreeToTerms: 'Zgadzam się z',
-    termsAndConditions: 'Regulaminem Sprzedaży',
-    agreeToPrivacy: 'Przeczytałem i zgadzam się z',
-    subscribeNewsletter: 'Chcę otrzymywać wiadomości, promocje i ekskluzywne oferty przez email',
-    newsletterOptional: '(opcjonalne)',
-    requiredField: 'To pole jest wymagane',
-    consentRequired: 'Musisz zaakceptować warunki, aby kontynuować',
-    
-    // Shipping & Returns Page (PL)
-    shippingReturnsTitle: 'Wysyłka i Zwroty',
-    shippingInfo: 'Informacje o Wysyłce',
-    shippingInfoDesc: 'Oferujemy niezawodne usługi wysyłkowe w całej Polsce i Europie za pośrednictwem zaufanych przewoźników.',
-    shippingItem1: 'Koszty wysyłki obliczane przy kasie w zależności od miejsca docelowego i przewoźnika',
-    shippingItem2: 'Wszystkie zamówienia są starannie pakowane, aby zapewnić bezpieczną dostawę świec',
-    shippingItem3: 'Numery śledzenia dostarczone dla wszystkich przesyłek',
-    deliveryTimes: 'Czasy Dostawy',
-    deliveryTimesDesc: 'Szacowane czasy dostawy różnią się w zależności od lokalizacji i wybranego przewoźnika (zazwyczaj 2-7 dni roboczych w Polsce, 5-14 dni dla zamówień międzynarodowych).',
-    orderTracking: 'Śledzenie Zamówienia',
-    orderTrackingDesc: 'Po wysłaniu zamówienia otrzymasz email potwierdzający z informacjami do śledzenia. Możesz również śledzić zamówienie z panelu swojego konta.',
-    returnsPolicy: 'Polityka Zwrotów',
-    returnsPolicyDesc: 'Chcemy, abyś pokochał swój zakup SPIRIT CANDLES. Jeśli nie jesteś całkowicie zadowolony, przyjmujemy zwroty w ciągu 14 dni od dostawy pod następującymi warunkami:',
-    returnsItem1: 'Produkty muszą być nieużywane i w oryginalnym opakowaniu',
-    returnsItem2: 'Brak śladów palenia lub ingerencji',
-    returnsItem3: 'Koszty wysyłki zwrotnej ponosi klient (chyba że produkt jest wadliwy)',
-    returnsItem4: 'Produkty wyprzedażowe i spersonalizowane nie podlegają zwrotowi',
-    howToReturn: 'Jak Dokonać Zwrotu',
-    returnStep1: 'Skontaktuj się z nami pod adresem m5moffice@proton.me w ciągu 14 dni od dostawy',
-    returnStep2: 'Przekażemy instrukcje zwrotu i autoryzację',
-    returnStep3: 'Wyślij produkt z powrotem używając usługi ze śledzeniem',
-    refundsPolicy: 'Zwroty Pieniędzy',
-    refundsDesc: 'Po otrzymaniu i sprawdzeniu Twojego zwrotu, przetworzymy zwrot pieniędzy w ciągu 7-14 dni roboczych na Twoją oryginalną metodę płatności.',
-    needHelp: 'Potrzebujesz Pomocy?',
-    needHelpDesc: 'W przypadku pytań dotyczących wysyłki lub zwrotów, skontaktuj się z naszą obsługą klienta:',
-  }
-};
-
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
-  const [isLoadingLanguage, setIsLoadingLanguage] = useState(true);
-
-  // Load user's preferred language from database on mount
-  useEffect(() => {
-    const loadUserLanguage = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-          const { data } = await supabase
-            .from('profiles')
-            .select('preferred_language')
-            .eq('user_id', user.id)
-            .single();
-          
-          if (data?.preferred_language) {
-            setLanguage(data.preferred_language as Language);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading user language:', error);
-      } finally {
-        setIsLoadingLanguage(false);
-      }
-    };
-
-    loadUserLanguage();
-  }, []);
-
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations['en']] || key;
-  };
-
-  return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
-      {children}
-    </LanguageContext.Provider>
-  );
-};
 
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
+};
+
+interface LanguageProviderProps {
+  children: React.ReactNode;
+}
+
+export const LanguageProvider = ({ children }: LanguageProviderProps) => {
+  const [language, setLanguageState] = useState<Language>(() => {
+    const stored = localStorage.getItem('language');
+    return (stored === 'pl' || stored === 'en') ? stored : 'en';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  const t = (key: string): string => {
+    // Navigation
+    if (key === 'home') return language === 'pl' ? 'Strona główna' : 'Home';
+    if (key === 'shop') return language === 'pl' ? 'Sklep' : 'Shop';
+    if (key === 'collections') return language === 'pl' ? 'Kolekcje' : 'Collections';
+    if (key === 'about') return language === 'pl' ? 'O nas' : 'About';
+    if (key === 'contact') return language === 'pl' ? 'Kontakt' : 'Contact';
+    if (key === 'cart') return language === 'pl' ? 'Koszyk' : 'Cart';
+    if (key === 'login') return language === 'pl' ? 'Zaloguj się' : 'Login';
+    if (key === 'register') return language === 'pl' ? 'Zarejestruj się' : 'Register';
+    if (key === 'logout') return language === 'pl' ? 'Wyloguj' : 'Logout';
+    if (key === 'dashboard') return language === 'pl' ? 'Panel' : 'Dashboard';
+
+    // Admin Dashboard
+    if (key === 'adminDashboard') return language === 'pl' ? 'Panel administratora' : 'Admin Dashboard';
+    if (key === 'manageProductInventory') return language === 'pl' ? 'Zarządzaj swoim asortymentem' : 'Manage your product inventory';
+    if (key === 'manageCustomerOrders') return language === 'pl' ? 'Zarządzaj zamówieniami klientów i wysyłką' : 'Manage customer orders and shipping';
+    if (key === 'addProduct') return language === 'pl' ? 'Dodaj produkt' : 'Add Product';
+    if (key === 'editProductTitle') return language === 'pl' ? 'Edytuj produkt' : 'Edit Product';
+    if (key === 'addNewProduct') return language === 'pl' ? 'Dodaj nowy produkt' : 'Add New Product';
+    if (key === 'dataType') return language === 'pl' ? 'Typ danych' : 'Data Type';
+    if (key === 'format') return language === 'pl' ? 'Format' : 'Format';
+    if (key === 'exportOrdersCsv') return language === 'pl' ? 'Eksportuj zamówienia jako CSV' : 'Export orders as CSV';
+    if (key === 'warehouse') return language === 'pl' ? 'Magazyn' : 'Warehouse';
+    if (key === 'monthlyOrders') return language === 'pl' ? 'Miesięczne zamówienia' : 'Monthly Orders';
+    if (key === 'salesByCategory') return language === 'pl' ? 'Sprzedaż według kategorii' : 'Sales by Category';
+    if (key === 'monthlyRevenue') return language === 'pl' ? 'Miesięczny przychód' : 'Monthly Revenue';
+    if (key === 'fromLastMonth') return language === 'pl' ? 'od ostatniego miesiąca' : 'from last month';
+
+    // User Dashboard
+    if (key === 'userDashboard') return language === 'pl' ? 'Panel' : 'Dashboard';
+    if (key === 'welcomeBack') return language === 'pl' ? 'Witamy ponownie' : 'Welcome back';
+    if (key === 'welcomeBackUser') return language === 'pl' ? 'Witamy ponownie' : 'Welcome back';
+    if (key === 'profile') return language === 'pl' ? 'Profil' : 'Profile';
+    if (key === 'orders') return language === 'pl' ? 'Zamówienia' : 'Orders';
+    if (key === 'payments') return language === 'pl' ? 'Płatności' : 'Payments';
+    if (key === 'settings') return language === 'pl' ? 'Ustawienia' : 'Settings';
+    if (key === 'accountSettings') return language === 'pl' ? 'Ustawienia konta' : 'Account Settings';
+    if (key === 'manageAccountPrefs') return language === 'pl' ? 'Zarządzaj preferencjami swojego konta' : 'Manage your account preferences';
+    if (key === 'accountStatus') return language === 'pl' ? 'Status konta' : 'Account Status';
+    if (key === 'user') return language === 'pl' ? 'Użytkownik' : 'User';
+    if (key === 'preferredLanguage') return language === 'pl' ? 'Preferowany język' : 'Preferred Language';
+    if (key === 'choosePreferredLang') return language === 'pl' ? 'Wybierz preferowany język dla e-maili i strony internetowej.' : 'Choose your preferred language for emails and the website.';
+    if (key === 'profileInformation') return language === 'pl' ? 'Informacje o profilu' : 'Profile Information';
+    if (key === 'viewEditPersonalInfo') return language === 'pl' ? 'Wyświetl i edytuj swoje dane osobowe' : 'View and edit your personal information';
+    if (key === 'viewAndEdit') return language === 'pl' ? 'Wyświetl i edytuj swoje dane osobowe' : 'View and edit your personal information';
+    if (key === 'firstName') return language === 'pl' ? 'Imię' : 'First Name';
+    if (key === 'lastName') return language === 'pl' ? 'Nazwisko' : 'Last Name';
+    if (key === 'username') return language === 'pl' ? 'Nazwa użytkownika' : 'Username';
+    if (key === 'saveChanges') return language === 'pl' ? 'Zapisz zmiany' : 'Save Changes';
+    if (key === 'cancel') return language === 'pl' ? 'Anuluj' : 'Cancel';
+    if (key === 'orderHistory') return language === 'pl' ? 'Historia zamówień' : 'Order History';
+    if (key === 'viewPastOrders') return language === 'pl' ? 'Zobacz swoje poprzednie zamówienia i ich status' : 'View your past orders and their status';
+    if (key === 'orderHistoryDesc') return language === 'pl' ? 'Zobacz swoje poprzednie zamówienia i ich status' : 'View your past orders and their status';
+    if (key === 'noOrders') return language === 'pl' ? 'Nie znaleziono zamówień' : 'No orders found';
+    if (key === 'editProfile') return language === 'pl' ? 'Edytuj profil' : 'Edit Profile';
+    if (key === 'updating') return language === 'pl' ? 'Aktualizowanie...' : 'Updating...';
+    if (key === 'shippingInformation') return language === 'pl' ? 'Informacje o wysyłce' : 'Shipping Information';
+
+    // Order Details
+    if (key === 'orderDetails') return language === 'pl' ? 'Szczegóły zamówienia' : 'Order Details';
+    if (key === 'completeInfoForOrder') return language === 'pl' ? 'Pełne informacje dla zamówienia' : 'Complete information for order';
+    if (key === 'orderInformation') return language === 'pl' ? 'Informacje o zamówieniu' : 'Order Information';
+    if (key === 'orderId') return language === 'pl' ? 'ID zamówienia' : 'Order ID';
+    if (key === 'orderNumber') return language === 'pl' ? 'Numer zamówienia' : 'Order Number';
+    if (key === 'date') return language === 'pl' ? 'Data' : 'Date';
+    if (key === 'status') return language === 'pl' ? 'Status' : 'Status';
+    if (key === 'customerInformation') return language === 'pl' ? 'Informacje o kliencie' : 'Customer Information';
+    if (key === 'name') return language === 'pl' ? 'Imię i nazwisko' : 'Name';
+    if (key === 'email') return language === 'pl' ? 'E-mail' : 'Email';
+    if (key === 'userId') return language === 'pl' ? 'ID użytkownika' : 'User ID';
+    if (key === 'role') return language === 'pl' ? 'Rola' : 'Role';
+    if (key === 'shippingAddress') return language === 'pl' ? 'Adres wysyłki' : 'Shipping Address';
+    if (key === 'phone') return language === 'pl' ? 'Telefon' : 'Phone';
+    if (key === 'pricingDetails') return language === 'pl' ? 'Szczegóły cenowe' : 'Pricing Details';
+    if (key === 'productsSubtotal') return language === 'pl' ? 'Suma produktów' : 'Products Subtotal';
+    if (key === 'shippingCost') return language === 'pl' ? 'Koszt wysyłki' : 'Shipping Cost';
+    if (key === 'carrierSelected') return language === 'pl' ? 'Wybrany przewoźnik' : 'Carrier Selected';
+    if (key === 'serviceId') return language === 'pl' ? 'ID usługi' : 'Service ID';
+    if (key === 'totalPaid') return language === 'pl' ? 'Łącznie zapłacono' : 'Total Paid';
+    if (key === 'shippingStatus') return language === 'pl' ? 'Status wysyłki' : 'Shipping Status';
+    if (key === 'carrier') return language === 'pl' ? 'Przewoźnik' : 'Carrier';
+    if (key === 'packageId') return language === 'pl' ? 'ID paczki' : 'Package ID';
+    if (key === 'customer') return language === 'pl' ? 'Klient' : 'Customer';
+    if (key === 'total') return language === 'pl' ? 'Łącznie' : 'Total';
+    if (key === 'shipping') return language === 'pl' ? 'Wysyłka' : 'Shipping';
+    if (key === 'actions') return language === 'pl' ? 'Akcje' : 'Actions';
+    if (key === 'details') return language === 'pl' ? 'Szczegóły' : 'Details';
+    if (key === 'complete') return language === 'pl' ? 'Zakończ' : 'Complete';
+    if (key === 'createShipment') return language === 'pl' ? 'Utwórz przesyłkę' : 'Create Shipment';
+    if (key === 'noShipment') return language === 'pl' ? 'Brak przesyłki' : 'No shipment';
+    if (key === 'viewDetails') return language === 'pl' ? 'Zobacz szczegóły' : 'View Details';
+
+    // Auth page
+    if (key === 'signIn') return language === 'pl' ? 'Zaloguj się' : 'Sign In';
+    if (key === 'signUp') return language === 'pl' ? 'Zarejestruj się' : 'Sign Up';
+    if (key === 'password') return language === 'pl' ? 'Hasło' : 'Password';
+    if (key === 'confirmPassword') return language === 'pl' ? 'Potwierdź hasło' : 'Confirm Password';
+    if (key === 'rememberMe') return language === 'pl' ? 'Zapamiętaj mnie' : 'Remember Me';
+    if (key === 'forgotPassword') return language === 'pl' ? 'Nie pamiętasz hasła?' : 'Forgot Password?';
+    if (key === 'dontHaveAccount') return language === 'pl' ? 'Nie masz konta?' : "Don't have an account?";
+    if (key === 'alreadyHaveAccount') return language === 'pl' ? 'Masz już konto?' : 'Already have an account?';
+    if (key === 'iAccept') return language === 'pl' ? 'Akceptuję' : 'I accept';
+    if (key === 'and') return language === 'pl' ? 'i' : 'and';
+    if (key === 'newsletterOptIn') return language === 'pl' ? 'Chcę otrzymywać newsletter z wiadomościami i ofertami' : 'I want to receive newsletters with news and offers';
+    if (key === 'joinFamily') return language === 'pl' ? 'Dołącz do rodziny Spirit of Candles' : 'Join the Spirit of Candles family';
+
+    // Common
+    if (key === 'products') return language === 'pl' ? 'Produkty' : 'Products';
+    if (key === 'customers') return language === 'pl' ? 'Klienci' : 'Customers';
+    if (key === 'revenue') return language === 'pl' ? 'Przychody' : 'Revenue';
+    if (key === 'statistics') return language === 'pl' ? 'Statystyki' : 'Statistics';
+    if (key === 'exportData') return language === 'pl' ? 'Eksportuj dane' : 'Export Data';
+    if (key === 'category') return language === 'pl' ? 'Kategoria' : 'Category';
+    if (key === 'size') return language === 'pl' ? 'Rozmiar' : 'Size';
+    if (key === 'stock') return language === 'pl' ? 'Magazyn' : 'Stock';
+    if (key === 'edit') return language === 'pl' ? 'Edytuj' : 'Edit';
+    if (key === 'publish') return language === 'pl' ? 'Opublikuj' : 'Publish';
+    if (key === 'unpublish') return language === 'pl' ? 'Cofnij publikację' : 'Unpublish';
+    if (key === 'delete') return language === 'pl' ? 'Usuń' : 'Delete';
+    if (key === 'clear') return language === 'pl' ? 'Wyczyść' : 'Clear';
+    if (key === 'notAvailable') return language === 'pl' ? 'Niedostępne' : 'N/A';
+    if (key === 'loading') return language === 'pl' ? 'Ładowanie...' : 'Loading...';
+    if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
+    if (key === 'error') return language === 'pl' ? 'Błąd' : 'Error';
+
+    // Product form fields
+    if (key === 'nameEn') return language === 'pl' ? 'Nazwa (EN)' : 'Name (EN)';
+    if (key === 'namePl') return language === 'pl' ? 'Nazwa (PL)' : 'Name (PL)';
+    if (key === 'descriptionEn') return language === 'pl' ? 'Opis (EN)' : 'Description (EN)';
+    if (key === 'descriptionPl') return language === 'pl' ? 'Opis (PL)' : 'Description (PL)';
+    if (key === 'pricePln') return language === 'pl' ? 'Cena PLN' : 'Price PLN';
+    if (key === 'priceEur') return language === 'pl' ? 'Cena EUR' : 'Price EUR';
+    if (key === 'stockQuantity') return language === 'pl' ? 'Stan magazynowy' : 'Stock Quantity';
+    if (key === 'uploadImage') return language === 'pl' ? 'Wgraj zdjęcie' : 'Upload Image';
+    if (key === 'imageUploaded') return language === 'pl' ? 'Zdjęcie wgrane' : 'Image Uploaded';
+    if (key === 'updateProduct') return language === 'pl' ? 'Zaktualizuj produkt' : 'Update Product';
+    if (key === 'createProduct') return language === 'pl' ? 'Utwórz produkt' : 'Create Product';
+    if (key === 'deleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć ten produkt?' : 'Are you sure you want to delete this product?';
+    if (key === 'productWeight') return language === 'pl' ? 'Waga produktu' : 'Product Weight';
+    if (key === 'shipmentCreatedSuccess') return language === 'pl' ? 'Przesyłka utworzona pomyślnie' : 'Shipment created successfully';
+
+    // Categories
+    if (key === 'luxury') return language === 'pl' ? 'Luksus' : 'Luxury';
+    if (key === 'nature') return language === 'pl' ? 'Natura' : 'Nature';
+    if (key === 'fresh') return language === 'pl' ? 'Świeżość' : 'Fresh';
+
+    // Status badges
+    if (key === 'paid') return language === 'pl' ? 'Opłacone' : 'Paid';
+    if (key === 'inTransit') return language === 'pl' ? 'W drodze' : 'In Transit';
+    if (key === 'delivered') return language === 'pl' ? 'Dostarczono' : 'Delivered';
+    if (key === 'completed') return language === 'pl' ? 'Zakończone' : 'Completed';
+    if (key === 'trackPackage') return language === 'pl' ? 'Śledź paczkę' : 'Track Package';
+    if (key === 'billing') return language === 'pl' ? 'Płatności' : 'Billing';
+
+    // Privacy/Legal
+    if (key === 'termsOfSale') return language === 'pl' ? 'Regulamin sprzedaży' : 'Terms of Sale';
+    if (key === 'privacyPolicy') return language === 'pl' ? 'Polityka prywatności' : 'Privacy Policy';
+    if (key === 'consentRequired') return language === 'pl' ? 'Wymagana zgoda' : 'Consent Required';
+    if (key === 'mustAcceptTerms') return language === 'pl' ? 'Musisz zaakceptować Regulamin sprzedaży i Politykę prywatności' : 'You must accept the Terms of Sale and Privacy Policy';
+
+    // Default fallback
+    return key;
+  };
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage: setLanguageState, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
 };

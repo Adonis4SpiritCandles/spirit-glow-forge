@@ -46,7 +46,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">+2% from last month</p>
+            <p className="text-xs text-muted-foreground">+2% {t('fromLastMonth')}</p>
           </CardContent>
         </Card>
         
@@ -57,7 +57,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalOrders}</div>
-            <p className="text-xs text-muted-foreground">+15% from last month</p>
+            <p className="text-xs text-muted-foreground">+15% {t('fromLastMonth')}</p>
           </CardContent>
         </Card>
 
@@ -68,7 +68,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalCustomers}</div>
-            <p className="text-xs text-muted-foreground">+8% from last month</p>
+            <p className="text-xs text-muted-foreground">+8% {t('fromLastMonth')}</p>
           </CardContent>
         </Card>
 
@@ -79,7 +79,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{(stats.revenue / 100).toFixed(2)} PLN</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
+            <p className="text-xs text-muted-foreground">+12% {t('fromLastMonth')}</p>
           </CardContent>
         </Card>
       </div>
@@ -89,7 +89,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
         {/* Monthly Orders Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-playfair">Monthly Orders</CardTitle>
+            <CardTitle className="font-playfair">{t('monthlyOrders')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -107,7 +107,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
         {/* Category Breakdown */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-playfair">Sales by Category</CardTitle>
+            <CardTitle className="font-playfair">{t('salesByCategory')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -136,7 +136,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
       {/* Revenue Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="font-playfair">Monthly Revenue (PLN)</CardTitle>
+          <CardTitle className="font-playfair">{t('monthlyRevenue')} (PLN)</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>

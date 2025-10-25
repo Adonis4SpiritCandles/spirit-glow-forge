@@ -98,10 +98,10 @@ serve(async (req) => {
         phone: receiver.phone || ''
       },
       parcels: parcels.map(p => {
-        const weight = Math.max(0.1, Number(p.weight || 0));
-        const length = Math.max(1, Number(p.length || 20));
-        const width = Math.max(1, Number(p.width || 20));
-        const height = Math.max(1, Number(p.height || 12));
+        const weight = Math.max(0.1, Number(p.weight || 1));
+        const length = Math.max(1, Number(p.length || 10));
+        const width = Math.max(1, Number(p.width || 10));
+        const height = Math.max(1, Number(p.height || 10));
         return {
           weight,
           length,

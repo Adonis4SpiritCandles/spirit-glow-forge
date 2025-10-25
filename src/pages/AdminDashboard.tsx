@@ -16,6 +16,8 @@ import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Dow
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AdminCustomerModal from '@/components/AdminCustomerModal';
+import AdminEditCustomerModal from '@/components/AdminEditCustomerModal';
+import AdminDeleteOrderDialog from '@/components/AdminDeleteOrderDialog';
 import AdminStatistics from '@/components/AdminStatistics';
 import AdminExport from '@/components/AdminExport';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
@@ -110,7 +112,13 @@ const AdminDashboard = () => {
   // Customer modal state
   const [selectedCustomer, setSelectedCustomer] = useState<Profile | null>(null);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isEditCustomerModalOpen, setIsEditCustomerModalOpen] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+
+  // Order delete state
+  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
+  const [isDeleteOrderDialogOpen, setIsDeleteOrderDialogOpen] = useState(false);
+  const [isDeletingOrder, setIsDeletingOrder] = useState(false);
 
   // Order details modal state
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -362,6 +370,82 @@ const AdminDashboard = () => {
   const handleCustomerView = (customer: Profile) => {
     setSelectedCustomer(customer);
     setIsCustomerModalOpen(true);
+  };
+
+  const handleCustomerEdit = (customer: Profile) => {
+    setSelectedCustomer(customer);
+    setIsEditCustomerModalOpen(true);
+  };
+
+  const toggleUserRole = async (profile: Profile) => {
+    const newRole = profile.role === 'admin' ? 'user' : 'admin';
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('user_id', profile.user_id);
+
+      if (error) throw error;
+
+      toast({
+        title: t('success'),
+        description: newRole === 'admin' ? t('promoteToAdmin') : t('demoteToUser'),
+      });
+
+      loadDashboardData();
+    } catch (error: any) {
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDeleteOrder = (order: Order) => {
+    setOrderToDelete(order);
+    setIsDeleteOrderDialogOpen(true);
+  };
+
+  const confirmDeleteOrder = async () => {
+    if (!orderToDelete) return;
+
+    setIsDeletingOrder(true);
+    try {
+      // Delete order items first (due to foreign key)
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .delete()
+        .eq('order_id', orderToDelete.id);
+
+      if (itemsError) throw itemsError;
+
+      // Then delete the order
+      const { error: orderError } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderToDelete.id);
+
+      if (orderError) throw orderError;
+
+      toast({
+        title: t('success'),
+        description: 'Order deleted successfully',
+      });
+
+      setIsDeleteOrderDialogOpen(false);
+      setOrderToDelete(null);
+      loadDashboardData();
+    } catch (error: any) {
+      console.error('Error deleting order:', error);
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeletingOrder(false);
+    }
   };
 
   // Image upload handler
@@ -900,7 +984,7 @@ const AdminDashboard = () => {
                                 }}
                               >
                                 <Eye className="h-4 w-4 mr-1" />
-                                Details
+                                {t('details')}
                               </Button>
                               <Button
                                 size="sm"
@@ -908,7 +992,7 @@ const AdminDashboard = () => {
                                 onClick={() => updateOrderStatus(order.id, 'completed')}
                                 disabled={order.status === 'completed'}
                               >
-                                Complete
+                                {t('complete')}
                               </Button>
                               {order.tracking_number ? (
                                 <Button
@@ -927,9 +1011,17 @@ const AdminDashboard = () => {
                                   disabled={order.status !== 'completed'}
                                 >
                                   <Truck className="h-4 w-4 mr-1" />
-                                  Create Shipment
+                                  {t('createShipment')}
                                 </Button>
                               )}
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleDeleteOrder(order)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                {t('delete')}
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -990,12 +1082,7 @@ const AdminDashboard = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => {
-                                toast({
-                                  title: t('success'),
-                                  description: `${t('edit')} ${profile.email}`
-                                });
-                              }}
+                              onClick={() => handleCustomerEdit(profile)}
                             >
                               <Edit className="h-4 w-4 mr-2" />
                               {t('edit')}
@@ -1003,12 +1090,7 @@ const AdminDashboard = () => {
                             <Button
                               size="sm"
                               variant={profile.role === 'admin' ? 'secondary' : 'default'}
-                              onClick={() => {
-                                toast({
-                                  title: t('success'),
-                                  description: profile.role === 'admin' ? t('demoteToUser') : t('promoteToAdmin')
-                                });
-                              }}
+                              onClick={() => toggleUserRole(profile)}
                             >
                               {profile.role === 'admin' ? t('demoteToUser') : t('promoteToAdmin')}
                             </Button>
@@ -1372,6 +1454,28 @@ const AdminDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Customer Modal */}
+        <AdminEditCustomerModal
+          customer={selectedCustomer}
+          isOpen={isEditCustomerModalOpen}
+          onClose={() => {
+            setIsEditCustomerModalOpen(false);
+            setSelectedCustomer(null);
+          }}
+          onSuccess={loadDashboardData}
+        />
+
+        {/* Delete Order Dialog */}
+        <AdminDeleteOrderDialog
+          isOpen={isDeleteOrderDialogOpen}
+          onClose={() => {
+            setIsDeleteOrderDialogOpen(false);
+            setOrderToDelete(null);
+          }}
+          onConfirm={confirmDeleteOrder}
+          isLoading={isDeletingOrder}
+        />
       </div>
     </div>
   );

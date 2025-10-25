@@ -25,11 +25,11 @@ const ShipmentConfirmationModal = ({
   const { t } = useLanguage();
   const [enableEditing, setEnableEditing] = useState(false);
   const [dimensions, setDimensions] = useState({
-    width: 30,
-    height: 30,
-    length: 30
+    width: 10,
+    height: 10,
+    length: 10
   });
-  const [weight, setWeight] = useState(0.5);
+  const [weight, setWeight] = useState(1);
 
   if (!order) return null;
 

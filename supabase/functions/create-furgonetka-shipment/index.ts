@@ -82,11 +82,11 @@ serve(async (req) => {
 
     console.log('Profile found:', orderUserProfile?.email);
 
-    const weight = Math.max(0.1, Number(overrideWeight ?? 0.5));
+    const weight = Math.max(0.1, Number(overrideWeight ?? 1));
     const dimensions = {
-      width: Number(overrideDimensions?.width ?? 30),
-      height: Number(overrideDimensions?.height ?? 30),
-      length: Number(overrideDimensions?.length ?? 30)
+      width: Number(overrideDimensions?.width ?? 10),
+      height: Number(overrideDimensions?.height ?? 10),
+      length: Number(overrideDimensions?.length ?? 10)
     };
 
     console.log('Creating Furgonetka shipment with data:', {

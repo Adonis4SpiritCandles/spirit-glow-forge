@@ -109,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
       : `Order Confirmation ${orderRef}`;
 
     const emailResponse = await resend.emails.send({
-      from: "Spirit Candles <onboarding@resend.dev>",
+      from: "Spirit Candles <orders@spirit-candles.com>",
       to: [userEmail],
       subject: subject,
       html: `

@@ -71,12 +71,26 @@ Deno.serve(async (req) => {
     // Get Furgonetka access token
     const { data: tokenData, error: tokenError } = await supabase.functions.invoke(
       'get-furgonetka-token',
-      { body: {} }
+      {
+        body: {},
+        headers: {
+          Authorization: authHeader,
+        },
+      }
     );
 
     if (tokenError || !tokenData?.access_token) {
       console.error('Failed to get Furgonetka token:', tokenError);
-      throw new Error('Failed to authenticate with Furgonetka');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Failed to authenticate with Furgonetka',
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
     }
 
     const accessToken = tokenData.access_token;
@@ -130,6 +144,11 @@ Deno.serve(async (req) => {
       || packageData.parcels?.[0]?.tracking_url
       || null;
 
+    // Fallback: construct a public tracking URL if API didn't provide one
+    const finalTrackingUrl = trackingUrl || (trackingNumber
+      ? `https://sandbox.furgonetka.pl/zlokalizuj/${trackingNumber}`
+      : null);
+
     // Extract shipping status
     const shippingStatus = packageData.status 
       || packageData.parcels?.[0]?.state 
@@ -157,9 +176,7 @@ Deno.serve(async (req) => {
       updated_at: new Date().toISOString(),
     };
 
-    if (trackingUrl) {
-      updateData.tracking_url = trackingUrl;
-    }
+    // Note: tracking_url not persisted (column may not exist). It is still returned in the response for UI usage.
 
     const { error: updateError } = await supabase
       .from('orders')
@@ -177,7 +194,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         tracking_number: trackingNumber,
-        tracking_url: trackingUrl,
+        tracking_url: finalTrackingUrl,
         status: shippingStatus,
       }),
       {

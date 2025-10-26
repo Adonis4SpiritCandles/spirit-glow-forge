@@ -11,6 +11,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import spiritLogo from '@/assets/spirit-logo.png';
+import { ResetPasswordModal } from '@/components/ResetPasswordModal';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -27,6 +28,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   const { user, signIn, signUp } = useAuth();
   const { t, language } = useLanguage();
@@ -182,6 +184,19 @@ const Auth = () => {
               </Button>
             </div>
             
+            {isLogin && (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="link"
+                  className="p-0 h-auto text-sm text-primary"
+                  onClick={() => setShowResetPassword(true)}
+                >
+                  {t('forgotPassword') || 'Forgot Password?'}
+                </Button>
+              </div>
+            )}
+            
             {!isLogin && (
               <div className="relative">
                 <Input
@@ -282,6 +297,11 @@ const Auth = () => {
           </div>
         </CardContent>
       </Card>
+      
+      <ResetPasswordModal 
+        isOpen={showResetPassword} 
+        onClose={() => setShowResetPassword(false)} 
+      />
     </div>
   );
 };

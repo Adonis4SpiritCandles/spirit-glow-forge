@@ -300,6 +300,31 @@ serve(async (req) => {
       console.error('Error updating order:', updateError);
       throw updateError;
     }
+    
+    console.log('Package created successfully, triggering immediate tracking sync');
+
+    // Call sync tracking immediately (don't wait for cron)
+    try {
+      const { data: syncResult, error: syncError } = await supabase.functions.invoke(
+        'sync-furgonetka-tracking',
+        {
+          body: { orderId: orderId },
+          headers: {
+            Authorization: req.headers.get('Authorization') || '',
+          },
+        }
+      );
+      
+      if (syncError) {
+        console.error('Initial tracking sync failed:', syncError);
+        // Don't block, cron will retry later
+      } else {
+        console.log('Initial tracking sync successful:', syncResult);
+      }
+    } catch (error) {
+      console.error('Error calling sync-furgonetka-tracking:', error);
+      // Don't block the main operation
+    }
 
     return new Response(
       JSON.stringify({

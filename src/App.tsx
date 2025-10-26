@@ -29,6 +29,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import Accessibility from "./pages/Accessibility";
   import AllNotices from "./pages/AllNotices";
   import PrivacyRegistration from "./pages/PrivacyRegistration";
+  import ResetPassword from "./pages/ResetPassword";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
@@ -92,6 +93,7 @@ const App = () => {
                   <Route path="/accessibility" element={<Accessibility />} />
                   <Route path="/all-notices" element={<AllNotices />} />
                   <Route path="/privacy-registration" element={<PrivacyRegistration />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -12,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye } from 'lucide-react';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
+import { CarrierBadge } from '@/utils/carrierStyles';
 
 interface UserProfile {
   id: string;
@@ -191,20 +192,20 @@ const UserDashboard = () => {
       });
     }
     
-    // Stage 3: Shipment Created
+    // Stage 3: Shipment Created (USER VERSION - no "awaiting payment")
     if (order.furgonetka_package_id && !order.tracking_number) {
       badges.push({ 
         label: t('shipmentCreated') || 'Shipment Created', 
-        variant: 'bg-blue-500 text-white',
+        variant: 'bg-cyan-500 text-black font-semibold',
         icon: <Package className="w-3 h-3" /> 
       });
     }
     
-    // Stage 4: Shipped - Tracking available
-    if (order.tracking_number && order.carrier) {
+    // Stage 4: Shipped - Tracking available with real carrier name
+    if (order.tracking_number && (order.carrier_name || order.carrier)) {
       badges.push({ 
         label: t('shipped') || 'Shipped', 
-        variant: 'bg-green-500 text-white',
+        variant: 'bg-green-500 text-white flex items-center gap-1',
         icon: <Truck className="w-3 h-3" /> 
       });
     }
@@ -246,22 +247,22 @@ const UserDashboard = () => {
         </div>
 
         <Tabs defaultValue={tabParam || "profile"} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              {t('profile')}
+          <TabsList className="grid w-full grid-cols-4 gap-1">
+            <TabsTrigger value="profile" className="flex items-center gap-1 text-xs sm:text-sm">
+              <User className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('profile')}</span>
             </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2">
-              <ShoppingBag className="w-4 h-4" />
-              {t('orders')}
+            <TabsTrigger value="orders" className="flex items-center gap-1 text-xs sm:text-sm">
+              <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('orders')}</span>
             </TabsTrigger>
-            <TabsTrigger value="billing" className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              {t('billing')}
+            <TabsTrigger value="billing" className="flex items-center gap-1 text-xs sm:text-sm">
+              <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('billing')}</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              {t('settings')}
+            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm">
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('settings')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -362,18 +363,19 @@ const UserDashboard = () => {
                   <div className="space-y-4">
                     {orders.map((order) => {
                       const badges = getOrderBadges(order);
-                      const totalPLN = order.total_pln;
-                      const totalEUR = Math.round(totalPLN / 4.3);
-                      const shippingCostPLN = order.shipping_cost_pln || 0;
-                      const shippingCostEUR = Math.round(shippingCostPLN / 4.3);
-                      const productsPLN = totalPLN - shippingCostPLN;
-                      const productsEUR = Math.round(productsPLN / 4.3);
+                      // FIX: Use actual cents values, not rounded
+                      const totalPLN = (order.total_pln / 100).toFixed(2);
+                      const totalEUR = (order.total_eur / 100).toFixed(2);
+                      const shippingCostPLN = ((order.shipping_cost_pln || 0) / 100).toFixed(2);
+                      const shippingCostEUR = ((order.shipping_cost_eur || 0) / 100).toFixed(2);
+                      const productsPLN = ((order.total_pln - (order.shipping_cost_pln || 0)) / 100).toFixed(2);
+                      const productsEUR = ((order.total_eur - (order.shipping_cost_eur || 0)) / 100).toFixed(2);
 
                       return (
                         <div key={order.id} className="border rounded-lg p-4 space-y-3">
                           <div className="flex justify-between items-start mb-2">
                             <div>
-                              <h3 className="font-semibold">Order #SPIRIT-{String(order.order_number).padStart(5, '0')}</h3>
+                              <h3 className="font-semibold text-sm sm:text-base md:text-lg">Order #SPIRIT-{String(order.order_number).padStart(5, '0')}</h3>
                               <p className="text-sm text-muted-foreground">
                                 {new Date(order.created_at).toLocaleDateString()}
                               </p>
@@ -390,35 +392,35 @@ const UserDashboard = () => {
                         <div className="space-y-2 border-t pt-3">
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">{t('products')}:</span>
-                              <span>{productsPLN.toFixed(2)} PLN / {productsEUR} EUR</span>
+                              <span>{productsPLN} PLN / {productsEUR} EUR</span>
                             </div>
                           {(order.shipping_cost_pln || 0) > 0 && (
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">{t('shipping')}:</span>
-                              <span>{shippingCostPLN.toFixed(2)} PLN / {shippingCostEUR} EUR</span>
+                              <span>{shippingCostPLN} PLN / {shippingCostEUR} EUR</span>
                             </div>
                           )}
-                          {order.carrier_name && (
-                            <div className="flex justify-between text-sm">
+                          {(order.carrier_name || order.carrier) && (
+                            <div className="flex justify-between text-sm items-center">
                               <span className="text-muted-foreground">{t('carrier')}:</span>
-                              <Badge variant="outline">{order.carrier_name}</Badge>
+                              <CarrierBadge carrierName={order.carrier_name || order.carrier} />
                             </div>
                           )}
                           <div className="flex justify-between font-semibold pt-2 border-t">
                             <span>{t('total')}:</span>
-                            <span>{totalPLN.toFixed(2)} PLN / {totalEUR} EUR</span>
+                            <span>{totalPLN} PLN / {totalEUR} EUR</span>
                           </div>
                         </div>
-                        {order.tracking_number && order.carrier && (
+                        {order.tracking_number && (order.carrier_name || order.carrier) && (
                           <div className="border-t pt-3 mt-3 space-y-2">
                             <div className="flex items-center gap-2">
                               <Package className="h-4 w-4 text-muted-foreground" />
                               <span className="text-sm font-medium">{t('shippingInformation')}</span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                              <div>
+                              <div className="flex items-center gap-2">
                                 <span className="text-muted-foreground">{t('carrier')}:</span>
-                                <Badge variant="default" className="ml-2 bg-green-500">{order.carrier}</Badge>
+                                <CarrierBadge carrierName={order.carrier_name || order.carrier} />
                               </div>
                               <div>
                                 <span className="text-muted-foreground">{t('status')}:</span>
@@ -433,12 +435,12 @@ const UserDashboard = () => {
                                     href={order.tracking_url} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="ml-2 font-mono text-xs bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors inline-block"
+                                    className="ml-2 font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors inline-block"
                                   >
                                     {order.tracking_number}
                                   </a>
                                 ) : (
-                                  <code className="ml-2 font-mono text-xs bg-muted px-2 py-1 rounded">
+                                  <code className="ml-2 font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded">
                                     {order.tracking_number}
                                   </code>
                                 )}

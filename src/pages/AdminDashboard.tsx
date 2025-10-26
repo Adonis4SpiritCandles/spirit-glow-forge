@@ -1015,14 +1015,14 @@ const AdminDashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="products">{t('products')}</TabsTrigger>
-            <TabsTrigger value="orders">{t('orders')}</TabsTrigger>
-            <TabsTrigger value="trash">{t('ordersTrash')}</TabsTrigger>
-            <TabsTrigger value="customers">{t('customers')}</TabsTrigger>
-            <TabsTrigger value="warehouse">{t('warehouse')}</TabsTrigger>
-            <TabsTrigger value="statistics">{t('statistics')}</TabsTrigger>
-            <TabsTrigger value="export">Export</TabsTrigger>
+          <TabsList className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 w-full gap-1">
+            <TabsTrigger value="products" className="text-xs sm:text-sm">{t('products')}</TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs sm:text-sm">{t('orders')}</TabsTrigger>
+            <TabsTrigger value="trash" className="text-xs sm:text-sm">{t('ordersTrash')}</TabsTrigger>
+            <TabsTrigger value="customers" className="text-xs sm:text-sm">{t('customers')}</TabsTrigger>
+            <TabsTrigger value="warehouse" className="text-xs sm:text-sm">{t('warehouse')}</TabsTrigger>
+            <TabsTrigger value="statistics" className="text-xs sm:text-sm">{t('statistics')}</TabsTrigger>
+            <TabsTrigger value="export" className="text-xs sm:text-sm">Export</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">

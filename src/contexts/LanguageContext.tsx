@@ -318,16 +318,46 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'nature') return language === 'pl' ? 'Natura' : 'Nature';
     if (key === 'fresh') return language === 'pl' ? 'Świeżość' : 'Fresh';
 
-    // Status badges
-    if (key === 'paid') return language === 'pl' ? 'Opłacone' : 'Paid';
-    if (key === 'inTransit') return language === 'pl' ? 'W drodze' : 'In Transit';
-    if (key === 'delivered') return language === 'pl' ? 'Dostarczono' : 'Delivered';
-    if (key === 'completed') return language === 'pl' ? 'Zakończone' : 'Completed';
-    if (key === 'trackPackage') return language === 'pl' ? 'Śledź paczkę' : 'Track Package';
-    if (key === 'billing') return language === 'pl' ? 'Płatności' : 'Billing';
-    if (key === 'pending') return language === 'pl' ? 'Oczekujące' : 'Pending';
-    if (key === 'shipped') return language === 'pl' ? 'Wysłano' : 'Shipped';
-    if (key === 'cancelled') return language === 'pl' ? 'Anulowano' : 'Cancelled';
+    // Order Timeline & Bulk Actions
+    if (key === 'orderTimeline') return language === 'pl' ? 'Oś czasu zamówienia' : 'Order Timeline';
+    if (key === 'orderPlaced') return language === 'pl' ? 'Zamówienie złożone' : 'Order placed';
+    if (key === 'paymentReceived') return language === 'pl' ? 'Płatność otrzymana' : 'Payment received';
+    if (key === 'orderConfirmedByAdmin') return language === 'pl' ? 'Potwierdzone przez Admina' : 'Confirmed by Admin';
+    if (key === 'shipmentCreatedAwaitingPayment') return language === 'pl' ? 'Przesyłka utworzona, oczekiwanie na płatność' : 'Shipment created, awaiting payment';
+    if (key === 'packageShipped') return language === 'pl' ? 'Paczka wysłana' : 'Package shipped';
+    if (key === 'estimatedDelivery') return language === 'pl' ? 'Szacowana dostawa' : 'Estimated delivery';
+    if (key === 'ordersSelected') return language === 'pl' ? 'Zamówień zaznaczonych' : 'orders selected';
+    if (key === 'bulkComplete') return language === 'pl' ? 'Zakończ wszystkie' : 'Complete All';
+    if (key === 'bulkSyncTracking') return language === 'pl' ? 'Synchronizuj wszystkie' : 'Sync All';
+    if (key === 'bulkDelete') return language === 'pl' ? 'Usuń wszystkie' : 'Delete All';
+    if (key === 'clearSelection') return language === 'pl' ? 'Wyczyść zaznaczenie' : 'Clear Selection';
+    if (key === 'manualSyncAll') return language === 'pl' ? 'Ręcznie synchronizuj wszystkie' : 'Manual Sync All';
+    if (key === 'syncing') return language === 'pl' ? 'Synchronizacja...' : 'Syncing...';
+    
+    // Password Reset
+    if (key === 'forgotPassword') return language === 'pl' ? 'Zapomniałeś hasła?' : 'Forgot Password?';
+    if (key === 'resetPassword') return language === 'pl' ? 'Zresetuj hasło' : 'Reset Password';
+    if (key === 'resetPasswordDescription') return language === 'pl' ? 'Wpisz swój email, a wyślemy Ci link do resetu' : 'Enter your email and we\'ll send you a reset link';
+    if (key === 'sendResetLink') return language === 'pl' ? 'Wyślij link do resetu' : 'Send Reset Link';
+    if (key === 'emailSent') return language === 'pl' ? 'Email wysłany' : 'Email Sent';
+    if (key === 'checkEmailForResetLink') return language === 'pl' ? 'Sprawdź swoją skrzynkę pocztową w celu uzyskania linku do resetu hasła' : 'Check your email for the password reset link';
+    if (key === 'newPassword') return language === 'pl' ? 'Nowe hasło' : 'New Password';
+    if (key === 'confirmNewPassword') return language === 'pl' ? 'Potwierdź nowe hasło' : 'Confirm New Password';
+    if (key === 'passwordsDoNotMatch') return language === 'pl' ? 'Hasła nie pasują do siebie' : 'Passwords do not match';
+    if (key === 'passwordTooShort') return language === 'pl' ? 'Hasło musi mieć co najmniej 8 znaków' : 'Password must be at least 8 characters';
+    if (key === 'passwordResetSuccess') return language === 'pl' ? 'Hasło zresetowane pomyślnie! Przekierowanie...' : 'Password reset successfully! Redirecting...';
+    if (key === 'resetting') return language === 'pl' ? 'Resetowanie...' : 'Resetting...';
+    if (key === 'emailRequired') return language === 'pl' ? 'Email jest wymagany' : 'Email is required';
+    
+    // Name Validation
+    if (key === 'invalidName') return language === 'pl' ? 'Nieprawidłowe imię' : 'Invalid Name';
+    if (key === 'nameCannotContainNumbers') return language === 'pl' ? 'Imię i nazwisko nie mogą zawierać cyfr' : 'Name and surname cannot contain numbers';
+    
+    // Carrier Names & Shipping
+    if (key === 'sendTo') return language === 'pl' ? 'Wyślij do' : 'Send to';
+    if (key === 'furgonetka') return language === 'pl' ? 'Furgonetka' : 'Furgonetka';
+    
+    // Existing translations continuation...
 
     // Privacy/Legal
     if (key === 'termsOfSale') return language === 'pl' ? 'Regulamin sprzedaży' : 'Terms of Sale';

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 interface ShippingAddress {
@@ -140,7 +141,22 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
               id="name"
               required
               value={address.name}
-              onChange={(e) => setAddress({ ...address, name: e.target.value })}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Remove numbers while user types
+                const cleanedValue = value.replace(/[0-9]/g, '');
+                setAddress({ ...address, name: cleanedValue });
+              }}
+              onBlur={(e) => {
+                const nameRegex = /^[a-zA-ZÀ-ÿ\s\-']+$/;
+                if (e.target.value && !nameRegex.test(e.target.value)) {
+                  toast({
+                    title: t('invalidName') || 'Invalid Name',
+                    description: t('nameCannotContainNumbers') || 'Name and surname cannot contain numbers',
+                    variant: 'destructive'
+                  });
+                }
+              }}
               placeholder="John Doe"
             />
           </div>

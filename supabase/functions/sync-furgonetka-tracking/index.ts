@@ -116,13 +116,28 @@ Deno.serve(async (req) => {
     }
 
     const packageData = await packageResponse.json();
-    console.log('Package data from Furgonetka:', packageData);
+    console.log('Package data from Furgonetka:', JSON.stringify(packageData, null, 2));
 
-    // Extract tracking number
-    const trackingNumber = packageData.tracking_number || packageData.trackingNumber;
+    // Extract tracking number with multiple fallbacks
+    const trackingNumber = packageData.tracking_number 
+      || packageData.trackingNumber 
+      || packageData.waybill
+      || packageData.parcels?.[0]?.package_no
+      || packageData.parcels?.[0]?.tracking_number;
+
+    // Extract tracking URL
+    const trackingUrl = packageData.tracking_url 
+      || packageData.parcels?.[0]?.tracking_url
+      || null;
+
+    // Extract shipping status
+    const shippingStatus = packageData.status 
+      || packageData.parcels?.[0]?.state 
+      || 'in_transit';
 
     if (!trackingNumber) {
       console.log('No tracking number available yet for package:', order.furgonetka_package_id);
+      console.log('Package structure:', Object.keys(packageData));
       return new Response(
         JSON.stringify({
           success: false,
@@ -135,14 +150,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Update order with tracking number
+    // Update order with tracking number and URL
+    const updateData: any = {
+      tracking_number: trackingNumber,
+      shipping_status: shippingStatus,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (trackingUrl) {
+      updateData.tracking_url = trackingUrl;
+    }
+
     const { error: updateError } = await supabase
       .from('orders')
-      .update({
-        tracking_number: trackingNumber,
-        shipping_status: packageData.status || 'in_transit',
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('id', orderId);
 
     if (updateError) {
@@ -156,7 +177,8 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         tracking_number: trackingNumber,
-        status: packageData.status,
+        tracking_url: trackingUrl,
+        status: shippingStatus,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

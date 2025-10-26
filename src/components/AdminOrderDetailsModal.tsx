@@ -21,6 +21,7 @@ interface Order {
   order_number?: number;
   shipping_status?: string;
   tracking_number?: string;
+  tracking_url?: string;
   carrier?: string;
   shipping_label_url?: string;
   furgonetka_package_id?: string;
@@ -51,6 +52,7 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
     }
 
     setIsSyncing(true);
+    let data: any = null;
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -58,14 +60,15 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('sync-furgonetka-tracking', {
+      const response = await supabase.functions.invoke('sync-furgonetka-tracking', {
         body: { orderId: order.id },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      if (error) throw error;
+      if (response.error) throw response.error;
+      data = response.data;
 
       if (data?.success === false) {
         toast.error(data.error || 'Failed to sync tracking');
@@ -73,14 +76,17 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
       }
 
       if (data?.tracking_number) {
-        toast.success(`Tracking number synced: ${data.tracking_number}`);
+        const message = data.tracking_url 
+          ? `Tracking synced: ${data.tracking_number}`
+          : `Tracking number synced: ${data.tracking_number}`;
+        toast.success(message);
         onTrackingUpdated?.();
       } else {
         toast.info('No tracking number available yet from Furgonetka');
       }
     } catch (error: any) {
       console.error('Error syncing tracking:', error);
-      toast.error(error.message || 'Failed to sync tracking');
+      toast.error(data?.error || error.message || 'Failed to sync tracking');
     } finally {
       setIsSyncing(false);
     }
@@ -244,9 +250,21 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                     </div>
                   )}
                   {order.tracking_number && (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">{t('trackingNumber')}:</span>
-                      <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.tracking_number}</code>
+                      <div className="flex items-center gap-2">
+                        <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.tracking_number}</code>
+                        {order.tracking_url && (
+                          <a 
+                            href={order.tracking_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline text-sm"
+                          >
+                            Track
+                          </a>
+                        )}
+                      </div>
                     </div>
                   )}
                   {order.furgonetka_package_id && (

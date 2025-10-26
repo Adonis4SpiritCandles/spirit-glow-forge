@@ -13,7 +13,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AdminCustomerModal from '@/components/AdminCustomerModal';
@@ -966,6 +967,51 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Bulk Actions Bar */}
+        {selectedOrders.length > 0 && (
+          <div className="fixed top-0 left-0 right-0 bg-primary text-primary-foreground p-4 z-50 shadow-lg animate-in slide-in-from-top">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="font-medium">
+                {selectedOrders.length} {t('ordersSelected')}
+              </span>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={bulkCompleteOrders}
+                  disabled={isBulkOperating}
+                >
+                  {t('bulkComplete')}
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={bulkSyncTracking}
+                  disabled={isBulkOperating}
+                >
+                  {t('bulkSyncTracking')}
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={bulkDeleteOrders}
+                  disabled={isBulkOperating}
+                >
+                  {t('bulkDelete')}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setSelectedOrders([])}
+                  className="text-primary-foreground hover:bg-primary-foreground/20"
+                >
+                  {t('clearSelection')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="products" className="space-y-4">

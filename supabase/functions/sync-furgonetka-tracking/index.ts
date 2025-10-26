@@ -187,7 +187,35 @@ Deno.serve(async (req) => {
       throw new Error('Failed to update order with tracking number');
     }
 
-    console.log('Successfully synced tracking number:', trackingNumber);
+    console.log(`Successfully synced tracking for order ${orderId}`);
+
+    // Get order with profile data for email
+    const { data: orderData } = await supabase
+      .from('orders')
+      .select('*, profiles(email, preferred_language)')
+      .eq('id', orderId)
+      .single();
+
+    // Send tracking update email if tracking number is available
+    if (trackingNumber && orderData?.profiles?.email) {
+      try {
+        await supabase.functions.invoke('send-status-update', {
+          body: {
+            orderId: orderData.id,
+            orderNumber: orderData.order_number,
+            userEmail: orderData.profiles.email,
+            preferredLanguage: orderData.profiles.preferred_language || 'en',
+            updateType: 'tracking_updated',
+            trackingNumber: trackingNumber,
+            trackingUrl: finalTrackingUrl,
+            carrier: packageData.courier?.name || 'Furgonetka',
+          }
+        });
+        console.log(`Tracking email sent for order ${orderId}`);
+      } catch (emailError) {
+        console.error(`Failed to send tracking email for order ${orderId}:`, emailError);
+      }
+    }
 
     return new Response(
       JSON.stringify({

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Check, Clock, Truck, Package, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface Order {
@@ -18,6 +18,7 @@ interface Order {
   shipping_cost_eur?: number;
   carrier_name?: string;
   created_at: string;
+  updated_at?: string;
   order_number?: number;
   shipping_status?: string;
   tracking_number?: string;
@@ -31,6 +32,7 @@ interface Order {
     first_name?: string;
     last_name?: string;
     email?: string;
+    preferred_language?: string;
   };
 }
 
@@ -106,6 +108,46 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
   const totalPLN = order.total_pln / 100;
   const totalEUR = order.total_eur;
 
+  // Timeline steps
+  const timelineSteps = [
+    {
+      label: t('orderCreated'),
+      completed: true,
+      timestamp: order.created_at,
+      icon: CheckCircle2,
+    },
+    {
+      label: t('paymentConfirmed'),
+      completed: order.status !== 'pending',
+      timestamp: order.status !== 'pending' ? order.created_at : null,
+      icon: Check,
+    },
+    {
+      label: t('adminConfirmed'),
+      completed: order.status === 'completed',
+      timestamp: order.status === 'completed' ? order.updated_at : null,
+      icon: Check,
+    },
+    {
+      label: t('shipmentCreated'),
+      completed: !!order.furgonetka_package_id,
+      timestamp: order.furgonetka_package_id ? order.updated_at : null,
+      icon: Package,
+    },
+    {
+      label: t('inTransit'),
+      completed: !!order.tracking_number,
+      timestamp: order.tracking_number ? order.updated_at : null,
+      icon: Truck,
+    },
+    {
+      label: t('delivered'),
+      completed: order.shipping_status === 'delivered',
+      timestamp: order.shipping_status === 'delivered' ? order.updated_at : null,
+      icon: CheckCircle2,
+    },
+  ];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -139,6 +181,44 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                   <Badge variant="default">{order.status}</Badge>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Order Timeline */}
+          <div>
+            <h3 className="font-semibold mb-4">{t('orderTimeline')}</h3>
+            <div className="space-y-3 relative">
+              {timelineSteps.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <div key={index} className="flex items-start gap-4 relative">
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 ${
+                      step.completed 
+                        ? 'bg-green-100 text-green-600' 
+                        : 'bg-gray-100 text-gray-400'
+                    }`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    {index < timelineSteps.length - 1 && (
+                      <div className={`absolute left-[1.25rem] top-10 w-0.5 h-8 ${
+                        step.completed ? 'bg-green-200' : 'bg-gray-200'
+                      }`} />
+                    )}
+                    <div className="flex-1 pt-2">
+                      <p className={`font-medium ${step.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        {step.label}
+                      </p>
+                      {step.timestamp && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(step.timestamp).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

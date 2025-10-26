@@ -470,6 +470,34 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'learnMore') return language === 'pl' ? 'Dowiedz się więcej' : 'Learn More';
     if (key === 'savePreferences') return language === 'pl' ? 'Zapisz preferencje' : 'Save Preferences';
 
+    if (key === 'shipped') return language === 'pl' ? 'Wysłane' : 'Shipped';
+    
+    // Order Timeline
+    if (key === 'orderTimeline') return language === 'pl' ? 'Oś czasu zamówienia' : 'Order Timeline';
+    if (key === 'orderCreated') return language === 'pl' ? 'Zamówienie utworzone' : 'Order Created';
+    if (key === 'paymentConfirmed') return language === 'pl' ? 'Płatność potwierdzona' : 'Payment Confirmed';
+    if (key === 'adminConfirmed') return language === 'pl' ? 'Zamówienie potwierdzone' : 'Order Confirmed';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment Created';
+    if (key === 'inTransit') return language === 'pl' ? 'W tranzycie' : 'In Transit';
+    if (key === 'delivered') return language === 'pl' ? 'Dostarczone' : 'Delivered';
+    
+    // Bulk Actions
+    if (key === 'bulkComplete') return language === 'pl' ? 'Zakończ wybrane' : 'Complete Selected';
+    if (key === 'bulkSyncTracking') return language === 'pl' ? 'Synchronizuj śledzenie' : 'Sync Tracking';
+    if (key === 'bulkDelete') return language === 'pl' ? 'Usuń wybrane' : 'Delete Selected';
+    if (key === 'ordersSelected') return language === 'pl' ? 'zamówień wybranych' : 'orders selected';
+    if (key === 'clearSelection') return language === 'pl' ? 'Wyczyść wybór' : 'Clear Selection';
+    if (key === 'ordersCompleted') return language === 'pl' ? 'zamówień zakończonych' : 'orders completed';
+    if (key === 'ordersSynced') return language === 'pl' ? 'zamówień zsynchronizowanych' : 'orders synced';
+    if (key === 'ordersDeleted') return language === 'pl' ? 'zamówień przeniesiono do kosza' : 'orders moved to trash';
+    if (key === 'bulkDeleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz przenieść wybrane zamówienia do kosza?' : 'Are you sure you want to move selected orders to trash?';
+    if (key === 'noPaidOrders') return language === 'pl' ? 'Nie wybrano opłaconych zamówień' : 'No paid orders selected';
+    if (key === 'noOrdersWithTracking') return language === 'pl' ? 'Nie wybrano zamówień z przesyłkami Furgonetka' : 'No orders with Furgonetka packages selected';
+    if (key === 'syncing') return language === 'pl' ? 'Synchronizacja...' : 'Syncing...';
+    if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja wszystkich zamówień ze śledzeniem' : 'Syncing all orders with tracking';
+    if (key === 'syncTriggered') return language === 'pl' ? 'Ręczna synchronizacja uruchomiona' : 'Manual sync triggered successfully';
+    if (key === 'syncAllTracking') return language === 'pl' ? 'Synchronizuj wszystko' : 'Sync All Tracking';
+
     // About Page
     if (key === 'naturalSoyWax') return language === 'pl' ? 'Naturalny wosk sojowy' : 'Natural Soy Wax';
     if (key === 'naturalSoyWaxDesc') return language === 'pl' ? 'Ekologiczny i odnawialny, pali się czyszciej i dłużej' : 'Eco-friendly and renewable, burns cleaner and longer';

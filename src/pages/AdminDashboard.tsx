@@ -65,6 +65,7 @@ interface Order {
     first_name?: string;
     last_name?: string;
     email?: string;
+    preferred_language?: string;
   };
 }
 
@@ -138,6 +139,10 @@ const AdminDashboard = () => {
   // Product edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  // Bulk actions state
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  const [isBulkOperating, setIsBulkOperating] = useState(false);
+
   // Check if user is admin
   useEffect(() => {
     const checkAdminRole = async () => {
@@ -197,7 +202,7 @@ const AdminDashboard = () => {
         const userIds = [...new Set(ordersData.map(o => o.user_id))];
         const { data: profilesForOrders } = await supabase
           .from('profiles')
-          .select('user_id, first_name, last_name, email')
+          .select('user_id, first_name, last_name, email, preferred_language')
           .in('user_id', userIds);
 
         // Attach profile data to orders
@@ -249,7 +254,7 @@ const AdminDashboard = () => {
         const userIds = [...new Set(deletedOrdersData.map(o => o.user_id))];
         const { data: profilesForOrders } = await supabase
           .from('profiles')
-          .select('user_id, first_name, last_name, email')
+          .select('user_id, first_name, last_name, email, preferred_language')
           .in('user_id', userIds);
 
         const ordersWithProfiles = deletedOrdersData.map(order => ({
@@ -697,6 +702,169 @@ const AdminDashboard = () => {
     window.open(labelUrl, '_blank');
   };
 
+  // Bulk actions handlers
+  const toggleOrderSelection = (orderId: string) => {
+    setSelectedOrders(prev =>
+      prev.includes(orderId)
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedOrders.length === orders.length) {
+      setSelectedOrders([]);
+    } else {
+      setSelectedOrders(orders.map(o => o.id));
+    }
+  };
+
+  const bulkCompleteOrders = async () => {
+    const ordersToComplete = orders.filter(
+      o => selectedOrders.includes(o.id) && o.status === 'paid'
+    );
+
+    if (ordersToComplete.length === 0) {
+      toast({
+        title: t('error'),
+        description: t('noPaidOrders'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsBulkOperating(true);
+    let successCount = 0;
+
+    for (const order of ordersToComplete) {
+      try {
+        await supabase
+          .from('orders')
+          .update({ status: 'completed' })
+          .eq('id', order.id);
+
+        // Send email notification
+        if (order.profiles?.email) {
+          try {
+            await supabase.functions.invoke('send-status-update', {
+              body: {
+                orderId: order.id,
+                orderNumber: order.order_number,
+                userEmail: order.profiles.email,
+                preferredLanguage: order.profiles.preferred_language || 'en',
+                updateType: 'completed'
+              }
+            });
+          } catch (emailError) {
+            console.error(`Failed to send email for order ${order.id}:`, emailError);
+          }
+        }
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to complete order ${order.id}:`, error);
+      }
+    }
+
+    toast({
+      title: t('success'),
+      description: `${successCount} ${t('ordersCompleted')}`,
+    });
+
+    loadDashboardData();
+    setSelectedOrders([]);
+    setIsBulkOperating(false);
+  };
+
+  const bulkSyncTracking = async () => {
+    const ordersToSync = orders.filter(
+      o => selectedOrders.includes(o.id) && o.furgonetka_package_id
+    );
+
+    if (ordersToSync.length === 0) {
+      toast({
+        title: t('error'),
+        description: t('noOrdersWithTracking'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsBulkOperating(true);
+    let successCount = 0;
+
+    for (const order of ordersToSync) {
+      try {
+        await supabase.functions.invoke('sync-furgonetka-tracking', {
+          body: { orderId: order.id }
+        });
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to sync ${order.id}:`, error);
+      }
+    }
+
+    toast({
+      title: t('success'),
+      description: `${successCount}/${ordersToSync.length} ${t('ordersSynced')}`,
+    });
+
+    loadDashboardData();
+    setSelectedOrders([]);
+    setIsBulkOperating(false);
+  };
+
+  const bulkDeleteOrders = async () => {
+    if (!confirm(t('bulkDeleteConfirm'))) return;
+
+    setIsBulkOperating(true);
+    let successCount = 0;
+
+    for (const orderId of selectedOrders) {
+      try {
+        await supabase
+          .from('orders')
+          .update({ deleted_at: new Date().toISOString() })
+          .eq('id', orderId);
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to delete order ${orderId}:`, error);
+      }
+    }
+
+    toast({
+      title: t('success'),
+      description: `${successCount} ${t('ordersDeleted')}`,
+    });
+
+    loadDashboardData();
+    setSelectedOrders([]);
+    setIsBulkOperating(false);
+  };
+
+  const manualSyncAll = async () => {
+    try {
+      toast({
+        title: t('syncing'),
+        description: t('syncingAllOrders'),
+      });
+
+      await supabase.functions.invoke('auto-sync-tracking');
+
+      toast({
+        title: t('success'),
+        description: t('syncTriggered'),
+      });
+
+      setTimeout(() => loadDashboardData(), 3000);
+    } catch (error: any) {
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   // Update stock quantity for a product
   const updateStockQuantity = async (productId: string, newStock: number) => {
     try {
@@ -1052,20 +1220,32 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="orders" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('orders')}</CardTitle>
-                <CardDescription>{t('manageCustomerOrders')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {/* Desktop Table View */}
-                <div className="hidden md:block">
-                  <TooltipProvider>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-xs">Order #</TableHead>
+            <TabsContent value="orders" className="space-y-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>{t('orders')}</CardTitle>
+                    <CardDescription>{t('manageCustomerOrders')}</CardDescription>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={manualSyncAll}>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    {t('syncAllTracking')}
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block">
+                    <TooltipProvider>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-12">
+                              <Checkbox
+                                checked={selectedOrders.length === orders.length && orders.length > 0}
+                                onCheckedChange={handleSelectAll}
+                              />
+                            </TableHead>
+                            <TableHead className="text-xs">Order #</TableHead>
                           <TableHead className="text-xs">Order ID</TableHead>
                           <TableHead className="text-xs">{t('customer')}</TableHead>
                           <TableHead className="text-xs">{t('total')}</TableHead>
@@ -1075,22 +1255,28 @@ const AdminDashboard = () => {
                           <TableHead className="text-xs">{t('actions')}</TableHead>
                         </TableRow>
                       </TableHeader>
-                    <TableBody>
-                      {orders.map((order) => {
-                        const shippingStatus = getShippingStatusDisplay(order);
-                        const totalPLN = order.total_pln;
-                        const shippingCostPLN = order.shipping_cost_pln || 0;
-                        const productsPLN = totalPLN - shippingCostPLN;
-                        const shippingName = order.shipping_address?.first_name && order.shipping_address?.last_name
-                          ? `${order.shipping_address.first_name} ${order.shipping_address.last_name}`
-                          : null;
+                      <TableBody>
+                        {orders.map((order) => {
+                          const shippingStatus = getShippingStatusDisplay(order);
+                          const totalPLN = order.total_pln;
+                          const shippingCostPLN = order.shipping_cost_pln || 0;
+                          const productsPLN = totalPLN - shippingCostPLN;
+                          const shippingName = order.shipping_address?.first_name && order.shipping_address?.last_name
+                            ? `${order.shipping_address.first_name} ${order.shipping_address.last_name}`
+                            : null;
 
-                        return (
-                          <TableRow key={order.id}>
-                            {/* Order Number */}
-                            <TableCell className="font-semibold text-sm">
-                              SPIRIT-{String(order.order_number).padStart(5, '0')}
-                            </TableCell>
+                          return (
+                            <TableRow key={order.id}>
+                              <TableCell>
+                                <Checkbox
+                                  checked={selectedOrders.includes(order.id)}
+                                  onCheckedChange={() => toggleOrderSelection(order.id)}
+                                />
+                              </TableCell>
+                              {/* Order Number */}
+                              <TableCell className="font-semibold text-sm">
+                                SPIRIT-{String(order.order_number).padStart(5, '0')}
+                              </TableCell>
 
                             {/* Order ID with Tooltip */}
                             <TableCell>

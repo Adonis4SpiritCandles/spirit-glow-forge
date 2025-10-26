@@ -310,7 +310,7 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
               <Separator className="my-2" />
               <div className="flex justify-between font-semibold text-base">
                 <span>{t('totalPaid')}:</span>
-                <span>{totalPLN.toFixed(2)} PLN / {totalEUR} EUR</span>
+                <span>{totalPLN.toFixed(2)} PLN / {totalEUR.toFixed(2)} EUR</span>
               </div>
             </div>
           </div>
@@ -351,7 +351,8 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">{t('status')}:</span>
-                        <Badge variant="secondary" className="bg-green-500 text-white drop-shadow-md">
+                        <Badge variant="secondary" className="bg-green-500 text-white flex items-center gap-1 drop-shadow-md">
+                          <Truck className="h-3 w-3" />
                           {t('shippedSuccessfully')}
                         </Badge>
                       </div>

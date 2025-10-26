@@ -502,6 +502,29 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'savePreferences') return language === 'pl' ? 'Zapisz preferencje' : 'Save Preferences';
 
     if (key === 'shipped') return language === 'pl' ? 'Wysłane' : 'Shipped';
+    if (key === 'allProducts') return language === 'pl' ? 'Wszystkie produkty' : 'All Products';
+    if (key === 'newArrivals') return language === 'pl' ? 'Nowości' : 'New Arrivals';
+    if (key === 'bestSellers') return language === 'pl' ? 'Bestsellery' : 'Bestsellers';
+    if (key === 'featured') return language === 'pl' ? 'Wyróżnione' : 'Featured';
+    if (key === 'priceLowToHigh') return language === 'pl' ? 'Cena: Od najniższej' : 'Price: Low to High';
+    if (key === 'priceHighToLow') return language === 'pl' ? 'Cena: Od najwyższej' : 'Price: High to Low';
+    if (key === 'nameAtoZ') return language === 'pl' ? 'Nazwa: A do Z' : 'Name: A to Z';
+    if (key === 'searchCandles') return language === 'pl' ? 'Szukaj świec...' : 'Search candles...';
+    if (key === 'filterBy') return language === 'pl' ? 'Filtruj według' : 'Filter by';
+    if (key === 'sortBy') return language === 'pl' ? 'Sortuj według' : 'Sort by';
+    if (key === 'noProductsFound') return language === 'pl' ? 'Nie znaleziono produktów' : 'No products found';
+    if (key === 'tryAdjusting') return language === 'pl' ? 'Spróbuj dostosować kryteria wyszukiwania lub filtrowania' : 'Try adjusting your search or filter criteria';
+    if (key === 'clearFilters') return language === 'pl' ? 'Wyczyść filtry' : 'Clear Filters';
+    if (key === 'loadMoreProducts') return language === 'pl' ? 'Załaduj więcej produktów' : 'Load More Products';
+    if (key === 'product') return language === 'pl' ? 'produkt' : 'product';
+    if (key === 'products') return language === 'pl' ? 'produkty' : 'products';
+    if (key === 'pleaseLogIn') return language === 'pl' ? 'Proszę się zalogować' : 'Please Log In';
+    if (key === 'needLoginCart') return language === 'pl' ? 'Musisz być zalogowany, aby zobaczyć swój koszyk' : 'You need to be logged in to view your cart';
+    if (key === 'orderSummary') return language === 'pl' ? 'Podsumowanie zamówienia' : 'Order Summary';
+    if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to Cart';
+    if (key === 'addedToWishlist') return language === 'pl' ? 'Dodano do listy życzeń' : 'Added to Wishlist';
+    if (key === 'removedFromWishlist') return language === 'pl' ? 'Usunięto z listy życzeń' : 'Removed from Wishlist';
+    if (key === 'inspiredBy') return language === 'pl' ? 'Zainspirowane przez' : 'Inspired by';
     
     // Order Timeline
     if (key === 'orderTimeline') return language === 'pl' ? 'Oś czasu zamówienia' : 'Order Timeline';

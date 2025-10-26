@@ -48,11 +48,11 @@ const ProductDetail = () => {
         id: data.id,
         name: language === 'en' ? data.name_en : data.name_pl,
         fragrance: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
-        price: { pln: Number(data.price_pln).toFixed(2), eur: Number(data.price_eur).toFixed(2) },
+        price: { pln: (Number(data.price_pln) / 100).toFixed(2), eur: (Number(data.price_eur) / 100).toFixed(2) },
         image: data.image_url || candleLit,
         description: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
         longDescription: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
-        sizes: [{ size: data.size, weight: data.size || '180g', price: { pln: Number(data.price_pln), eur: Number(data.price_eur) }, burnTime: '40-45 hours' }],
+        sizes: [{ size: data.size, weight: data.size || '180g', price: { pln: Number(data.price_pln) / 100, eur: Number(data.price_eur) / 100 }, burnTime: '40-45 hours' }],
         isNew: false,
         moodTags: [],
         careInstructions: [
@@ -99,7 +99,7 @@ const ProductDetail = () => {
     addProductToCart(cartProduct as any, quantity);
     toast({
       title: t('addedToCart'),
-      description: `${product.name} (${size.weight}) x${quantity} has been added to your cart.`,
+      description: `${product.name} (${size.weight}) x${quantity} ${t('addedToCart').toLowerCase()}.`,
     });
   };
 

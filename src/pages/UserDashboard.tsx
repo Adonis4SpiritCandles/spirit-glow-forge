@@ -424,7 +424,8 @@ const UserDashboard = () => {
                               </div>
                               <div>
                                 <span className="text-muted-foreground">{t('status')}:</span>
-                                <Badge variant="secondary" className="ml-2 bg-green-100 text-green-800">
+                                <Badge variant="secondary" className="ml-2 bg-green-100 text-green-800 flex inline-flex items-center gap-1">
+                                  <Truck className="h-3 w-3" />
                                   {t('shipped')}
                                 </Badge>
                               </div>

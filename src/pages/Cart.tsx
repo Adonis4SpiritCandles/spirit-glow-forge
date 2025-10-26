@@ -18,9 +18,9 @@ const Cart = () => {
       <div className="min-h-screen bg-background flex items-center justify-center py-8">
         <Card className="max-w-md mx-auto text-center p-8">
           <ShoppingCart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <CardTitle className="font-playfair text-2xl mb-4">Please Log In</CardTitle>
+          <CardTitle className="font-playfair text-2xl mb-4">{t('pleaseLogIn')}</CardTitle>
           <CardDescription className="mb-6">
-            You need to be logged in to view your cart
+            {t('needLoginCart')}
           </CardDescription>
           <Button asChild>
             <Link to="/auth">{t('login')}</Link>
@@ -202,7 +202,7 @@ const Cart = () => {
           <div className="lg:col-span-1">
             <Card className="sticky top-8">
               <CardHeader>
-                <CardTitle className="font-playfair">Order Summary</CardTitle>
+                <CardTitle className="font-playfair">{t('orderSummary')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">

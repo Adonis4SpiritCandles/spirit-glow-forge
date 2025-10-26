@@ -34,10 +34,10 @@ const Shop = () => {
           id: p.id,
           name: language === 'en' ? p.name_en : p.name_pl,
           fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
-          price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
+          price: { pln: Number(p.price_pln) / 100, eur: Number(p.price_eur) / 100 },
           image: p.image_url,
           description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
-          sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
+          sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln) / 100, eur: Number(p.price_eur) / 100 } }],
           isNew: false,
           isBestseller: false,
         }));
@@ -97,7 +97,7 @@ const Shop = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search candles..."
+                placeholder={t('searchCandles')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -108,12 +108,12 @@ const Shop = () => {
             <Select value={filterBy} onValueChange={setFilterBy}>
               <SelectTrigger>
                 <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Filter by" />
+                <SelectValue placeholder={t('filterBy')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border z-50">
-                <SelectItem value="all">All Products</SelectItem>
-                <SelectItem value="new">New Arrivals</SelectItem>
-                <SelectItem value="bestseller">Bestsellers</SelectItem>
+                <SelectItem value="all">{t('allProducts')}</SelectItem>
+                <SelectItem value="new">{t('newArrivals')}</SelectItem>
+                <SelectItem value="bestseller">{t('bestSellers')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -121,20 +121,20 @@ const Shop = () => {
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger>
                 <SlidersHorizontal className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t('sortBy')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border z-50">
-                <SelectItem value="featured">Featured</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="name">Name: A to Z</SelectItem>
+                <SelectItem value="featured">{t('featured')}</SelectItem>
+                <SelectItem value="price-low">{t('priceLowToHigh')}</SelectItem>
+                <SelectItem value="price-high">{t('priceHighToLow')}</SelectItem>
+                <SelectItem value="name">{t('nameAtoZ')}</SelectItem>
               </SelectContent>
             </Select>
 
             {/* Results Count */}
             <div className="flex items-center justify-center md:justify-end">
               <span className="text-sm text-muted-foreground">
-                {sortedProducts.length} {sortedProducts.length === 1 ? 'product' : 'products'}
+                {sortedProducts.length} {sortedProducts.length === 1 ? t('product') : t('products')}
               </span>
             </div>
           </div>
@@ -150,10 +150,10 @@ const Shop = () => {
         ) : (
           <div className="text-center py-16">
             <h3 className="text-xl font-playfair font-semibold text-foreground mb-2">
-              No products found
+              {t('noProductsFound')}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Try adjusting your search or filter criteria
+              {t('tryAdjusting')}
             </p>
             <Button 
               onClick={() => {
@@ -163,7 +163,7 @@ const Shop = () => {
               }}
               variant="outline"
             >
-              Clear Filters
+              {t('clearFilters')}
             </Button>
           </div>
         )}
@@ -176,7 +176,7 @@ const Shop = () => {
               size="lg"
               className="px-8 py-4"
             >
-              Load More Products
+              {t('loadMoreProducts')}
             </Button>
           </div>
         )}

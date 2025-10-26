@@ -1462,12 +1462,12 @@ const AdminDashboard = () => {
                                     <Button
                                       size="sm"
                                       variant="default"
-                                      className="h-7 text-[10px] px-1.5 flex items-center gap-1"
+                                      className="h-7 text-[10px] px-1.5 flex items-center gap-1 bg-white hover:bg-gray-100 text-black"
                                       onClick={() => openShipmentModal(order)}
                                       disabled={order.status !== 'completed'}
                                     >
-                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4 order-2" />
                                       <span className="order-1">{t('sendTo')}</span>
+                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4 order-2" />
                                     </Button>
                                   )}
                                   <Button
@@ -1598,12 +1598,12 @@ const AdminDashboard = () => {
                               <Button 
                                 size="sm" 
                                 variant="default"
-                                className="w-full text-xs"
+                                className="w-full text-xs bg-white hover:bg-gray-100 text-black flex items-center justify-center gap-1.5"
                                 onClick={() => openShipmentModal(order)}
                                 disabled={order.status !== 'completed'}
                               >
-                                <img src={furgonetkaIco} alt="Furgonetka" className="h-3 w-3 ml-1" />
-                                {t('sendTo')}
+                                <span>{t('sendTo')}</span>
+                                <img src={furgonetkaIco} alt="Furgonetka" className="h-3 w-3" />
                               </Button>
                             )}
                             <Button 

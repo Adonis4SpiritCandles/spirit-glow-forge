@@ -60,16 +60,16 @@ const ProductCard = ({
     };
     addProductToCart(cartProduct as any, 1);
     toast({
-      title: "Added to Cart",
-      description: `${name} (${size.weight}) has been added to your cart.`,
+      title: t('addedToCart'),
+      description: `${name} (${size.weight}) ${t('addedToCart').toLowerCase()}.`,
     });
   };
 
   const toggleWishlist = () => {
     setIsWishlisted(!isWishlisted);
     toast({
-      title: isWishlisted ? "Removed from Wishlist" : "Added to Wishlist",
-      description: `${name} has been ${isWishlisted ? 'removed from' : 'added to'} your wishlist.`,
+      title: isWishlisted ? t('removedFromWishlist') : t('addedToWishlist'),
+      description: `${name} ${isWishlisted ? t('removedFromWishlist').toLowerCase() : t('addedToWishlist').toLowerCase()}.`,
     });
   };
 
@@ -138,7 +138,7 @@ const ProductCard = ({
                 {name}
               </h3>
               <p className="text-sm text-muted-foreground italic">
-                Inspired by {fragrance}
+                {t('inspiredBy')} {fragrance}
               </p>
             </div>
 

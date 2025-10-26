@@ -1,0 +1,152 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.1';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+interface SyncTrackingRequest {
+  orderId: string;
+}
+
+Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Verify authentication
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      throw new Error('Missing authorization header');
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+
+    if (authError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
+      throw new Error('Unauthorized - Admin access required');
+    }
+
+    const { orderId } = await req.json() as SyncTrackingRequest;
+
+    if (!orderId) {
+      throw new Error('Missing orderId');
+    }
+
+    console.log('Syncing tracking for order:', orderId);
+
+    // Get order details
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .select('furgonetka_package_id, tracking_number')
+      .eq('id', orderId)
+      .single();
+
+    if (orderError || !order) {
+      throw new Error('Order not found');
+    }
+
+    if (!order.furgonetka_package_id) {
+      throw new Error('Order has no Furgonetka package ID');
+    }
+
+    // Get Furgonetka access token
+    const { data: tokenData, error: tokenError } = await supabase.functions.invoke(
+      'get-furgonetka-token',
+      { body: {} }
+    );
+
+    if (tokenError || !tokenData?.access_token) {
+      console.error('Failed to get Furgonetka token:', tokenError);
+      throw new Error('Failed to authenticate with Furgonetka');
+    }
+
+    const accessToken = tokenData.access_token;
+
+    // Call Furgonetka API to get package details
+    const packageResponse = await fetch(
+      `https://api-sandbox.furgonetka.pl/packages/${order.furgonetka_package_id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!packageResponse.ok) {
+      const errorText = await packageResponse.text();
+      console.error('Furgonetka API error:', errorText);
+      throw new Error(`Failed to get package details from Furgonetka: ${packageResponse.status}`);
+    }
+
+    const packageData = await packageResponse.json();
+    console.log('Package data from Furgonetka:', packageData);
+
+    // Extract tracking number
+    const trackingNumber = packageData.tracking_number || packageData.trackingNumber;
+
+    if (!trackingNumber) {
+      throw new Error('No tracking number available yet from Furgonetka');
+    }
+
+    // Update order with tracking number
+    const { error: updateError } = await supabase
+      .from('orders')
+      .update({
+        tracking_number: trackingNumber,
+        shipping_status: packageData.status || 'in_transit',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', orderId);
+
+    if (updateError) {
+      console.error('Failed to update order:', updateError);
+      throw new Error('Failed to update order with tracking number');
+    }
+
+    console.log('Successfully synced tracking number:', trackingNumber);
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        tracking_number: trackingNumber,
+        status: packageData.status,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error('Error in sync-furgonetka-tracking:', error);
+    return new Response(
+      JSON.stringify({
+        error: error.message || 'Internal server error',
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      }
+    );
+  }
+});

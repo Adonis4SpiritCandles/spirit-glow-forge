@@ -1,7 +1,12 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 
 interface Order {
   id: string;
@@ -32,10 +37,49 @@ interface AdminOrderDetailsModalProps {
   order: Order | null;
   isOpen: boolean;
   onClose: () => void;
+  onTrackingUpdated?: () => void;
 }
 
-export default function AdminOrderDetailsModal({ order, isOpen, onClose }: AdminOrderDetailsModalProps) {
+export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrackingUpdated }: AdminOrderDetailsModalProps) {
   const { t } = useLanguage();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSyncTracking = async () => {
+    if (!order?.furgonetka_package_id) {
+      toast.error('No Furgonetka package ID found');
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Not authenticated');
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('sync-furgonetka-tracking', {
+        body: { orderId: order.id },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.tracking_number) {
+        toast.success(`Tracking number synced: ${data.tracking_number}`);
+        onTrackingUpdated?.();
+      } else {
+        toast.info('No tracking number available yet from Furgonetka');
+      }
+    } catch (error: any) {
+      console.error('Error syncing tracking:', error);
+      toast.error(error.message || 'Failed to sync tracking');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
   
   if (!order) return null;
 
@@ -204,6 +248,20 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose }: Admin
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t('packageId')}:</span>
                       <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.furgonetka_package_id}</code>
+                    </div>
+                  )}
+                  {order.furgonetka_package_id && (
+                    <div className="mt-3">
+                      <Button 
+                        onClick={handleSyncTracking} 
+                        disabled={isSyncing}
+                        size="sm"
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                        {isSyncing ? 'Syncing...' : 'Sync Tracking from Furgonetka'}
+                      </Button>
                     </div>
                   )}
                 </div>

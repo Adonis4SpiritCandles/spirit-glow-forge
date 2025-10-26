@@ -26,3 +26,6 @@ verify_jwt = true
 
 [functions.places-autocomplete]
 verify_jwt = true
+
+[functions.sync-furgonetka-tracking]
+verify_jwt = true

@@ -99,8 +99,12 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
     : order.profiles?.email || 'N/A';
 
   const shippingAddress = order.shipping_address || {};
-  const productSubtotalPLN = order.total_pln - (order.shipping_cost_pln || 0);
+  const productSubtotalPLN = (order.total_pln - (order.shipping_cost_pln || 0)) / 100;
   const productSubtotalEUR = order.total_eur - (order.shipping_cost_eur || 0);
+  const shippingCostPLN = (order.shipping_cost_pln || 0) / 100;
+  const shippingCostEUR = order.shipping_cost_eur || 0;
+  const totalPLN = order.total_pln / 100;
+  const totalEUR = order.total_eur;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -202,12 +206,12 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t('productsSubtotal')}:</span>
-                <span>{productSubtotalPLN} PLN / {productSubtotalEUR} EUR</span>
+                <span>{productSubtotalPLN.toFixed(2)} PLN / {productSubtotalEUR} EUR</span>
               </div>
               {(order.shipping_cost_pln || 0) > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('shippingCost')}:</span>
-                  <span>{order.shipping_cost_pln} PLN / {order.shipping_cost_eur} EUR</span>
+                  <span>{shippingCostPLN.toFixed(2)} PLN / {shippingCostEUR} EUR</span>
                 </div>
               )}
               {order.carrier_name && (
@@ -218,74 +222,87 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
               )}
               {order.service_id && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('serviceId')}:</span>
+                  <span className="text-muted-foreground">{t('serviceCarrierId')}:</span>
                   <span className="font-mono text-xs">{order.service_id}</span>
                 </div>
               )}
               <Separator className="my-2" />
               <div className="flex justify-between font-semibold text-base">
                 <span>{t('totalPaid')}:</span>
-                <span>{order.total_pln} PLN / {order.total_eur} EUR</span>
+                <span>{totalPLN.toFixed(2)} PLN / {totalEUR} EUR</span>
               </div>
             </div>
           </div>
 
           {/* Shipping Status */}
-          {(order.tracking_number || order.carrier || order.shipping_status) && (
+          {(order.tracking_number || order.carrier || order.shipping_status || order.furgonetka_package_id) && (
             <>
               <Separator />
               <div>
                 <h3 className="font-semibold mb-3">{t('shippingStatus')}</h3>
-                <div className="space-y-2 text-sm">
-                  {order.shipping_status && (
+                <div className="space-y-3 text-sm">
+                  {order.tracking_number && order.carrier && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">{t('carrier')}:</span>
+                        <Badge variant="default">{order.carrier}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">{t('sentVia')}:</span>
+                        <span className="text-xs">Furgonetka</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">{t('trackingNumb')}:</span>
+                        <div className="flex items-center gap-2">
+                          {order.tracking_url ? (
+                            <a 
+                              href={order.tracking_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="font-mono text-xs bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors"
+                            >
+                              {order.tracking_number}
+                            </a>
+                          ) : (
+                            <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.tracking_number}</code>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">{t('status')}:</span>
+                        <Badge variant="secondary" className="bg-green-500 text-white">
+                          {t('shippedSuccessfully')}
+                        </Badge>
+                      </div>
+                    </>
+                  )}
+                  
+                  {!order.tracking_number && order.shipping_status && (
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">{t('status')}:</span>
                       <Badge variant="secondary">{order.shipping_status}</Badge>
                     </div>
                   )}
-                  {order.carrier && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t('carrier')}:</span>
-                      <span>{order.carrier}</span>
-                    </div>
-                  )}
-                  {order.tracking_number && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">{t('trackingNumber')}:</span>
-                      <div className="flex items-center gap-2">
-                        <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.tracking_number}</code>
-                        {order.tracking_url && (
-                          <a 
-                            href={order.tracking_url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline text-sm"
-                          >
-                            Track
-                          </a>
-                        )}
+                  
+                  {order.furgonetka_package_id && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">{t('packageId')}:</span>
+                        <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.furgonetka_package_id}</code>
                       </div>
-                    </div>
-                  )}
-                  {order.furgonetka_package_id && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t('packageId')}:</span>
-                      <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.furgonetka_package_id}</code>
-                    </div>
-                  )}
-                  {order.furgonetka_package_id && (
-                    <div className="mt-3">
-                      <Button 
-                        onClick={handleSyncTracking} 
-                        disabled={isSyncing}
-                        size="sm"
-                        variant="outline"
-                        className="w-full"
-                      >
-                        <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                        {isSyncing ? 'Syncing...' : 'Sync Tracking from Furgonetka'}
-                      </Button>
-                    </div>
+                      <div className="mt-3">
+                        <Button 
+                          onClick={handleSyncTracking} 
+                          disabled={isSyncing}
+                          size="sm"
+                          variant="outline"
+                          className="w-full"
+                        >
+                          <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                          {isSyncing ? t('syncingTracking') : t('syncTracking')}
+                        </Button>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

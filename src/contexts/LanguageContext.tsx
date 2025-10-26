@@ -248,6 +248,24 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'viewOrdersForPayments') return language === 'pl' ? 'Zobacz swoje zamówienia, aby uzyskać szczegóły płatności' : 'View your orders for payment details';
     if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
     if (key === 'completeInformation') return language === 'pl' ? 'Pełne informacje dla zamówienia' : 'Complete information for order';
+    
+    // New Shipping Status Translations
+    if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie' : 'Awaiting confirmation';
+    if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na wysyłkę' : 'Awaiting submission';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Utworzona, oczekuje płatności' : 'Created, awaiting payment';
+    if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped successfully';
+    if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
+    if (key === 'trackingNumb') return language === 'pl' ? 'Nr śledzenia' : 'Tracking Numb.';
+    if (key === 'shipTo') return language === 'pl' ? 'Wysyłka do' : 'Ship to';
+    if (key === 'creationDate') return language === 'pl' ? 'Data utworzenia' : 'Creation Date';
+    if (key === 'serviceCarrierId') return language === 'pl' ? 'ID usługi przewoźnika' : 'Service Carrier ID';
+    if (key === 'viewOrderId') return language === 'pl' ? 'Zobacz ID' : 'View ID';
+    if (key === 'copyOrderId') return language === 'pl' ? 'Kopiuj ID' : 'Copy ID';
+    if (key === 'orderIdCopied') return language === 'pl' ? 'ID zamówienia skopiowane' : 'Order ID copied';
+    if (key === 'syncTracking') return language === 'pl' ? 'Synchronizuj tracking' : 'Sync Tracking';
+    if (key === 'syncingTracking') return language === 'pl' ? 'Synchronizacja...' : 'Syncing...';
+    if (key === 'trackingSynced') return language === 'pl' ? 'Tracking zsynchronizowany' : 'Tracking synced';
+    if (key === 'noShipmentCreated') return language === 'pl' ? 'Brak przesyłki' : 'No shipment';
 
     // Product form fields
     if (key === 'nameEn') return language === 'pl' ? 'Nazwa (EN)' : 'Name (EN)';

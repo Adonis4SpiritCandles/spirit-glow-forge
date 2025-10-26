@@ -9,10 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AdminCustomerModal from '@/components/AdminCustomerModal';
@@ -249,6 +250,56 @@ const AdminDashboard = () => {
       });
       loadDashboardData();
     }
+  };
+
+  // Get intelligent shipping status display
+  const getShippingStatusDisplay = (order: Order) => {
+    const { t } = useLanguage();
+    
+    // Stage 4: Tracking available - Show real carrier and "Shipped"
+    if (order.tracking_number && order.carrier) {
+      return {
+        badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600">{order.carrier}</Badge>,
+        details: (
+          <div className="space-y-1 text-xs">
+            <div className="font-mono">{order.tracking_number}</div>
+            <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+              {t('shipped')}
+            </Badge>
+          </div>
+        )
+      };
+    }
+
+    // Stage 3: Shipment created but no tracking yet
+    if (order.furgonetka_package_id && !order.tracking_number) {
+      return {
+        badge: <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 text-xs whitespace-normal h-auto py-1">{t('shipmentCreated')}</Badge>,
+        details: null
+      };
+    }
+
+    // Stage 2: Order completed but no shipment created
+    if (order.status === 'completed' && !order.furgonetka_package_id) {
+      return {
+        badge: <Badge variant="default" className="bg-orange-500 hover:bg-orange-600 text-xs whitespace-normal h-auto py-1">{t('awaitingFurgonetkaSubmission')}</Badge>,
+        details: null
+      };
+    }
+
+    // Stage 1: Order paid but not completed
+    if (order.status === 'paid' || (order.status !== 'pending' && order.status !== 'completed')) {
+      return {
+        badge: <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 text-xs whitespace-normal h-auto py-1">{t('awaitingShipmentConfirmation')}</Badge>,
+        details: null
+      };
+    }
+
+    // Default: No shipment
+    return {
+      badge: <Badge variant="outline">{t('noShipmentCreated')}</Badge>,
+      details: null
+    };
   };
 
   // Parse price with robust validation
@@ -546,6 +597,14 @@ const AdminDashboard = () => {
   };
 
   const downloadLabel = async (labelUrl: string) => {
+    if (!labelUrl) {
+      toast({
+        title: "Error",
+        description: "No label URL available",
+        variant: "destructive",
+      });
+      return;
+    }
     window.open(labelUrl, '_blank');
   };
 
@@ -910,125 +969,193 @@ const AdminDashboard = () => {
                 <CardDescription>{t('manageCustomerOrders')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('orderId')}</TableHead>
-                      <TableHead>{t('customer')}</TableHead>
-                      <TableHead>{t('total')}</TableHead>
-                      <TableHead>{t('status')}</TableHead>
-                      <TableHead>{t('shipping')}</TableHead>
-                      <TableHead>{t('date')}</TableHead>
-                      <TableHead>{t('actions')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {orders.map((order) => (
-                      <>
-                        <TableRow key={order.id}>
-                          <TableCell className="font-mono text-sm">
-                            {order.id.slice(0, 8)}...
-                          </TableCell>
-                          <TableCell>
-                            {order.profiles?.first_name} {order.profiles?.last_name}
-                            <br />
-                            <span className="text-xs text-muted-foreground">
-                              {order.profiles?.email}
-                            </span>
-                          </TableCell>
-                           <TableCell>
-                             {order.total_pln} PLN
-                             <br />
-                             <span className="text-xs text-muted-foreground">
-                               ({(order.total_pln - (order.shipping_cost_pln || 0))} + {order.shipping_cost_pln || 0} shipping)
-                             </span>
-                           </TableCell>
-                          <TableCell>
-                            <Badge 
-                              variant={
-                                order.status === 'completed' ? 'default' :
-                                order.status === 'pending' ? 'secondary' : 'destructive'
-                              }
-                            >
-                              {order.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {order.tracking_number ? (
-                              <div className="space-y-1">
-                                <Badge variant="outline" className="mb-1">
-                                  {order.carrier}
-                                </Badge>
-                                <div className="text-xs">
-                                  <span className="font-mono">{order.tracking_number}</span>
+                <TooltipProvider>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('orderNumber')}</TableHead>
+                        <TableHead>{t('orderId')}</TableHead>
+                        <TableHead>{t('customer')}</TableHead>
+                        <TableHead>{t('total')}</TableHead>
+                        <TableHead>{t('status')}</TableHead>
+                        <TableHead>{t('shipping')}</TableHead>
+                        <TableHead>{t('creationDate')}</TableHead>
+                        <TableHead>{t('actions')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {orders.map((order) => {
+                        const shippingStatus = getShippingStatusDisplay(order);
+                        const totalPLN = order.total_pln / 100;
+                        const shippingCostPLN = (order.shipping_cost_pln || 0) / 100;
+                        const productsPLN = totalPLN - shippingCostPLN;
+                        const shippingName = order.shipping_address?.first_name && order.shipping_address?.last_name
+                          ? `${order.shipping_address.first_name} ${order.shipping_address.last_name}`
+                          : null;
+
+                        return (
+                          <TableRow key={order.id}>
+                            {/* Order Number */}
+                            <TableCell className="font-semibold">
+                              SPIRIT-{String(order.order_number).padStart(5, '0')}
+                            </TableCell>
+
+                            {/* Order ID with Tooltip */}
+                            <TableCell>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1 cursor-pointer group">
+                                    <span className="font-mono text-sm hidden md:inline">
+                                      {order.id.slice(0, 8)}...
+                                    </span>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 px-2 md:hidden"
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(order.id);
+                                        toast({ title: t('orderIdCopied') });
+                                      }}
+                                    >
+                                      {t('viewOrderId')}
+                                    </Button>
+                                    <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" 
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(order.id);
+                                        toast({ title: t('orderIdCopied') });
+                                      }}
+                                    />
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="font-mono text-xs">{order.id}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TableCell>
+
+                            {/* Customer with Ship To */}
+                            <TableCell>
+                              <div className="space-y-0.5">
+                                <div className="font-medium">
+                                  {order.profiles?.first_name} {order.profiles?.last_name}
                                 </div>
-                                <Badge variant="secondary" className="text-xs">
-                                  {order.shipping_status || 'pending'}
-                                </Badge>
+                                <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                  {order.profiles?.email}
+                                </div>
+                                {shippingName && shippingName !== `${order.profiles?.first_name} ${order.profiles?.last_name}` && (
+                                  <div className="text-xs text-muted-foreground">
+                                    {t('shipTo')}: {shippingName}
+                                  </div>
+                                )}
                               </div>
-                            ) : (
-                              <Badge variant="outline">{t('noShipment')}</Badge>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {new Date(order.created_at).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2 flex-wrap">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                  setSelectedOrder(order);
-                                  setIsOrderDetailsOpen(true);
-                                }}
+                            </TableCell>
+
+                            {/* Total with precise decimals */}
+                            <TableCell>
+                              <div className="space-y-0.5">
+                                <div className="font-semibold">{totalPLN.toFixed(2)} PLN</div>
+                                <div className="text-xs text-muted-foreground">
+                                  ({productsPLN.toFixed(2)} + {shippingCostPLN.toFixed(2)})
+                                </div>
+                              </div>
+                            </TableCell>
+
+                            {/* Status */}
+                            <TableCell>
+                              <Badge 
+                                variant={
+                                  order.status === 'completed' ? 'default' :
+                                  order.status === 'paid' ? 'secondary' :
+                                  order.status === 'pending' ? 'outline' : 'destructive'
+                                }
+                                className={
+                                  order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white' :
+                                  order.status === 'completed' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : ''
+                                }
                               >
-                                <Eye className="h-4 w-4 mr-1" />
-                                {t('details')}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateOrderStatus(order.id, 'completed')}
-                                disabled={order.status === 'completed'}
-                              >
-                                {t('complete')}
-                              </Button>
-                              {order.tracking_number ? (
+                                {order.status}
+                              </Badge>
+                            </TableCell>
+
+                            {/* Shipping Status */}
+                            <TableCell>
+                              <div className="space-y-1">
+                                {shippingStatus.badge}
+                                {shippingStatus.details}
+                              </div>
+                            </TableCell>
+
+                            {/* Creation Date */}
+                            <TableCell className="text-sm">
+                              {new Date(order.created_at).toLocaleDateString()}
+                            </TableCell>
+
+                            {/* Actions - Organized in Grid */}
+                            <TableCell>
+                              <div className="grid grid-cols-2 gap-1.5 max-w-[200px]">
+                                {/* Row 1 */}
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 text-xs"
+                                  onClick={() => {
+                                    setSelectedOrder(order);
+                                    setIsOrderDetailsOpen(true);
+                                  }}
+                                >
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  {t('details')}
+                                </Button>
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => order.shipping_label_url && downloadLabel(order.shipping_label_url)}
+                                  className="h-8 text-xs"
+                                  onClick={() => updateOrderStatus(order.id, 'completed')}
+                                  disabled={order.status === 'completed'}
                                 >
-                                  <Download className="h-4 w-4 mr-1" />
-                                  Label
+                                  {t('complete')}
                                 </Button>
-                               ) : (
+
+                                {/* Row 2 */}
+                                {order.shipping_label_url ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 text-xs"
+                                    onClick={() => downloadLabel(order.shipping_label_url!)}
+                                  >
+                                    <Download className="h-3 w-3 mr-1" />
+                                    Label
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="default"
+                                    className="h-8 text-xs"
+                                    onClick={() => openShipmentModal(order)}
+                                    disabled={order.status !== 'completed'}
+                                  >
+                                    <Truck className="h-3 w-3 mr-1" />
+                                    {t('createShipment')}
+                                  </Button>
+                                )}
                                 <Button
                                   size="sm"
-                                  variant="default"
-                                  onClick={() => openShipmentModal(order)}
-                                  disabled={order.status !== 'completed'}
+                                  variant="destructive"
+                                  className="h-8 text-xs"
+                                  onClick={() => handleDeleteOrder(order)}
                                 >
-                                  <Truck className="h-4 w-4 mr-1" />
-                                  {t('createShipment')}
+                                  <Trash2 className="h-3 w-3 mr-1" />
+                                  {t('delete')}
                                 </Button>
-                              )}
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => handleDeleteOrder(order)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                {t('delete')}
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      </>
-                    ))}
-                  </TableBody>
-                </Table>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TooltipProvider>
               </CardContent>
             </Card>
           </TabsContent>
@@ -1288,6 +1415,14 @@ const AdminDashboard = () => {
           order={selectedOrder}
           isOpen={isOrderDetailsOpen}
           onClose={() => setIsOrderDetailsOpen(false)}
+          onTrackingUpdated={() => {
+            loadDashboardData();
+            // Refresh the selected order
+            if (selectedOrder) {
+              const updatedOrder = orders.find(o => o.id === selectedOrder.id);
+              if (updatedOrder) setSelectedOrder(updatedOrder);
+            }
+          }}
         />
 
         {/* Shipment Confirmation Modal */}

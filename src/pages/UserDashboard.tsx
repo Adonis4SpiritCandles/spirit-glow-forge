@@ -37,9 +37,11 @@ interface Order {
   order_number?: number;
   shipping_address: any;
   tracking_number?: string;
+  tracking_url?: string;
   carrier?: string;
   shipping_status?: string;
   shipping_label_url?: string;
+  furgonetka_package_id?: string;
   profiles?: {
     first_name?: string;
     last_name?: string;
@@ -168,11 +170,11 @@ const UserDashboard = () => {
     }
   };
 
-  const getOrderBadges = (status: string, shippingStatus?: string) => {
+  const getOrderBadges = (order: Order) => {
     const badges = [];
     
-    // Always show "Paid" badge if order is not pending (i.e., payment successful)
-    if (status !== 'pending') {
+    // Stage 1: Paid - Payment successful
+    if (order.status !== 'pending') {
       badges.push({ 
         label: t('paid') || 'Paid', 
         variant: 'bg-red-500 text-white',
@@ -180,8 +182,8 @@ const UserDashboard = () => {
       });
     }
     
-    // Show "Completed" badge if admin has completed the order
-    if (status === 'completed') {
+    // Stage 2: Completed - Admin accepted order
+    if (order.status === 'completed') {
       badges.push({ 
         label: t('completed') || 'Completed', 
         variant: 'bg-yellow-500 text-white',
@@ -189,17 +191,26 @@ const UserDashboard = () => {
       });
     }
     
-    // Show "In Transit" badge if shipment has been created
-    if (shippingStatus === 'created' || shippingStatus === 'in_transit') {
+    // Stage 3: Shipment Created
+    if (order.furgonetka_package_id && !order.tracking_number) {
       badges.push({ 
-        label: t('inTransit') || 'In Transit', 
+        label: t('shipmentCreated') || 'Shipment Created', 
+        variant: 'bg-blue-500 text-white',
+        icon: <Package className="w-3 h-3" /> 
+      });
+    }
+    
+    // Stage 4: Shipped - Tracking available
+    if (order.tracking_number && order.carrier) {
+      badges.push({ 
+        label: t('shipped') || 'Shipped', 
         variant: 'bg-green-500 text-white',
         icon: <Truck className="w-3 h-3" /> 
       });
     }
     
-    // Show "Delivered" badge if package delivered
-    if (shippingStatus === 'delivered') {
+    // Stage 5: Delivered
+    if (order.shipping_status === 'delivered') {
       badges.push({ 
         label: t('delivered') || 'Delivered', 
         variant: 'bg-green-600 text-white',
@@ -350,7 +361,14 @@ const UserDashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {orders.map((order) => {
-                      const badges = getOrderBadges(order.status, order.shipping_status);
+                      const badges = getOrderBadges(order);
+                      const totalPLN = order.total_pln / 100;
+                      const totalEUR = order.total_eur;
+                      const shippingCostPLN = (order.shipping_cost_pln || 0) / 100;
+                      const shippingCostEUR = order.shipping_cost_eur || 0;
+                      const productsPLN = totalPLN - shippingCostPLN;
+                      const productsEUR = totalEUR - shippingCostEUR;
+
                       return (
                         <div key={order.id} className="border rounded-lg p-4 space-y-3">
                           <div className="flex justify-between items-start mb-2">
@@ -372,12 +390,12 @@ const UserDashboard = () => {
                         <div className="space-y-2 border-t pt-3">
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">{t('products')}:</span>
-                              <span>{(order.total_pln - (order.shipping_cost_pln || 0))} PLN / {(order.total_eur - (order.shipping_cost_eur || 0))} EUR</span>
+                              <span>{productsPLN.toFixed(2)} PLN / {productsEUR} EUR</span>
                             </div>
                           {(order.shipping_cost_pln || 0) > 0 && (
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">{t('shipping')}:</span>
-                              <span>{order.shipping_cost_pln} PLN / {order.shipping_cost_eur} EUR</span>
+                              <span>{shippingCostPLN.toFixed(2)} PLN / {shippingCostEUR} EUR</span>
                             </div>
                           )}
                           {order.carrier_name && (
@@ -388,10 +406,10 @@ const UserDashboard = () => {
                           )}
                           <div className="flex justify-between font-semibold pt-2 border-t">
                             <span>{t('total')}:</span>
-                            <span>{order.total_pln} PLN / {order.total_eur} EUR</span>
+                            <span>{totalPLN.toFixed(2)} PLN / {totalEUR} EUR</span>
                           </div>
                         </div>
-                        {order.tracking_number && (
+                        {order.tracking_number && order.carrier && (
                           <div className="border-t pt-3 mt-3 space-y-2">
                             <div className="flex items-center gap-2">
                               <Package className="h-4 w-4 text-muted-foreground" />
@@ -399,45 +417,39 @@ const UserDashboard = () => {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                               <div>
-                                <span className="text-muted-foreground">Carrier:</span>
-                                <Badge variant="outline" className="ml-2">{order.carrier}</Badge>
+                                <span className="text-muted-foreground">{t('carrier')}:</span>
+                                <Badge variant="default" className="ml-2 bg-green-500">{order.carrier}</Badge>
                               </div>
                               <div>
-                                <span className="text-muted-foreground">Status:</span>
-                                <Badge variant="secondary" className="ml-2">
-                                  {order.shipping_status || 'pending'}
+                                <span className="text-muted-foreground">{t('status')}:</span>
+                                <Badge variant="secondary" className="ml-2 bg-green-100 text-green-800">
+                                  {t('shipped')}
                                 </Badge>
                               </div>
                               <div className="md:col-span-2">
-                                <span className="text-muted-foreground">Tracking Number:</span>
-                                <code className="ml-2 font-mono text-xs bg-muted px-2 py-1 rounded">
-                                  {order.tracking_number}
-                                </code>
+                                <span className="text-muted-foreground">{t('trackingNumb')}:</span>
+                                {order.tracking_url ? (
+                                  <a 
+                                    href={order.tracking_url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="ml-2 font-mono text-xs bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors inline-block"
+                                  >
+                                    {order.tracking_number}
+                                  </a>
+                                ) : (
+                                  <code className="ml-2 font-mono text-xs bg-muted px-2 py-1 rounded">
+                                    {order.tracking_number}
+                                  </code>
+                                )}
                               </div>
                             </div>
-                            {order.carrier === 'InPost' && (
+                            {order.tracking_url && (
                               <Button 
                                 size="sm" 
                                 variant="outline"
-                                onClick={() => window.open(`https://tracking.inpost.pl/${order.tracking_number}`, '_blank')}
-                              >
-                                {t('trackPackage')}
-                              </Button>
-                            )}
-                            {order.carrier === 'DHL' && (
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => window.open(`https://www.dhl.com/pl-pl/home/tracking.html?tracking-id=${order.tracking_number}`, '_blank')}
-                              >
-                                {t('trackPackage')}
-                              </Button>
-                            )}
-                            {order.carrier === 'FedEx' && (
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => window.open(`https://www.fedex.com/fedextrack/?trknbr=${order.tracking_number}`, '_blank')}
+                                onClick={() => window.open(order.tracking_url, '_blank')}
+                                className="w-full mt-2"
                               >
                                 {t('trackPackage')}
                               </Button>
@@ -536,6 +548,9 @@ const UserDashboard = () => {
         onClose={() => {
           setIsOrderModalOpen(false);
           setSelectedOrder(null);
+        }}
+        onTrackingUpdated={() => {
+          loadUserData();
         }}
       />
     </div>

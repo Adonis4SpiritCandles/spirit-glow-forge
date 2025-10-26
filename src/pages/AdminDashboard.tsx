@@ -180,10 +180,11 @@ const AdminDashboard = () => {
 
       setProducts(productsData || []);
 
-      // Load orders with profile data - using a separate query to avoid relation issues
+      // Load orders with profile data - filter out soft-deleted orders
       const { data: ordersData } = await supabase
         .from('orders')
         .select('*')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       // Fetch profile data for each order
@@ -256,14 +257,14 @@ const AdminDashboard = () => {
   const getShippingStatusDisplay = (order: Order) => {
     const { t } = useLanguage();
     
-    // Stage 4: Tracking available - Show real carrier and "Shipped"
+    // Stage 4: Tracking available - Show "Tracking Number" badge and tracking details
     if (order.tracking_number && order.carrier) {
       return {
-        badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600">{order.carrier}</Badge>,
+        badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-xs drop-shadow-md">{t('trackingNumber')}</Badge>,
         details: (
-          <div className="space-y-1 text-xs">
-            <div className="font-mono">{order.tracking_number}</div>
-            <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+          <div className="space-y-1 text-xs mt-1">
+            <div className="font-mono text-[10px]">{order.tracking_number}</div>
+            <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-800">
               {t('shipped')}
             </Badge>
           </div>
@@ -274,7 +275,7 @@ const AdminDashboard = () => {
     // Stage 3: Shipment created but no tracking yet
     if (order.furgonetka_package_id && !order.tracking_number) {
       return {
-        badge: <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 text-xs whitespace-normal h-auto py-1">{t('shipmentCreated')}</Badge>,
+        badge: <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('furgonetkaPayMiss')}</Badge>,
         details: null
       };
     }
@@ -282,7 +283,7 @@ const AdminDashboard = () => {
     // Stage 2: Order completed but no shipment created
     if (order.status === 'completed' && !order.furgonetka_package_id) {
       return {
-        badge: <Badge variant="default" className="bg-orange-500 hover:bg-orange-600 text-xs whitespace-normal h-auto py-1">{t('awaitingFurgonetkaSubmission')}</Badge>,
+        badge: <Badge variant="default" className="bg-orange-500 hover:bg-orange-600 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('awaitingFurgonetkaSubmission')}</Badge>,
         details: null
       };
     }
@@ -290,14 +291,14 @@ const AdminDashboard = () => {
     // Stage 1: Order paid but not completed
     if (order.status === 'paid' || (order.status !== 'pending' && order.status !== 'completed')) {
       return {
-        badge: <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 text-xs whitespace-normal h-auto py-1">{t('awaitingShipmentConfirmation')}</Badge>,
+        badge: <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('awaitingShipmentConfirmation')}</Badge>,
         details: null
       };
     }
 
     // Default: No shipment
     return {
-      badge: <Badge variant="outline">{t('noShipmentCreated')}</Badge>,
+      badge: <Badge variant="outline" className="text-[10px]">{t('noShipmentCreated')}</Badge>,
       details: null
     };
   };
@@ -463,32 +464,24 @@ const AdminDashboard = () => {
 
     setIsDeletingOrder(true);
     try {
-      // Delete order items first (due to foreign key)
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .delete()
-        .eq('order_id', orderToDelete.id);
-
-      if (itemsError) throw itemsError;
-
-      // Then delete the order
-      const { error: orderError } = await supabase
+      // Soft delete: set deleted_at timestamp
+      const { error } = await supabase
         .from('orders')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', orderToDelete.id);
 
-      if (orderError) throw orderError;
+      if (error) throw error;
 
       toast({
         title: t('success'),
-        description: 'Order deleted successfully',
+        description: t('orderMovedToTrash'),
       });
 
       setIsDeleteOrderDialogOpen(false);
       setOrderToDelete(null);
       loadDashboardData();
     } catch (error: any) {
-      console.error('Error deleting order:', error);
+      console.error('Error soft deleting order:', error);
       toast({
         title: t('error'),
         description: error.message,
@@ -973,21 +966,21 @@ const AdminDashboard = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>{t('orderNumber')}</TableHead>
-                        <TableHead>{t('orderId')}</TableHead>
-                        <TableHead>{t('customer')}</TableHead>
-                        <TableHead>{t('total')}</TableHead>
-                        <TableHead>{t('status')}</TableHead>
-                        <TableHead>{t('shipping')}</TableHead>
-                        <TableHead>{t('creationDate')}</TableHead>
-                        <TableHead>{t('actions')}</TableHead>
+                        <TableHead className="text-xs">Order #</TableHead>
+                        <TableHead className="text-xs">Order ID</TableHead>
+                        <TableHead className="text-xs">{t('customer')}</TableHead>
+                        <TableHead className="text-xs">{t('total')}</TableHead>
+                        <TableHead className="text-xs">{t('status')}</TableHead>
+                        <TableHead className="text-xs">{t('shipping')}</TableHead>
+                        <TableHead className="text-xs">{t('created')}</TableHead>
+                        <TableHead className="text-xs">{t('actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {orders.map((order) => {
                         const shippingStatus = getShippingStatusDisplay(order);
-                        const totalPLN = order.total_pln / 100;
-                        const shippingCostPLN = (order.shipping_cost_pln || 0) / 100;
+                        const totalPLN = order.total_pln;
+                        const shippingCostPLN = order.shipping_cost_pln || 0;
                         const productsPLN = totalPLN - shippingCostPLN;
                         const shippingName = order.shipping_address?.first_name && order.shipping_address?.last_name
                           ? `${order.shipping_address.first_name} ${order.shipping_address.last_name}`
@@ -996,7 +989,7 @@ const AdminDashboard = () => {
                         return (
                           <TableRow key={order.id}>
                             {/* Order Number */}
-                            <TableCell className="font-semibold">
+                            <TableCell className="font-semibold text-sm">
                               SPIRIT-{String(order.order_number).padStart(5, '0')}
                             </TableCell>
 
@@ -1036,16 +1029,21 @@ const AdminDashboard = () => {
                             {/* Customer with Ship To */}
                             <TableCell>
                               <div className="space-y-0.5">
-                                <div className="font-medium">
+                                <div className="font-medium text-sm">
                                   {order.profiles?.first_name} {order.profiles?.last_name}
                                 </div>
                                 <div className="text-xs text-muted-foreground truncate max-w-[200px]">
                                   {order.profiles?.email}
                                 </div>
                                 {shippingName && shippingName !== `${order.profiles?.first_name} ${order.profiles?.last_name}` && (
-                                  <div className="text-xs text-muted-foreground">
-                                    {t('shipTo')}: {shippingName}
-                                  </div>
+                                  <>
+                                    <div className="text-[10px] text-muted-foreground mt-1">
+                                      {t('deliveryName')}:
+                                    </div>
+                                    <div className="text-xs font-medium text-muted-foreground">
+                                      {shippingName}
+                                    </div>
+                                  </>
                                 )}
                               </div>
                             </TableCell>
@@ -1069,11 +1067,11 @@ const AdminDashboard = () => {
                                   order.status === 'pending' ? 'outline' : 'destructive'
                                 }
                                 className={
-                                  order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white' :
-                                  order.status === 'completed' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : ''
+                                  order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
+                                  order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
                                 }
                               >
-                                {order.status}
+                                {order.status === 'completed' ? t('complete') : order.status}
                               </Badge>
                             </TableCell>
 
@@ -1092,62 +1090,63 @@ const AdminDashboard = () => {
 
                             {/* Actions - Organized in Grid */}
                             <TableCell>
-                              <div className="grid grid-cols-2 gap-1.5 max-w-[200px]">
+                              <div className="flex flex-col gap-1 w-fit">
                                 {/* Row 1 */}
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 text-xs"
-                                  onClick={() => {
-                                    setSelectedOrder(order);
-                                    setIsOrderDetailsOpen(true);
-                                  }}
-                                >
-                                  <Eye className="h-3 w-3 mr-1" />
-                                  {t('details')}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8 text-xs"
-                                  onClick={() => updateOrderStatus(order.id, 'completed')}
-                                  disabled={order.status === 'completed'}
-                                >
-                                  {t('complete')}
-                                </Button>
-
-                                {/* Row 2 */}
-                                {order.shipping_label_url ? (
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-7 text-[10px] px-2"
+                                    onClick={() => {
+                                      setSelectedOrder(order);
+                                      setIsOrderDetailsOpen(true);
+                                    }}
+                                  >
+                                    <Eye className="h-3 w-3" />
+                                  </Button>
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    className="h-8 text-xs"
-                                    onClick={() => downloadLabel(order.shipping_label_url!)}
+                                    className="h-7 text-[10px] px-2"
+                                    onClick={() => updateOrderStatus(order.id, 'completed')}
+                                    disabled={order.status === 'completed'}
                                   >
-                                    <Download className="h-3 w-3 mr-1" />
-                                    Label
+                                    {t('complete')}
                                   </Button>
-                                ) : (
+                                </div>
+                                
+                                {/* Row 2 */}
+                                <div className="flex gap-1">
+                                  {order.shipping_label_url ? (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-7 text-[10px] px-2"
+                                      onClick={() => downloadLabel(order.shipping_label_url!)}
+                                    >
+                                      <Download className="h-3 w-3" />
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      size="sm"
+                                      variant="default"
+                                      className="h-7 text-[10px] px-1.5 flex items-center gap-1"
+                                      onClick={() => openShipmentModal(order)}
+                                      disabled={order.status !== 'completed'}
+                                    >
+                                      <img src="/src/assets/furgonetka-logo.png" alt="F" className="h-3.5 w-3.5" />
+                                      <span>Create</span>
+                                    </Button>
+                                  )}
                                   <Button
                                     size="sm"
-                                    variant="default"
-                                    className="h-8 text-xs"
-                                    onClick={() => openShipmentModal(order)}
-                                    disabled={order.status !== 'completed'}
+                                    variant="destructive"
+                                    className="h-7 text-[10px] px-2"
+                                    onClick={() => handleDeleteOrder(order)}
                                   >
-                                    <Truck className="h-3 w-3 mr-1" />
-                                    {t('createShipment')}
+                                    <Trash2 className="h-3 w-3" />
                                   </Button>
-                                )}
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  className="h-8 text-xs"
-                                  onClick={() => handleDeleteOrder(order)}
-                                >
-                                  <Trash2 className="h-3 w-3 mr-1" />
-                                  {t('delete')}
-                                </Button>
+                                </div>
                               </div>
                             </TableCell>
                           </TableRow>

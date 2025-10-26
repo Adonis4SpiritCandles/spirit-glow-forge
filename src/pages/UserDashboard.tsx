@@ -362,12 +362,12 @@ const UserDashboard = () => {
                   <div className="space-y-4">
                     {orders.map((order) => {
                       const badges = getOrderBadges(order);
-                      const totalPLN = order.total_pln / 100;
-                      const totalEUR = order.total_eur;
-                      const shippingCostPLN = (order.shipping_cost_pln || 0) / 100;
-                      const shippingCostEUR = order.shipping_cost_eur || 0;
+                      const totalPLN = order.total_pln;
+                      const totalEUR = Math.round(totalPLN / 4.3);
+                      const shippingCostPLN = order.shipping_cost_pln || 0;
+                      const shippingCostEUR = Math.round(shippingCostPLN / 4.3);
                       const productsPLN = totalPLN - shippingCostPLN;
-                      const productsEUR = totalEUR - shippingCostEUR;
+                      const productsEUR = Math.round(productsPLN / 4.3);
 
                       return (
                         <div key={order.id} className="border rounded-lg p-4 space-y-3">

@@ -177,6 +177,7 @@ export type Database = {
           carrier: string | null
           carrier_name: string | null
           created_at: string
+          deleted_at: string | null
           estimated_delivery_date: string | null
           furgonetka_package_id: string | null
           id: string
@@ -199,6 +200,7 @@ export type Database = {
           carrier?: string | null
           carrier_name?: string | null
           created_at?: string
+          deleted_at?: string | null
           estimated_delivery_date?: string | null
           furgonetka_package_id?: string | null
           id?: string
@@ -221,6 +223,7 @@ export type Database = {
           carrier?: string | null
           carrier_name?: string | null
           created_at?: string
+          deleted_at?: string | null
           estimated_delivery_date?: string | null
           furgonetka_package_id?: string | null
           id?: string

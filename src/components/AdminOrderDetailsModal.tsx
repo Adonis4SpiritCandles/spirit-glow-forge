@@ -239,7 +239,7 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
             <>
               <Separator />
               <div>
-                <h3 className="font-semibold mb-3">{t('shippingStatus')}</h3>
+              <h3 className="font-semibold mb-3">{t('shippingStatus')}</h3>
                 <div className="space-y-3 text-sm">
                   {order.tracking_number && order.carrier && (
                     <>
@@ -252,7 +252,7 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                         <span className="text-xs">Furgonetka</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">{t('trackingNumb')}:</span>
+                        <span className="text-muted-foreground">{t('trackingNumber')}:</span>
                         <div className="flex items-center gap-2">
                           {order.tracking_url ? (
                             <a 
@@ -270,7 +270,7 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">{t('status')}:</span>
-                        <Badge variant="secondary" className="bg-green-500 text-white">
+                        <Badge variant="secondary" className="bg-green-500 text-white drop-shadow-md">
                           {t('shippedSuccessfully')}
                         </Badge>
                       </div>

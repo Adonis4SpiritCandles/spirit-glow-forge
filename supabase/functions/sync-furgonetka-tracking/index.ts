@@ -82,21 +82,37 @@ Deno.serve(async (req) => {
     const accessToken = tokenData.access_token;
 
     // Call Furgonetka API to get package details
+    console.log('Fetching package details for:', order.furgonetka_package_id);
     const packageResponse = await fetch(
-      `https://api-sandbox.furgonetka.pl/packages/${order.furgonetka_package_id}`,
+      `https://api.sandbox.furgonetka.pl/packages/${order.furgonetka_package_id}`,
       {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.furgonetka.v1+json',
+          'X-Language': 'en_GB',
         },
       }
     );
 
     if (!packageResponse.ok) {
       const errorText = await packageResponse.text();
-      console.error('Furgonetka API error:', errorText);
-      throw new Error(`Failed to get package details from Furgonetka: ${packageResponse.status}`);
+      console.error('Furgonetka API error:', {
+        status: packageResponse.status,
+        statusText: packageResponse.statusText,
+        body: errorText,
+      });
+      
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: `Furgonetka API error (${packageResponse.status}): ${errorText || packageResponse.statusText}`,
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
     }
 
     const packageData = await packageResponse.json();
@@ -106,7 +122,17 @@ Deno.serve(async (req) => {
     const trackingNumber = packageData.tracking_number || packageData.trackingNumber;
 
     if (!trackingNumber) {
-      throw new Error('No tracking number available yet from Furgonetka');
+      console.log('No tracking number available yet for package:', order.furgonetka_package_id);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Tracking number not yet assigned by Furgonetka. Please try again in a few minutes.',
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
     }
 
     // Update order with tracking number

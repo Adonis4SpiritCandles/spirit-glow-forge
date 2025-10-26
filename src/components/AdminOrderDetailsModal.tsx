@@ -67,6 +67,11 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
 
       if (error) throw error;
 
+      if (data?.success === false) {
+        toast.error(data.error || 'Failed to sync tracking');
+        return;
+      }
+
       if (data?.tracking_number) {
         toast.success(`Tracking number synced: ${data.tracking_number}`);
         onTrackingUpdated?.();

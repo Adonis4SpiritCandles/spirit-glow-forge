@@ -219,7 +219,7 @@ Deno.serve(async (req) => {
               <p>
                 <strong>Spirit Candles</strong><br>
                 ${isPolish ? 'Ręcznie robione świece premium' : 'Handcrafted Premium Candles'}<br>
-                <a href="mailto:info@spiritcandles.com">info@spiritcandles.com</a>
+                <a href="mailto:info@spirit-candle.com">info@spirit-candle.com</a>
               </p>
               <p style="font-size: 12px; margin-top: 20px;">
                 ${isPolish 

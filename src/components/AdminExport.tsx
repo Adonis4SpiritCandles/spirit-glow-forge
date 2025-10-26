@@ -35,8 +35,8 @@ const AdminExport = ({ data }: AdminExportProps) => {
           item.name_en,
           item.name_pl,
           item.category,
-          (item.price_pln / 100).toString(),
-          (item.price_eur / 100).toString(),
+          Number(item.price_pln).toFixed(2),
+          Number(item.price_eur).toFixed(2),
           item.stock_quantity.toString(),
           new Date(item.created_at).toLocaleDateString()
         ]);
@@ -47,8 +47,8 @@ const AdminExport = ({ data }: AdminExportProps) => {
           item.id,
           item.user_id,
           item.status,
-          (item.total_pln / 100).toString(),
-          (item.total_eur / 100).toString(),
+          Number(item.total_pln).toFixed(2),
+          Number(item.total_eur).toFixed(2),
           new Date(item.created_at).toLocaleDateString()
         ]);
         break;

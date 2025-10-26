@@ -165,10 +165,10 @@ const ProductCard = ({
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <div className="text-lg font-semibold text-primary">
-                  {sizes[selectedSize].price.pln} PLN
+                  {sizes[selectedSize].price.pln.toFixed(2)} PLN
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  ~{sizes[selectedSize].price.eur} EUR
+                  ~{sizes[selectedSize].price.eur.toFixed(2)} EUR
                 </div>
               </div>
               

@@ -1,8 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 
-const RESEND_API_KEY = "re_DXpt2dQ2_Fyini5KQU4Ua2d33rn8dUECR";
-const resend = new Resend(RESEND_API_KEY);
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -98,7 +97,7 @@ const handler = async (req: Request): Promise<Response> => {
         <tr>
           <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${productName}</td>
           <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; text-align: center;">${item.quantity}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; text-align: right;">${(item.price_pln / 100).toFixed(2)} PLN</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; text-align: right;">${Number(item.price_pln).toFixed(2)} PLN</td>
         </tr>
       `;
       })
@@ -181,7 +180,7 @@ const handler = async (req: Request): Promise<Response> => {
                       ${isPolish ? 'Suma częściowa:' : 'Subtotal:'}
                     </td>
                     <td style="padding: 12px; text-align: right;">
-                      ${(subtotalPLN / 100).toFixed(2)} PLN / ${(subtotalEUR / 100).toFixed(2)} EUR
+                      ${Number(subtotalPLN).toFixed(2)} PLN / ${Number(subtotalEUR).toFixed(2)} EUR
                     </td>
                   </tr>
                   <tr>
@@ -189,7 +188,7 @@ const handler = async (req: Request): Promise<Response> => {
                       ${isPolish ? 'Koszt dostawy:' : 'Shipping Cost:'}
                     </td>
                     <td style="padding: 12px; text-align: right;">
-                      ${(shippingCostPLN / 100).toFixed(2)} PLN / ${(shippingCostEUR / 100).toFixed(2)} EUR
+                      ${Number(shippingCostPLN).toFixed(2)} PLN / ${Number(shippingCostEUR).toFixed(2)} EUR
                     </td>
                   </tr>
                   <tr style="background: #f9f9f9;">
@@ -197,7 +196,7 @@ const handler = async (req: Request): Promise<Response> => {
                       ${isPolish ? 'Razem:' : 'Total:'}
                     </td>
                     <td style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px; color: #d4af37; border-top: 2px solid #d4af37;">
-                      ${(totalPLN / 100).toFixed(2)} PLN / ${(totalEUR / 100).toFixed(2)} EUR
+                      ${Number(totalPLN).toFixed(2)} PLN / ${Number(totalEUR).toFixed(2)} EUR
                     </td>
                   </tr>
                 </tbody>

@@ -34,10 +34,10 @@ const Shop = () => {
           id: p.id,
           name: language === 'en' ? p.name_en : p.name_pl,
           fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
-          price: { pln: Number(p.price_pln) / 100, eur: Number(p.price_eur) / 100 },
+          price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
           image: p.image_url,
           description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
-          sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln) / 100, eur: Number(p.price_eur) / 100 } }],
+          sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
           isNew: false,
           isBestseller: false,
         }));

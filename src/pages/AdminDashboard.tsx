@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -140,6 +140,12 @@ const AdminDashboard = () => {
   
   // Product edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+// Bulk actions state
+  const tabsListRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    tabsListRef.current?.scrollTo({ left: 0, behavior: 'instant' as ScrollBehavior });
+  }, []);
 
   // Bulk actions state
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
@@ -1016,7 +1022,7 @@ const AdminDashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="w-full overflow-x-auto whitespace-nowrap flex gap-1 p-1">
+          <TabsList ref={tabsListRef} className="w-full overflow-x-auto whitespace-nowrap flex gap-1 px-0 py-1 scrollbar-none">
             <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">{t('products')}</TabsTrigger>
             <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">{t('orders')}</TabsTrigger>
             <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">{t('ordersTrash')}</TabsTrigger>

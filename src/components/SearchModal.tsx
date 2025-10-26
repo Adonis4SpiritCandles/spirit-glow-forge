@@ -159,7 +159,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                           </Badge>
                         )}
                         <div className="text-sm font-semibold text-primary">
-                          {product.price_pln / 100} PLN
+                          {Number(product.price_pln).toFixed(2)} PLN
                         </div>
                       </div>
                     </div>

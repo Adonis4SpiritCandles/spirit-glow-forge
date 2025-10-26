@@ -144,13 +144,13 @@ const Cart = () => {
                       {/* Price */}
                       <div>
                         <div className="font-semibold text-primary text-lg">
-                          {item.product.price_pln * item.quantity} PLN
+                          {(item.product.price_pln * item.quantity).toFixed(2)} PLN
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          ~{item.product.price_eur * item.quantity} EUR
+                          ~{(item.product.price_eur * item.quantity).toFixed(2)} EUR
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {item.product.price_pln} PLN each
+                          {Number(item.product.price_pln).toFixed(2)} PLN each
                         </div>
                       </div>
 
@@ -208,11 +208,11 @@ const Cart = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>{t('subtotal')} ({itemCount} {t('items')})</span>
-                    <span>{totalPLN} PLN</span>
+                    <span>{Number(totalPLN).toFixed(2)} PLN</span>
                   </div>
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span></span>
-                    <span>~{totalEUR} EUR</span>
+                    <span>~{Number(totalEUR).toFixed(2)} EUR</span>
                   </div>
                   
                   <div className="flex justify-between text-sm">
@@ -226,8 +226,8 @@ const Cart = () => {
                 <div className="flex justify-between font-semibold text-lg">
                   <span>{t('total')}</span>
                   <div className="text-right">
-                    <div className="text-primary">{totalPLN} PLN</div>
-                    <div className="text-sm text-muted-foreground">~{totalEUR} EUR</div>
+                    <div className="text-primary">{Number(totalPLN).toFixed(2)} PLN</div>
+                    <div className="text-sm text-muted-foreground">~{Number(totalEUR).toFixed(2)} EUR</div>
                   </div>
                 </div>
 

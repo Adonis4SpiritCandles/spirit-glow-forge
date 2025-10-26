@@ -48,11 +48,11 @@ const ProductDetail = () => {
         id: data.id,
         name: language === 'en' ? data.name_en : data.name_pl,
         fragrance: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
-        price: { pln: (Number(data.price_pln) / 100).toFixed(2), eur: (Number(data.price_eur) / 100).toFixed(2) },
+        price: { pln: Number(data.price_pln), eur: Number(data.price_eur) },
         image: data.image_url || candleLit,
         description: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
         longDescription: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
-        sizes: [{ size: data.size, weight: data.size || '180g', price: { pln: Number(data.price_pln) / 100, eur: Number(data.price_eur) / 100 }, burnTime: '40-45 hours' }],
+        sizes: [{ size: data.size, weight: data.size || '180g', price: { pln: Number(data.price_pln), eur: Number(data.price_eur) }, burnTime: '40-45 hours' }],
         isNew: false,
         moodTags: [],
         careInstructions: [
@@ -214,10 +214,10 @@ const ProductDetail = () => {
             {/* Price */}
             <div className="space-y-2">
               <div className="text-3xl font-bold text-primary">
-                {totalPrice.pln} PLN
+                {totalPrice.pln.toFixed(2)} PLN
               </div>
               <div className="text-lg text-muted-foreground">
-                ~{totalPrice.eur} EUR
+                ~{totalPrice.eur.toFixed(2)} EUR
               </div>
             </div>
 
@@ -276,14 +276,14 @@ const ProductDetail = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-                <Button 
-                  onClick={handleAddToCart}
-                  size="lg"
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  {t('addToCart')} - {totalPrice.pln} PLN
-                </Button>
+              <Button 
+                onClick={handleAddToCart}
+                size="lg"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                {t('addToCart')} - {totalPrice.pln.toFixed(2)} PLN
+              </Button>
                 
                 <Button 
                   size="lg"

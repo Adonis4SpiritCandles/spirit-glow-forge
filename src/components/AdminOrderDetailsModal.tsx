@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { RefreshCw, Check, Clock, Truck, Package, CheckCircle2 } from 'lucide-react';
+import { CarrierBadge } from '@/utils/carrierStyles';
 import { useState } from 'react';
 
 interface Order {
@@ -101,12 +102,12 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
     : order.profiles?.email || 'N/A';
 
   const shippingAddress = order.shipping_address || {};
-  const productSubtotalPLN = (order.total_pln - (order.shipping_cost_pln || 0)) / 100;
-  const productSubtotalEUR = order.total_eur - (order.shipping_cost_eur || 0);
-  const shippingCostPLN = (order.shipping_cost_pln || 0) / 100;
-  const shippingCostEUR = order.shipping_cost_eur || 0;
-  const totalPLN = order.total_pln / 100;
-  const totalEUR = order.total_eur;
+  const productSubtotalPLN = Number(order.total_pln - (order.shipping_cost_pln || 0));
+  const productSubtotalEUR = Number(order.total_eur - (order.shipping_cost_eur || 0));
+  const shippingCostPLN = Number(order.shipping_cost_pln || 0);
+  const shippingCostEUR = Number(order.shipping_cost_eur || 0);
+  const totalPLN = Number(order.total_pln);
+  const totalEUR = Number(order.total_eur);
 
   // Timeline steps
   const timelineSteps = [
@@ -286,18 +287,18 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t('productsSubtotal')}:</span>
-                <span>{productSubtotalPLN.toFixed(2)} PLN / {productSubtotalEUR} EUR</span>
+                <span>{productSubtotalPLN.toFixed(2)} PLN / {productSubtotalEUR.toFixed(2)} EUR</span>
               </div>
               {(order.shipping_cost_pln || 0) > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('shippingCost')}:</span>
-                  <span>{shippingCostPLN.toFixed(2)} PLN / {shippingCostEUR} EUR</span>
+                  <span>{shippingCostPLN.toFixed(2)} PLN / {shippingCostEUR.toFixed(2)} EUR</span>
                 </div>
               )}
-              {order.carrier_name && (
+              {(order.carrier_name || order.carrier) && (
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">{t('carrierSelected')}:</span>
-                  <Badge variant="outline">{order.carrier_name}</Badge>
+                  <CarrierBadge carrierName={order.carrier_name || order.carrier} />
                 </div>
               )}
               {order.service_id && (
@@ -325,11 +326,11 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                     <>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">{t('carrier')}:</span>
-                        <Badge variant="default">{order.carrier}</Badge>
+                        <CarrierBadge carrierName={order.carrier_name || order.carrier} />
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">{t('sentVia')}:</span>
-                        <span className="text-xs">Furgonetka</span>
+                        <Badge className="bg-blue-900 text-white">Furgonetka</Badge>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">{t('trackingNumber')}:</span>
@@ -339,12 +340,12 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                               href={order.tracking_url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="font-mono text-xs bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors"
+                              className="font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors"
                             >
                               {order.tracking_number}
                             </a>
                           ) : (
-                            <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.tracking_number}</code>
+                            <code className="font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded">{order.tracking_number}</code>
                           )}
                         </div>
                       </div>

@@ -364,12 +364,12 @@ const UserDashboard = () => {
                     {orders.map((order) => {
                       const badges = getOrderBadges(order);
                       // FIX: Use actual cents values, not rounded
-                      const totalPLN = (order.total_pln / 100).toFixed(2);
-                      const totalEUR = (order.total_eur / 100).toFixed(2);
-                      const shippingCostPLN = ((order.shipping_cost_pln || 0) / 100).toFixed(2);
-                      const shippingCostEUR = ((order.shipping_cost_eur || 0) / 100).toFixed(2);
-                      const productsPLN = ((order.total_pln - (order.shipping_cost_pln || 0)) / 100).toFixed(2);
-                      const productsEUR = ((order.total_eur - (order.shipping_cost_eur || 0)) / 100).toFixed(2);
+                       const totalPLN = Number(order.total_pln).toFixed(2);
+                       const totalEUR = Number(order.total_eur).toFixed(2);
+                       const shippingCostPLN = Number(order.shipping_cost_pln || 0).toFixed(2);
+                       const shippingCostEUR = Number(order.shipping_cost_eur || 0).toFixed(2);
+                       const productsPLN = Number(order.total_pln - (order.shipping_cost_pln || 0)).toFixed(2);
+                       const productsEUR = Number(order.total_eur - (order.shipping_cost_eur || 0)).toFixed(2);
 
                       return (
                         <div key={order.id} className="border rounded-lg p-4 space-y-3">
@@ -435,12 +435,12 @@ const UserDashboard = () => {
                                     href={order.tracking_url} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="ml-2 font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors inline-block"
+                                    className="ml-2 font-mono text-base md:text-lg font-bold bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors inline-block"
                                   >
                                     {order.tracking_number}
                                   </a>
                                 ) : (
-                                  <code className="ml-2 font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded">
+                                  <code className="ml-2 font-mono text-base md:text-lg font-bold bg-muted px-2 py-1 rounded">
                                     {order.tracking_number}
                                   </code>
                                 )}

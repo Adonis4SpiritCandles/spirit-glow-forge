@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw } from 'lucide-react';
+import furgonetkaIco from '@/assets/furgonetka-logo-ico.png';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -365,7 +366,7 @@ const AdminDashboard = () => {
         badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-xs drop-shadow-md">{t('trackingNumber')}</Badge>,
         details: (
           <div className="space-y-1 text-xs mt-1">
-            <div className="font-mono text-[10px]">{order.tracking_number}</div>
+            <div className="font-mono text-xs md:text-sm font-semibold">{order.tracking_number}</div>
             <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-800">
               {t('shipped')}
             </Badge>
@@ -385,7 +386,7 @@ const AdminDashboard = () => {
     // Stage 2: Order completed but no shipment created
     if (order.status === 'completed' && !order.furgonetka_package_id) {
       return {
-        badge: <Badge variant="default" className="bg-orange-500 hover:bg-orange-600 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('awaitingFurgonetkaSubmission')}</Badge>,
+        badge: <Badge variant="default" className="bg-cyan-400 hover:bg-cyan-500 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto text-black font-semibold shadow">{t('awaitingFurgonetkaSubmission')}</Badge>,
         details: null
       };
     }
@@ -1015,14 +1016,14 @@ const AdminDashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 w-full gap-1">
-            <TabsTrigger value="products" className="text-xs sm:text-sm">{t('products')}</TabsTrigger>
-            <TabsTrigger value="orders" className="text-xs sm:text-sm">{t('orders')}</TabsTrigger>
-            <TabsTrigger value="trash" className="text-xs sm:text-sm">{t('ordersTrash')}</TabsTrigger>
-            <TabsTrigger value="customers" className="text-xs sm:text-sm">{t('customers')}</TabsTrigger>
-            <TabsTrigger value="warehouse" className="text-xs sm:text-sm">{t('warehouse')}</TabsTrigger>
-            <TabsTrigger value="statistics" className="text-xs sm:text-sm">{t('statistics')}</TabsTrigger>
-            <TabsTrigger value="export" className="text-xs sm:text-sm">Export</TabsTrigger>
+          <TabsList className="w-full overflow-x-auto whitespace-nowrap flex gap-1 p-1">
+            <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">{t('products')}</TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">{t('orders')}</TabsTrigger>
+            <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">{t('ordersTrash')}</TabsTrigger>
+            <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">{t('customers')}</TabsTrigger>
+            <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">{t('warehouse')}</TabsTrigger>
+            <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
+            <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">Export</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">
@@ -1465,8 +1466,8 @@ const AdminDashboard = () => {
                                       onClick={() => openShipmentModal(order)}
                                       disabled={order.status !== 'completed'}
                                     >
-                                      <img src="/src/assets/furgonetka-logo.png" alt="F" className="h-3.5 w-3.5" />
-                                      <span>Create</span>
+                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4 order-2" />
+                                      <span className="order-1">{t('sendTo')}</span>
                                     </Button>
                                   )}
                                   <Button
@@ -1601,8 +1602,8 @@ const AdminDashboard = () => {
                                 onClick={() => openShipmentModal(order)}
                                 disabled={order.status !== 'completed'}
                               >
-                                <img src="/src/assets/furgonetka-logo.png" alt="F" className="h-3 w-3 mr-1" />
-                                Create
+                                <img src={furgonetkaIco} alt="Furgonetka" className="h-3 w-3 ml-1" />
+                                {t('sendTo')}
                               </Button>
                             )}
                             <Button 

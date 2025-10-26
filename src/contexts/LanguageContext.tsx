@@ -247,6 +247,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'billingDescription') return language === 'pl' ? 'Zarządzaj swoimi metodami płatności' : 'Manage your payment methods';
     if (key === 'viewOrdersForPayments') return language === 'pl' ? 'Zobacz swoje zamówienia, aby uzyskać szczegóły płatności' : 'View your orders for payment details';
     if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
+    if (key === 'trackPackage') return language === 'pl' ? 'Śledź paczkę' : 'Track package';
     if (key === 'completeInformation') return language === 'pl' ? 'Pełne informacje dla zamówienia' : 'Complete information for order';
     if (key === 'deliveryName') return language === 'pl' ? 'Nazwa dostawy' : 'Delivery Name';
     if (key === 'shippingLabel') return language === 'pl' ? 'Etykieta wysyłkowa' : 'Shipping Label';
@@ -264,7 +265,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie wysyłki' : 'Awaiting shipment confirmation';
     if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na przesłanie do Furgonetki' : 'Awaiting Furgonetka submission';
-    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona, oczekuje płatności' : 'Shipment created, awaiting payment';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment created';
     if (key === 'shipped') return language === 'pl' ? 'Wysłano' : 'Shipped';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped successfully';
     if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
@@ -281,7 +282,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // New Shipping Status Translations
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie' : 'Awaiting confirmation';
     if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na wysyłkę' : 'Awaiting submission';
-    if (key === 'shipmentCreated') return language === 'pl' ? 'Utworzona, oczekuje płatności' : 'Created, awaiting payment';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment created';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped successfully';
     if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
     if (key === 'trackingNumb') return language === 'pl' ? 'Nr śledzenia' : 'Tracking Numb.';

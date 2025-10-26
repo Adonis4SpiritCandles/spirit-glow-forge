@@ -1,1 +1,28 @@
 project_id = "fhtuqmdlgzmpsbflxhra"
+
+[functions.contact-form]
+verify_jwt = false
+
+[functions.create-checkout]
+verify_jwt = true
+
+[functions.get-furgonetka-token]
+verify_jwt = false
+
+[functions.create-furgonetka-shipment]
+verify_jwt = true
+
+[functions.furgonetka-webhook]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.send-order-confirmation]
+verify_jwt = false
+
+[functions.calculate-shipping-price]
+verify_jwt = true
+
+[functions.places-autocomplete]
+verify_jwt = true

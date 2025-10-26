@@ -424,10 +424,7 @@ export type Database = {
           username: string
         }[]
       }
-      get_current_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_current_user_role: { Args: never; Returns: string }
       search_products: {
         Args: { search_text: string }
         Returns: {

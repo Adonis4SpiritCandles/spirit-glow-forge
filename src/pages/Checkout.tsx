@@ -257,7 +257,7 @@ const Checkout = () => {
                           <div className="text-xs text-muted-foreground">{item.product.size} × {item.quantity}</div>
                         </div>
                         <div className="text-right">
-                          <div className="font-semibold text-primary">{item.product.price_pln * item.quantity} PLN</div>
+                          <div className="font-semibold text-primary">{(item.product.price_pln * item.quantity).toFixed(2)} PLN</div>
                         </div>
                       </div>
                     </div>
@@ -274,7 +274,7 @@ const Checkout = () => {
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span>{t('subtotal')} ({itemCount} {t('items')})</span>
-                <span>{totalPLN} PLN</span>
+                <span>{Number(totalPLN).toFixed(2)} PLN</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>{t('shipping')}</span>

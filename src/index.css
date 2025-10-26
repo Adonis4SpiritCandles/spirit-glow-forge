@@ -105,6 +105,16 @@ All colors MUST be HSL. Premium luxury aesthetics with mystical elegance.
     @apply font-playfair;
   }
   
+  /* Hide scrollbar */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-none {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
   /* Luxury scrollbar */
   ::-webkit-scrollbar {
     width: 8px;

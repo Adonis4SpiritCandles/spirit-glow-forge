@@ -191,6 +191,7 @@ export type Database = {
           total_eur: number
           total_pln: number
           tracking_number: string | null
+          tracking_url: string | null
           updated_at: string
           user_id: string
         }
@@ -212,6 +213,7 @@ export type Database = {
           total_eur: number
           total_pln: number
           tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
           user_id: string
         }
@@ -233,6 +235,7 @@ export type Database = {
           total_eur?: number
           total_pln?: number
           tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -172,11 +172,10 @@ Deno.serve(async (req) => {
     // Update order with tracking number and URL
     const updateData: any = {
       tracking_number: trackingNumber,
+      tracking_url: finalTrackingUrl,
       shipping_status: shippingStatus,
       updated_at: new Date().toISOString(),
     };
-
-    // Note: tracking_url not persisted (column may not exist). It is still returned in the response for UI usage.
 
     const { error: updateError } = await supabase
       .from('orders')

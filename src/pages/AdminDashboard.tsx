@@ -52,6 +52,7 @@ interface Order {
   shipping_cost_eur?: number;
   carrier_name?: string;
   created_at: string;
+  deleted_at?: string | null;
   order_number?: number;
   shipping_status?: string;
   tracking_number?: string;
@@ -80,11 +81,12 @@ interface Profile {
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [deletedOrders, setDeletedOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [stats, setStats] = useState({
     totalProducts: 0,
@@ -187,6 +189,9 @@ const AdminDashboard = () => {
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
+      // Load deleted orders separately
+      await loadDeletedOrders();
+
       // Fetch profile data for each order
       if (ordersData && ordersData.length > 0) {
         const userIds = [...new Set(ordersData.map(o => o.user_id))];
@@ -228,6 +233,97 @@ const AdminDashboard = () => {
         title: "Error",
         description: "Failed to load dashboard data",
         variant: "destructive",
+      });
+    }
+  };
+
+  const loadDeletedOrders = async () => {
+    try {
+      const { data: deletedOrdersData } = await supabase
+        .from('orders')
+        .select('*')
+        .not('deleted_at', 'is', null)
+        .order('deleted_at', { ascending: false });
+
+      if (deletedOrdersData && deletedOrdersData.length > 0) {
+        const userIds = [...new Set(deletedOrdersData.map(o => o.user_id))];
+        const { data: profilesForOrders } = await supabase
+          .from('profiles')
+          .select('user_id, first_name, last_name, email')
+          .in('user_id', userIds);
+
+        const ordersWithProfiles = deletedOrdersData.map(order => ({
+          ...order,
+          profiles: profilesForOrders?.find(p => p.user_id === order.user_id)
+        }));
+        
+        setDeletedOrders(ordersWithProfiles as Order[]);
+      } else {
+        setDeletedOrders([]);
+      }
+    } catch (error) {
+      console.error('Error loading deleted orders:', error);
+    }
+  };
+
+  const restoreOrder = async (orderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ deleted_at: null })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: t('success'),
+        description: t('orderRestored'),
+      });
+      
+      loadDashboardData();
+      loadDeletedOrders();
+    } catch (error: any) {
+      console.error('Error restoring order:', error);
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const permanentDeleteOrder = async (orderId: string) => {
+    if (!confirm(t('permanentDeleteConfirm'))) return;
+
+    try {
+      // Delete order items first (foreign key constraint)
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .delete()
+        .eq('order_id', orderId);
+
+      if (itemsError) throw itemsError;
+
+      // Delete order permanently
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: t('success'),
+        description: t('orderPermanentlyDeleted'),
+      });
+      
+      loadDeletedOrders();
+    } catch (error: any) {
+      console.error('Error permanently deleting order:', error);
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: 'destructive',
       });
     }
   };
@@ -705,9 +801,10 @@ const AdminDashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList>
+          <TabsList className="flex-wrap">
             <TabsTrigger value="products">{t('products')}</TabsTrigger>
             <TabsTrigger value="orders">{t('orders')}</TabsTrigger>
+            <TabsTrigger value="trash">{t('ordersTrash')}</TabsTrigger>
             <TabsTrigger value="customers">{t('customers')}</TabsTrigger>
             <TabsTrigger value="warehouse">{t('warehouse')}</TabsTrigger>
             <TabsTrigger value="statistics">{t('statistics')}</TabsTrigger>
@@ -962,20 +1059,22 @@ const AdminDashboard = () => {
                 <CardDescription>{t('manageCustomerOrders')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <TooltipProvider>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">Order #</TableHead>
-                        <TableHead className="text-xs">Order ID</TableHead>
-                        <TableHead className="text-xs">{t('customer')}</TableHead>
-                        <TableHead className="text-xs">{t('total')}</TableHead>
-                        <TableHead className="text-xs">{t('status')}</TableHead>
-                        <TableHead className="text-xs">{t('shipping')}</TableHead>
-                        <TableHead className="text-xs">{t('created')}</TableHead>
-                        <TableHead className="text-xs">{t('actions')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
+                {/* Desktop Table View */}
+                <div className="hidden md:block">
+                  <TooltipProvider>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">Order #</TableHead>
+                          <TableHead className="text-xs">Order ID</TableHead>
+                          <TableHead className="text-xs">{t('customer')}</TableHead>
+                          <TableHead className="text-xs">{t('total')}</TableHead>
+                          <TableHead className="text-xs">{t('status')}</TableHead>
+                          <TableHead className="text-xs">{t('shipping')}</TableHead>
+                          <TableHead className="text-xs">{t('created')}</TableHead>
+                          <TableHead className="text-xs">{t('actions')}</TableHead>
+                        </TableRow>
+                      </TableHeader>
                     <TableBody>
                       {orders.map((order) => {
                         const shippingStatus = getShippingStatusDisplay(order);
@@ -1155,6 +1254,284 @@ const AdminDashboard = () => {
                     </TableBody>
                   </Table>
                 </TooltipProvider>
+                </div>
+
+                {/* Mobile Card-Based View */}
+                <div className="md:hidden space-y-4">
+                  {orders.map((order) => {
+                    const shippingStatus = getShippingStatusDisplay(order);
+                    const totalPLN = order.total_pln;
+                    const shippingCostPLN = order.shipping_cost_pln || 0;
+                    const productsPLN = totalPLN - shippingCostPLN;
+                    const shippingName = order.shipping_address?.first_name && order.shipping_address?.last_name
+                      ? `${order.shipping_address.first_name} ${order.shipping_address.last_name}`
+                      : null;
+
+                    return (
+                      <Card key={order.id} className="p-4">
+                        <div className="space-y-3">
+                          {/* Header */}
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <div className="font-semibold text-sm">
+                                SPIRIT-{String(order.order_number).padStart(5, '0')}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {new Date(order.created_at).toLocaleDateString()}
+                              </div>
+                            </div>
+                            <Badge 
+                              variant={
+                                order.status === 'completed' ? 'default' :
+                                order.status === 'paid' ? 'secondary' :
+                                order.status === 'pending' ? 'outline' : 'destructive'
+                              }
+                              className={
+                                order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
+                                order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
+                              }
+                            >
+                              {order.status === 'completed' ? t('complete') : order.status}
+                            </Badge>
+                          </div>
+
+                          {/* Customer */}
+                          <div className="text-sm border-t pt-2">
+                            <div className="font-medium">
+                              {order.profiles?.first_name} {order.profiles?.last_name}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {order.profiles?.email}
+                            </div>
+                            {shippingName && shippingName !== `${order.profiles?.first_name} ${order.profiles?.last_name}` && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {t('deliveryName')}: <span className="font-medium">{shippingName}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Total */}
+                          <div className="flex justify-between text-sm border-t pt-2">
+                            <span className="text-muted-foreground">{t('total')}:</span>
+                            <div className="text-right">
+                              <div className="font-semibold">{totalPLN.toFixed(2)} PLN</div>
+                              <div className="text-xs text-muted-foreground">
+                                ({productsPLN.toFixed(2)} + {shippingCostPLN.toFixed(2)})
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Shipping Status */}
+                          <div className="border-t pt-2">
+                            <div className="text-xs text-muted-foreground mb-1">{t('shipping')}:</div>
+                            {shippingStatus.badge}
+                            {shippingStatus.details && <div className="mt-1">{shippingStatus.details}</div>}
+                          </div>
+
+                          {/* Actions */}
+                          <div className="grid grid-cols-2 gap-2 pt-2 border-t">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="w-full text-xs"
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setIsOrderDetailsOpen(true);
+                              }}
+                            >
+                              <Eye className="h-3 w-3 mr-1" />
+                              {t('details')}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="default"
+                              className="w-full text-xs bg-green-500 hover:bg-green-600 text-white"
+                              onClick={() => updateOrderStatus(order.id, 'completed')}
+                              disabled={order.status === 'completed'}
+                            >
+                              {t('complete')}
+                            </Button>
+                            {order.shipping_label_url ? (
+                              <Button 
+                                size="sm" 
+                                variant="secondary"
+                                className="w-full text-xs"
+                                onClick={() => downloadLabel(order.shipping_label_url!)}
+                              >
+                                <Download className="h-3 w-3 mr-1" />
+                                Label
+                              </Button>
+                            ) : (
+                              <Button 
+                                size="sm" 
+                                variant="default"
+                                className="w-full text-xs"
+                                onClick={() => openShipmentModal(order)}
+                                disabled={order.status !== 'completed'}
+                              >
+                                <img src="/src/assets/furgonetka-logo.png" alt="F" className="h-3 w-3 mr-1" />
+                                Create
+                              </Button>
+                            )}
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              className="w-full text-xs"
+                              onClick={() => handleDeleteOrder(order)}
+                            >
+                              <Trash2 className="h-3 w-3 mr-1" />
+                              {t('delete')}
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="trash" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('ordersTrash')}</CardTitle>
+                <CardDescription>{t('deletedOrdersDesc')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {deletedOrders.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    {language === 'pl' ? 'Brak usuniętych zamówień' : 'No deleted orders'}
+                  </div>
+                ) : (
+                  <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs">Order #</TableHead>
+                            <TableHead className="text-xs">{t('customer')}</TableHead>
+                            <TableHead className="text-xs">{t('total')}</TableHead>
+                            <TableHead className="text-xs">{t('status')}</TableHead>
+                            <TableHead className="text-xs">{language === 'pl' ? 'Usunięto' : 'Deleted'}</TableHead>
+                            <TableHead className="text-xs">{t('actions')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {deletedOrders.map((order) => {
+                            const totalPLN = order.total_pln;
+                            return (
+                              <TableRow key={order.id}>
+                                <TableCell className="font-semibold text-sm">
+                                  SPIRIT-{String(order.order_number).padStart(5, '0')}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="space-y-0.5">
+                                    <div className="font-medium text-sm">
+                                      {order.profiles?.first_name} {order.profiles?.last_name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {order.profiles?.email}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="font-semibold">
+                                  {totalPLN.toFixed(2)} PLN
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="outline">{order.status}</Badge>
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  {order.deleted_at ? new Date(order.deleted_at).toLocaleDateString() : '-'}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 text-xs"
+                                      onClick={() => restoreOrder(order.id)}
+                                    >
+                                      {t('restore')}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      className="h-8 text-xs"
+                                      onClick={() => permanentDeleteOrder(order.id)}
+                                    >
+                                      <Trash2 className="h-3 w-3 mr-1" />
+                                      {t('deletePermanently')}
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-4">
+                      {deletedOrders.map((order) => {
+                        const totalPLN = order.total_pln;
+                        return (
+                          <Card key={order.id} className="p-4 border-destructive/50">
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <div className="font-semibold text-sm">
+                                    SPIRIT-{String(order.order_number).padStart(5, '0')}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {language === 'pl' ? 'Usunięto' : 'Deleted'}: {order.deleted_at ? new Date(order.deleted_at).toLocaleDateString() : '-'}
+                                  </div>
+                                </div>
+                                <Badge variant="outline">{order.status}</Badge>
+                              </div>
+
+                              <div className="text-sm border-t pt-2">
+                                <div className="font-medium">
+                                  {order.profiles?.first_name} {order.profiles?.last_name}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {order.profiles?.email}
+                                </div>
+                              </div>
+
+                              <div className="flex justify-between text-sm border-t pt-2">
+                                <span className="text-muted-foreground">{t('total')}:</span>
+                                <span className="font-semibold">{totalPLN.toFixed(2)} PLN</span>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2 pt-2 border-t">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  className="w-full text-xs"
+                                  onClick={() => restoreOrder(order.id)}
+                                >
+                                  {t('restore')}
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  className="w-full text-xs"
+                                  onClick={() => permanentDeleteOrder(order.id)}
+                                >
+                                  <Trash2 className="h-3 w-3 mr-1" />
+                                  {t('deletePermanently')}
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3, X } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3, X, Bell } from 'lucide-react';
 import furgonetkaIco from '@/assets/furgonetka-logo-ico.png';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
@@ -25,6 +25,8 @@ import AdminStatistics from '@/components/AdminStatistics';
 import AdminExport from '@/components/AdminExport';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 
 interface Product {
   id: string;
@@ -88,6 +90,7 @@ const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const { unseenCount, markOrdersAsSeen, loadUnseenCount } = useAdminNotifications();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
@@ -1500,6 +1503,37 @@ const AdminDashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
+                  {/* Unseen Orders Alert */}
+                  {unseenCount > 0 && (
+                    <Alert className="mb-6 bg-yellow-50 border-yellow-300 animate-fade-in">
+                      <Bell className="h-5 w-5 text-yellow-600 animate-pulse" />
+                      <AlertDescription className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <strong className="text-yellow-800">
+                            🔔 {t('newOrdersToConfirm')}
+                          </strong>
+                          <p className="text-yellow-700 mt-1">
+                            {t('youHaveXOrders').replace('{count}', unseenCount.toString())}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const unseenOrders = orders.filter(o => !o.admin_seen).map(o => o.id);
+                              markOrdersAsSeen(unseenOrders);
+                              loadUnseenCount();
+                            }}
+                            className="bg-white hover:bg-yellow-50"
+                          >
+                            {t('markAllAsSeen')}
+                          </Button>
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  
                   {/* Desktop Table View */}
                   <div className="hidden md:block">
                     <TooltipProvider>

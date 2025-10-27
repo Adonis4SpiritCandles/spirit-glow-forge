@@ -3,15 +3,18 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Search, ShoppingCart, User, LogOut, Heart } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Menu, Search, ShoppingCart, User, LogOut, Heart, LayoutDashboard, Settings as SettingsIcon, Package, ShoppingBag, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useCartContext } from '@/contexts/CartContext';
 import { useWishlist } from '@/hooks/useWishlist';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageToggle from '@/components/LanguageToggle';
 import SearchModal from '@/components/SearchModal';
 import spiritLogo from '@/assets/spirit-logo.png';
+import goldShieldIcon from '@/assets/gold-shield-admin-mini.png';
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,6 +23,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const { user, signOut } = useAuth();
   const { itemCount } = useCartContext();
   const { wishlistCount } = useWishlist();
+  const { unseenCount, isAdmin } = useAdminNotifications();
   const [userProfile, setUserProfile] = useState<any>(null);
 
   // Load user profile to check role
@@ -115,17 +119,72 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                       )}
                     </Button>
                   </Link>
-                  {/* Show different dashboard links based on user role */}
-                  <Link to={userProfile?.role === 'admin' ? '/admin' : '/dashboard'}>
-                    <Button variant="ghost" size="sm">
-                      <User className="h-4 w-4 mr-1" />
-            {userProfile?.role === 'admin' ? t('adminDashboard') : t('dashboard')}
-                    </Button>
-                  </Link>
-                  <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                    <LogOut className="h-4 w-4 mr-1" />
-                    {t('logout')}
-                  </Button>
+                  
+                  {/* User Dropdown Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="gap-1">
+                        <User className="h-4 w-4" />
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      {userProfile?.role === 'admin' && (
+                        <>
+                          <DropdownMenuItem asChild>
+                            <Link to="/admin" className="flex items-center cursor-pointer relative">
+                              <img src={goldShieldIcon} alt="" className="h-4 w-4 mr-2" />
+                              {t('admin')}
+                              {unseenCount > 0 && (
+                                <Badge className="ml-auto h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
+                                  {unseenCount}
+                                </Badge>
+                              )}
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" className="flex items-center cursor-pointer">
+                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                          {t('dashboard')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard?tab=settings" className="flex items-center cursor-pointer">
+                          <SettingsIcon className="h-4 w-4 mr-2" />
+                          {t('settings')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard?tab=profile" className="flex items-center cursor-pointer">
+                          <User className="h-4 w-4 mr-2" />
+                          {t('profile')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard?tab=orders" className="flex items-center cursor-pointer">
+                          <Package className="h-4 w-4 mr-2" />
+                          {t('myOrders')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/shop" className="flex items-center cursor-pointer">
+                          <ShoppingBag className="h-4 w-4 mr-2" />
+                          {t('shop')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={handleSignOut}
+                        className="cursor-pointer text-destructive focus:text-destructive"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        {t('logout')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
                 <Link to="/auth">
@@ -187,8 +246,8 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                   ))}
                   <div className="border-t border-border pt-4 mt-4">
                     <Button 
-                      variant="outline" 
-                      className="w-full mb-2"
+                      variant="ghost"
+                      className="w-full mb-2 justify-start"
                       onClick={() => {
                         setIsSearchOpen(true);
                         setIsMenuOpen(false);
@@ -199,17 +258,16 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Button>
                     
                     <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="relative w-full justify-center mb-2"
+                      variant="outline" 
+                      className="w-full mb-2 justify-start"
                       onClick={onCartOpen}
                     >
-                      <ShoppingCart className="h-5 w-5 mr-2" />
+                      <ShoppingCart className="h-4 w-4 mr-2" />
                       {t('cart')}
                       {itemCount > 0 && (
                         <Badge 
                           variant="destructive" 
-                          className="ml-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                          className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs"
                         >
                           {itemCount}
                         </Badge>
@@ -220,33 +278,49 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     {user ? (
                       <>
                         <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
-                          <Button variant="outline" className="w-full mb-2 relative justify-center">
+                          <Button variant="outline" className="w-full mb-2 justify-start">
                             <Heart className="h-4 w-4 mr-2" />
                             {t('wishlist')}
                             {wishlistCount > 0 && (
                               <Badge 
                                 variant="destructive" 
-                                className="ml-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                                className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs"
                               >
                                 {wishlistCount}
                               </Badge>
                             )}
                           </Button>
                         </Link>
-                        <Link to={userProfile?.role === 'admin' ? '/admin' : '/dashboard'} onClick={() => setIsMenuOpen(false)}>
-                          <Button variant="outline" className="w-full mb-2">
-                            <User className="h-4 w-4 mr-2" />
-                            {userProfile?.role === 'admin' ? 'Admin Dashboard' : t('dashboard')}
+                        
+                        <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                          <Button variant="outline" className="w-full mb-2 justify-start">
+                            <LayoutDashboard className="h-4 w-4 mr-2" />
+                            {t('dashboard')}
                           </Button>
                         </Link>
-                        <Button variant="outline" className="w-full mb-2" onClick={handleSignOut}>
+                        
+                        {userProfile?.role === 'admin' && (
+                          <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
+                            <Button variant="outline" className="w-full mb-2 justify-start relative">
+                              <img src={goldShieldIcon} alt="" className="h-4 w-4 mr-2" />
+                              {t('admin')}
+                              {unseenCount > 0 && (
+                                <Badge className="ml-auto h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
+                                  {unseenCount}
+                                </Badge>
+                              )}
+                            </Button>
+                          </Link>
+                        )}
+                        
+                        <Button variant="ghost" className="w-full mb-2 justify-start" onClick={handleSignOut}>
                           <LogOut className="h-4 w-4 mr-2" />
                           {t('logout')}
                         </Button>
                       </>
                     ) : (
                       <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                        <Button variant="outline" className="w-full mb-2">
+                        <Button variant="outline" className="w-full mb-2 justify-start">
                           <User className="h-4 w-4 mr-2" />
                           {t('login')}
                         </Button>

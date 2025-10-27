@@ -32,6 +32,19 @@ Deno.serve(async (req) => {
 
     console.log(`[Admin Notification] Sending new order notification for Order #${orderNumber}`);
 
+    // Get admin's preferred language from profiles
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data: adminProfile } = await supabase
+      .from('profiles')
+      .select('email_language_preference')
+      .eq('email', 'm5moffice@proton.me')
+      .single();
+
+    const isPolish = adminProfile?.email_language_preference === 'pl';
+
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -50,32 +63,32 @@ Deno.serve(async (req) => {
           <!-- Main Content -->
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <h1 style="color: #333; font-size: 28px; margin-bottom: 10px; font-weight: 600;">
-              🎉 New Order on Spirit Candle Received!
+              🎉 ${isPolish ? 'Nowe zamówienie w Spirit Candle otrzymane!' : 'New Order on Spirit Candle Received!'}
             </h1>
             <p style="color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-              A new order has been placed and requires your attention.
+              ${isPolish ? 'Złożono nowe zamówienie, które wymaga Twojej uwagi.' : 'A new order has been placed and requires your attention.'}
             </p>
 
             <!-- Order Info -->
             <div style="background: #f9f9f9; border-left: 4px solid #d4af37; padding: 20px; margin-bottom: 30px; border-radius: 8px;">
               <p style="margin: 5px 0; color: #333; font-size: 20px; font-weight: bold;">
-                Order #SPIRIT-${String(orderNumber).padStart(5, '0')}
+                ${isPolish ? 'Zamówienie' : 'Order'} #SPIRIT-${String(orderNumber).padStart(5, '0')}
               </p>
               <p style="margin: 5px 0; color: #333;">
-                <strong>Order ID:</strong> 
+                <strong>${isPolish ? 'ID Zamówienia' : 'Order ID'}:</strong> 
                 <span style="font-family: monospace; font-size: 12px;">${orderId}</span>
               </p>
               <p style="margin: 5px 0; color: #333;">
-                <strong>Customer:</strong> ${userEmail}
+                <strong>${isPolish ? 'Klient' : 'Customer'}:</strong> ${userEmail}
               </p>
               <p style="margin: 5px 0; color: #333;">
-                <strong>Total (PLN):</strong> ${totalPLN.toFixed(2)} PLN
+                <strong>${isPolish ? 'Suma (PLN)' : 'Total (PLN)'}:</strong> ${totalPLN.toFixed(2)} PLN
               </p>
               <p style="margin: 5px 0; color: #333;">
-                <strong>Total (EUR):</strong> ${totalEUR.toFixed(2)} EUR
+                <strong>${isPolish ? 'Suma (EUR)' : 'Total (EUR)'}:</strong> ${totalEUR.toFixed(2)} EUR
               </p>
               <p style="margin: 5px 0; color: #333;">
-                <strong>Status:</strong> <span style="color: #228B22; font-weight: bold;">✅ Payment Confirmed</span>
+                <strong>${isPolish ? 'Status' : 'Status'}:</strong> <span style="color: #228B22; font-weight: bold;">✅ ${isPolish ? 'Płatność potwierdzona' : 'Payment Confirmed'}</span>
               </p>
             </div>
             
@@ -83,13 +96,13 @@ Deno.serve(async (req) => {
             <div style="text-align: center; margin: 30px 0;">
               <a href="https://spirit-candle.com/admin" 
                  style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
-                View in Admin Dashboard
+                ${isPolish ? 'Wyświetl w panelu administratora' : 'View in Admin Dashboard'}
               </a>
             </div>
             
             <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
               <p style="color: #333; line-height: 1.6; margin: 0;">
-                Please log in to your admin dashboard to confirm and process this order.
+                ${isPolish ? 'Zaloguj się do panelu administratora, aby potwierdzić i przetworzyć to zamówienie.' : 'Please log in to your admin dashboard to confirm and process this order.'}
               </p>
             </div>
           </div>
@@ -97,10 +110,10 @@ Deno.serve(async (req) => {
           <!-- Footer -->
           <div style="background: #f5f5f5; padding: 30px 20px; text-align: center; margin-top: 40px;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              <strong>www.spirit-candle.com</strong> - Admin Notification System
+              <strong>www.spirit-candle.com</strong> - ${isPolish ? 'System powiadomień administratora' : 'Admin Notification System'}
             </p>
             <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
-              This is an automated notification. Please do not reply to this email.
+              ${isPolish ? 'To jest automatyczne powiadomienie. Nie odpowiadaj na ten e-mail.' : 'This is an automated notification. Please do not reply to this email.'}
             </p>
           </div>
         </body>

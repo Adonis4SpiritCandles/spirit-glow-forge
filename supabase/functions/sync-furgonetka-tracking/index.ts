@@ -200,12 +200,15 @@ Deno.serve(async (req) => {
     // Get order with profile data for email
     const { data: orderData } = await supabase
       .from('orders')
-      .select('*, profiles(email, preferred_language)')
+      .select('*, profiles(email, preferred_language, first_name)')
       .eq('id', orderId)
       .single();
 
-    // Send tracking update email if tracking number is available
-    if (trackingNumber && orderData?.profiles?.email) {
+    // Check if tracking number was just added (wasn't there before)
+    const wasTrackingJustAdded = !order.tracking_number && trackingNumber;
+
+    // Send tracking update email if tracking number was just added
+    if (wasTrackingJustAdded && trackingNumber && orderData?.profiles?.email) {
       try {
         await supabase.functions.invoke('send-status-update', {
           body: {
@@ -213,13 +216,13 @@ Deno.serve(async (req) => {
             orderNumber: orderData.order_number,
             userEmail: orderData.profiles.email,
             preferredLanguage: orderData.profiles.preferred_language || 'en',
-            updateType: 'tracking_updated',
+            updateType: 'tracking_available',
             trackingNumber: trackingNumber,
             trackingUrl: finalTrackingUrl,
             carrier: packageData.courier?.name || 'Furgonetka',
           }
         });
-        console.log(`Tracking email sent for order ${orderId}`);
+        console.log(`Tracking available email sent for order ${orderId}`);
       } catch (emailError) {
         console.error(`Failed to send tracking email for order ${orderId}:`, emailError);
       }

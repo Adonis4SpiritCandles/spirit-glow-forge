@@ -47,6 +47,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'dashboard') return language === 'pl' ? 'Panel' : 'Dashboard';
     if (key === 'search') return language === 'pl' ? 'Szukaj' : 'Search';
     if (key === 'wishlist') return language === 'pl' ? 'Lista życzeń' : 'Wishlist';
+    if (key === 'myOrders') return language === 'pl' ? 'Moje zamówienia' : 'My Orders';
+    if (key === 'admin') return language === 'pl' ? 'Admin' : 'Admin';
 
     // Hero Section
     if (key === 'rebornYourNature') return language === 'pl' ? 'Odrodzenie Twojej Natury' : 'Reborn Your Nature';
@@ -133,6 +135,20 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'newOrderNotification') return language === 'pl' ? 'Otrzymano nowe zamówienie!' : 'New order received!';
     if (key === 'viewInDashboard') return language === 'pl' ? 'Zobacz w panelu' : 'View in Dashboard';
     if (key === 'shippingInfo') return language === 'pl' ? 'Informacje o wysyłce' : 'Shipping Info';
+    if (key === 'newOrdersToConfirm') return language === 'pl' ? 'Nowe zamówienia do potwierdzenia' : 'New orders to confirm';
+    if (key === 'youHaveXOrders') return language === 'pl' ? 'Masz {count} zamówień oczekujących na potwierdzenie' : 'You have {count} orders awaiting confirmation';
+    if (key === 'goToAdminDashboard') return language === 'pl' ? 'Przejdź do panelu administratora' : 'Go to Admin Dashboard';
+    if (key === 'viewNewOrders') return language === 'pl' ? 'Zobacz nowe zamówienia' : 'View new orders';
+    if (key === 'markAllAsSeen') return language === 'pl' ? 'Oznacz wszystkie jako przeczytane' : 'Mark all as seen';
+    if (key === 'newOrder') return language === 'pl' ? 'Nowe zamówienie' : 'New order';
+    if (key === 'orderReceived') return language === 'pl' ? 'Zamówienie otrzymano' : 'Order received';
+    if (key === 'orderBeingPrepared') return language === 'pl' ? 'Twoje zamówienie jest przygotowywane' : 'Your order is being prepared';
+    if (key === 'trackingAvailable') return language === 'pl' ? 'Numer śledzenia dostępny' : 'Tracking available';
+    if (key === 'trackYourOrder') return language === 'pl' ? 'Śledź swoje zamówienie' : 'Track your order';
+    if (key === 'orderConfirmedAndPreparing') return language === 'pl' ? 'Zamówienie potwierdzone i jest przygotowywane do wysyłki' : 'Order confirmed and being prepared for shipment';
+    if (key === 'youWillReceiveTracking') return language === 'pl' ? 'Otrzymasz kolejnego e-maila z numerem śledzenia, gdy zamówienie zostanie wysłane' : 'You will receive another email with tracking number when your order is shipped';
+    if (key === 'orderHasBeenShipped') return language === 'pl' ? 'Twoje zamówienie zostało wysłane' : 'Your order has been shipped';
+    if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
 
     // Toast messages
     if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to cart';

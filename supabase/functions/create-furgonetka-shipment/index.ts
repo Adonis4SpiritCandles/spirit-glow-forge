@@ -326,6 +326,31 @@ serve(async (req) => {
       // Don't block the main operation
     }
 
+    // Send order preparation email to customer
+    try {
+      const { data: orderForEmail } = await supabase
+        .from('orders')
+        .select('*, profiles(email, first_name, last_name, preferred_language)')
+        .eq('id', orderId)
+        .single();
+
+      if (orderForEmail?.profiles?.email) {
+        await supabase.functions.invoke('send-order-preparation-email', {
+          body: {
+            orderId: orderForEmail.id,
+            orderNumber: orderForEmail.order_number,
+            userEmail: orderForEmail.profiles.email,
+            preferredLanguage: orderForEmail.profiles.preferred_language || 'en',
+            userName: orderForEmail.profiles.first_name || '',
+          }
+        });
+        console.log('Order preparation email sent successfully');
+      }
+    } catch (emailError) {
+      console.error('Failed to send order preparation email:', emailError);
+      // Don't block the main operation
+    }
+
     return new Response(
       JSON.stringify({
         success: true,

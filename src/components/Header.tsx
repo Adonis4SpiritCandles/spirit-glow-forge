@@ -120,7 +120,15 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Button>
                   </Link>
                   
-                  {/* Admin Button - Outside dropdown, between wishlist and user menu */}
+                  {/* Dashboard Button - For all users */}
+                  <Link to="/dashboard">
+                    <Button variant="ghost" size="sm" className="gap-1">
+                      <LayoutDashboard className="h-4 w-4" />
+                      <span className="text-sm">{t('dashboard')}</span>
+                    </Button>
+                  </Link>
+                  
+                  {/* Admin Button - Outside dropdown, between dashboard and user menu */}
                   {userProfile?.role === 'admin' && (
                     <Link to="/admin">
                       <Button variant="ghost" size="sm" className="relative">
@@ -214,7 +222,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               )}
             </Button>
 
-            {/* Mobile Icons - Dashboard and Admin */}
+            {/* Mobile Icons - Dashboard (for all users) and Admin (for admins only) */}
             {user && (
               <>
                 <Link to="/dashboard" className="md:hidden">

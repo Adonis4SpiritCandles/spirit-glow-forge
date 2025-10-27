@@ -369,11 +369,15 @@ const AdminDashboard = () => {
     // Stage 4: Tracking available - Show "Tracking Number" badge and tracking details
     if (order.tracking_number && order.carrier) {
       return {
-        badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-xs drop-shadow-md">{t('trackingNumber')}</Badge>,
+        badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-xs drop-shadow-md flex items-center gap-1">
+          <Truck className="h-3 w-3" />
+          {t('trackingNumber')}
+        </Badge>,
         details: (
           <div className="space-y-1 text-xs mt-1">
             <div className="font-mono text-xs md:text-sm font-semibold">{order.tracking_number}</div>
-            <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-800">
+            <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-800 flex items-center gap-1">
+              <Truck className="h-3 w-3" />
               {t('shipped')}
             </Badge>
           </div>
@@ -970,7 +974,7 @@ const AdminDashboard = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.revenue} PLN</div>
+              <div className="text-2xl font-bold">{stats.revenue.toFixed(2)} PLN</div>
             </CardContent>
           </Card>
         </div>
@@ -1455,14 +1459,15 @@ const AdminDashboard = () => {
                                 
                                 {/* Row 2 */}
                                 <div className="flex gap-1">
-                                  {order.shipping_label_url ? (
+                                  {order.shipping_label_url || order.furgonetka_package_id ? (
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      className="h-7 text-[10px] px-2"
-                                      onClick={() => downloadLabel(order.shipping_label_url!)}
+                                      className="h-7 text-[10px] px-1.5 flex items-center gap-1 bg-white hover:bg-gray-100 text-black border-gray-300"
+                                      disabled
                                     >
-                                      <Download className="h-3 w-3" />
+                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4" />
+                                      <span>{t('doneButton')}</span>
                                     </Button>
                                   ) : (
                                     <Button

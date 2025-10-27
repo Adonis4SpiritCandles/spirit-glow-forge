@@ -42,9 +42,10 @@ interface AdminOrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTrackingUpdated?: () => void;
+  isAdmin?: boolean;
 }
 
-export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrackingUpdated }: AdminOrderDetailsModalProps) {
+export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrackingUpdated, isAdmin = true }: AdminOrderDetailsModalProps) {
   const { t } = useLanguage();
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -372,18 +373,20 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                         <span className="text-muted-foreground">{t('packageId')}:</span>
                         <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.furgonetka_package_id}</code>
                       </div>
-                      <div className="mt-3">
-                        <Button 
-                          onClick={handleSyncTracking} 
-                          disabled={isSyncing}
-                          size="sm"
-                          variant="outline"
-                          className="w-full"
-                        >
-                          <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                          {isSyncing ? t('syncingTracking') : t('syncTracking')}
-                        </Button>
-                      </div>
+                      {isAdmin && (
+                        <div className="mt-3">
+                          <Button 
+                            onClick={handleSyncTracking} 
+                            disabled={isSyncing}
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                          >
+                            <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                            {isSyncing ? t('syncingTracking') : t('syncTracking')}
+                          </Button>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>

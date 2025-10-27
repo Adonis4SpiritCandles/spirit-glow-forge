@@ -76,17 +76,23 @@ export const CarrierBadge = ({ carrierName, className = '' }: CarrierBadgeProps)
   
   const style = getCarrierStyle(carrierName);
   
+  // Enhanced InPost visibility
+  const isInPost = carrierName.toLowerCase().includes('inpost');
+  const textClass = isInPost ? 'text-black font-extrabold' : style.text;
+  const borderClass = isInPost ? 'border-yellow-600 border-2' : style.border;
+  
   return (
     <Badge 
       className={`
         ${style.bg} 
-        ${style.text} 
+        ${textClass} 
         border
-        ${style.border}
+        ${borderClass}
         font-bold 
         text-shadow-sm
         shadow-md
         px-3 py-1
+        rounded-none
         ${className}
       `}
     >

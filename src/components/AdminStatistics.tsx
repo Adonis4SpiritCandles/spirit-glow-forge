@@ -78,7 +78,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(stats.revenue / 100).toFixed(2)} PLN</div>
+            <div className="text-2xl font-bold">{stats.revenue.toFixed(2)} PLN</div>
             <p className="text-xs text-muted-foreground">+12% {t('fromLastMonth')}</p>
           </CardContent>
         </Card>

@@ -217,6 +217,23 @@ serve(async (req) => {
         // Don't fail the webhook if email fails
       }
 
+      // Send admin notification email (background task)
+      try {
+        await supabaseClient.functions.invoke('send-admin-order-notification', {
+          body: {
+            orderId: order.id,
+            orderNumber: order.order_number,
+            userEmail: userProfile?.email || session.customer_details?.email,
+            totalPLN: orderTotalPLN,
+            totalEUR: orderTotalEUR,
+          }
+        });
+        console.log("Admin notification email sent");
+      } catch (adminEmailError) {
+        console.error("Error sending admin notification:", adminEmailError);
+        // Don't fail the webhook if email fails
+      }
+
       // Clear cart
       const { error: clearError } = await supabaseClient
         .from("cart_items")

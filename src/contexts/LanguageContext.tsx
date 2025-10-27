@@ -350,6 +350,24 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'resetting') return language === 'pl' ? 'Resetowanie...' : 'Resetting...';
     if (key === 'emailRequired') return language === 'pl' ? 'Email jest wymagany' : 'Email is required';
     
+    // Toast messages
+    if (key === 'removed') return language === 'pl' ? 'Usunięto' : 'Removed';
+    if (key === 'updated') return language === 'pl' ? 'Zaktualizowano' : 'Updated';
+    if (key === 'synced') return language === 'pl' ? 'Zsynchronizowano' : 'Synced';
+    if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja wszystkich zamówień...' : 'Syncing all orders...';
+    if (key === 'syncTriggered') return language === 'pl' ? 'Synchronizacja uruchomiona' : 'Sync triggered';
+    if (key === 'noPaidOrders') return language === 'pl' ? 'Brak zamówień do zakończenia (tylko zamówienia zapłacone)' : 'No orders to complete (paid orders only)';
+    if (key === 'ordersCompleted') return language === 'pl' ? 'zamówień zakończonych' : 'orders completed';
+    if (key === 'noOrdersWithTracking') return language === 'pl' ? 'Brak zamówień z przesyłką Furgonetka' : 'No orders with Furgonetka package';
+    if (key === 'ordersSynced') return language === 'pl' ? 'zamówień zsynchronizowanych' : 'orders synced';
+    if (key === 'bulkDeleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć zaznaczone zamówienia?' : 'Are you sure you want to delete selected orders?';
+    if (key === 'ordersDeleted') return language === 'pl' ? 'zamówień usuniętych' : 'orders deleted';
+    if (key === 'syncAllTracking') return language === 'pl' ? 'Synchronizuj wszystkie' : 'Sync All Tracking';
+    if (key === 'resetDemoOrders') return language === 'pl' ? 'Reset zamówień (demo)' : 'Reset Orders (demo)';
+    if (key === 'resetDemoOrdersConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć wszystkie zamówienia testowe? Ta akcja jest nieodwracalna.' : 'Are you sure you want to delete all demo orders? This action cannot be undone.';
+    if (key === 'allOrdersDeleted') return language === 'pl' ? 'Wszystkie zamówienia usunięte pomyślnie' : 'All orders deleted successfully';
+    if (key === 'doneButton') return language === 'pl' ? 'Zrobione' : 'Done';
+    
     // Name Validation
     if (key === 'invalidName') return language === 'pl' ? 'Nieprawidłowe imię' : 'Invalid Name';
     if (key === 'nameCannotContainNumbers') return language === 'pl' ? 'Imię i nazwisko nie mogą zawierać cyfr' : 'Name and surname cannot contain numbers';

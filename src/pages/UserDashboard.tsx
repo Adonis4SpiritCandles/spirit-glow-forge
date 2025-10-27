@@ -555,6 +555,7 @@ const UserDashboard = () => {
         onTrackingUpdated={() => {
           loadUserData();
         }}
+        isAdmin={false}
       />
     </div>
   );

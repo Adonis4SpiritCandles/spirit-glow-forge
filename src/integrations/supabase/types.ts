@@ -174,11 +174,13 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_seen: boolean | null
           carrier: string | null
           carrier_name: string | null
           created_at: string
           deleted_at: string | null
           estimated_delivery_date: string | null
+          exclude_from_stats: boolean | null
           furgonetka_package_id: string | null
           id: string
           order_number: number | null
@@ -197,11 +199,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_seen?: boolean | null
           carrier?: string | null
           carrier_name?: string | null
           created_at?: string
           deleted_at?: string | null
           estimated_delivery_date?: string | null
+          exclude_from_stats?: boolean | null
           furgonetka_package_id?: string | null
           id?: string
           order_number?: number | null
@@ -220,11 +224,13 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_seen?: boolean | null
           carrier?: string | null
           carrier_name?: string | null
           created_at?: string
           deleted_at?: string | null
           estimated_delivery_date?: string | null
+          exclude_from_stats?: boolean | null
           furgonetka_package_id?: string | null
           id?: string
           order_number?: number | null
@@ -250,6 +256,7 @@ export type Database = {
           created_at: string
           description_en: string | null
           description_pl: string | null
+          exclude_from_stats: boolean | null
           id: string
           image_url: string | null
           name_en: string
@@ -267,6 +274,7 @@ export type Database = {
           created_at?: string
           description_en?: string | null
           description_pl?: string | null
+          exclude_from_stats?: boolean | null
           id?: string
           image_url?: string | null
           name_en: string
@@ -284,6 +292,7 @@ export type Database = {
           created_at?: string
           description_en?: string | null
           description_pl?: string | null
+          exclude_from_stats?: boolean | null
           id?: string
           image_url?: string | null
           name_en?: string
@@ -302,6 +311,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          exclude_from_stats: boolean | null
           first_name: string | null
           id: string
           last_name: string | null
@@ -318,6 +328,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          exclude_from_stats?: boolean | null
           first_name?: string | null
           id?: string
           last_name?: string | null
@@ -334,6 +345,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          exclude_from_stats?: boolean | null
           first_name?: string | null
           id?: string
           last_name?: string | null

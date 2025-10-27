@@ -65,11 +65,14 @@ Deno.serve(async (req) => {
       try {
         console.log(`[Auto-Sync] Syncing order #${order.order_number} (${order.id})`);
 
-        // Call the sync-furgonetka-tracking function
+        // Call the sync-furgonetka-tracking function with service role auth
         const { data: syncResult, error: syncError } = await supabase.functions.invoke(
           'sync-furgonetka-tracking',
           {
-            body: { orderId: order.id }
+            body: { orderId: order.id },
+            headers: {
+              Authorization: `Bearer ${supabaseServiceKey}`,
+            },
           }
         );
 

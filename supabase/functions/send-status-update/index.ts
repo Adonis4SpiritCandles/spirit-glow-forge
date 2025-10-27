@@ -67,166 +67,82 @@ Deno.serve(async (req) => {
     }
 
     // Build email HTML
-    let emailHtml = `
+    const emailHtml = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-              line-height: 1.6;
-              color: #333;
-              margin: 0;
-              padding: 0;
-              background-color: #f4f4f4;
-            }
-            .container {
-              max-width: 600px;
-              margin: 0 auto;
-              background-color: #ffffff;
-              padding: 0;
-            }
-            .header {
-              background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-              padding: 40px 20px;
-              text-align: center;
-            }
-            .header h1 {
-              color: #ffffff;
-              margin: 0;
-              font-size: 28px;
-              font-weight: 700;
-            }
-            .content {
-              padding: 40px 30px;
-            }
-            .content h2 {
-              color: #8B5CF6;
-              margin-top: 0;
-              font-size: 24px;
-            }
-            .info-box {
-              background-color: #f8f9fa;
-              border-left: 4px solid #8B5CF6;
-              padding: 20px;
-              margin: 25px 0;
-              border-radius: 4px;
-            }
-            .info-box h3 {
-              margin-top: 0;
-              color: #6366F1;
-              font-size: 14px;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-            }
-            .info-box p {
-              margin: 8px 0;
-              font-size: 16px;
-            }
-            .tracking-number {
-              background-color: #ffffff;
-              border: 2px dashed #8B5CF6;
-              padding: 15px;
-              text-align: center;
-              font-family: 'Courier New', monospace;
-              font-size: 20px;
-              font-weight: bold;
-              color: #6366F1;
-              margin: 20px 0;
-              border-radius: 8px;
-            }
-            .button {
-              display: inline-block;
-              background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-              color: #ffffff !important;
-              padding: 14px 32px;
-              text-decoration: none;
-              border-radius: 8px;
-              font-weight: 600;
-              margin: 20px 0;
-              text-align: center;
-              transition: all 0.3s ease;
-            }
-            .button:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-            }
-            .footer {
-              background-color: #f8f9fa;
-              padding: 30px;
-              text-align: center;
-              color: #6c757d;
-              font-size: 14px;
-            }
-            .footer a {
-              color: #8B5CF6;
-              text-decoration: none;
-            }
-          </style>
         </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>🕯️ Spirit Candles</h1>
-            </div>
-            <div class="content">
-              <h2>${heading}</h2>
-              <p>${message}</p>
-              
-              <div class="info-box">
-                <h3>${isPolish ? 'Numer zamówienia' : 'Order Number'}</h3>
-                <p>#SPIRIT-${String(orderNumber).padStart(5, '0')}</p>
-              </div>
-    `;
-
-    // Add tracking information if available
-    if (trackingNumber) {
-      emailHtml += `
-        <div class="tracking-number">
-          ${trackingNumber}
-        </div>
-        ${carrier ? `<p style="text-align: center; color: #6c757d;"><strong>${isPolish ? 'Przewoźnik' : 'Carrier'}:</strong> ${carrier}</p>` : ''}
-      `;
-      
-      if (trackingUrl) {
-        emailHtml += `
-          <div style="text-align: center;">
-            <a href="${trackingUrl}" class="button">
-              ${isPolish ? '📦 Śledź przesyłkę' : '📦 Track Package'}
-            </a>
+        <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #ffffff;">
+          <!-- Header with Logo -->
+          <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 30px 20px; text-align: center;">
+            <img src="https://i.postimg.cc/Gpm7Mytb/spirit-logo.png" 
+                 alt="Spirit Candles" 
+                 style="max-width: 180px; height: auto;" />
           </div>
-        `;
-      }
-    }
+          
+          <!-- Main Content -->
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <h1 style="color: #333; font-size: 28px; margin-bottom: 10px; font-weight: 600;">
+              ${heading}
+            </h1>
+            <p style="color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+              ${message}
+            </p>
 
-    if (estimatedDelivery) {
-      emailHtml += `
-        <div class="info-box">
-          <h3>${isPolish ? 'Szacowana dostawa' : 'Estimated Delivery'}</h3>
-          <p>${estimatedDelivery}</p>
-        </div>
-      `;
-    }
-
-    emailHtml += `
-              <p>${isPolish 
-                ? 'Dziękujemy za zakupy w Spirit Candles. Jeśli masz jakiekolwiek pytania, skontaktuj się z nami.' 
-                : 'Thank you for shopping with Spirit Candles. If you have any questions, please contact us.'}</p>
-            </div>
-            <div class="footer">
-              <p>
-                <strong>Spirit Candles</strong><br>
-                ${isPolish ? 'Ręcznie robione świece premium' : 'Handcrafted Premium Candles'}<br>
-                <a href="mailto:info@spirit-candle.com">info@spirit-candle.com</a>
+            <!-- Order Info -->
+            <div style="background: #f9f9f9; border-left: 4px solid #d4af37; padding: 20px; margin-bottom: 30px; border-radius: 8px;">
+              <p style="margin: 5px 0; color: #333; font-size: 18px; font-weight: bold;">
+                ${isPolish ? 'Numer zamówienia:' : 'Order Number:'} SPIRIT-${String(orderNumber).padStart(5, '0')}
               </p>
-              <p style="font-size: 12px; margin-top: 20px;">
+              <p style="margin: 5px 0; color: #333;">
+                <strong>${isPolish ? 'ID zamówienia:' : 'Order ID:'}</strong> 
+                <span style="font-family: monospace; font-size: 12px;">${orderId}</span>
+              </p>
+              ${trackingNumber ? `
+              <p style="margin: 5px 0; color: #333;">
+                <strong>${isPolish ? 'Numer śledzenia:' : 'Tracking Number:'}</strong> ${trackingNumber}
+              </p>
+              ${trackingUrl ? `
+              <p style="margin: 5px 0;">
+                <a href="${trackingUrl}" style="color: #d4af37; text-decoration: none; font-weight: 600;">
+                  ${isPolish ? '📦 Śledź przesyłkę' : '📦 Track Package'} →
+                </a>
+              </p>
+              ` : ''}
+              ` : ''}
+              ${carrier ? `
+              <p style="margin: 5px 0; color: #333;">
+                <strong>${isPolish ? 'Przewoźnik:' : 'Carrier:'}</strong> ${carrier}
+              </p>
+              ` : ''}
+              ${estimatedDelivery ? `
+              <p style="margin: 5px 0; color: #333;">
+                <strong>${isPolish ? 'Szacowana dostawa:' : 'Estimated Delivery:'}</strong> ${estimatedDelivery}
+              </p>
+              ` : ''}
+            </div>
+            
+            <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
+              <p style="color: #333; line-height: 1.6; margin: 0;">
                 ${isPolish 
-                  ? 'Otrzymujesz tę wiadomość, ponieważ złożyłeś zamówienie w Spirit Candles.' 
-                  : 'You are receiving this email because you placed an order with Spirit Candles.'}
+                  ? 'Dziękujemy za zakupy w Spirit Candles. Jeśli masz jakiekolwiek pytania, skontaktuj się z nami.' 
+                  : 'Thank you for shopping with Spirit Candles. If you have any questions, please contact us.'}
               </p>
             </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background: #f5f5f5; padding: 30px 20px; text-align: center; margin-top: 40px;">
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              ${isPolish ? 'Dziękujemy za zakupy w' : 'Thank you for shopping with'} <strong>Spirit Candles</strong>
+            </p>
+            <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
+              ${isPolish 
+                ? 'Jeśli masz pytania, skontaktuj się z nami pod adresem m5moffice@proton.me'
+                : 'If you have any questions, contact us at m5moffice@proton.me'}
+            </p>
           </div>
         </body>
       </html>

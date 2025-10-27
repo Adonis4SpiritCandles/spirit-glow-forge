@@ -33,67 +33,64 @@ Deno.serve(async (req) => {
     const emailHtml = `
       <!DOCTYPE html>
       <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 30px; text-align: center; }
-          .logo { max-width: 180px; height: auto; }
-          .content { background: #f9f9f9; padding: 30px; }
-          .order-box { background: white; border: 2px solid #228B22; padding: 20px; margin: 20px 0; border-radius: 8px; }
-          .order-number { font-size: 24px; font-weight: bold; color: #228B22; margin-bottom: 10px; }
-          .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-          .label { font-weight: bold; color: #666; }
-          .value { color: #333; }
-          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <img src="https://fhtuqmdlgzmpsbflxhra.supabase.co/storage/v1/object/public/products/spirit-logo.png" alt="Spirit Candles" class="logo">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #ffffff;">
+          <!-- Header with Logo -->
+          <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 30px 20px; text-align: center;">
+            <img src="https://i.postimg.cc/Gpm7Mytb/spirit-logo.png" 
+                 alt="Spirit Candles" 
+                 style="max-width: 180px; height: auto;" />
           </div>
           
-          <div class="content">
-            <h2 style="color: #1a1a1a;">📦 Order Delivered!</h2>
-            <p>An order has been successfully delivered to the customer.</p>
-            
-            <div class="order-box">
-              <div class="order-number">Order #${orderNumber}</div>
-              
-              <div class="detail-row">
-                <span class="label">Order ID:</span>
-                <span class="value">${orderId}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Customer Email:</span>
-                <span class="value">${userEmail}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Tracking Number:</span>
-                <span class="value">${trackingNumber}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Status:</span>
-                <span class="value" style="color: #228B22; font-weight: bold;">✅ DELIVERED</span>
-              </div>
+          <!-- Main Content -->
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <h1 style="color: #333; font-size: 28px; margin-bottom: 10px; font-weight: 600;">
+              📦 Order Delivered!
+            </h1>
+            <p style="color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+              An order has been successfully delivered to the customer.
+            </p>
+
+            <!-- Order Info -->
+            <div style="background: #f9f9f9; border-left: 4px solid #d4af37; padding: 20px; margin-bottom: 30px; border-radius: 8px;">
+              <p style="margin: 5px 0; color: #333; font-size: 20px; font-weight: bold;">
+                Order #SPIRIT-${String(orderNumber).padStart(5, '0')}
+              </p>
+              <p style="margin: 5px 0; color: #333;">
+                <strong>Order ID:</strong> 
+                <span style="font-family: monospace; font-size: 12px;">${orderId}</span>
+              </p>
+              <p style="margin: 5px 0; color: #333;">
+                <strong>Customer Email:</strong> ${userEmail}
+              </p>
+              <p style="margin: 5px 0; color: #333;">
+                <strong>Tracking Number:</strong> ${trackingNumber}
+              </p>
+              <p style="margin: 5px 0; color: #333;">
+                <strong>Status:</strong> <span style="color: #228B22; font-weight: bold;">✅ DELIVERED</span>
+              </p>
             </div>
             
-            <p style="margin-top: 30px; color: #666;">
-              The customer has received their order successfully.
+            <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
+              <p style="color: #333; line-height: 1.6; margin: 0;">
+                The customer has received their order successfully.
+              </p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background: #f5f5f5; padding: 30px 20px; text-align: center; margin-top: 40px;">
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              <strong>www.spirit-candle.com</strong> - Delivery Notification System
+            </p>
+            <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
+              This is an automated notification. Please do not reply to this email.
             </p>
           </div>
-          
-          <div class="footer">
-            <p>Spirit Candles - Delivery Notification System</p>
-            <p>This is an automated notification. Please do not reply to this email.</p>
-          </div>
-        </div>
-      </body>
+        </body>
       </html>
     `;
 

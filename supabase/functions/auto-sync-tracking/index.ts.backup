@@ -11,17 +11,6 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // 🔒 SECURITY: Check CRON_SECRET
-  const expectedSecret = Deno.env.get('CRON_SECRET');
-  const providedSecret = req.headers.get('x-cron-secret');
-  
-  if (!expectedSecret || providedSecret !== expectedSecret) {
-    console.error('[Auto-Sync] Unauthorized access attempt');
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  console.log('[Auto-Sync] CRON_SECRET validated ✓');
-
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;

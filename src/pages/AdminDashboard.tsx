@@ -63,6 +63,8 @@ interface Order {
   furgonetka_package_id?: string;
   shipping_address?: any;
   service_id?: number;
+  exclude_from_stats?: boolean;
+  admin_seen?: boolean;
   profiles?: {
     first_name?: string;
     last_name?: string;
@@ -85,6 +87,7 @@ interface Profile {
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { t, language } = useLanguage();
+  const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
@@ -97,6 +100,7 @@ const AdminDashboard = () => {
     totalCustomers: 0,
     revenue: 0,
   });
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
   
   // Product management state
   const [showProductForm, setShowProductForm] = useState(false);
@@ -177,6 +181,7 @@ const AdminDashboard = () => {
 
       if (adminRole) {
         loadDashboardData();
+        setupRealtimeSubscription();
       }
     };
 
@@ -184,6 +189,40 @@ const AdminDashboard = () => {
       checkAdminRole();
     }
   }, [user, authLoading]);
+
+  // Setup realtime subscription for new orders
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('new-orders-admin')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'orders'
+        },
+        (payload) => {
+          console.log('New order received:', payload);
+          setNewOrdersCount(prev => prev + 1);
+          toast({
+            title: t('newOrderNotification'),
+            description: `Order #${payload.new.order_number}`,
+            action: (
+              <Button variant="outline" size="sm" onClick={() => {
+                loadDashboardData();
+              }}>
+                {t('viewInDashboard')}
+              </Button>
+            ),
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -232,14 +271,22 @@ const AdminDashboard = () => {
 
        setProfiles(profilesData || []);
 
-      // Calculate stats
-      const revenue = ordersData?.reduce((sum, order) => sum + order.total_pln, 0) || 0;
+      // Calculate stats - filter by exclude_from_stats
+      const activeOrders = ordersData?.filter(o => !o.exclude_from_stats) || [];
+      const activeProducts = productsData?.filter(p => !p.exclude_from_stats) || [];
+      const activeProfiles = profilesData?.filter(p => !p.exclude_from_stats) || [];
+      const revenue = activeOrders.reduce((sum, order) => sum + order.total_pln, 0);
+      
       setStats({
-        totalProducts: productsData?.length || 0,
-        totalOrders: ordersData?.length || 0,
-        totalCustomers: profilesData?.length || 0,
+        totalProducts: activeProducts.length,
+        totalOrders: activeOrders.length,
+        totalCustomers: activeProfiles.length,
         revenue,
       });
+
+      // Count new orders not seen by admin
+      const unseenOrders = ordersData?.filter(o => !o.admin_seen) || [];
+      setNewOrdersCount(unseenOrders.length);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       toast({
@@ -451,14 +498,20 @@ const AdminDashboard = () => {
           .eq('id', editingProduct.id);
         
         if (error) throw error;
-        toast({ title: "Success", description: "Product updated successfully" });
+        toast({ 
+          title: t('success'), 
+          description: language === 'en' ? 'Product updated successfully' : 'Produkt zaktualizowany pomyślnie'
+        });
       } else {
         const { error } = await supabase
           .from('products')
           .insert([payload]);
         
         if (error) throw error;
-        toast({ title: "Success", description: "Product created successfully" });
+        toast({ 
+          title: t('success'), 
+          description: language === 'en' ? 'Product created successfully' : 'Produkt utworzony pomyślnie'
+        });
       }
       
       setShowProductForm(false);
@@ -467,7 +520,7 @@ const AdminDashboard = () => {
       loadDashboardData();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -502,11 +555,14 @@ const AdminDashboard = () => {
         .eq('id', productId);
       
       if (error) throw error;
-      toast({ title: "Success", description: "Product deleted successfully" });
+      toast({ 
+        title: t('success'), 
+        description: language === 'en' ? 'Product deleted successfully' : 'Produkt usunięty pomyślnie'
+      });
       loadDashboardData();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -521,11 +577,16 @@ const AdminDashboard = () => {
         .eq('id', productId);
 
       if (error) throw error;
-      toast({ title: "Success", description: publish ? "Product published" : "Product unpublished" });
+      toast({ 
+        title: t('success'), 
+        description: publish 
+          ? (language === 'en' ? 'Product published' : 'Produkt opublikowany')
+          : (language === 'en' ? 'Product unpublished' : 'Produkt ukryty')
+      });
       loadDashboardData();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -874,6 +935,71 @@ const AdminDashboard = () => {
         description: error.message,
         variant: 'destructive',
       });
+    }
+  };
+
+  const resetDemoOrders = async () => {
+    if (!confirm(t('resetDemoOrdersConfirm'))) return;
+
+    try {
+      toast({
+        title: t('processing'),
+        description: t('resettingOrders'),
+      });
+
+      const { data, error } = await supabase.functions.invoke('admin-reset-orders');
+
+      if (error) throw error;
+
+      toast({
+        title: t('success'),
+        description: t('ordersResetSuccess'),
+      });
+
+      loadDashboardData();
+    } catch (error: any) {
+      toast({
+        title: t('error'),
+        description: t('ordersResetError'),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const toggleOrderStatsExclusion = async (orderId: string, currentlyExcluded: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ exclude_from_stats: !currentlyExcluded })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: t('success'),
+        description: t('statsUpdated'),
+      });
+
+      loadDashboardData();
+    } catch (error: any) {
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const markOrderAsSeen = async (orderId: string) => {
+    try {
+      await supabase
+        .from('orders')
+        .update({ admin_seen: true })
+        .eq('id', orderId);
+      
+      setNewOrdersCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking order as seen:', error);
     }
   };
 
@@ -1284,10 +1410,16 @@ const AdminDashboard = () => {
                     <CardTitle>{t('orders')}</CardTitle>
                     <CardDescription>{t('manageCustomerOrders')}</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={manualSyncAll}>
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    {t('syncAllTracking')}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={resetDemoOrders}>
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      {t('resetDemoOrders')}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={manualSyncAll}>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      {t('syncAllTracking')}
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {/* Desktop Table View */}
@@ -1368,32 +1500,40 @@ const AdminDashboard = () => {
                               </Tooltip>
                             </TableCell>
 
-                            {/* Customer with Ship To */}
+                            {/* Customer with Shipping Info */}
                             <TableCell>
-                              <div className="space-y-0.5">
+                              <div className="space-y-1">
                                 <div className="font-medium text-sm">
                                   {order.profiles?.first_name} {order.profiles?.last_name}
                                 </div>
                                 <div className="text-xs text-muted-foreground truncate max-w-[200px]">
                                   {order.profiles?.email}
                                 </div>
-                                {shippingName && shippingName !== `${order.profiles?.first_name} ${order.profiles?.last_name}` && (
-                                  <>
-                                    <div className="text-[10px] text-muted-foreground mt-1">
-                                      {t('deliveryName')}:
+                                {order.shipping_address && (
+                                  <div className="mt-2 p-2 bg-muted/50 rounded text-xs space-y-0.5">
+                                    <div className="font-semibold text-[10px] text-muted-foreground uppercase">
+                                      {t('shippingInfo')}
                                     </div>
-                                    <div className="text-xs font-medium text-muted-foreground">
-                                      {shippingName}
+                                    <div className="font-medium">
+                                      {order.shipping_address.first_name} {order.shipping_address.last_name}
                                     </div>
-                                  </>
+                                    <div className="text-muted-foreground">
+                                      {order.shipping_address.city} {order.shipping_address.postal_code}
+                                    </div>
+                                    {order.shipping_address.phone && (
+                                      <div className="text-muted-foreground">
+                                        📞 {order.shipping_address.phone}
+                                      </div>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             </TableCell>
 
-                            {/* Total with precise decimals */}
+                            {/* Total with compact format */}
                             <TableCell>
-                              <div className="space-y-0.5">
-                                <div className="font-semibold">{totalPLN.toFixed(2)} PLN</div>
+                              <div className="whitespace-nowrap">
+                                <div className="font-semibold text-primary">{totalPLN.toFixed(2)} PLN</div>
                                 <div className="text-xs text-muted-foreground">
                                   ({productsPLN.toFixed(2)} + {shippingCostPLN.toFixed(2)})
                                 </div>
@@ -1435,26 +1575,36 @@ const AdminDashboard = () => {
                               <div className="flex flex-col gap-1 w-fit">
                                 {/* Row 1 */}
                                 <div className="flex gap-1">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-7 text-[10px] px-2"
-                                    onClick={() => {
-                                      setSelectedOrder(order);
-                                      setIsOrderDetailsOpen(true);
-                                    }}
-                                  >
-                                    <Eye className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-7 text-[10px] px-2"
-                                    onClick={() => updateOrderStatus(order.id, 'completed')}
-                                    disabled={order.status === 'completed'}
-                                  >
-                                    {t('complete')}
-                                  </Button>
+                                   <Button
+                                     size="sm"
+                                     variant="ghost"
+                                     className="h-7 text-[10px] px-2"
+                                     onClick={() => {
+                                       setSelectedOrder(order);
+                                       setIsOrderDetailsOpen(true);
+                                       markOrderAsSeen(order.id);
+                                     }}
+                                   >
+                                     <Eye className="h-3 w-3" />
+                                   </Button>
+                                   <Button
+                                     size="sm"
+                                     variant={order.exclude_from_stats ? 'secondary' : 'outline'}
+                                     className="h-7 text-[10px] px-2"
+                                     onClick={() => toggleOrderStatsExclusion(order.id, order.exclude_from_stats || false)}
+                                     title={order.exclude_from_stats ? t('includeInStats') : t('excludeFromStats')}
+                                   >
+                                     {order.exclude_from_stats ? '📊' : '🚫'}
+                                   </Button>
+                                   <Button
+                                     size="sm"
+                                     variant="outline"
+                                     className="h-7 text-[10px] px-2"
+                                     onClick={() => updateOrderStatus(order.id, 'completed')}
+                                     disabled={order.status === 'completed'}
+                                   >
+                                     {t('complete')}
+                                   </Button>
                                 </div>
                                 
                                 {/* Row 2 */}

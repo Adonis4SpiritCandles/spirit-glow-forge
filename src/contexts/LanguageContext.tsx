@@ -119,6 +119,35 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'salesByCategory') return language === 'pl' ? 'Sprzedaż według kategorii' : 'Sales by Category';
     if (key === 'monthlyRevenue') return language === 'pl' ? 'Miesięczny przychód' : 'Monthly Revenue';
     if (key === 'fromLastMonth') return language === 'pl' ? 'od ostatniego miesiąca' : 'from last month';
+    if (key === 'resetDemoOrders') return language === 'pl' ? 'Resetuj zamówienia demo' : 'Reset Demo Orders';
+    if (key === 'resetDemoOrdersConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć wszystkie zamówienia i zresetować numerację? Tej operacji nie można cofnąć.' : 'Are you sure you want to delete all orders and reset the order number sequence? This action cannot be undone.';
+    if (key === 'resettingOrders') return language === 'pl' ? 'Resetowanie zamówień...' : 'Resetting orders...';
+    if (key === 'ordersResetSuccess') return language === 'pl' ? 'Wszystkie zamówienia demo zostały usunięte' : 'All demo orders have been deleted successfully';
+    if (key === 'ordersResetError') return language === 'pl' ? 'Nie udało się zresetować zamówień' : 'Failed to reset orders';
+    if (key === 'excludeFromStats') return language === 'pl' ? 'Wyklucz ze statystyk' : 'Exclude from statistics';
+    if (key === 'includeInStats') return language === 'pl' ? 'Uwzględnij w statystykach' : 'Include in statistics';
+    if (key === 'statsUpdated') return language === 'pl' ? 'Statystyki zaktualizowane' : 'Statistics updated';
+    if (key === 'newOrderNotification') return language === 'pl' ? 'Otrzymano nowe zamówienie!' : 'New order received!';
+    if (key === 'viewInDashboard') return language === 'pl' ? 'Zobacz w panelu' : 'View in Dashboard';
+    if (key === 'shippingInfo') return language === 'pl' ? 'Informacje o wysyłce' : 'Shipping Info';
+
+    // Toast messages
+    if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to cart';
+    if (key === 'removedFromCart') return language === 'pl' ? 'Usunięto z koszyka' : 'Removed from cart';
+    if (key === 'quantityUpdated') return language === 'pl' ? 'Zaktualizowano ilość' : 'Quantity updated';
+    if (key === 'addedToWishlist') return language === 'pl' ? 'Dodano do ulubionych' : 'Added to wishlist';
+    if (key === 'removedFromWishlist') return language === 'pl' ? 'Usunięto z ulubionych' : 'Removed from wishlist';
+    if (key === 'error') return language === 'pl' ? 'Błąd' : 'Error';
+    if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
+    if (key === 'processing') return language === 'pl' ? 'Przetwarzanie...' : 'Processing...';
+    if (key === 'pleaseTryAgain') return language === 'pl' ? 'Spróbuj ponownie' : 'Please try again';
+    if (key === 'removed') return language === 'pl' ? 'Usunięto' : 'Removed';
+    if (key === 'updated') return language === 'pl' ? 'Zaktualizowano' : 'Updated';
+    if (key === 'synced') return language === 'pl' ? 'Zsynchronizowano' : 'Synced';
+    if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja wszystkich zamówień...' : 'Syncing all orders...';
+    if (key === 'doneButton') return language === 'pl' ? 'Zrobione' : 'Done';
+    if (key === 'syncing') return language === 'pl' ? 'Synchronizacja' : 'Syncing';
+    if (key === 'syncTriggered') return language === 'pl' ? 'Synchronizacja uruchomiona' : 'Sync triggered';
 
     // User Dashboard
     if (key === 'userDashboard') return language === 'pl' ? 'Panel' : 'Dashboard';

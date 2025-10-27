@@ -54,7 +54,7 @@ const Checkout = () => {
     if (initialLoadComplete && !user) {
       navigate('/auth');
       toast({
-        title: t('loginRequired') || 'Login Required',
+        title: t('error'),
         description: t('loginToCheckout') || 'You need to log in to complete your purchase',
         variant: 'destructive',
       });

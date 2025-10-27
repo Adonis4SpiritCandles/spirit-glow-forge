@@ -93,6 +93,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                             size="sm"
                             onClick={() => removeFromCart(item.id)}
                             className="p-1 h-auto text-muted-foreground hover:text-destructive"
+                            aria-label={t('removed')}
                           >
                             <X className="h-3 w-3" />
                           </Button>

@@ -217,6 +217,23 @@ Deno.serve(async (req) => {
       }
     }
 
+    // If order is delivered, send admin notification
+    if (shippingStatus === 'delivered' && orderData) {
+      try {
+        await supabase.functions.invoke('send-admin-delivered-notification', {
+          body: {
+            orderId: orderData.id,
+            orderNumber: orderData.order_number,
+            trackingNumber: trackingNumber,
+            userEmail: orderData.profiles.email,
+          }
+        });
+        console.log(`Admin delivered notification sent for order ${orderId}`);
+      } catch (emailError) {
+        console.error(`Failed to send admin delivered notification for order ${orderId}:`, emailError);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,

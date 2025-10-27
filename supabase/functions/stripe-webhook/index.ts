@@ -107,16 +107,16 @@ serve(async (req) => {
         ? parseInt(session.metadata.service_id) 
         : null;
       const shippingCostPLN = session.metadata?.shipping_cost_pln 
-        ? parseInt(session.metadata.shipping_cost_pln)
+        ? parseFloat(session.metadata.shipping_cost_pln)
         : 0;
       const shippingCostEUR = session.metadata?.shipping_cost_eur
-        ? parseInt(session.metadata.shipping_cost_eur)
+        ? parseFloat(session.metadata.shipping_cost_eur)
         : 0;
       const carrierName = session.metadata?.carrier_name || null;
 
-      // Calculate total including shipping
-      const orderTotalPLN = totalPLN + shippingCostPLN;
-      const orderTotalEUR = totalEUR + shippingCostEUR;
+      // Calculate total including shipping (keep 2 decimals)
+      const orderTotalPLN = Number((totalPLN + shippingCostPLN).toFixed(2));
+      const orderTotalEUR = Number((totalEUR + shippingCostEUR).toFixed(2));
 
       // Create order
       const { data: order, error: orderError } = await supabaseClient

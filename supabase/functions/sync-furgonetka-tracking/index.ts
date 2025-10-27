@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Verify authentication
     const authHeader = req.headers.get('authorization');
@@ -26,24 +26,32 @@ Deno.serve(async (req) => {
       throw new Error('Missing authorization header');
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
+    const token = authHeader.replace('Bearer ', '');
+    
+    // Check if this is a service role call (from CRON job) or user call
+    const isServiceRoleCall = token === supabaseServiceKey;
+    
+    if (!isServiceRoleCall) {
+      // Verify user authentication and admin role
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
-    if (authError || !user) {
-      throw new Error('Unauthorized');
+      if (authError || !user) {
+        throw new Error('Unauthorized');
+      }
+
+      // Check if user is admin
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profile?.role !== 'admin') {
+        throw new Error('Unauthorized - Admin access required');
+      }
     }
-
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('user_id', user.id)
-      .single();
-
-    if (profile?.role !== 'admin') {
-      throw new Error('Unauthorized - Admin access required');
-    }
+    
+    console.log(`[Sync Tracking] Called by: ${isServiceRoleCall ? 'Service Role (CRON)' : 'Admin User'}`);
 
     const { orderId } = await req.json() as SyncTrackingRequest;
 

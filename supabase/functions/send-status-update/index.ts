@@ -13,7 +13,7 @@ interface StatusUpdateRequest {
   orderNumber: number;
   userEmail: string;
   preferredLanguage: string;
-  updateType: 'completed' | 'tracking_updated' | 'shipped';
+  updateType: 'completed' | 'tracking_updated' | 'shipped' | 'tracking_available';
   trackingNumber?: string;
   trackingUrl?: string;
   carrier?: string;
@@ -56,6 +56,14 @@ Deno.serve(async (req) => {
       message = isPolish
         ? `Twoje zamówienie zostało potwierdzone i jest przygotowywane do wysyłki. Otrzymasz kolejną wiadomość, gdy zamówienie zostanie wysłane z numerem śledzenia.`
         : `Your order has been confirmed and is being prepared for shipment. You will receive another email when your order is shipped with tracking information.`;
+    } else if (updateType === 'tracking_available') {
+      subject = isPolish
+        ? `Numer śledzenia dostępny - Zamówienie #SPIRIT-${String(orderNumber).padStart(5, '0')}`
+        : `Tracking Number Available - Order #SPIRIT-${String(orderNumber).padStart(5, '0')}`;
+      heading = isPolish ? 'Numer śledzenia dostępny!' : 'Tracking Number Available!';
+      message = isPolish
+        ? `Twoje zamówienie${carrier ? ` (${carrier})` : ''} ma teraz dostępny numer śledzenia. Możesz śledzić swoją przesyłkę używając poniższego numeru.`
+        : `Your order${carrier ? ` (${carrier})` : ''} now has a tracking number available. You can track your package using the number below.`;
     } else if (updateType === 'tracking_updated' || updateType === 'shipped') {
       subject = isPolish
         ? `Zamówienie #SPIRIT-${String(orderNumber).padStart(5, '0')} wysłane`

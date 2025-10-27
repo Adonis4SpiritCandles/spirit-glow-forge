@@ -35,14 +35,15 @@ export const useAdminNotifications = () => {
     checkAdminRole();
   }, [user]);
 
-  // Load unseen orders count
+  // Load unseen orders count - only paid orders
   const loadUnseenCount = async () => {
     try {
       const { data, error } = await supabase
         .from('orders')
         .select('id', { count: 'exact' })
         .is('deleted_at', null)
-        .eq('admin_seen', false);
+        .eq('admin_seen', false)
+        .eq('status', 'paid');
 
       if (error) throw error;
 
@@ -56,7 +57,7 @@ export const useAdminNotifications = () => {
     }
   };
 
-  // Setup realtime subscription for new orders
+  // Setup realtime subscription for new paid orders
   useEffect(() => {
     if (!isAdmin || !hasCheckedInitial) return;
 
@@ -71,7 +72,10 @@ export const useAdminNotifications = () => {
         },
         (payload) => {
           console.log('New order notification:', payload);
-          setUnseenCount(prev => prev + 1);
+          // Only increment if the new order is in 'paid' status
+          if (payload.new && payload.new.status === 'paid') {
+            setUnseenCount(prev => prev + 1);
+          }
         }
       )
       .subscribe();

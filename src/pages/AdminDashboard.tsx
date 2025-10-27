@@ -1505,27 +1505,26 @@ const AdminDashboard = () => {
                 <CardContent>
                   {/* Unseen Orders Alert */}
                   {unseenCount > 0 && (
-                    <Alert className="mb-6 bg-yellow-50 border-yellow-300 animate-fade-in">
-                      <Bell className="h-5 w-5 text-yellow-600 animate-pulse" />
-                      <AlertDescription className="flex items-center justify-between">
+                    <Alert className="mb-6 bg-gradient-to-r from-amber-900/20 via-amber-800/20 to-amber-900/20 border-2 border-amber-500/50 shadow-lg shadow-amber-500/20 animate-fade-in backdrop-blur-sm">
+                      <Bell className="h-5 w-5 text-amber-400 animate-pulse drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                      <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex-1">
-                          <strong className="text-yellow-800">
+                          <strong className="text-lg font-semibold text-amber-200 drop-shadow-md flex items-center gap-2">
                             🔔 {t('newOrdersToConfirm')}
                           </strong>
-                          <p className="text-yellow-700 mt-1">
+                          <p className="text-amber-100/90 mt-2 font-medium">
                             {t('youHaveXOrders').replace('{count}', unseenCount.toString())}
                           </p>
                         </div>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
-                            variant="outline"
                             onClick={() => {
-                              const unseenOrders = orders.filter(o => !o.admin_seen).map(o => o.id);
+                              const unseenOrders = orders.filter(o => !o.admin_seen && o.status === 'paid').map(o => o.id);
                               markOrdersAsSeen(unseenOrders);
                               loadUnseenCount();
                             }}
-                            className="bg-white hover:bg-yellow-50"
+                            className="bg-amber-500 hover:bg-amber-600 text-black font-semibold shadow-md hover:shadow-lg transition-all"
                           >
                             {t('markAllAsSeen')}
                           </Button>

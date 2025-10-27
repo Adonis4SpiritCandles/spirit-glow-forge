@@ -120,6 +120,23 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Button>
                   </Link>
                   
+                  {/* Admin Button - Outside dropdown, between wishlist and user menu */}
+                  {userProfile?.role === 'admin' && (
+                    <Link to="/admin">
+                      <Button variant="ghost" size="sm" className="relative">
+                        <img src={goldShieldIcon} alt="Admin" className="h-4 w-4" />
+                        {unseenCount > 0 && (
+                          <Badge 
+                            variant="secondary" 
+                            className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs animate-pulse"
+                          >
+                            {unseenCount}
+                          </Badge>
+                        )}
+                      </Button>
+                    </Link>
+                  )}
+                  
                   {/* User Dropdown Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -129,22 +146,6 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                      {userProfile?.role === 'admin' && (
-                        <>
-                          <DropdownMenuItem asChild>
-                            <Link to="/admin" className="flex items-center cursor-pointer relative">
-                              <img src={goldShieldIcon} alt="" className="h-4 w-4 mr-2" />
-                              {t('admin')}
-                              {unseenCount > 0 && (
-                                <Badge className="ml-auto h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                                  {unseenCount}
-                                </Badge>
-                              )}
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                        </>
-                      )}
                       <DropdownMenuItem asChild>
                         <Link to="/dashboard" className="flex items-center cursor-pointer">
                           <LayoutDashboard className="h-4 w-4 mr-2" />

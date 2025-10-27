@@ -93,8 +93,8 @@ serve(async (req) => {
     }
 
     // Calculate shipping costs in both currencies (assuming shippingCost is in PLN)
-    const shippingCostPLN = Math.round(shippingCost);
-    const shippingCostEUR = Math.round(shippingCost / 4.3); // Approximate conversion
+    const shippingCostPLN = Number(Number(shippingCost).toFixed(2));
+    const shippingCostEUR = Number((Number(shippingCost) / 4.3).toFixed(2)); // Approximate conversion, keep 2 decimals
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({

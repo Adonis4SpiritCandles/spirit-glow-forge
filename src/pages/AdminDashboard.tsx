@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3 } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3, X } from 'lucide-react';
 import furgonetkaIco from '@/assets/furgonetka-logo-ico.png';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
@@ -916,17 +916,30 @@ const AdminDashboard = () => {
       toast({ title: t('error'), description: language === 'pl' ? 'Wybierz co najmniej jedno zamówienie' : 'Select at least one order', variant: 'destructive' });
       return;
     }
+    
+    // Check if all selected orders are already excluded
+    const selectedOrdersData = orders.filter(o => selectedOrders.includes(o.id));
+    const allExcluded = selectedOrdersData.every(o => o.exclude_from_stats);
+    
+    // Toggle: if all excluded, restore them; otherwise exclude them
+    const newExcludeStatus = !allExcluded;
+    
     setIsBulkOperating(true);
     let successCount = 0;
     for (const orderId of selectedOrders) {
       try {
-        await supabase.from('orders').update({ exclude_from_stats: true }).eq('id', orderId);
+        await supabase.from('orders').update({ exclude_from_stats: newExcludeStatus }).eq('id', orderId);
         successCount++;
       } catch (error) {
-        console.error(`Failed to exclude ${orderId}:`, error);
+        console.error(`Failed to toggle stats for ${orderId}:`, error);
       }
     }
-    toast({ title: t('success'), description: language === 'pl' ? `Wykluczono ${successCount} zamówień ze statystyk` : `${successCount} orders excluded from stats` });
+    
+    const successMessage = newExcludeStatus
+      ? (language === 'pl' ? `Wykluczono ${successCount} zamówień ze statystyk` : `${successCount} orders excluded from stats`)
+      : (language === 'pl' ? `Przywrócono ${successCount} zamówień do statystyk` : `${successCount} orders restored to stats`);
+    
+    toast({ title: t('success'), description: successMessage });
     loadDashboardData();
     setSelectedOrders([]);
     setIsBulkOperating(false);
@@ -1169,10 +1182,10 @@ const AdminDashboard = () => {
         )}
 
         {/* Dashboard Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="space-y-4">
           {/* Mobile: compact selector instead of horizontal scroll */}
           <div className="sm:hidden">
-            <Select value={activeTab} onValueChange={setActiveTab}>
+            <Select value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
               <SelectTrigger>
                 <SelectValue placeholder={t('products')} />
               </SelectTrigger>
@@ -1452,19 +1465,35 @@ const AdminDashboard = () => {
                       size="sm"
                       onClick={bulkExcludeFromStats}
                       disabled={selectedOrders.length === 0}
-                      className="w-full sm:w-auto order-first sm:order-none"
+                      className="w-full sm:w-auto order-first sm:order-none bg-black text-white hover:bg-black/90 text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-8"
                     >
-                      <BarChart3 className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">{t('excludeFromStats')}</span>
-                      <span className="sm:hidden">{language === 'pl' ? 'Wyklucz ze statystyk' : 'Exclude from stats'}</span>
+                      <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                      <X className="w-2 h-2 sm:w-3 sm:h-3 -ml-0.5 mr-1" />
+                      {(() => {
+                        const selectedOrdersData = orders.filter(o => selectedOrders.includes(o.id));
+                        const allExcluded = selectedOrdersData.every(o => o.exclude_from_stats);
+                        return (
+                          <>
+                            <span className="hidden sm:inline">
+                              {allExcluded ? t('includeInStats') : t('excludeFromStats')}
+                            </span>
+                            <span className="sm:hidden">
+                              {allExcluded 
+                                ? (language === 'pl' ? 'Przywróć' : 'Restore')
+                                : (language === 'pl' ? 'Wyklucz' : 'Exclude')
+                              }
+                            </span>
+                          </>
+                        );
+                      })()}
                     </Button>
-                    <Button variant="outline" size="sm" onClick={resetDemoOrders} className="w-full sm:w-auto">
-                      <Trash2 className="w-4 h-4 mr-2" />
+                    <Button variant="outline" size="sm" onClick={resetDemoOrders} className="w-full sm:w-auto text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-8">
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                       <span className="hidden sm:inline">{t('resetDemoOrders')}</span>
                       <span className="sm:hidden">{t('reset')}</span>
                     </Button>
-                    <Button variant="outline" size="sm" onClick={manualSyncAll} className="w-full sm:w-auto">
-                      <RefreshCw className="w-4 h-4 mr-2" />
+                    <Button variant="outline" size="sm" onClick={manualSyncAll} className="w-full sm:w-auto text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-8">
+                      <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                       <span className="hidden sm:inline">{t('syncAllTracking')}</span>
                       <span className="sm:hidden">{t('sync')}</span>
                     </Button>

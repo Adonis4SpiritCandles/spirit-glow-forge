@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3 } from 'lucide-react';
 import furgonetkaIco from '@/assets/furgonetka-logo-ico.png';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
@@ -148,6 +148,9 @@ const AdminDashboard = () => {
   // Bulk actions state
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isBulkOperating, setIsBulkOperating] = useState(false);
+
+  // Tabs state (controlled for mobile select)
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'statistics' | 'export'>('products');
 
   // Check if user is admin
   useEffect(() => {
@@ -908,6 +911,27 @@ const AdminDashboard = () => {
     setIsBulkOperating(false);
   };
 
+  const bulkExcludeFromStats = async () => {
+    if (selectedOrders.length === 0) {
+      toast({ title: t('error'), description: language === 'pl' ? 'Wybierz co najmniej jedno zamówienie' : 'Select at least one order', variant: 'destructive' });
+      return;
+    }
+    setIsBulkOperating(true);
+    let successCount = 0;
+    for (const orderId of selectedOrders) {
+      try {
+        await supabase.from('orders').update({ exclude_from_stats: true }).eq('id', orderId);
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to exclude ${orderId}:`, error);
+      }
+    }
+    toast({ title: t('success'), description: language === 'pl' ? `Wykluczono ${successCount} zamówień ze statystyk` : `${successCount} orders excluded from stats` });
+    loadDashboardData();
+    setSelectedOrders([]);
+    setIsBulkOperating(false);
+  };
+
   const manualSyncAll = async () => {
     try {
       toast({
@@ -1145,8 +1169,26 @@ const AdminDashboard = () => {
         )}
 
         {/* Dashboard Tabs */}
-        <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="w-full overflow-x-auto whitespace-nowrap flex gap-1 px-2 py-1 scrollbar-thin">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          {/* Mobile: compact selector instead of horizontal scroll */}
+          <div className="sm:hidden">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('products')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="products">{t('products')}</SelectItem>
+                <SelectItem value="orders">{t('orders')}</SelectItem>
+                <SelectItem value="trash">{t('ordersTrash')}</SelectItem>
+                <SelectItem value="customers">{t('customers')}</SelectItem>
+                <SelectItem value="warehouse">{t('warehouse')}</SelectItem>
+                <SelectItem value="statistics">{t('statistics')}</SelectItem>
+                <SelectItem value="export">Export</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {/* Tablet/Desktop: wrapped tabs, no horizontal scroll */}
+          <TabsList className="hidden sm:flex flex-wrap justify-start gap-1 px-2 py-1">
             <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">{t('products')}</TabsTrigger>
             <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">{t('orders')}</TabsTrigger>
             <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">{t('ordersTrash')}</TabsTrigger>
@@ -1405,6 +1447,17 @@ const AdminDashboard = () => {
                     <CardDescription>{t('manageCustomerOrders')}</CardDescription>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={bulkExcludeFromStats}
+                      disabled={selectedOrders.length === 0}
+                      className="w-full sm:w-auto order-first sm:order-none"
+                    >
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                      <span className="hidden sm:inline">{t('excludeFromStats')}</span>
+                      <span className="sm:hidden">{language === 'pl' ? 'Wyklucz ze statystyk' : 'Exclude from stats'}</span>
+                    </Button>
                     <Button variant="outline" size="sm" onClick={resetDemoOrders} className="w-full sm:w-auto">
                       <Trash2 className="w-4 h-4 mr-2" />
                       <span className="hidden sm:inline">{t('resetDemoOrders')}</span>
@@ -1430,17 +1483,16 @@ const AdminDashboard = () => {
                                 onCheckedChange={handleSelectAll}
                               />
                             </TableHead>
-                            <TableHead className="text-xs min-w-[120px]">{t('statsControl')}</TableHead>
                             <TableHead className="text-xs">Order #</TableHead>
-                          <TableHead className="text-xs">Order ID</TableHead>
-                          <TableHead className="text-xs min-w-[200px] max-w-[250px]">{t('customer')}</TableHead>
-                          <TableHead className="text-xs">{t('total')}</TableHead>
-                          <TableHead className="text-xs">{t('status')}</TableHead>
-                          <TableHead className="text-xs min-w-[180px]">{t('shipping')}</TableHead>
-                          <TableHead className="text-xs">{t('created')}</TableHead>
-                          <TableHead className="text-xs">{t('actions')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
+                            <TableHead className="text-xs">Order ID</TableHead>
+                            <TableHead className="text-xs min-w-[200px] max-w-[250px]">{t('customer')}</TableHead>
+                            <TableHead className="text-xs">{t('total')}</TableHead>
+                            <TableHead className="text-xs">{t('status')}</TableHead>
+                            <TableHead className="text-xs min-w-[180px]">{t('shipping')}</TableHead>
+                            <TableHead className="text-xs">{t('created')}</TableHead>
+                            <TableHead className="text-xs">{t('actions')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
                       <TableBody>
                         {orders.map((order) => {
                           const shippingStatus = getShippingStatusDisplay(order);
@@ -1458,17 +1510,6 @@ const AdminDashboard = () => {
                                   checked={selectedOrders.includes(order.id)}
                                   onCheckedChange={() => toggleOrderSelection(order.id)}
                                 />
-                              </TableCell>
-                              {/* Stats Control */}
-                              <TableCell>
-                                <Button
-                                  size="sm"
-                                  variant={order.exclude_from_stats ? 'secondary' : 'destructive'}
-                                  className="w-full text-[10px] px-2 py-1 whitespace-normal"
-                                  onClick={() => toggleOrderStatsExclusion(order.id, order.exclude_from_stats || false)}
-                                >
-                                  {order.exclude_from_stats ? t('includeInStats') : t('excludeFromStats')}
-                                </Button>
                               </TableCell>
                               {/* Order Number */}
                               <TableCell className="font-semibold text-sm">
@@ -1663,20 +1704,12 @@ const AdminDashboard = () => {
                     return (
                       <Card key={order.id} className="p-4">
                         <div className="space-y-3">
-                          {/* Header with Checkbox and Stats Control */}
+                          {/* Header with Checkbox */}
                           <div className="flex items-center gap-2 mb-2">
                             <Checkbox
                               checked={selectedOrders.includes(order.id)}
                               onCheckedChange={() => toggleOrderSelection(order.id)}
                             />
-                            <Button
-                              size="sm"
-                              variant={order.exclude_from_stats ? 'secondary' : 'destructive'}
-                              className="flex-1 text-xs whitespace-normal"
-                              onClick={() => toggleOrderStatsExclusion(order.id, order.exclude_from_stats || false)}
-                            >
-                              {order.exclude_from_stats ? t('includeInStats') : t('excludeFromStats')}
-                            </Button>
                           </div>
 
                           {/* Order Info */}

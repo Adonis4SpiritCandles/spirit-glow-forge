@@ -126,7 +126,10 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'ordersResetError') return language === 'pl' ? 'Nie udało się zresetować zamówień' : 'Failed to reset orders';
     if (key === 'excludeFromStats') return language === 'pl' ? 'Wyklucz ze statystyk' : 'Exclude from statistics';
     if (key === 'includeInStats') return language === 'pl' ? 'Uwzględnij w statystykach' : 'Include in statistics';
+    if (key === 'statsControl') return language === 'pl' ? 'Kontrola statystyk' : 'Stats Control';
     if (key === 'statsUpdated') return language === 'pl' ? 'Statystyki zaktualizowane' : 'Statistics updated';
+    if (key === 'reset') return language === 'pl' ? 'Resetuj' : 'Reset';
+    if (key === 'sync') return language === 'pl' ? 'Sync' : 'Sync';
     if (key === 'newOrderNotification') return language === 'pl' ? 'Otrzymano nowe zamówienie!' : 'New order received!';
     if (key === 'viewInDashboard') return language === 'pl' ? 'Zobacz w panelu' : 'View in Dashboard';
     if (key === 'shippingInfo') return language === 'pl' ? 'Informacje o wysyłce' : 'Shipping Info';

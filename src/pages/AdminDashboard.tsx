@@ -145,12 +145,6 @@ const AdminDashboard = () => {
   // Product edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-// Bulk actions state
-  const tabsListRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    tabsListRef.current?.scrollTo({ left: 0, behavior: 'instant' as ScrollBehavior });
-  }, []);
-
   // Bulk actions state
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isBulkOperating, setIsBulkOperating] = useState(false);
@@ -1152,7 +1146,7 @@ const AdminDashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList ref={tabsListRef} className="w-full overflow-x-auto whitespace-nowrap flex gap-1 px-0 py-1 scrollbar-none">
+          <TabsList className="w-full overflow-x-auto whitespace-nowrap flex gap-1 px-2 py-1 scrollbar-thin">
             <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">{t('products')}</TabsTrigger>
             <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">{t('orders')}</TabsTrigger>
             <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">{t('ordersTrash')}</TabsTrigger>
@@ -1410,14 +1404,16 @@ const AdminDashboard = () => {
                     <CardTitle>{t('orders')}</CardTitle>
                     <CardDescription>{t('manageCustomerOrders')}</CardDescription>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={resetDemoOrders}>
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Button variant="outline" size="sm" onClick={resetDemoOrders} className="w-full sm:w-auto">
                       <Trash2 className="w-4 h-4 mr-2" />
-                      {t('resetDemoOrders')}
+                      <span className="hidden sm:inline">{t('resetDemoOrders')}</span>
+                      <span className="sm:hidden">{t('reset')}</span>
                     </Button>
-                    <Button variant="outline" size="sm" onClick={manualSyncAll}>
+                    <Button variant="outline" size="sm" onClick={manualSyncAll} className="w-full sm:w-auto">
                       <RefreshCw className="w-4 h-4 mr-2" />
-                      {t('syncAllTracking')}
+                      <span className="hidden sm:inline">{t('syncAllTracking')}</span>
+                      <span className="sm:hidden">{t('sync')}</span>
                     </Button>
                   </div>
                 </CardHeader>
@@ -1434,12 +1430,13 @@ const AdminDashboard = () => {
                                 onCheckedChange={handleSelectAll}
                               />
                             </TableHead>
+                            <TableHead className="text-xs min-w-[120px]">{t('statsControl')}</TableHead>
                             <TableHead className="text-xs">Order #</TableHead>
                           <TableHead className="text-xs">Order ID</TableHead>
-                          <TableHead className="text-xs">{t('customer')}</TableHead>
+                          <TableHead className="text-xs min-w-[200px] max-w-[250px]">{t('customer')}</TableHead>
                           <TableHead className="text-xs">{t('total')}</TableHead>
                           <TableHead className="text-xs">{t('status')}</TableHead>
-                          <TableHead className="text-xs">{t('shipping')}</TableHead>
+                          <TableHead className="text-xs min-w-[180px]">{t('shipping')}</TableHead>
                           <TableHead className="text-xs">{t('created')}</TableHead>
                           <TableHead className="text-xs">{t('actions')}</TableHead>
                         </TableRow>
@@ -1461,6 +1458,17 @@ const AdminDashboard = () => {
                                   checked={selectedOrders.includes(order.id)}
                                   onCheckedChange={() => toggleOrderSelection(order.id)}
                                 />
+                              </TableCell>
+                              {/* Stats Control */}
+                              <TableCell>
+                                <Button
+                                  size="sm"
+                                  variant={order.exclude_from_stats ? 'secondary' : 'destructive'}
+                                  className="w-full text-[10px] px-2 py-1 whitespace-normal"
+                                  onClick={() => toggleOrderStatsExclusion(order.id, order.exclude_from_stats || false)}
+                                >
+                                  {order.exclude_from_stats ? t('includeInStats') : t('excludeFromStats')}
+                                </Button>
                               </TableCell>
                               {/* Order Number */}
                               <TableCell className="font-semibold text-sm">
@@ -1501,7 +1509,7 @@ const AdminDashboard = () => {
                             </TableCell>
 
                             {/* Customer with Shipping Info */}
-                            <TableCell>
+                            <TableCell className="max-w-[250px]">
                               <div className="space-y-1">
                                 <div className="font-medium text-sm">
                                   {order.profiles?.first_name} {order.profiles?.last_name}
@@ -1558,7 +1566,7 @@ const AdminDashboard = () => {
                             </TableCell>
 
                             {/* Shipping Status */}
-                            <TableCell>
+                            <TableCell className="min-w-[180px]">
                               <div className="space-y-1">
                                 {shippingStatus.badge}
                                 {shippingStatus.details}
@@ -1570,7 +1578,7 @@ const AdminDashboard = () => {
                               {new Date(order.created_at).toLocaleDateString()}
                             </TableCell>
 
-                            {/* Actions - Organized in Grid */}
+                             {/* Actions - Organized in Grid */}
                             <TableCell>
                               <div className="flex flex-col gap-1 w-fit">
                                 {/* Row 1 */}
@@ -1586,15 +1594,6 @@ const AdminDashboard = () => {
                                      }}
                                    >
                                      <Eye className="h-3 w-3" />
-                                   </Button>
-                                   <Button
-                                     size="sm"
-                                     variant={order.exclude_from_stats ? 'secondary' : 'outline'}
-                                     className="h-7 text-[10px] px-2"
-                                     onClick={() => toggleOrderStatsExclusion(order.id, order.exclude_from_stats || false)}
-                                     title={order.exclude_from_stats ? t('includeInStats') : t('excludeFromStats')}
-                                   >
-                                     {order.exclude_from_stats ? '📊' : '🚫'}
                                    </Button>
                                    <Button
                                      size="sm"
@@ -1664,7 +1663,23 @@ const AdminDashboard = () => {
                     return (
                       <Card key={order.id} className="p-4">
                         <div className="space-y-3">
-                          {/* Header */}
+                          {/* Header with Checkbox and Stats Control */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <Checkbox
+                              checked={selectedOrders.includes(order.id)}
+                              onCheckedChange={() => toggleOrderSelection(order.id)}
+                            />
+                            <Button
+                              size="sm"
+                              variant={order.exclude_from_stats ? 'secondary' : 'destructive'}
+                              className="flex-1 text-xs whitespace-normal"
+                              onClick={() => toggleOrderStatsExclusion(order.id, order.exclude_from_stats || false)}
+                            >
+                              {order.exclude_from_stats ? t('includeInStats') : t('excludeFromStats')}
+                            </Button>
+                          </div>
+
+                          {/* Order Info */}
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold text-sm">
@@ -1697,9 +1712,24 @@ const AdminDashboard = () => {
                             <div className="text-xs text-muted-foreground">
                               {order.profiles?.email}
                             </div>
-                            {shippingName && shippingName !== `${order.profiles?.first_name} ${order.profiles?.last_name}` && (
-                              <div className="text-xs text-muted-foreground mt-1">
-                                {t('deliveryName')}: <span className="font-medium">{shippingName}</span>
+                            
+                            {/* Shipping info box */}
+                            {order.shipping_address && (
+                              <div className="mt-2 p-2 bg-muted/50 rounded text-xs space-y-0.5">
+                                <div className="font-semibold text-[10px] text-muted-foreground uppercase">
+                                  {t('shippingInfo')}
+                                </div>
+                                <div className="font-medium">
+                                  {order.shipping_address.first_name} {order.shipping_address.last_name}
+                                </div>
+                                <div className="text-muted-foreground">
+                                  {order.shipping_address.city} {order.shipping_address.postal_code}
+                                </div>
+                                {order.shipping_address.phone && (
+                                  <div className="text-muted-foreground">
+                                    📞 {order.shipping_address.phone}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -1745,15 +1775,15 @@ const AdminDashboard = () => {
                             >
                               {t('complete')}
                             </Button>
-                            {order.shipping_label_url ? (
+                            {order.shipping_label_url || order.furgonetka_package_id ? (
                               <Button 
                                 size="sm" 
-                                variant="secondary"
-                                className="w-full text-xs"
-                                onClick={() => downloadLabel(order.shipping_label_url!)}
+                                variant="outline"
+                                className="w-full text-xs bg-white hover:bg-gray-100 text-black border-gray-300 flex items-center justify-center gap-1.5"
+                                disabled
                               >
-                                <Download className="h-3 w-3 mr-1" />
-                                Label
+                                <img src={furgonetkaIco} alt="Furgonetka" className="h-3 w-3" />
+                                <span>{t('doneButton')}</span>
                               </Button>
                             ) : (
                               <Button 

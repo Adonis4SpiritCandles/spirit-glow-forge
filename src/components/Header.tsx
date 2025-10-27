@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import LanguageToggle from '@/components/LanguageToggle';
 import SearchModal from '@/components/SearchModal';
 import spiritLogo from '@/assets/spirit-logo.png';
+import spiritLogoTransparent from '@/assets/spirit-logo-transparent.png';
 import goldShieldIcon from '@/assets/gold-shield-admin-mini.png';
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
@@ -258,15 +259,15 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <SheetHeader>
-                  <SheetTitle>
+                  <SheetTitle className="flex justify-center mb-6">
                     <img 
-                      src={spiritLogo} 
+                      src={spiritLogoTransparent} 
                       alt="SPIRIT CANDLES" 
-                      className="h-8 w-auto"
+                      className="h-20 w-auto animate-glow-pulse"
                     />
                   </SheetTitle>
-                  <SheetDescription>
-                    Reborn Your Nature
+                  <SheetDescription className="sr-only">
+                    Menu Navigation
                   </SheetDescription>
                 </SheetHeader>
                 <div className="grid gap-4 py-4">

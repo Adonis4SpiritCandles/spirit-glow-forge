@@ -257,7 +257,7 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
           <div>
             <h3 className="font-semibold mb-3">{t('shippingAddress')}</h3>
             <div className="text-sm space-y-1">
-              {shippingAddress.name && <p className="font-medium">{shippingAddress.name}</p>}
+              {shippingAddress.name && <p className="font-semibold text-base">{shippingAddress.name}</p>}
               {shippingAddress.street && (
                 <p>
                   {(() => {
@@ -275,8 +275,8 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                 </p>
               )}
               {shippingAddress.country && <p>{shippingAddress.country}</p>}
-              {shippingAddress.email && <p className="text-muted-foreground">Email: {shippingAddress.email}</p>}
               {shippingAddress.phone && <p className="text-muted-foreground">Phone: {shippingAddress.phone}</p>}
+              {shippingAddress.email && <p className="text-muted-foreground text-xs">Email: {shippingAddress.email}</p>}
             </div>
           </div>
 

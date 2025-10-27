@@ -48,7 +48,7 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="font-playfair">{t('shippingOptions') || 'Shipping Options'}</CardTitle>
+          <CardTitle className="font-playfair">{t('shippingOptions')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center py-8 space-y-4">
           <p className="text-muted-foreground">
@@ -79,9 +79,9 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
             {processedOptions.map((option) => (
               <div
                 key={option.service_id}
-                className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-colors cursor-pointer ${
+                className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all duration-300 cursor-pointer ${
                   selectedServiceId === option.service_id
-                    ? 'border-primary bg-primary/5'
+                    ? 'border-primary bg-primary/5 scale-[1.02]'
                     : 'border-border hover:border-primary/50'
                 }`}
                 onClick={() => onSelect(option)}
@@ -107,8 +107,9 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
           </div>
         </RadioGroup>
 
+        {/* Desktop Only - Selected shipping confirmation */}
         {selectedOption && (
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t hidden md:block">
             <div className="flex justify-between items-center mb-4">
               <span className="font-semibold">{t('selectedShipping')}:</span>
               <span className="text-primary font-bold">

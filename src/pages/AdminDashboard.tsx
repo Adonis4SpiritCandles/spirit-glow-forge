@@ -1460,7 +1460,7 @@ const AdminDashboard = () => {
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
                     <CardTitle>{t('orders')}</CardTitle>
-                    <CardDescription>{t('manageCustomerOrders')}</CardDescription>
+                    <CardDescription className="text-xs md:text-sm">{t('manageCustomerOrders')}</CardDescription>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <Button
@@ -1481,10 +1481,7 @@ const AdminDashboard = () => {
                               {allExcluded ? t('includeInStats') : t('excludeFromStats')}
                             </span>
                             <span className="sm:hidden">
-                              {allExcluded 
-                                ? (language === 'pl' ? 'Przywróć' : 'Restore')
-                                : (language === 'pl' ? 'Wyklucz' : 'Exclude')
-                              }
+                              {allExcluded ? t('restoreInStat') : t('excludeFromStat')}
                             </span>
                           </>
                         );
@@ -1493,12 +1490,12 @@ const AdminDashboard = () => {
                     <Button variant="outline" size="sm" onClick={resetDemoOrders} className="w-full sm:w-auto text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-8">
                       <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                       <span className="hidden sm:inline">{t('resetDemoOrders')}</span>
-                      <span className="sm:hidden">{t('reset')}</span>
+                      <span className="sm:hidden">{t('resetAllOrders')}</span>
                     </Button>
                     <Button variant="outline" size="sm" onClick={manualSyncAll} className="w-full sm:w-auto text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-8">
                       <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                       <span className="hidden sm:inline">{t('syncAllTracking')}</span>
-                      <span className="sm:hidden">{t('sync')}</span>
+                      <span className="sm:hidden">{t('syncTrackingNum')}</span>
                     </Button>
                   </div>
                 </CardHeader>

@@ -168,8 +168,8 @@ const Checkout = () => {
     } catch (error) {
       console.error('Error creating checkout:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to create checkout session. Please try again.',
+        title: t('error'),
+        description: t('checkoutError') || 'Failed to create checkout session. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -186,6 +186,7 @@ const Checkout = () => {
         <h1 className="font-playfair text-3xl font-bold mb-6 capitalize">{t('checkout')}</h1>
         
         <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Content - Left Side */}
           <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
             {step === 'address' && (
               <ShippingAddressForm onSubmit={handleAddressSubmit} isLoading={isCalculating} />
@@ -193,81 +194,243 @@ const Checkout = () => {
 
             {step === 'shipping' && shippingOptions.length > 0 && (
               <>
-                <Card className="p-4 bg-muted/30">
-                  <div className="space-y-2">
-                    <h3 className="font-semibold">{t('deliveryAddress')}</h3>
-                    {shippingAddress && (
-                      <div className="text-sm space-y-1">
-                        <p>{shippingAddress.name}</p>
-                        <p>{shippingAddress.street}</p>
-                        <p>{shippingAddress.postalCode} {shippingAddress.city}</p>
-                        <p>{shippingAddress.country}</p>
-                        <Button 
-                          variant="link" 
-                          className="p-0 h-auto text-primary"
-                          onClick={() => {
-                            setStep('address');
-                            setShippingOptions([]);
-                            setSelectedShipping(null);
-                          }}
-                        >
-                          {t('changeAddress')}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </Card>
+                {/* Desktop/Tablet Layout */}
+                <div className="hidden md:block space-y-4">
+                  <Card className="p-4 bg-muted/30">
+                    <div className="space-y-2">
+                      <h3 className="font-semibold">{t('deliveryAddress')}</h3>
+                      {shippingAddress && (
+                        <div className="text-sm space-y-1">
+                          <p>{shippingAddress.name}</p>
+                          <p>{shippingAddress.street}</p>
+                          <p>{shippingAddress.postalCode} {shippingAddress.city}</p>
+                          <p>{shippingAddress.country}</p>
+                          <Button 
+                            variant="link" 
+                            className="p-0 h-auto text-primary"
+                            onClick={() => {
+                              setStep('address');
+                              setShippingOptions([]);
+                              setSelectedShipping(null);
+                            }}
+                          >
+                            {t('changeAddress')}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
 
-                <Card className="p-4 bg-muted/30">
-                  <div className="flex items-start space-x-2">
-                    <Checkbox 
-                      id="terms-consent-checkout"
-                      checked={termsConsent}
-                      onCheckedChange={(checked) => setTermsConsent(checked as boolean)}
-                      required
-                    />
-                     <Label htmlFor="terms-consent-checkout" className="text-sm text-muted-foreground leading-tight cursor-pointer">
-                       {t('iAcceptTerms')} <Link to="/terms-of-sale" className="text-primary hover:underline" target="_blank">{t('termsOfSale')}</Link> *
-                     </Label>
-                  </div>
-                </Card>
+                  <Card className="p-4">
+                    <h3 className="font-semibold mb-4">{t('orderItems')}</h3>
+                    <div className="space-y-3">
+                      {cartItems.map((item) => (
+                        <div key={item.id} className="flex gap-4">
+                          <div className="w-16 h-16 rounded-md overflow-hidden bg-gradient-mystical">
+                            <img src={item.product.image_url} alt={language === 'en' ? item.product.name_en : item.product.name_pl} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between">
+                              <div>
+                                <div className="font-semibold text-sm">{language === 'en' ? item.product.name_en : item.product.name_pl}</div>
+                                <div className="text-xs text-muted-foreground">{item.product.size} × {item.quantity}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-semibold text-primary">{(item.product.price_pln * item.quantity).toFixed(2)} PLN</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
 
-                <ShippingOptions
-                  options={shippingOptions}
-                  selectedServiceId={selectedShipping?.service_id}
-                  onSelect={setSelectedShipping}
-                  onConfirm={handleShippingConfirm}
-                  isLoading={isLoading}
-                />
+                  <ShippingOptions
+                    options={shippingOptions}
+                    selectedServiceId={selectedShipping?.service_id}
+                    onSelect={setSelectedShipping}
+                    onConfirm={handleShippingConfirm}
+                    isLoading={isLoading}
+                  />
+
+                  {selectedShipping && (
+                    <>
+                      <Card className="p-4 bg-primary/5 border-primary/20">
+                        <div className="flex justify-between items-center text-lg font-semibold">
+                          <span>{t('total')}</span>
+                          <span className="text-primary">{finalTotalPLN.toFixed(2)} PLN</span>
+                        </div>
+                      </Card>
+
+                      <Card className="p-4 bg-muted/30">
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="terms-consent-checkout-desktop"
+                            checked={termsConsent}
+                            onCheckedChange={(checked) => setTermsConsent(checked as boolean)}
+                            required
+                          />
+                          <Label htmlFor="terms-consent-checkout-desktop" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                            {t('iAcceptTerms')} <Link to="/terms-of-sale" className="text-primary hover:underline" target="_blank">{t('termsOfSale')}</Link> *
+                          </Label>
+                        </div>
+                      </Card>
+
+                      <Button
+                        onClick={handleShippingConfirm}
+                        className="w-full"
+                        size="lg"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? t('processing') : t('confirmAndProceed')}
+                      </Button>
+                    </>
+                  )}
+                </div>
+
+                {/* Mobile Layout */}
+                <div className="md:hidden space-y-4">
+                  <Card className="p-4 bg-muted/30">
+                    <div className="space-y-2">
+                      <h3 className="font-semibold">{t('deliveryAddress')}</h3>
+                      {shippingAddress && (
+                        <div className="text-sm space-y-1">
+                          <p>{shippingAddress.name}</p>
+                          <p>{shippingAddress.street}</p>
+                          <p>{shippingAddress.postalCode} {shippingAddress.city}</p>
+                          <p>{shippingAddress.country}</p>
+                          <Button 
+                            variant="link" 
+                            className="p-0 h-auto text-primary"
+                            onClick={() => {
+                              setStep('address');
+                              setShippingOptions([]);
+                              setSelectedShipping(null);
+                            }}
+                          >
+                            {t('changeAddress')}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+
+                  <Card className="p-4">
+                    <h3 className="font-semibold mb-4">{t('orderItems')}</h3>
+                    <div className="space-y-3">
+                      {cartItems.map((item) => (
+                        <div key={item.id} className="flex gap-4">
+                          <div className="w-16 h-16 rounded-md overflow-hidden bg-gradient-mystical">
+                            <img src={item.product.image_url} alt={language === 'en' ? item.product.name_en : item.product.name_pl} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between">
+                              <div>
+                                <div className="font-semibold text-sm">{language === 'en' ? item.product.name_en : item.product.name_pl}</div>
+                                <div className="text-xs text-muted-foreground">{item.product.size} × {item.quantity}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-semibold text-primary">{(item.product.price_pln * item.quantity).toFixed(2)} PLN</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+
+                  <ShippingOptions
+                    options={shippingOptions}
+                    selectedServiceId={selectedShipping?.service_id}
+                    onSelect={setSelectedShipping}
+                    onConfirm={handleShippingConfirm}
+                    isLoading={isLoading}
+                  />
+
+                  {selectedShipping && (
+                    <>
+                      <Card className="p-4 bg-muted/30">
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span>{t('subtotal')} ({itemCount} {t('items')})</span>
+                            <span>{Number(totalPLN).toFixed(2)} PLN</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span>{t('shipping')}</span>
+                            <span className="font-semibold">{selectedShipping.price.gross.toFixed(2)} {selectedShipping.price.currency}</span>
+                          </div>
+                          <Separator />
+                          <div className="flex justify-between font-semibold text-lg">
+                            <span>{t('total')}</span>
+                            <div className="text-right">
+                              <div className="text-primary">{finalTotalPLN.toFixed(2)} PLN</div>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+
+                      <Card className="p-4 bg-muted/30">
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="terms-consent-checkout-mobile"
+                            checked={termsConsent}
+                            onCheckedChange={(checked) => setTermsConsent(checked as boolean)}
+                            required
+                          />
+                          <Label htmlFor="terms-consent-checkout-mobile" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                            {t('iAcceptTerms')} <Link to="/terms-of-sale" className="text-primary hover:underline" target="_blank">{t('termsOfSale')}</Link> *
+                          </Label>
+                        </div>
+                      </Card>
+
+                      <Button asChild variant="outline" className="w-full">
+                        <Link to="/cart">{t('backToCart')}</Link>
+                      </Button>
+
+                      <Button
+                        onClick={handleShippingConfirm}
+                        className="w-full"
+                        size="lg"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? t('processing') : t('confirmAndProceed')}
+                      </Button>
+                    </>
+                  )}
+                </div>
               </>
             )}
 
-            <Card className="p-4">
-              <h3 className="font-semibold mb-4">{t('orderItems')}</h3>
-              <div className="space-y-3">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-4">
-                    <div className="w-16 h-16 rounded-md overflow-hidden bg-gradient-mystical">
-                      <img src={item.product.image_url} alt={language === 'en' ? item.product.name_en : item.product.name_pl} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <div>
-                          <div className="font-semibold text-sm">{language === 'en' ? item.product.name_en : item.product.name_pl}</div>
-                          <div className="text-xs text-muted-foreground">{item.product.size} × {item.quantity}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-primary">{(item.product.price_pln * item.quantity).toFixed(2)} PLN</div>
+            {/* Order Items Card - Only shown in Address step for all screens */}
+            {step === 'address' && (
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">{t('orderItems')}</h3>
+                <div className="space-y-3">
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="flex gap-4">
+                      <div className="w-16 h-16 rounded-md overflow-hidden bg-gradient-mystical">
+                        <img src={item.product.image_url} alt={language === 'en' ? item.product.name_en : item.product.name_pl} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <div>
+                            <div className="font-semibold text-sm">{language === 'en' ? item.product.name_en : item.product.name_pl}</div>
+                            <div className="text-xs text-muted-foreground">{item.product.size} × {item.quantity}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-semibold text-primary">{(item.product.price_pln * item.quantity).toFixed(2)} PLN</div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
+                  ))}
+                </div>
+              </Card>
+            )}
           </div>
 
-          <Card className="lg:col-span-1 lg:sticky lg:top-8 h-fit order-1 lg:order-2">
+          {/* Order Summary Sidebar - Desktop Only */}
+          <Card className="lg:col-span-1 lg:sticky lg:top-8 h-fit order-1 lg:order-2 hidden lg:block">
             <CardHeader>
               <CardTitle className="font-playfair">{t('orderSummary')}</CardTitle>
             </CardHeader>

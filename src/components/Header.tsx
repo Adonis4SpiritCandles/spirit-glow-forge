@@ -214,6 +214,33 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               )}
             </Button>
 
+            {/* Mobile Icons - Dashboard and Admin */}
+            {user && (
+              <>
+                <Link to="/dashboard" className="md:hidden">
+                  <Button variant="ghost" size="sm">
+                    <LayoutDashboard className="h-4 w-4" />
+                  </Button>
+                </Link>
+                
+                {userProfile?.role === 'admin' && (
+                  <Link to="/admin" className="md:hidden">
+                    <Button variant="ghost" size="sm" className="relative">
+                      <img src={goldShieldIcon} alt="Admin" className="h-4 w-4" />
+                      {unseenCount > 0 && (
+                        <Badge 
+                          variant="secondary" 
+                          className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs animate-pulse"
+                        >
+                          {unseenCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </Link>
+                )}
+              </>
+            )}
+
             {/* Mobile Menu */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>

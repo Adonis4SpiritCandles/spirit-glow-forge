@@ -67,7 +67,7 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
       <CardHeader>
         <CardTitle className="font-playfair flex items-center gap-2">
           <Package className="h-5 w-5" />
-          {t('shippingOptions') || 'Shipping Options'}
+          {t('shippingOptions')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -94,14 +94,11 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
                   </Label>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    {option.eta || (t('standardDelivery') || 'Standard Delivery')}
+                    {option.eta || t('standardDelivery')}
                   </p>
                   <div className="flex items-baseline gap-2 mt-2">
                     <span className="text-lg font-bold text-primary">
                       {option.price.gross.toFixed(2)} {option.price.currency}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      ({t('net') || 'net'}: {option.price.net.toFixed(2)} {option.price.currency})
                     </span>
                   </div>
                 </div>
@@ -113,7 +110,7 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
         {selectedOption && (
           <div className="pt-4 border-t">
             <div className="flex justify-between items-center mb-4">
-              <span className="font-semibold">{t('selectedShipping') || 'Selected Shipping'}:</span>
+              <span className="font-semibold">{t('selectedShipping')}:</span>
               <span className="text-primary font-bold">
                 {selectedOption.price.gross.toFixed(2)} {selectedOption.price.currency}
               </span>
@@ -123,7 +120,7 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? (t('processing') || 'Processing...') : (t('confirmAndProceed') || 'Confirm and Proceed to Payment')}
+              {isLoading ? t('processing') : t('confirmAndProceed')}
             </Button>
           </div>
         )}

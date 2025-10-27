@@ -162,7 +162,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
           </div>
 
           <div className="space-y-2 relative">
-            <Label htmlFor="street">{t('streetAddress') || 'Street Address'}</Label>
+            <Label htmlFor="street">{t('streetAddress')}</Label>
             <div className="relative">
               <Input
                 id="street"
@@ -207,7 +207,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="apartmentNumber">{t('apartmentNumber') === 'apartmentNumber' ? 'Apartment Number (Optional)' : t('apartmentNumber') || 'Apartment Number (Optional)'}</Label>
+              <Label htmlFor="apartmentNumber">{t('apartmentNumber')}</Label>
               <Input
                 id="apartmentNumber"
                 value={address.apartmentNumber}
@@ -219,7 +219,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="city">{t('city') || 'City'}</Label>
+              <Label htmlFor="city">{t('city')}</Label>
               <Input
                 id="city"
                 required
@@ -229,7 +229,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="postalCode">{t('postalCode') || 'Postal Code'}</Label>
+              <Label htmlFor="postalCode">{t('postalCode')}</Label>
               <Input
                 id="postalCode"
                 required
@@ -293,7 +293,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (t('calculating') || 'Calculating...') : (t('calculateShipping') || 'Calculate Shipping Options')}
+            {isLoading ? t('calculating') : t('calculateShipping')}
           </Button>
         </form>
       </CardContent>

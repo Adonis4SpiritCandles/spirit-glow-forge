@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
         <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #ffffff;">
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 30px 20px; text-align: center;">
-            <img src="https://i.postimg.cc/Gpm7Mytb/spirit-logo.png" 
+            <img src="https://spirit-candle.com/ImageFiles/spirit-logo-BluOP5mb.png" 
                  alt="Spirit Candles" 
                  style="max-width: 180px; height: auto;" />
           </div>

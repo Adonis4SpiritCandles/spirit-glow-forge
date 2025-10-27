@@ -149,6 +149,41 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'youWillReceiveTracking') return language === 'pl' ? 'Otrzymasz kolejnego e-maila z numerem śledzenia, gdy zamówienie zostanie wysłane' : 'You will receive another email with tracking number when your order is shipped';
     if (key === 'orderHasBeenShipped') return language === 'pl' ? 'Twoje zamówienie zostało wysłane' : 'Your order has been shipped';
     if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
+    
+    // Admin Dashboard - Additional translations
+    if (key === 'exclude') return language === 'pl' ? 'Wykluczyć' : 'Exclude';
+    if (key === 'excludeFromStat') return language === 'pl' ? 'Wyklucz ze STAT' : 'Exclude from STAT';
+    if (key === 'restoreInStat') return language === 'pl' ? 'Przywróć do STAT' : 'Restore in STAT';
+    if (key === 'resetAllOrders') return language === 'pl' ? 'Resetuj wszystkie zamówienia' : 'Reset All Orders';
+    if (key === 'syncTrackingNum') return language === 'pl' ? 'Sync numer śledzenia' : 'Sync Tracking Num.';
+
+    // Checkout & Payment
+    if (key === 'checkout') return language === 'pl' ? 'Kasa' : 'Checkout';
+    if (key === 'calculatedNext') return language === 'pl' ? 'Obliczane w następnym kroku' : 'Calculated next';
+    if (key === 'backToCart') return language === 'pl' ? 'Powrót do koszyka' : 'Back to Cart';
+    if (key === 'deliveryAddress') return language === 'pl' ? 'Adres dostawy' : 'Delivery Address';
+    if (key === 'changeAddress') return language === 'pl' ? 'Zmień adres' : 'Change Address';
+    if (key === 'iAcceptTerms') return language === 'pl' ? 'Akceptuję' : 'I accept';
+    if (key === 'termsOfSale') return language === 'pl' ? 'Regulamin Sprzedaży' : 'Terms of Sale';
+    if (key === 'shippingOptions') return language === 'pl' ? 'Opcje wysyłki' : 'Shipping Options';
+    if (key === 'streetAddress') return language === 'pl' ? 'Ulica' : 'Street Address';
+    if (key === 'postalCode') return language === 'pl' ? 'Kod pocztowy' : 'Postal Code';
+    if (key === 'city') return language === 'pl' ? 'Miasto' : 'City';
+    if (key === 'calculateShipping') return language === 'pl' ? 'Oblicz opcje wysyłki' : 'Calculate Shipping Options';
+    if (key === 'orderItems') return language === 'pl' ? 'Produkty w zamówieniu' : 'Order Items';
+    if (key === 'standardDelivery') return language === 'pl' ? 'Dostawa standardowa' : 'Standard Delivery';
+    if (key === 'selectedShipping') return language === 'pl' ? 'Wybrana wysyłka' : 'Selected Shipping';
+    if (key === 'confirmAndProceed') return language === 'pl' ? 'Potwierdź i przejdź do płatności' : 'Confirm and Proceed to Payment';
+    if (key === 'apartmentNumber') return language === 'pl' ? 'Mieszkanie (Opcj.)' : 'Apartment (Opt.)';
+    if (key === 'orderSummary') return language === 'pl' ? 'Podsumowanie zamówienia' : 'Order Summary';
+    
+    // Payment Success
+    if (key === 'paymentSuccessful') return language === 'pl' ? 'Płatność udana!' : 'Payment Successful!';
+    if (key === 'orderConfirmation') return language === 'pl' ? 'Dziękujemy za zamówienie! Otrzymasz wkrótce email z potwierdzeniem.' : 'Thank you for your order! You will receive a confirmation email shortly.';
+    if (key === 'sessionId') return language === 'pl' ? 'ID sesji' : 'Session ID';
+    if (key === 'continueShopping') return language === 'pl' ? 'Kontynuuj zakupy' : 'Continue Shopping';
+    if (key === 'viewOrders') return language === 'pl' ? 'Zobacz zamówienia' : 'View Orders';
+    if (key === 'emailConfirmation') return language === 'pl' ? 'Sprawdź swoją skrzynkę pocztową, aby uzyskać szczegóły zamówienia.' : 'Check your email for order details.';
 
     // Toast messages
     if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to cart';

@@ -7,6 +7,7 @@ import { ShoppingCart, Minus, Plus, X, Eye } from "lucide-react";
 import { useCartContext } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
+import spiritLogo from "@/assets/spirit-logo.png";
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -23,14 +24,24 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right" className="w-[400px] sm:w-[500px] flex flex-col">
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <ShoppingCart className="h-5 w-5" />
-            {t('shoppingCart')}
-            {itemCount > 0 && (
-              <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                {itemCount}
-              </Badge>
-            )}
+          <SheetTitle className="flex items-center gap-2 flex-col">
+            {/* Animated Logo */}
+            <div className="relative mb-2">
+              <img 
+                src={spiritLogo} 
+                alt="Spirit Candles" 
+                className="h-16 w-auto animate-glow-pulse"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full">
+              <ShoppingCart className="h-5 w-5" />
+              {t('shoppingCart')}
+              {itemCount > 0 && (
+                <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                  {itemCount}
+                </Badge>
+              )}
+            </div>
           </SheetTitle>
         </SheetHeader>
 
@@ -160,11 +171,11 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>{t('subtotal')} ({itemCount} {t('items')})</span>
-                  <span>{totalPLN} PLN</span>
+                  <span>{totalPLN.toFixed(2)} PLN</span>
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span></span>
-                  <span>~{totalEUR} EUR</span>
+                  <span>~{totalEUR.toFixed(2)} EUR</span>
                 </div>
               </div>
 
@@ -173,8 +184,8 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('total')}</span>
                 <div className="text-right">
-                  <div className="text-primary">{totalPLN} PLN</div>
-                  <div className="text-xs text-muted-foreground">~{totalEUR} EUR</div>
+                  <div className="text-primary">{totalPLN.toFixed(2)} PLN</div>
+                  <div className="text-xs text-muted-foreground">~{totalEUR.toFixed(2)} EUR</div>
                 </div>
               </div>
 

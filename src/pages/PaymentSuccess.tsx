@@ -26,7 +26,7 @@ const PaymentSuccess = () => {
               <CheckCircle className="w-8 h-8 text-success" />
             </div>
             <CardTitle className="font-playfair text-2xl text-success">
-                {t('paymentSuccessful') || 'Payment Successful!'}
+                {t('paymentSuccessful')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -35,7 +35,7 @@ const PaymentSuccess = () => {
                 {t('orderConfirmation')}
               </p>
               {sessionId && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground break-all">
                   {t('sessionId')}: {sessionId}
                 </p>
               )}

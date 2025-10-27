@@ -251,14 +251,14 @@ export const useCart = () => {
     }
   };
 
-  // Calculate totals
-  const totalPLN = cartItems.reduce((sum, item) => 
+  // Calculate totals with proper decimal precision
+  const totalPLN = Number(cartItems.reduce((sum, item) => 
     sum + (Number(item.product.price_pln) * item.quantity), 0
-  );
+  ).toFixed(2));
   
-  const totalEUR = cartItems.reduce((sum, item) => 
+  const totalEUR = Number(cartItems.reduce((sum, item) => 
     sum + (Number(item.product.price_eur) * item.quantity), 0
-  );
+  ).toFixed(2));
   
   const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 

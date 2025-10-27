@@ -183,7 +183,7 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="font-playfair text-3xl font-bold mb-6">{t('checkout') || 'Checkout'}</h1>
+        <h1 className="font-playfair text-3xl font-bold mb-6 capitalize">{t('checkout')}</h1>
         
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
@@ -195,7 +195,7 @@ const Checkout = () => {
               <>
                 <Card className="p-4 bg-muted/30">
                   <div className="space-y-2">
-                    <h3 className="font-semibold">{t('deliveryAddress') || 'Delivery Address'}</h3>
+                    <h3 className="font-semibold">{t('deliveryAddress')}</h3>
                     {shippingAddress && (
                       <div className="text-sm space-y-1">
                         <p>{shippingAddress.name}</p>
@@ -211,7 +211,7 @@ const Checkout = () => {
                             setSelectedShipping(null);
                           }}
                         >
-                          {t('changeAddress') || 'Change Address'}
+                          {t('changeAddress')}
                         </Button>
                       </div>
                     )}
@@ -243,7 +243,7 @@ const Checkout = () => {
             )}
 
             <Card className="p-4">
-              <h3 className="font-semibold mb-4">{t('orderItems') || 'Order Items'}</h3>
+              <h3 className="font-semibold mb-4">{t('orderItems')}</h3>
               <div className="space-y-3">
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex gap-4">
@@ -269,7 +269,7 @@ const Checkout = () => {
 
           <Card className="lg:col-span-1 lg:sticky lg:top-8 h-fit order-1 lg:order-2">
             <CardHeader>
-              <CardTitle className="font-playfair">{t('orderSummary') || 'Order Summary'}</CardTitle>
+              <CardTitle className="font-playfair">{t('orderSummary')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
@@ -281,7 +281,7 @@ const Checkout = () => {
                 {selectedShipping ? (
                   <span className="font-semibold">{selectedShipping.price.gross.toFixed(2)} {selectedShipping.price.currency}</span>
                 ) : (
-                  <span className="text-muted-foreground">{t('calculatedNext') || 'Calculated next'}</span>
+                  <span className="text-muted-foreground">{t('calculatedNext')}</span>
                 )}
               </div>
               <Separator />
@@ -293,7 +293,7 @@ const Checkout = () => {
               </div>
 
               <Button asChild variant="outline" className="w-full">
-                <Link to="/cart">{t('backToCart') || 'Back to Cart'}</Link>
+                <Link to="/cart">{t('backToCart')}</Link>
               </Button>
             </CardContent>
           </Card>

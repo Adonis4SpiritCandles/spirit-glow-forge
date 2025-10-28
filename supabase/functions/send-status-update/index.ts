@@ -13,7 +13,7 @@ interface StatusUpdateRequest {
   orderNumber: number;
   userEmail: string;
   preferredLanguage: string;
-  updateType: 'completed' | 'tracking_updated' | 'shipped' | 'tracking_available';
+  updateType: 'completed' | 'tracking_updated' | 'shipped' | 'tracking_available' | 'delivered';
   trackingNumber?: string;
   trackingUrl?: string;
   carrier?: string;
@@ -72,6 +72,14 @@ Deno.serve(async (req) => {
       message = isPolish
         ? `Twoje zamówienie zostało wysłane${carrier ? ` przez ${carrier}` : ''}. Możesz śledzić swoją przesyłkę używając poniższego numeru śledzenia.`
         : `Your order has been shipped${carrier ? ` via ${carrier}` : ''}. You can track your package using the tracking number below.`;
+    } else if (updateType === 'delivered') {
+      subject = isPolish
+        ? `Zamówienie #SPIRIT-${String(orderNumber).padStart(5, '0')} dostarczone`
+        : `Order #SPIRIT-${String(orderNumber).padStart(5, '0')} Delivered`;
+      heading = isPolish ? '🎉 Dostarczono!' : '🎉 Delivered!';
+      message = isPolish
+        ? `Twoje zamówienie zostało oznaczone jako dostarczone${carrier ? ` przez ${carrier}` : ''}. Dziękujemy za zakupy w Spirit Candles!`
+        : `Your order has been marked as delivered${carrier ? ` by ${carrier}` : ''}. Thank you for shopping with Spirit Candles!`;
     }
 
     // Build email HTML

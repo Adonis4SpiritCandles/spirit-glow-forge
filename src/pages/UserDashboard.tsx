@@ -13,6 +13,8 @@ import { Navigate, useSearchParams } from 'react-router-dom';
 import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye } from 'lucide-react';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import { CarrierBadge } from '@/utils/carrierStyles';
+import BadgeShowcase from '@/components/gamification/BadgeShowcase';
+import ReferralDashboard from '@/components/gamification/ReferralDashboard';
 
 interface UserProfile {
   id: string;
@@ -247,7 +249,7 @@ const UserDashboard = () => {
         </div>
 
         <Tabs defaultValue={tabParam || "profile"} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 gap-1">
+          <TabsList className="grid w-full grid-cols-6 gap-1">
             <TabsTrigger value="profile" className="flex items-center gap-1 text-xs sm:text-sm">
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('profile')}</span>
@@ -263,6 +265,14 @@ const UserDashboard = () => {
             <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm">
               <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('settings')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="rewards" className="flex items-center gap-1 text-xs sm:text-sm">
+              <Package className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('rewards') || 'Rewards'}</span>
+            </TabsTrigger>
+            <TabsTrigger value="referrals" className="flex items-center gap-1 text-xs sm:text-sm">
+              <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('referrals') || 'Referrals'}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -344,6 +354,14 @@ const UserDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="rewards" className="mt-6">
+            <BadgeShowcase />
+          </TabsContent>
+
+          <TabsContent value="referrals" className="mt-6">
+            <ReferralDashboard />
           </TabsContent>
 
           <TabsContent value="orders" className="mt-6">

@@ -54,6 +54,7 @@ const ProductDetail = () => {
         id: data.id,
         name: language === 'en' ? data.name_en : data.name_pl,
         fragrance: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
+        category: data.category,
         price: { pln: Number(data.price_pln), eur: Number(data.price_eur) },
         image: data.image_url || candleLit,
         description: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
@@ -330,7 +331,26 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Product Details Tabs */}
+          {/* Experience Tabs: 3D Viewer & AR */}
+          <section className="mt-8">
+            <h2 className="sr-only">Product Experience</h2>
+            <Tabs defaultValue="viewer" className="w-full">
+              <TabsList className="grid grid-cols-2 max-w-md">
+                <TabsTrigger value="viewer">3D Viewer</TabsTrigger>
+                <TabsTrigger value="ar">AR Preview</TabsTrigger>
+              </TabsList>
+              <TabsContent value="viewer" className="mt-6">
+                <Product3DViewer />
+              </TabsContent>
+              <TabsContent value="ar" className="mt-6">
+                {id && (
+                  <ARPreview productId={id} productName={product.name} />
+                )}
+              </TabsContent>
+            </Tabs>
+          </section>
+
+          {/* Product Details Tabs */}
         <div className="mt-16 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Product Details */}
@@ -409,6 +429,14 @@ const ProductDetail = () => {
 
           {/* Product Reviews */}
           {id && <ProductReviews productId={id} />}
+
+          {/* Related & Recently Viewed */}
+          {id && (
+            <>
+              <RelatedProducts currentProductId={id} category={product.category} />
+              <RecentlyViewed currentProductId={id} />
+            </>
+          )}
         </div>
       </div>
     </div>

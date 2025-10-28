@@ -356,6 +356,25 @@ const AdminDashboard = () => {
     if (!confirm(t('permanentDeleteConfirm'))) return;
 
     try {
+      // Fetch order for email before deletion
+      const { data: orderRow } = await supabase
+        .from('orders')
+        .select('id, order_number, user_id')
+        .eq('id', orderId)
+        .single();
+
+      let profileEmail: string | null = null;
+      let preferredLanguage: string = 'en';
+      if (orderRow?.user_id) {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('email, preferred_language')
+          .eq('user_id', orderRow.user_id)
+          .single();
+        profileEmail = (prof as any)?.email || null;
+        preferredLanguage = (prof as any)?.preferred_language || 'en';
+      }
+
       // Delete order items first (foreign key constraint)
       const { error: itemsError } = await supabase
         .from('order_items')
@@ -371,6 +390,22 @@ const AdminDashboard = () => {
         .eq('id', orderId);
 
       if (error) throw error;
+
+      // Send cancellation email
+      try {
+        if (profileEmail) {
+          await supabase.functions.invoke('send-order-cancelled', {
+            body: {
+              orderId,
+              orderNumber: orderRow?.order_number,
+              userEmail: profileEmail,
+              preferredLanguage,
+            }
+          });
+        }
+      } catch (emailErr) {
+        console.error('Failed to send order cancelled email:', emailErr);
+      }
 
       toast({
         title: t('success'),
@@ -747,6 +782,23 @@ const AdminDashboard = () => {
         description: t('shipmentCreatedSuccess'),
         className: "bg-green-500 text-white shadow-lg",
       });
+
+      // Send "order accepted" email to customer
+      try {
+        if (selectedOrderForShipment?.profiles?.email) {
+          await supabase.functions.invoke('send-order-accepted', {
+            body: {
+              orderId,
+              orderNumber: selectedOrderForShipment.order_number,
+              userEmail: selectedOrderForShipment.profiles.email,
+              preferredLanguage: (selectedOrderForShipment as any).profiles?.preferred_language || 'en',
+              carrierName: selectedOrderForShipment.carrier_name || selectedOrderForShipment.carrier || 'Furgonetka',
+            }
+          });
+        }
+      } catch (emailErr) {
+        console.error('Failed to send order accepted email:', emailErr);
+      }
 
       setIsShipmentModalOpen(false);
       setSelectedOrderForShipment(null);

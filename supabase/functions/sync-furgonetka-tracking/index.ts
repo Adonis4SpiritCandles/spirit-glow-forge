@@ -228,7 +228,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // If order is delivered, send admin notification
+    // If order is delivered, send admin and customer notifications
     if (shippingStatus === 'delivered' && orderData) {
       try {
         await supabase.functions.invoke('send-admin-delivered-notification', {
@@ -242,6 +242,24 @@ Deno.serve(async (req) => {
         console.log(`Admin delivered notification sent for order ${orderId}`);
       } catch (emailError) {
         console.error(`Failed to send admin delivered notification for order ${orderId}:`, emailError);
+      }
+
+      try {
+        await supabase.functions.invoke('send-status-update', {
+          body: {
+            orderId: orderData.id,
+            orderNumber: orderData.order_number,
+            userEmail: orderData.profiles.email,
+            preferredLanguage: orderData.profiles.preferred_language || 'en',
+            updateType: 'delivered',
+            trackingNumber: trackingNumber,
+            trackingUrl: finalTrackingUrl,
+            carrier: packageData.courier?.name || 'Furgonetka',
+          }
+        });
+        console.log(`Customer delivered email sent for order ${orderId}`);
+      } catch (emailError) {
+        console.error(`Failed to send delivered email for order ${orderId}:`, emailError);
       }
     }
 

@@ -32,13 +32,14 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import AllNotices from "./pages/AllNotices";
   import PrivacyRegistration from "./pages/PrivacyRegistration";
   import ResetPassword from "./pages/ResetPassword";
+  import SharedWishlist from "./pages/SharedWishlist";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
-import { CookieBanner } from "./components/CookieBanner";
-import LiveChatWidget from "./components/chat/LiveChatWidget";
-import { LanguageProvider } from "./contexts/LanguageContext";
-import { CartProvider } from "./contexts/CartContext";
+ import { CookieBanner } from "./components/CookieBanner";
+ import LiveChatWidget from "./components/chat/LiveChatWidget";
+ import { LanguageProvider } from "./contexts/LanguageContext";
+ import { CartProvider } from "./contexts/CartContext";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ const App = () => {
                   <Route path="/privacy-registration" element={<PrivacyRegistration />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="/wishlist/shared/:id" element={<SharedWishlist />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Footer />

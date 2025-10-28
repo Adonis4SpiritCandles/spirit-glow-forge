@@ -22,14 +22,14 @@ const HeroSection = () => {
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-80"
+        className="absolute inset-0 w-full h-full object-cover opacity-90"
         style={{ zIndex: 0 }}
       >
         <source src="/videos/hero-background.mp4" type="video/mp4" />
       </video>
 
-      {/* Black Overlay (40%) */}
-      <div className="absolute inset-0 bg-black/40" style={{ zIndex: 1 }}></div>
+      {/* Black Overlay (55%) */}
+      <div className="absolute inset-0 bg-black/55" style={{ zIndex: 1 }}></div>
 
       {/* Animated Background Elements */}
       <div className="absolute inset-0 opacity-30" style={{ zIndex: 2 }}>

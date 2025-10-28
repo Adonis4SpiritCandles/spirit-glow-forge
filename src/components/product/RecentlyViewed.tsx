@@ -94,7 +94,7 @@ const RecentlyViewed = ({ currentProductId }: { currentProductId: string }) => {
                 price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                 image={product.image_url}
                 description={language === 'en' ? product.description_en : product.description_pl}
-                sizes={[product.size]}
+                sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: Number(product.price_pln), eur: Number(product.price_eur) } }]}
               />
             </motion.div>
           ))}

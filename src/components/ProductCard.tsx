@@ -45,23 +45,32 @@ const ProductCard = ({
   const { addProductToCart } = useCartContext();
   const { t } = useLanguage();
 
+  // Safe guards for props shape
+  const hasSizes = Array.isArray(sizes) && sizes.length > 0;
+  const selected = hasSizes ? sizes[Math.min(selectedSize, Math.max(0, sizes.length - 1))] : undefined;
+  const displayPrice = selected?.price || price;
+
   const handleAddToCart = () => {
-    const size = sizes[selectedSize];
+    const hasSizes = Array.isArray(sizes) && sizes.length > 0;
+    const selected = hasSizes ? sizes[selectedSize] : undefined;
+    const displayPrice = selected?.price || price;
+    const weight = selected?.weight || (hasSizes ? String(selected?.size || '') : 'standard');
+
     // Map to cart Product shape
     const cartProduct = {
       id,
       name_en: name,
       name_pl: name,
-      price_pln: size.price.pln,
-      price_eur: size.price.eur,
+      price_pln: Number(displayPrice?.pln ?? 0),
+      price_eur: Number(displayPrice?.eur ?? 0),
       image_url: image,
-      size: size.weight,
+      size: weight,
       category: fragrance || "candle",
     };
     addProductToCart(cartProduct as any, 1);
     toast({
       title: t('addedToCart'),
-      description: `${name} (${size.weight}) ${t('addedToCart').toLowerCase()}.`,
+      description: `${name} (${weight}) ${t('addedToCart').toLowerCase()}.`,
     });
   };
 
@@ -147,28 +156,30 @@ const ProductCard = ({
             </p>
 
             {/* Size Selection */}
-            <div className="flex gap-2">
-              {sizes.map((size, index) => (
-                <Button
-                  key={index}
-                  variant={selectedSize === index ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedSize(index)}
-                  className="text-xs font-medium"
-                >
-                  {size.weight}
-                </Button>
-              ))}
-            </div>
+            {hasSizes && (
+              <div className="flex gap-2">
+                {sizes.map((size, index) => (
+                  <Button
+                    key={index}
+                    variant={selectedSize === index ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedSize(index)}
+                    className="text-xs font-medium"
+                  >
+                    {size.weight}
+                  </Button>
+                ))}
+              </div>
+            )}
 
             {/* Price & Add to Cart - always at bottom */}
             <div className="flex items-center justify-between gap-2 mt-auto pt-2">
               <div className="space-y-1 flex-shrink-0">
                 <div className="text-lg font-semibold text-primary whitespace-nowrap">
-                  {sizes[selectedSize].price.pln.toFixed(2)} PLN
+                  {Number(displayPrice?.pln ?? 0).toFixed(2)} PLN
                 </div>
                 <div className="text-xs text-muted-foreground whitespace-nowrap">
-                  ~{sizes[selectedSize].price.eur.toFixed(2)} EUR
+                  ~{Number(displayPrice?.eur ?? 0).toFixed(2)} EUR
                 </div>
               </div>
               

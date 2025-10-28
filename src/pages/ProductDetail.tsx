@@ -158,6 +158,31 @@ const ProductDetail = () => {
     }
   };
 
+  const handleBuyNow = () => {
+    // Add product to cart
+    const size = product.sizes[selectedSize];
+    const cartProduct = {
+      id: product.id,
+      name_en: product.name,
+      name_pl: product.name,
+      price_pln: size.price.pln,
+      price_eur: size.price.eur,
+      image_url: product.image,
+      size: size.weight,
+      category: product.fragrance || 'candle',
+    };
+    addProductToCart(cartProduct as any, quantity);
+    
+    // Navigate directly to checkout
+    navigate('/checkout');
+    
+    // Toast notification
+    toast({
+      title: t('redirectingToCheckout') || t('addedToCart'),
+      description: `${product.name} (${size.weight}) x${quantity}`,
+    });
+  };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({
@@ -307,6 +332,7 @@ const ProductDetail = () => {
               </Button>
                 
                 <Button 
+                  onClick={handleBuyNow}
                   size="lg"
                   className="w-full py-6"
                 >

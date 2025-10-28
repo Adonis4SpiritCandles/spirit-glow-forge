@@ -118,12 +118,12 @@ serve(async (req) => {
         if (isValid) {
           couponData = coupon;
           
-          // Calculate subtotal
-          const subtotal = cartItems.reduce((sum: number, item: any) => 
-            sum + (item.product.price_pln * item.quantity), 0) + shippingCostPLN;
+          // Calculate subtotal of PRODUCTS ONLY (excluding shipping)
+          const productsSubtotal = cartItems.reduce((sum: number, item: any) => 
+            sum + (item.product.price_pln * item.quantity), 0);
           
           if (coupon.percent_off) {
-            discountAmount = Math.round((subtotal * coupon.percent_off / 100) * 100); // in grosze
+            discountAmount = Math.round((productsSubtotal * coupon.percent_off / 100) * 100); // in grosze
           } else if (coupon.amount_off_pln) {
             discountAmount = Math.round(coupon.amount_off_pln * 100); // in grosze
           }
@@ -157,20 +157,45 @@ serve(async (req) => {
       },
     };
 
-    // Add discount as a line item if coupon was applied
-    if (discountAmount > 0) {
-      sessionParams.line_items.push({
-        price_data: {
-          currency: 'pln',
-          product_data: {
-            name: `Discount (${couponData.code})`,
-            description: couponData.percent_off 
-              ? `${couponData.percent_off}% off` 
-              : `${couponData.amount_off_pln} PLN off`,
-          },
-          unit_amount: -discountAmount, // Negative amount for discount
-        },
-        quantity: 1,
+    // Apply discount proportionally to product line items if coupon was applied
+    // Shipping cost remains untouched for Furgonetka integration
+    if (discountAmount > 0 && couponData) {
+      const productsSubtotal = cartItems.reduce((sum: number, item: any) => 
+        sum + (item.product.price_pln * item.quantity), 0);
+      
+      // Calculate discount factor for products only
+      const discountFactor = 1 - (discountAmount / 100 / productsSubtotal);
+      
+      // Apply discount to product line items proportionally
+      sessionParams.line_items = sessionParams.line_items.map((item: any, index: number) => {
+        // Only apply discount to product items (not shipping)
+        if (index < cartItems.length) {
+          if (item.price_data) {
+            return {
+              ...item,
+              price_data: {
+                ...item.price_data,
+                unit_amount: Math.round(item.price_data.unit_amount * discountFactor)
+              }
+            };
+          } else if (item.price) {
+            // For mapped price IDs, we can't apply discount, fall back to using dynamic pricing
+            const cartItem = cartItems[index];
+            return {
+              price_data: {
+                currency: 'pln',
+                product_data: {
+                  name: cartItem.product.name_en,
+                  description: cartItem.product.description_en,
+                },
+                unit_amount: Math.round(cartItem.product.price_pln * 100 * discountFactor),
+              },
+              quantity: item.quantity,
+            };
+          }
+        }
+        // Keep shipping line item unchanged
+        return item;
       });
     }
 

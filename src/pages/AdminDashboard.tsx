@@ -1266,10 +1266,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">{t('ordersTrash')}</TabsTrigger>
             <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">{t('customers')}</TabsTrigger>
             <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">{t('warehouse')}</TabsTrigger>
-            <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
             <TabsTrigger value="coupons" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Kupony' : 'Coupons'}</TabsTrigger>
-            <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">Export</TabsTrigger>
             <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">Social Media</TabsTrigger>
+            <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
+            <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">Export</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">

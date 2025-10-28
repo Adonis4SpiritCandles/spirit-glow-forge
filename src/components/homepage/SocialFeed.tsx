@@ -5,12 +5,16 @@ import { Instagram, Play, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import tiktokIcon from "@/assets/social-tiktok-icon.png";
+import instagramIcon from "@/assets/social-instagram-icon.png";
 
 interface SocialPost {
   id: string;
   platform: 'instagram' | 'tiktok';
   type: 'image' | 'video';
   media_url: string;
+  preview_image_url?: string;
   embed_url?: string;
   external_link?: string;
   caption?: string;
@@ -21,7 +25,7 @@ interface SocialPost {
 const SocialFeed = () => {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { language } = useLanguage();
-  const [selectedMedia, setSelectedMedia] = useState<{ type: 'image' | 'video', url: string, platform: string } | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<{ type: 'image' | 'video', url: string, platform: string, externalLink?: string } | null>(null);
   const [filter, setFilter] = useState<'all' | 'instagram' | 'tiktok'>('all');
   const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,44 +98,60 @@ const SocialFeed = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
           <AnimatePresence mode="popLayout">
-            {filteredPosts.map((post, index) => (
-              <motion.div
-                key={post.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.4, delay: 0.05 * index }}
-                whileHover={{ scale: 1.05 }}
-                className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
-                onClick={() => setSelectedMedia({ type: post.type, url: post.media_url, platform: post.platform })}
-              >
-                <img
-                  src={post.media_url}
-                  alt={`${post.platform} post`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                />
-                
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                  <div className="flex items-center gap-2 text-white">
-                    {post.platform === 'instagram' ? (
-                      <Instagram className="w-5 h-5" />
-                    ) : (
-                      <Play className="w-5 h-5" />
-                    )}
-                    <span className="text-sm font-medium capitalize">{post.platform}</span>
+            {filteredPosts.map((post, index) => {
+              // Use preview_image_url for videos, media_url for images
+              const thumbnailUrl = post.type === 'video' 
+                ? (post.preview_image_url || post.media_url) 
+                : post.media_url;
+              
+              return (
+                <motion.div
+                  key={post.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={inView ? { opacity: 1, scale: 1 } : {}}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.4, delay: 0.05 * index }}
+                  whileHover={{ scale: 1.05 }}
+                  className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
+                  onClick={() => setSelectedMedia({ type: post.type, url: post.media_url, platform: post.platform, externalLink: post.external_link })}
+                >
+                  {/* Watermark icon */}
+                  <div className="absolute top-2 left-2 z-10">
+                    <img 
+                      src={post.platform === 'tiktok' ? tiktokIcon : instagramIcon}
+                      alt={post.platform}
+                      className="w-8 h-8 sm:w-10 sm:h-10 opacity-90 drop-shadow-lg"
+                    />
                   </div>
-                </div>
 
-                {/* Video indicator */}
-                {post.type === 'video' && (
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                    <Play className="w-6 h-6 text-primary fill-primary ml-1" />
+                  <img
+                    src={thumbnailUrl}
+                    alt={`${post.platform} post`}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                    <div className="flex items-center gap-2 text-white">
+                      {post.platform === 'instagram' ? (
+                        <Instagram className="w-5 h-5" />
+                      ) : (
+                        <Play className="w-5 h-5" />
+                      )}
+                      <span className="text-sm font-medium capitalize">{post.platform}</span>
+                    </div>
                   </div>
-                )}
-              </motion.div>
-            ))}
+
+                  {/* Video indicator */}
+                  {post.type === 'video' && (
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                      <Play className="w-6 h-6 text-primary fill-primary ml-1" />
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
         )}
@@ -174,7 +194,7 @@ const SocialFeed = () => {
         <DialogContent className="max-w-4xl p-0 bg-transparent border-0">
           <button
             onClick={() => setSelectedMedia(null)}
-            className="absolute -top-12 right-0 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            className="absolute -top-12 right-0 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors z-50"
           >
             <X className="w-6 h-6" />
           </button>
@@ -194,6 +214,24 @@ const SocialFeed = () => {
                     autoPlay
                     className="w-full h-full rounded-lg"
                   />
+                </div>
+              )}
+              
+              {/* External Link Button */}
+              {selectedMedia.externalLink && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+                  <Button
+                    asChild
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+                  >
+                    <a
+                      href={selectedMedia.externalLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {language === 'pl' ? 'Zobacz oryginał' : 'View Original'}
+                    </a>
+                  </Button>
                 </div>
               )}
             </div>

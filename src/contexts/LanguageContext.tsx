@@ -787,6 +787,23 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'phoneSupport') return language === 'pl' ? 'Wsparcie telefoniczne' : 'Phone Support';
     if (key === 'phoneHours') return language === 'pl' ? 'Pon-Pt: 9:00-18:00 CET' : 'Mon-Fri: 9:00-18:00 CET';
 
+    // Coupon & Checkout translations
+    if (key === 'haveCoupon') return language === 'pl' ? 'Masz kupon?' : 'Have a coupon?';
+    if (key === 'enterCouponCode') return language === 'pl' ? 'Wprowadź kod kuponu' : 'Enter coupon code';
+    if (key === 'apply') return language === 'pl' ? 'Zastosuj' : 'Apply';
+    if (key === 'applying') return language === 'pl' ? 'Zastosowanie...' : 'Applying...';
+    if (key === 'couponApplied') return language === 'pl' ? 'Kupon został pomyślnie zastosowany!' : 'Coupon applied successfully!';
+    if (key === 'invalidCoupon') return language === 'pl' ? 'Nieprawidłowy lub wygasły kod kuponu' : 'Invalid or expired coupon code';
+    if (key === 'couponNotYetValid') return language === 'pl' ? 'Ten kupon nie jest jeszcze ważny' : 'This coupon is not yet valid';
+    if (key === 'couponExpired') return language === 'pl' ? 'Ten kupon wygasł' : 'This coupon has expired';
+    if (key === 'couponMaxRedemptions') return language === 'pl' ? 'Ten kupon osiągnął limit użycia' : 'This coupon has reached its usage limit';
+    if (key === 'couponError') return language === 'pl' ? 'Błąd podczas stosowania kuponu' : 'Failed to apply coupon';
+    if (key === 'checkoutError') return language === 'pl' ? 'Błąd podczas tworzenia sesji zakupu. Spróbuj ponownie.' : 'Failed to create checkout session. Please try again.';
+    if (key === 'discount') return language === 'pl' ? 'Zniżka' : 'Discount';
+    if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
+    if (key === 'autoRotate') return language === 'pl' ? 'Automatyczna rotacja' : 'Auto-rotate';
+    if (key === 'endConversation') return language === 'pl' ? 'Zakończ rozmowę i zamknij czat' : 'End conversation and close chat';
+
     // Default fallback
     return key;
   };

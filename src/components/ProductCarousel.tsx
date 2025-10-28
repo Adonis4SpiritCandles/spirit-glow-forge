@@ -93,10 +93,10 @@ const ProductCarousel = () => {
                     id={product.id}
                     name={language === 'en' ? product.name_en : product.name_pl}
                     fragrance={language === 'en' ? product.description_en : product.description_pl}
-price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
+                    price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                     image={product.image_url}
                     description={language === 'en' ? product.description_en : product.description_pl}
-                    sizes={[{ size: product.size, weight: product.weight, price: { pln: product.price_pln, eur: product.price_eur } }]}
+                    sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: product.price_pln, eur: product.price_eur } }]}
                   />
                 </CarouselItem>
               ))}
@@ -125,7 +125,7 @@ price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                     price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                     image={product.image_url}
                     description={language === 'en' ? product.description_en : product.description_pl}
-                    sizes={[{ size: product.size, weight: product.weight, price: { pln: product.price_pln, eur: product.price_eur } }]}
+                    sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: product.price_pln, eur: product.price_eur } }]}
                   />
                 </CarouselItem>
               ))}

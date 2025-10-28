@@ -615,35 +615,18 @@ const Checkout = () => {
           </div>
 
           {/* Order Summary Sidebar - Desktop Only */}
-          <Card className="lg:col-span-1 lg:sticky lg:top-8 h-fit order-1 lg:order-2 hidden lg:block">
-            <CardHeader>
-              <CardTitle className="font-playfair">{t('orderSummary')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span>{t('subtotal')} ({itemCount} {t('items')})</span>
-                <span>{Number(totalPLN).toFixed(2)} PLN</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>{t('shipping')}</span>
-                {selectedShipping ? (
-                  <span className="font-semibold">{selectedShipping.price.gross.toFixed(2)} {selectedShipping.price.currency}</span>
-                ) : (
-                  <span className="text-muted-foreground">{t('calculatedNext')}</span>
-                )}
-              </div>
-              <Separator />
-              <div className="flex justify-between font-semibold text-lg">
-                <span>{t('total')}</span>
-                <div className="text-right">
-                  <div className="text-primary">{finalTotalPLN.toFixed(2)} PLN</div>
-                </div>
-              </div>
-
-              <Button asChild variant="outline" className="w-full">
-                <Link to="/cart">{t('backToCart')}</Link>
-              </Button>
-            </CardContent>
+          <Card className="lg:col-span-1 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] h-fit order-1 lg:order-2 hidden lg:block">
+            <div className="overflow-y-auto">
+              <CardHeader>
+                <CardTitle className="font-playfair">{t('orderSummary')}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+...
+                <Button asChild variant="outline" className="w-full">
+                  <Link to="/cart">{t('backToCart')}</Link>
+                </Button>
+              </CardContent>
+            </div>
           </Card>
         </div>
       </div>

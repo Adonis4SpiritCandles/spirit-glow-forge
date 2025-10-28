@@ -39,14 +39,17 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import CartSidebar from "./components/CartSidebar";
  import { CookieBanner } from "./components/CookieBanner";
  import LiveChatWidget from "./components/chat/LiveChatWidget";
- import { LanguageProvider } from "./contexts/LanguageContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
  import { CartProvider } from "./contexts/CartContext";
+ import { useReferral } from "./hooks/useReferral";
+ import FloatingActionButton from "./components/FloatingActionButton";
 
 const queryClient = new QueryClient();
 
 const RouteChangeHandler = () => {
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
+  useReferral(); // Track referral parameters
 
   useEffect(() => {
     // Scroll to top when route changes
@@ -110,6 +113,7 @@ const App = () => {
                 <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
                 <CookieBanner />
                 <LiveChatWidget />
+                <FloatingActionButton />
               </div>
             </BrowserRouter>
           </TooltipProvider>

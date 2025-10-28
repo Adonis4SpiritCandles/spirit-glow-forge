@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Loader2, Minimize2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Minimize2, PhoneOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -21,17 +21,19 @@ const LiveChatWidget = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [sessionId] = useState(() => `session-${Date.now()}-${Math.random()}`);
+  const [sessionId, setSessionId] = useState(() => `session-${Date.now()}-${Math.random()}`);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, initialLoadComplete } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen && user) {
+    if (isOpen && user && initialLoadComplete) {
       loadMessages();
-      // Subscribe to new messages
+      
+      // Subscribe to new messages with unique channel
       const channel = supabase
-        .channel('chat-messages')
+        .channel(`chat-${user.id}-${sessionId}`)
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -39,6 +41,7 @@ const LiveChatWidget = () => {
           filter: `session_id=eq.${sessionId}`
         }, (payload) => {
           setMessages(prev => [...prev, payload.new as Message]);
+          scrollToBottom();
         })
         .subscribe();
 
@@ -46,11 +49,23 @@ const LiveChatWidget = () => {
         supabase.removeChannel(channel);
       };
     }
-  }, [isOpen, user, sessionId]);
+  }, [isOpen, user, sessionId, initialLoadComplete]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Show notification badge when chat is closed
+  useEffect(() => {
+    if (!isOpen && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.sender !== 'user') {
+        setHasNewMessages(true);
+      }
+    } else {
+      setHasNewMessages(false);
+    }
+  }, [isOpen, messages]);
 
   const loadMessages = async () => {
     if (!user) return;
@@ -67,7 +82,9 @@ const LiveChatWidget = () => {
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   const handleSendMessage = async () => {
@@ -80,6 +97,8 @@ const LiveChatWidget = () => {
       sender: 'user' as const,
     };
 
+    setInputMessage("");
+
     // Insert user message
     const { error } = await supabase
       .from('chat_messages')
@@ -90,11 +109,9 @@ const LiveChatWidget = () => {
       return;
     }
 
-    setInputMessage("");
-    setIsTyping(true);
-
-    // Reload messages immediately
+    // Reload to show user message immediately
     await loadMessages();
+    setIsTyping(true);
 
     // Auto-response bot
     setTimeout(async () => {
@@ -109,7 +126,7 @@ const LiveChatWidget = () => {
           sender: 'bot',
         });
 
-      // Reload messages again after bot response
+      // Reload after bot response
       await loadMessages();
       setIsTyping(false);
     }, 1500);
@@ -154,6 +171,29 @@ const LiveChatWidget = () => {
       : 'Thank you for your message! How can I help you? I can answer questions about shipping, returns, orders, or products.';
   };
 
+  const handleEndChat = async () => {
+    if (!user) return;
+
+    // Insert session ended message
+    await supabase
+      .from('chat_messages')
+      .insert({
+        user_id: user.id,
+        session_id: sessionId,
+        message: language === 'pl' ? '🔚 Sesja zakończona' : '🔚 Session ended',
+        sender: 'bot',
+      });
+
+    // Generate new session ID
+    setSessionId(`session-${Date.now()}-${Math.random()}`);
+    setMessages([]);
+    setIsOpen(false);
+    
+    toast.success(
+      language === 'pl' ? 'Czat został zakończony' : 'Chat session ended'
+    );
+  };
+
   return (
     <>
       {/* Chat button */}
@@ -169,8 +209,10 @@ const LiveChatWidget = () => {
             className="fixed bottom-24 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-accent text-white shadow-xl hover:shadow-2xl transition-shadow flex items-center justify-center"
           >
             <MessageCircle className="w-6 h-6" />
-            {/* Notification dot */}
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse" />
+            {/* Notification dot - only show when new messages */}
+            {hasNewMessages && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse" />
+            )}
           </motion.button>
         )}
       </AnimatePresence>
@@ -182,44 +224,53 @@ const LiveChatWidget = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-lg shadow-2xl overflow-hidden"
-            style={{ height: isMinimized ? 'auto' : '600px', maxHeight: isMinimized ? 'auto' : 'calc(100vh - 3rem)' }}
+            className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-lg shadow-2xl flex flex-col"
+            style={{ height: isMinimized ? 'auto' : '600px', maxHeight: 'calc(100vh - 3rem)' }}
           >
-            {/* Header */}
-            <div className="bg-slate-900 p-4 flex items-center justify-between border-b border-white/10">
+            {/* Header - fixed height */}
+            <div className="bg-gradient-to-r from-primary to-accent p-4 flex items-center justify-between rounded-t-lg flex-shrink-0" style={{ minHeight: '72px' }}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                   <MessageCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">
+                  <h3 className="font-semibold text-white text-sm leading-tight">
                     {language === 'pl' ? 'Czat Na Żywo' : 'Live Chat'}
                   </h3>
-                  <p className="text-xs text-white/70">
+                  <p className="text-xs text-white/80 leading-tight">
                     {language === 'pl' ? 'Odpowiadamy szybko' : 'We reply quickly'}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {user && (
+                  <button
+                    onClick={handleEndChat}
+                    className="p-2 hover:bg-white/10 rounded transition-colors text-white"
+                    title={language === 'pl' ? 'Zakończ czat' : 'End chat'}
+                  >
+                    <PhoneOff className="w-4 h-4" />
+                  </button>
+                )}
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-1 hover:bg-white/10 rounded transition-colors text-white"
+                  className="p-2 hover:bg-white/10 rounded transition-colors text-white"
                 >
-                  <Minimize2 className="w-5 h-5" />
+                  <Minimize2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-white/10 rounded transition-colors text-white"
+                  className="p-2 hover:bg-white/10 rounded transition-colors text-white"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
             {!isMinimized && (
               <>
-                {/* Messages area */}
-                <div className="h-[calc(100%-8rem)] overflow-y-auto p-4 bg-background/50">
+                {/* Messages area - flex-1 to fill space */}
+                <div className="flex-1 overflow-y-auto p-4 bg-background/50 min-h-0">
                   {!user ? (
                     <div className="text-center py-8">
                       <p className="text-muted-foreground mb-4">
@@ -254,7 +305,7 @@ const LiveChatWidget = () => {
                                 : 'bg-accent text-accent-foreground'
                             }`}
                           >
-                            <p className="text-sm">{msg.message}</p>
+                            <p className="text-sm break-words">{msg.message}</p>
                             <span className="text-xs opacity-70 mt-1 block">
                               {new Date(msg.created_at).toLocaleTimeString([], {
                                 hour: '2-digit',
@@ -287,9 +338,9 @@ const LiveChatWidget = () => {
                   )}
                 </div>
 
-                {/* Input area */}
+                {/* Input area - fixed at bottom */}
                 {user && (
-                  <div className="p-4 border-t border-border bg-background">
+                  <div className="p-4 border-t border-border bg-background rounded-b-lg flex-shrink-0">
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
@@ -302,6 +353,7 @@ const LiveChatWidget = () => {
                         onChange={(e) => setInputMessage(e.target.value)}
                         placeholder={language === 'pl' ? 'Wpisz wiadomość...' : 'Type a message...'}
                         className="flex-1"
+                        disabled={isTyping}
                       />
                       <Button
                         type="submit"

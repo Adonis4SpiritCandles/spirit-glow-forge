@@ -19,6 +19,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import UserDashboard from "./pages/UserDashboard";
   import Auth from "./pages/Auth";
   import Wishlist from "./pages/Wishlist";
+  import ScentQuiz from "./pages/ScentQuiz";
+  import LoyaltyProgram from "./pages/LoyaltyProgram";
   import NotFound from "./pages/NotFound";
   import PrivacyPolicy from "./pages/PrivacyPolicy";
   import CookiePolicy from "./pages/CookiePolicy";
@@ -81,6 +83,8 @@ const App = () => {
                   <Route path="/dashboard" element={<UserDashboard />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/scent-quiz" element={<ScentQuiz />} />
+                  <Route path="/loyalty" element={<LoyaltyProgram />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/faq" element={<FAQ />} />

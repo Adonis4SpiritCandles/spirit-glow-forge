@@ -31,6 +31,20 @@ const LiveChatWidget = () => {
     if (isOpen && user && initialLoadComplete) {
       loadMessages();
       
+      // Send automatic welcome message if chat is empty
+      if (messages.length === 0) {
+        const welcomeMsg = language === 'pl'
+          ? 'Witaj w Spirit Candles! 🕯️ Jak mogę Ci pomóc? Mogę odpowiedzieć na pytania o nasze świece, wysyłkę, zwroty, zamówienia i kupony.'
+          : 'Welcome to Spirit Candles! 🕯️ How can I help you? I can answer questions about our candles, shipping, returns, orders, and coupons.';
+        
+        supabase.from('chat_messages').insert({
+          user_id: user.id,
+          session_id: sessionId,
+          message: welcomeMsg,
+          sender: 'bot',
+        }).then(() => loadMessages());
+      }
+      
       // Subscribe to new messages with unique channel
       const channel = supabase
         .channel(`chat-${user.id}-${sessionId}`)
@@ -133,65 +147,83 @@ const LiveChatWidget = () => {
   };
 
   const getBotResponse = (message: string): string => {
-    const keywords = {
-      wysyłka: language === 'pl' 
-        ? 'Wysyłamy za pomocą Furgonetka. Darmowa dostawa przy zamówieniach powyżej 200 PLN. Standardowa dostawa trwa 2-4 dni robocze.'
-        : 'We ship via Furgonetka. Free shipping on orders over 200 PLN. Standard delivery takes 2-4 business days.',
-      shipping: language === 'pl' 
-        ? 'Wysyłamy za pomocą Furgonetka. Darmowa dostawa przy zamówieniach powyżej 200 PLN. Standardowa dostawa trwa 2-4 dni robocze.'
-        : 'We ship via Furgonetka. Free shipping on orders over 200 PLN. Standard delivery takes 2-4 business days.',
-      zwrot: language === 'pl'
-        ? 'Oferujemy 30-dniowy okres zwrotu. Produkty muszą być nieużywane i w oryginalnym opakowaniu.'
-        : 'We offer a 30-day return period. Products must be unused and in original packaging.',
-      returns: language === 'pl'
-        ? 'Oferujemy 30-dniowy okres zwrotu. Produkty muszą być nieużywane i w oryginalnym opakowaniu.'
-        : 'We offer a 30-day return period. Products must be unused and in original packaging.',
-      zamówienie: language === 'pl'
-        ? 'Możesz sprawdzić status swojego zamówienia w panelu użytkownika. Potrzebujesz pomocy z konkretnym zamówieniem?'
-        : 'You can check your order status in your user dashboard. Need help with a specific order?',
-      order: language === 'pl'
-        ? 'Możesz sprawdzić status swojego zamówienia w panelu użytkownika. Potrzebujesz pomocy z konkretnym zamówieniem?'
-        : 'You can check your order status in your user dashboard. Need help with a specific order?',
-      produkt: language === 'pl'
-        ? 'Mamy szeroki wybór świec sojowych ręcznie robionych. Sprawdź naszą kolekcję w sklepie!'
-        : 'We have a wide selection of handmade soy candles. Check our collection in the shop!',
-      products: language === 'pl'
-        ? 'Mamy szeroki wybór świec sojowych ręcznie robionych. Sprawdź naszą kolekcję w sklepie!'
-        : 'We have a wide selection of handmade soy candles. Check our collection in the shop!',
-    };
-
-    for (const [key, response] of Object.entries(keywords)) {
-      if (message.toLowerCase().includes(key.toLowerCase())) {
-        return response;
-      }
+    const lowerMsg = message.toLowerCase();
+    
+    // Spirit Candles info
+    if (lowerMsg.includes('spirit') || lowerMsg.includes('candel') || lowerMsg.includes('świec') || lowerMsg.includes('candle')) {
+      return language === 'pl'
+        ? 'Spirit Candles to marka luksusowych świec sojowych ręcznie robionych. 🕯️✨\n\n• 100% naturalny wosk sojowy\n• Wysokiej jakości olejki zapachowe\n• Czas palenia: 40-50 godzin\n• Ręcznie wykonane z pasją'
+        : 'Spirit Candles offers luxury handmade soy candles. 🕯️✨\n\n• 100% natural soy wax\n• Premium fragrance oils\n• Burn time: 40-50 hours\n• Handcrafted with passion';
     }
-
+    
+    // Shipping
+    if (lowerMsg.includes('wysyłka') || lowerMsg.includes('shipping') || lowerMsg.includes('dostawa') || lowerMsg.includes('delivery')) {
+      return language === 'pl'
+        ? '📦 **Wysyłka i Dostawa**\n\n• Wysyłamy przez Furgonetka\n• Darmowa dostawa od 200 PLN\n• Standardowa dostawa: 2-4 dni robocze\n• Śledzenie przesyłki w panelu użytkownika'
+        : '📦 **Shipping & Delivery**\n\n• We ship via Furgonetka\n• Free shipping on orders over 200 PLN\n• Standard delivery: 2-4 business days\n• Track your package in your dashboard';
+    }
+    
+    // Returns
+    if (lowerMsg.includes('zwrot') || lowerMsg.includes('return') || lowerMsg.includes('refund')) {
+      return language === 'pl'
+        ? '↩️ **Polityka Zwrotów**\n\n• 30-dniowy okres zwrotu\n• Produkty nieużywane\n• Oryginalne opakowanie\n• Kontakt: support@spiritcandles.com'
+        : '↩️ **Return Policy**\n\n• 30-day return period\n• Products must be unused\n• Original packaging required\n• Contact: support@spiritcandles.com';
+    }
+    
+    // Orders & Tracking
+    if (lowerMsg.includes('zamówienie') || lowerMsg.includes('order') || lowerMsg.includes('tracking') || lowerMsg.includes('śledzenie')) {
+      return language === 'pl'
+        ? '📋 **Status Zamówienia**\n\nMożesz sprawdzić status zamówienia w:\n• Panel Użytkownika → Dashboard\n• Otrzymasz email z linkiem śledzenia\n\nPotrzebujesz pomocy? Podaj numer zamówienia.'
+        : '📋 **Order Status**\n\nCheck your order status in:\n• User Dashboard\n• Email with tracking link\n\nNeed help? Provide your order number.';
+    }
+    
+    // Coupons & Discounts
+    if (lowerMsg.includes('coupon') || lowerMsg.includes('kupon') || lowerMsg.includes('sconto') || lowerMsg.includes('zniżka') || lowerMsg.includes('discount') || lowerMsg.includes('promo')) {
+      return language === 'pl'
+        ? '🎁 **Aktualne Promocje**\n\n• WELCOME10 - 10% zniżki na pierwsze zamówienie\n• Newsletter - ekskluzywne kody\n• Śledź nas na Instagram/TikTok dla więcej promocji!\n\n@spiritcandles'
+        : '🎁 **Current Promotions**\n\n• WELCOME10 - 10% off your first order\n• Newsletter - exclusive codes\n• Follow us on Instagram/TikTok for more!\n\n@spiritcandles';
+    }
+    
+    // Product recommendations
+    if (lowerMsg.includes('recommend') || lowerMsg.includes('polec') || lowerMsg.includes('best') || lowerMsg.includes('najleps')) {
+      return language === 'pl'
+        ? '✨ **Nasze Bestsellery**\n\n🌹 Mystic Rose - romantyczny i zmysłowy\n🍊 Golden Amber - ciepły i przytulny\n🌿 Fresh Linen - świeży i czysty\n\nSprawdź kolekcję w zakładce Shop!'
+        : '✨ **Our Bestsellers**\n\n🌹 Mystic Rose - romantic & sensual\n🍊 Golden Amber - warm & cozy\n🌿 Fresh Linen - fresh & clean\n\nExplore our collection in the Shop!';
+    }
+    
+    // Default response with menu
     return language === 'pl'
-      ? 'Dziękuję za wiadomość! Jak mogę Ci pomóc? Mogę odpowiedzieć na pytania o wysyłkę, zwroty, zamówienia lub produkty.'
-      : 'Thank you for your message! How can I help you? I can answer questions about shipping, returns, orders, or products.';
+      ? '💬 **Jak mogę Ci pomóc?**\n\nMogę odpowiedzieć na pytania o:\n• 🕯️ Nasze świece Spirit\n• 📦 Wysyłkę i dostawę\n• ↩️ Zwroty\n• 📋 Zamówienia\n• 🎁 Kupony promocyjne\n• ✨ Rekomendacje produktów'
+      : '💬 **How can I help you?**\n\nI can answer questions about:\n• 🕯️ Our Spirit candles\n• 📦 Shipping & delivery\n• ↩️ Returns\n• 📋 Orders\n• 🎁 Promo coupons\n• ✨ Product recommendations';
   };
 
   const handleEndChat = async () => {
     if (!user) return;
 
-    // Insert session ended message
+    // Insert goodbye message
+    const goodbyeMsg = language === 'pl'
+      ? '👋 Dziękujemy za rozmowę! Mamy nadzieję, że pomogliśmy.\n\nZapraszamy ponownie! ✨\n\n- Spirit Candles Team'
+      : '👋 Thank you for chatting with us! We hope we helped.\n\nCome back anytime! ✨\n\n- Spirit Candles Team';
+    
     await supabase
       .from('chat_messages')
       .insert({
         user_id: user.id,
         session_id: sessionId,
-        message: language === 'pl' ? '🔚 Sesja zakończona' : '🔚 Session ended',
+        message: goodbyeMsg,
         sender: 'bot',
       });
 
-    // Generate new session ID
-    setSessionId(`session-${Date.now()}-${Math.random()}`);
-    setMessages([]);
-    setIsOpen(false);
-    
-    toast.success(
-      language === 'pl' ? 'Czat został zakończony' : 'Chat session ended'
-    );
+    // Wait to show goodbye, then close
+    setTimeout(() => {
+      setSessionId(`session-${Date.now()}-${Math.random()}`);
+      setMessages([]);
+      setIsOpen(false);
+      
+      toast.success(
+        language === 'pl' ? 'Czat został zakończony' : 'Chat session ended'
+      );
+    }, 2500);
   };
 
   return (
@@ -234,12 +266,17 @@ const LiveChatWidget = () => {
                   <MessageCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white text-sm leading-tight">
-                    {language === 'pl' ? 'Czat Na Żywo' : 'Live Chat'}
+                  <h3 className="font-semibold text-white text-sm leading-tight tracking-wide">
+                    {language === 'pl' ? 'SPIRIT CZAT' : 'SPIRIT CHAT'}
                   </h3>
-                  <p className="text-xs text-white/80 leading-tight">
-                    {language === 'pl' ? 'Odpowiadamy szybko' : 'We reply quickly'}
-                  </p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <svg className="w-3 h-3 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <p className="text-xs text-white/80 leading-tight">
+                      {language === 'pl' ? 'Asystenta & Info' : 'Support & Info'}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">

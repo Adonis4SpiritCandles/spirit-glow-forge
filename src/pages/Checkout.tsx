@@ -253,19 +253,20 @@ const Checkout = () => {
   };
 
   const shippingCost = selectedShipping ? selectedShipping.price.gross : 0;
-  let subtotalWithShipping = totalPLN + (selectedShipping?.price.currency === 'PLN' ? shippingCost : 0);
   
-  // Calculate discount
+  // Calculate discount - ONLY on products, NOT on shipping (aligns with backend)
   let discountAmount = 0;
   if (appliedCoupon) {
     if (appliedCoupon.percent_off) {
-      discountAmount = (subtotalWithShipping * appliedCoupon.percent_off) / 100;
+      // Discount percentage applies ONLY to product subtotal
+      discountAmount = (totalPLN * appliedCoupon.percent_off) / 100;
     } else if (appliedCoupon.amount_off_pln) {
-      discountAmount = appliedCoupon.amount_off_pln;
+      // Fixed discount, capped at product subtotal
+      discountAmount = Math.min(appliedCoupon.amount_off_pln, totalPLN - 0.01);
     }
   }
   
-  const finalTotalPLN = Math.max(0, subtotalWithShipping - discountAmount);
+  const finalTotalPLN = Math.max(0, (totalPLN - discountAmount) + shippingCost);
 
   return (
     <div className="min-h-screen bg-background py-8">
@@ -274,7 +275,7 @@ const Checkout = () => {
         
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content - Left Side */}
-          <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
+          <div className="lg:col-span-2 space-y-4 order-1 lg:order-1">
             {step === 'address' && (
               <ShippingAddressForm onSubmit={handleAddressSubmit} isLoading={isCalculating} />
             )}
@@ -614,20 +615,75 @@ const Checkout = () => {
             )}
           </div>
 
-          {/* Order Summary Sidebar - Desktop Only */}
-          <Card className="lg:col-span-1 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] h-fit order-1 lg:order-2 hidden lg:block">
-            <div className="overflow-y-auto">
-              <CardHeader>
-                <CardTitle className="font-playfair">{t('orderSummary')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-...
-                <Button asChild variant="outline" className="w-full">
-                  <Link to="/cart">{t('backToCart')}</Link>
-                </Button>
-              </CardContent>
+          {/* Order Summary Sidebar - Right Side (Desktop/Tablet), Top (Mobile) */}
+          <div className="lg:col-span-1 order-2 lg:order-2">
+            <div className="lg:sticky lg:top-24 space-y-4">
+              {/* Order Summary Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-playfair">{t('orderSummary')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>{t('subtotal')}</span>
+                      <span>{totalPLN.toFixed(2)} PLN</span>
+                    </div>
+                    {selectedShipping && (
+                      <div className="flex justify-between text-sm">
+                        <span>{t('shipping')}</span>
+                        <span>{shippingCost.toFixed(2)} PLN</span>
+                      </div>
+                    )}
+                    {appliedCoupon && discountAmount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>{t('discount')}</span>
+                        <span>-{discountAmount.toFixed(2)} PLN</span>
+                      </div>
+                    )}
+                    <Separator />
+                    <div className="flex justify-between items-center text-lg font-semibold">
+                      <span>{t('total')}</span>
+                      <span className="text-primary">{finalTotalPLN.toFixed(2)} PLN</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Order Items Card - Desktop/Tablet Only, Below Order Summary */}
+              {step === 'shipping' && selectedShipping && (
+                <Card className="hidden md:block">
+                  <CardHeader>
+                    <CardTitle className="font-playfair text-lg">{t('orderItems')}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="flex gap-3">
+                        <div className="w-16 h-16 rounded-md overflow-hidden bg-gradient-mystical flex-shrink-0">
+                          <img 
+                            src={item.product.image_url} 
+                            alt={language === 'en' ? item.product.name_en : item.product.name_pl} 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-sm line-clamp-1">
+                            {language === 'en' ? item.product.name_en : item.product.name_pl}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {item.product.size} × {item.quantity}
+                          </div>
+                          <div className="font-semibold text-sm text-primary mt-1">
+                            {(item.product.price_pln * item.quantity).toFixed(2)} PLN
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

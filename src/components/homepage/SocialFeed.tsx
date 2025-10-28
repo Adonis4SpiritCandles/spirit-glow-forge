@@ -6,8 +6,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import tiktokIcon from "@/assets/social-tiktok-icon.png";
-import instagramIcon from "@/assets/social-instagram-icon.png";
+import tiktokIcon from "@/assets/tiktok-watermark.png";
+import instagramIcon from "@/assets/instagram-watermark.png";
 
 interface SocialPost {
   id: string;
@@ -121,7 +121,7 @@ const SocialFeed = () => {
                     <img 
                       src={post.platform === 'tiktok' ? tiktokIcon : instagramIcon}
                       alt={post.platform}
-                      className="w-8 h-8 sm:w-10 sm:h-10 opacity-90 drop-shadow-lg"
+                      className="w-10 h-10 sm:w-12 sm:h-12 opacity-95 drop-shadow-2xl"
                     />
                   </div>
 
@@ -189,9 +189,9 @@ const SocialFeed = () => {
         </motion.div>
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal - Enhanced */}
       <Dialog open={!!selectedMedia} onOpenChange={() => setSelectedMedia(null)}>
-        <DialogContent className="max-w-4xl p-0 bg-transparent border-0">
+        <DialogContent className="max-w-md md:max-w-2xl p-0 bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 shadow-2xl overflow-hidden">
           <button
             onClick={() => setSelectedMedia(null)}
             className="absolute -top-12 right-0 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors z-50"
@@ -200,36 +200,48 @@ const SocialFeed = () => {
           </button>
           {selectedMedia && (
             <div className="relative">
-              {selectedMedia.type === 'image' ? (
-                <img
-                  src={selectedMedia.url}
-                  alt="Social media post"
-                  className="w-full h-auto rounded-lg"
-                />
-              ) : (
-                <div className="aspect-video bg-black rounded-lg">
+              {/* Media Container - 9:16 aspect ratio */}
+              <div className="relative aspect-[9/16] max-h-[80vh] overflow-hidden rounded-lg bg-black">
+                {selectedMedia.type === 'image' ? (
+                  <img
+                    src={selectedMedia.url}
+                    alt="Social media post"
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
                   <video
                     src={selectedMedia.url}
                     controls
                     autoPlay
-                    className="w-full h-full rounded-lg"
+                    className="w-full h-full object-contain"
                   />
-                </div>
-              )}
+                )}
+              </div>
               
               {/* External Link Button */}
               {selectedMedia.externalLink && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
                   <Button
                     asChild
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+                    className="bg-primary/90 hover:bg-primary text-primary-foreground shadow-xl border border-white/20 backdrop-blur-sm"
                   >
                     <a
                       href={selectedMedia.externalLink}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="flex items-center gap-2"
                     >
-                      {language === 'pl' ? 'Zobacz oryginał' : 'View Original'}
+                      {selectedMedia.platform === 'tiktok' ? (
+                        <>
+                          <Play className="w-4 h-4" />
+                          {language === 'pl' ? 'Vedi su TikTok' : 'View on TikTok'}
+                        </>
+                      ) : (
+                        <>
+                          <Instagram className="w-4 h-4" />
+                          {language === 'pl' ? 'Vedi su Instagram' : 'View on Instagram'}
+                        </>
+                      )}
                     </a>
                   </Button>
                 </div>

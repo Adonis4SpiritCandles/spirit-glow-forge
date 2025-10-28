@@ -125,22 +125,22 @@ const ProductCard = ({
             )}
           </div>
 
-          {/* Action Buttons */}
-          <div className={`absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
+          {/* Action Buttons - Wishlist */}
+          <div className="absolute top-3 right-3 z-30 opacity-0 group-hover:opacity-100 transition-all duration-300">
             <Button
               size="sm"
               variant="secondary"
               onClick={toggleWishlist}
-              className="w-10 h-10 p-0 rounded-full shadow-elegant"
+              className="w-10 h-10 p-0 rounded-full shadow-lg bg-white/95 hover:bg-white"
             >
               <Heart 
-                className={`h-4 w-4 ${isWishlisted ? 'fill-current text-primary' : ''}`} 
+                className={`h-4 w-4 transition-colors ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-700'}`} 
               />
             </Button>
           </div>
 
-          {/* View Product Overlay */}
-          <div className={`absolute inset-0 bg-background/80 mystical-blur flex items-center justify-center transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          {/* View Product Overlay - No blur */}
+          <div className={`absolute inset-0 bg-black/60 flex items-center justify-center transition-all duration-300 z-10 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <Button 
               asChild
               className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-luxury"

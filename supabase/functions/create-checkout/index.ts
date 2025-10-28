@@ -122,6 +122,7 @@ serve(async (req) => {
           const productsSubtotalGrosze = cartItems.reduce((sum: number, item: any) => 
             sum + Math.round(item.product.price_pln * 100 * item.quantity), 0);
           
+          // Calculate discount ONLY on products (never on shipping)
           if (coupon.percent_off) {
             discountAmount = Math.round(productsSubtotalGrosze * coupon.percent_off / 100);
           } else if (coupon.amount_off_pln) {

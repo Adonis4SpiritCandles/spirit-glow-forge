@@ -27,6 +27,7 @@ import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
 import AdminSocialMedia from '@/components/admin/AdminSocialMedia';
 import AdminCoupons from '@/components/admin/AdminCoupons';
+import AdminCollections from '@/components/admin/AdminCollections';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 

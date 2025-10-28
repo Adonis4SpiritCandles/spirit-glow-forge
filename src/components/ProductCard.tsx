@@ -74,8 +74,8 @@ const ProductCard = ({
     };
     addProductToCart(cartProduct as any, 1);
     toast({
-      title: t('addedToCart'),
-      description: `${name} (${weight}) ${t('addedToCart').toLowerCase()}.`,
+      title: t('addedToCartTitle'),
+      description: `${name} (${weight})`,
     });
   };
 

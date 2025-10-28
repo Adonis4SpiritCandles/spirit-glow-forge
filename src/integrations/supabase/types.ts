@@ -361,8 +361,11 @@ export type Database = {
           admin_seen: boolean | null
           carrier: string | null
           carrier_name: string | null
+          coupon_code: string | null
           created_at: string
           deleted_at: string | null
+          discount_eur: number | null
+          discount_pln: number | null
           estimated_delivery_date: string | null
           exclude_from_stats: boolean | null
           furgonetka_package_id: string | null
@@ -386,8 +389,11 @@ export type Database = {
           admin_seen?: boolean | null
           carrier?: string | null
           carrier_name?: string | null
+          coupon_code?: string | null
           created_at?: string
           deleted_at?: string | null
+          discount_eur?: number | null
+          discount_pln?: number | null
           estimated_delivery_date?: string | null
           exclude_from_stats?: boolean | null
           furgonetka_package_id?: string | null
@@ -411,8 +417,11 @@ export type Database = {
           admin_seen?: boolean | null
           carrier?: string | null
           carrier_name?: string | null
+          coupon_code?: string | null
           created_at?: string
           deleted_at?: string | null
+          discount_eur?: number | null
+          discount_pln?: number | null
           estimated_delivery_date?: string | null
           exclude_from_stats?: boolean | null
           furgonetka_package_id?: string | null

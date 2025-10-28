@@ -56,8 +56,8 @@ const Auth = () => {
           });
         } else {
           toast({
-            title: "Welcome back!",
-            description: "You have been signed in successfully.",
+            title: t('loginSuccessTitle'),
+            description: t('loginSuccessDesc'),
           });
         }
       } else {

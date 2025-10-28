@@ -118,15 +118,21 @@ serve(async (req) => {
         if (isValid) {
           couponData = coupon;
           
-          // Calculate subtotal of PRODUCTS ONLY (excluding shipping)
-          const productsSubtotal = cartItems.reduce((sum: number, item: any) => 
-            sum + (item.product.price_pln * item.quantity), 0);
+          // Calculate subtotal of PRODUCTS ONLY (excluding shipping) in grosze
+          const productsSubtotalGrosze = cartItems.reduce((sum: number, item: any) => 
+            sum + Math.round(item.product.price_pln * 100 * item.quantity), 0);
           
           if (coupon.percent_off) {
-            discountAmount = Math.round((productsSubtotal * coupon.percent_off / 100) * 100); // in grosze
+            discountAmount = Math.round(productsSubtotalGrosze * coupon.percent_off / 100);
           } else if (coupon.amount_off_pln) {
-            discountAmount = Math.round(coupon.amount_off_pln * 100); // in grosze
+            discountAmount = Math.round(coupon.amount_off_pln * 100);
+            // Cap discount to products subtotal - 1 grosz minimum
+            if (discountAmount >= productsSubtotalGrosze) {
+              discountAmount = productsSubtotalGrosze - 1;
+            }
           }
+
+          console.log(`Coupon applied: ${coupon.code}, discount: ${discountAmount / 100} PLN`);
 
           // Increment redemption count
           await supabaseClient
@@ -147,52 +153,46 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/checkout`,
       metadata: {
         user_id: user.id,
-        shipping_address: shippingAddress ? JSON.stringify(shippingAddress) : undefined,
-        service_id: serviceId?.toString(),
+        shipping_address: shippingAddress ? JSON.stringify(shippingAddress) : '',
+        service_id: serviceId?.toString() || '',
         shipping_cost_pln: shippingCostPLN.toString(),
         shipping_cost_eur: shippingCostEUR.toString(),
-        carrier_name: carrierName || undefined,
-        coupon_code: couponData?.code || undefined,
-        discount_amount: discountAmount > 0 ? (discountAmount / 100).toFixed(2) : undefined,
+        carrier_name: carrierName || '',
+        coupon_code: couponData?.code || '',
+        discount_amount: discountAmount > 0 ? (discountAmount / 100).toFixed(2) : '0',
       },
     };
 
     // Apply discount proportionally to product line items if coupon was applied
     // Shipping cost remains untouched for Furgonetka integration
     if (discountAmount > 0 && couponData) {
-      const productsSubtotal = cartItems.reduce((sum: number, item: any) => 
-        sum + (item.product.price_pln * item.quantity), 0);
+      // Calculate products subtotal in grosze
+      const productsSubtotalGrosze = cartItems.reduce((sum: number, item: any) => 
+        sum + Math.round(item.product.price_pln * 100 * item.quantity), 0);
       
       // Calculate discount factor for products only
-      const discountFactor = 1 - (discountAmount / 100 / productsSubtotal);
+      const discountFactor = (productsSubtotalGrosze - discountAmount) / productsSubtotalGrosze;
+      
+      console.log(`Applying discount factor: ${discountFactor}, products subtotal: ${productsSubtotalGrosze / 100} PLN`);
       
       // Apply discount to product line items proportionally
       sessionParams.line_items = sessionParams.line_items.map((item: any, index: number) => {
         // Only apply discount to product items (not shipping)
         if (index < cartItems.length) {
-          if (item.price_data) {
-            return {
-              ...item,
-              price_data: {
-                ...item.price_data,
-                unit_amount: Math.round(item.price_data.unit_amount * discountFactor)
-              }
-            };
-          } else if (item.price) {
-            // For mapped price IDs, we can't apply discount, fall back to using dynamic pricing
-            const cartItem = cartItems[index];
-            return {
-              price_data: {
-                currency: 'pln',
-                product_data: {
-                  name: cartItem.product.name_en,
-                  description: cartItem.product.description_en,
-                },
-                unit_amount: Math.round(cartItem.product.price_pln * 100 * discountFactor),
+          const originalAmount = item.price_data ? item.price_data.unit_amount : Math.round(cartItems[index].product.price_pln * 100);
+          const discountedAmount = Math.max(1, Math.round(originalAmount * discountFactor));
+          
+          return {
+            price_data: {
+              currency: 'pln',
+              product_data: {
+                name: item.price_data?.product_data?.name || cartItems[index].product.name_en,
+                description: item.price_data?.product_data?.description || cartItems[index].product.description_en,
               },
-              quantity: item.quantity,
-            };
-          }
+              unit_amount: discountedAmount,
+            },
+            quantity: item.quantity,
+          };
         }
         // Keep shipping line item unchanged
         return item;

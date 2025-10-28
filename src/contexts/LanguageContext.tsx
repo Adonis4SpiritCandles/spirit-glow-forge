@@ -232,6 +232,32 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     
     // Chat translations
     if (key === 'endConversation') return language === 'pl' ? 'Zakończ rozmowę i zamknij czat' : 'End conversation and close chat';
+    
+    // Coupon and checkout translations
+    if (key === 'haveCoupon') return language === 'pl' ? 'Masz kupon?' : 'Have a coupon?';
+    if (key === 'enterCouponCode') return language === 'pl' ? 'Wprowadź kod kuponu' : 'Enter coupon code';
+    if (key === 'apply') return language === 'pl' ? 'Zastosuj' : 'Apply';
+    if (key === 'applying') return language === 'pl' ? 'Zastosowanie...' : 'Applying...';
+    if (key === 'couponApplied') return language === 'pl' ? 'Kupon został pomyślnie zastosowany!' : 'Coupon applied successfully!';
+    if (key === 'invalidCoupon') return language === 'pl' ? 'Nieprawidłowy lub wygasły kod kuponu' : 'Invalid or expired coupon code';
+    if (key === 'couponNotYetValid') return language === 'pl' ? 'Ten kupon nie jest jeszcze ważny' : 'This coupon is not yet valid';
+    if (key === 'couponExpired') return language === 'pl' ? 'Ten kupon wygasł' : 'This coupon has expired';
+    if (key === 'couponMaxRedemptions') return language === 'pl' ? 'Ten kupon osiągnął limit użycia' : 'This coupon has reached its usage limit';
+    if (key === 'couponError') return language === 'pl' ? 'Błąd podczas stosowania kuponu' : 'Error applying coupon';
+    if (key === 'checkoutError') return language === 'pl' ? 'Błąd podczas tworzenia sesji zakupu. Spróbuj ponownie.' : 'Error creating checkout session. Please try again.';
+    if (key === 'discount') return language === 'pl' ? 'Zniżka' : 'Discount';
+    if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
+    
+    // Review translations
+    if (key === 'noReviewsYet') return language === 'pl' ? 'Brak recenzji. Bądź pierwszym!' : 'No reviews yet. Be the first to review!';
+    
+    // Toast message translations
+    if (key === 'loginSuccessTitle') return language === 'pl' ? 'Witamy ponownie!' : 'Welcome back!';
+    if (key === 'loginSuccessDesc') return language === 'pl' ? 'Zalogowano pomyślnie.' : 'You have been signed in successfully.';
+    if (key === 'orderStatusUpdatedTitle') return language === 'pl' ? 'Status zamówienia zaktualizowany' : 'Order status updated';
+    if (key === 'orderStatusUpdatedDesc') return language === 'pl' ? 'Status zamówienia został pomyślnie zaktualizowany.' : 'The order status has been updated successfully.';
+    if (key === 'addedToCartTitle') return language === 'pl' ? 'Dodano do koszyka' : 'Added to cart';
+    if (key === 'addedToCartDesc') return language === 'pl' ? 'Produkt został dodany do koszyka.' : 'Product has been added to your cart.';
     if (key === 'manageAccountPrefs') return language === 'pl' ? 'Zarządzaj preferencjami swojego konta' : 'Manage your account preferences';
     if (key === 'accountStatus') return language === 'pl' ? 'Status konta' : 'Account Status';
     if (key === 'user') return language === 'pl' ? 'Użytkownik' : 'User';

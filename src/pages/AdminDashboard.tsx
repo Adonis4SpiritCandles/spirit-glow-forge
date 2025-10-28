@@ -1252,10 +1252,10 @@ const AdminDashboard = () => {
                 <SelectItem value="trash">{t('ordersTrash')}</SelectItem>
                 <SelectItem value="customers">{t('customers')}</SelectItem>
                 <SelectItem value="warehouse">{t('warehouse')}</SelectItem>
-                <SelectItem value="statistics">{t('statistics')}</SelectItem>
                 <SelectItem value="coupons">{language === 'pl' ? 'Kupony' : 'Coupons'}</SelectItem>
-                <SelectItem value="export">Export</SelectItem>
                 <SelectItem value="social">Social Media</SelectItem>
+                <SelectItem value="statistics">{t('statistics')}</SelectItem>
+                <SelectItem value="export">Export</SelectItem>
               </SelectContent>
             </Select>
           </div>

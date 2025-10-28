@@ -15,7 +15,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-mystical">
+    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-gradient-mystical">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
@@ -25,7 +25,7 @@ const HeroSection = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
+      <div className="container mx-auto px-4 lg:px-8 text-center relative z-10 py-8 md:py-0">
         <div className="max-w-4xl mx-auto">
           {/* Logo with Glow Effect */}
           <div className="mb-12">
@@ -82,7 +82,7 @@ const HeroSection = () => {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background/20 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 w-full h-16 md:h-32 bg-gradient-to-t from-background/20 to-transparent"></div>
     </section>
   );
 };

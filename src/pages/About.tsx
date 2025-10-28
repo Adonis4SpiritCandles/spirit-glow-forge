@@ -11,23 +11,33 @@ const About = () => {
   const features = [
     {
       icon: <Leaf className="w-6 h-6 text-primary" />,
-      title: t('naturalSoyWax'),
-      description: t('naturalSoyWaxDesc')
-    },
-    {
-      icon: <Flame className="w-6 h-6 text-primary" />,
-      title: t('woodenWicks'),
-      description: t('woodenWicksDesc')
+      title: t('feature1Title'),
+      description: t('feature1Desc')
     },
     {
       icon: <Heart className="w-6 h-6 text-primary" />,
-      title: t('handPouredWithLove'),
-      description: t('handPouredDesc')
+      title: t('feature2Title'),
+      description: t('feature2Desc')
+    },
+    {
+      icon: <Flame className="w-6 h-6 text-primary" />,
+      title: t('feature3Title'),
+      description: t('feature3Desc')
     },
     {
       icon: <Award className="w-6 h-6 text-primary" />,
-      title: t('luxuryFragrances'),
-      description: t('luxuryFragrancesDesc')
+      title: t('feature4Title'),
+      description: t('feature4Desc')
+    },
+    {
+      icon: <Leaf className="w-6 h-6 text-primary" />,
+      title: t('feature5Title'),
+      description: t('feature5Desc')
+    },
+    {
+      icon: <Heart className="w-6 h-6 text-primary" />,
+      title: t('feature6Title'),
+      description: t('feature6Desc')
     }
   ];
 
@@ -87,7 +97,7 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <Card 
                 key={index}

@@ -656,7 +656,7 @@ const AdminDashboard = () => {
 
       toast({
         title: t('success'),
-        description: newRole === 'admin' ? t('promoteToAdmin') : t('demoteToUser'),
+        description: newRole === 'admin' ? t('userPromotedToAdmin') : t('userDemotedToUser'),
       });
 
       loadDashboardData();

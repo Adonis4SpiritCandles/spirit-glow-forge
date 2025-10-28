@@ -733,8 +733,23 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'handPouredDesc') return language === 'pl' ? 'Każda świeca jest starannie wykonana ręcznie' : 'Each candle is carefully crafted by hand';
     if (key === 'luxuryFragrances') return language === 'pl' ? 'Luksusowe zapachy' : 'Luxury Fragrances';
     if (key === 'luxuryFragrancesDesc') return language === 'pl' ? 'Inspirowane najlepszymi perfumami świata' : 'Inspired by the world\'s finest perfumes';
-    if (key === 'aboutIntro1') return language === 'pl' ? 'Spirit Candle to więcej niż świece – to zaproszenie do odkrycia wewnętrznego spokoju i harmonii. Każdy produkt jest starannie wykonany z naturalnego wosku sojowego i zapachów inspirowanych luksusowymi perfumami.' : 'Spirit Candle is more than candles – it\'s an invitation to discover inner peace and harmony. Each product is carefully crafted from natural soy wax and fragrances inspired by luxury perfumes.';
-    if (key === 'aboutIntro2') return language === 'pl' ? 'Nasze drewniane knoty tworzą uspokajający, trzaskający dźwięk, a ekologiczne składniki sprawiają, że możesz cieszyć się każdą chwilą bez obaw o środowisko.' : 'Our wooden wicks create a soothing crackling sound, and eco-friendly ingredients mean you can enjoy every moment without worrying about the environment.';
+    if (key === 'aboutIntro1') return language === 'pl' ? 'Tworzymy wyjątkowe świece zapachowe, powstające w 100% ręcznie, z dbałością o najmniejsze szczegóły. Nasza misją jest wprowadzanie ciepła, relaksu i wyjątkowej atmosfery do wnętrz naszych klientów.' : 'We create unique scented candles, made 100% by hand, with attention to the smallest details. Our mission is to bring warmth, relaxation, and a unique atmosphere to our customers\' interiors.';
+    if (key === 'aboutIntro2') return language === 'pl' ? 'Każda świeca to historia, emocja, chwila, którą chcesz zachować. Łączymy pasję z rzemiosłem, aby dostarczyć produkty, które są nie tylko piękne, ale także bezpieczne dla Ciebie i środowiska.' : 'Each candle is a story, an emotion, a moment you want to preserve. We combine passion with craftsmanship to deliver products that are not only beautiful but also safe for you and the environment.';
+    
+    // Official Features from PDF
+    if (key === 'feature1Title') return language === 'pl' ? '100% Naturalny Wosk Sojowy' : '100% Natural Soy Wax';
+    if (key === 'feature1Desc') return language === 'pl' ? 'Bezpieczny dla zdrowia, przyjazny dla środowiska wosk, który pali się czysto i dłużej niż tradycyjna parafina.' : 'Safe for health, environmentally friendly wax that burns cleanly and longer than traditional paraffin.';
+    if (key === 'feature2Title') return language === 'pl' ? 'Ręcznie Wykonane' : 'Handcrafted';
+    if (key === 'feature2Desc') return language === 'pl' ? 'Każda świeca jest unikatowa, tworzona z pasją i starannością przez wykwalifikowanych rzemieślników.' : 'Each candle is unique, created with passion and care by skilled artisans.';
+    if (key === 'feature3Title') return language === 'pl' ? 'Gramatura 180g' : '180g Optimal Size';
+    if (key === 'feature3Desc') return language === 'pl' ? 'Optymalny rozmiar zapewniający długi czas palenia i intensywność zapachu w całej przestrzeni.' : 'Perfect weight ensuring long burn time and optimal fragrance intensity throughout your space.';
+    if (key === 'feature4Title') return language === 'pl' ? 'Ekskluzywne Kompozycje Zapachowe' : 'Exclusive Fragrances';
+    if (key === 'feature4Desc') return language === 'pl' ? 'Inspirowane światowymi perfumami i orientalnymi aromatami, nasze kompozycje tworzą niezapomniane atmosfery.' : 'Inspired by world perfumes and oriental aromas, our compositions create unforgettable atmospheres.';
+    if (key === 'feature5Title') return language === 'pl' ? 'Ekologiczne Opakowania' : 'Eco-Friendly Packaging';
+    if (key === 'feature5Desc') return language === 'pl' ? 'Używamy materiałów biodegradowalnych i wielokrotnego użytku, dbając o naszą planetę przy każdym produkcie.' : 'We use biodegradable and reusable materials, caring for our planet with every product.';
+    if (key === 'feature6Title') return language === 'pl' ? 'Możliwość Personalizacji' : 'Personalization Available';
+    if (key === 'feature6Desc') return language === 'pl' ? 'Stwórz świece z indywidualnym napisem, kolorem czy zapachem na naprawdę wyjątkowy prezent.' : 'Create candles with custom inscriptions, colors, or fragrances for a truly unique gift.';
+    
     if (key === 'discoverOurCollection') return language === 'pl' ? 'Odkryj naszą kolekcję' : 'Discover Our Collection';
     if (key === 'whyChooseSpiritCandles') return language === 'pl' ? 'Dlaczego Spirit Candles?' : 'Why Spirit Candles?';
     if (key === 'whyChooseDesc') return language === 'pl' ? 'Jakość, craftsmanship i dbałość o środowisko w każdym produkcie' : 'Quality, craftsmanship and environmental care in every product';

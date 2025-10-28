@@ -209,55 +209,98 @@ Deno.serve(async (req) => {
 
     // Send tracking update email if tracking number was just added
     if (wasTrackingJustAdded && trackingNumber && orderData?.profiles?.email) {
+      console.log(`Sending tracking available email for order ${orderId} to ${orderData.profiles.email}`);
       try {
-        await supabase.functions.invoke('send-status-update', {
-          body: {
-            orderId: orderData.id,
-            orderNumber: orderData.order_number,
-            userEmail: orderData.profiles.email,
-            preferredLanguage: orderData.profiles.preferred_language || 'en',
-            updateType: 'tracking_available',
-            trackingNumber: trackingNumber,
-            trackingUrl: finalTrackingUrl,
-            carrier: packageData.courier?.name || 'Furgonetka',
+        const emailResponse = await fetch(
+          `${supabaseUrl}/functions/v1/send-status-update`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId: orderData.id,
+              orderNumber: orderData.order_number,
+              userEmail: orderData.profiles.email,
+              preferredLanguage: orderData.profiles.preferred_language || 'en',
+              updateType: 'tracking_available',
+              trackingNumber: trackingNumber,
+              trackingUrl: finalTrackingUrl,
+              carrier: packageData.courier?.name || packageData.service || 'Furgonetka',
+            }),
           }
-        });
-        console.log(`Tracking available email sent for order ${orderId}`);
+        );
+        
+        if (!emailResponse.ok) {
+          const errorText = await emailResponse.text();
+          console.error(`Failed to send tracking email (${emailResponse.status}):`, errorText);
+        } else {
+          const emailData = await emailResponse.json();
+          console.log(`Tracking available email sent successfully for order ${orderId}:`, emailData);
+        }
       } catch (emailError) {
-        console.error(`Failed to send tracking email for order ${orderId}:`, emailError);
+        console.error(`Exception sending tracking email for order ${orderId}:`, emailError);
       }
     }
 
     // If order is delivered, send admin and customer notifications
     if (shippingStatus === 'delivered' && orderData) {
+      console.log(`Order ${orderId} marked as delivered, sending notifications`);
       try {
-        await supabase.functions.invoke('send-admin-delivered-notification', {
-          body: {
-            orderId: orderData.id,
-            orderNumber: orderData.order_number,
-            trackingNumber: trackingNumber,
-            userEmail: orderData.profiles.email,
+        const adminEmailResponse = await fetch(
+          `${supabaseUrl}/functions/v1/send-admin-delivered-notification`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId: orderData.id,
+              orderNumber: orderData.order_number,
+              trackingNumber: trackingNumber,
+              userEmail: orderData.profiles.email,
+            }),
           }
-        });
-        console.log(`Admin delivered notification sent for order ${orderId}`);
+        );
+        
+        if (!adminEmailResponse.ok) {
+          console.error(`Failed to send admin delivered notification (${adminEmailResponse.status})`);
+        } else {
+          console.log(`Admin delivered notification sent for order ${orderId}`);
+        }
       } catch (emailError) {
         console.error(`Failed to send admin delivered notification for order ${orderId}:`, emailError);
       }
 
       try {
-        await supabase.functions.invoke('send-status-update', {
-          body: {
-            orderId: orderData.id,
-            orderNumber: orderData.order_number,
-            userEmail: orderData.profiles.email,
-            preferredLanguage: orderData.profiles.preferred_language || 'en',
-            updateType: 'delivered',
-            trackingNumber: trackingNumber,
-            trackingUrl: finalTrackingUrl,
-            carrier: packageData.courier?.name || 'Furgonetka',
+        const customerEmailResponse = await fetch(
+          `${supabaseUrl}/functions/v1/send-status-update`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId: orderData.id,
+              orderNumber: orderData.order_number,
+              userEmail: orderData.profiles.email,
+              preferredLanguage: orderData.profiles.preferred_language || 'en',
+              updateType: 'delivered',
+              trackingNumber: trackingNumber,
+              trackingUrl: finalTrackingUrl,
+              carrier: packageData.courier?.name || packageData.service || 'Furgonetka',
+            }),
           }
-        });
-        console.log(`Customer delivered email sent for order ${orderId}`);
+        );
+        
+        if (!customerEmailResponse.ok) {
+          console.error(`Failed to send delivered email (${customerEmailResponse.status})`);
+        } else {
+          console.log(`Customer delivered email sent for order ${orderId}`);
+        }
       } catch (emailError) {
         console.error(`Failed to send delivered email for order ${orderId}:`, emailError);
       }

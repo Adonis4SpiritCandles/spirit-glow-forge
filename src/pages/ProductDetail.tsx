@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useReviews } from "@/hooks/useReviews";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductReviews from "@/components/ProductReviews";
-import Product3DViewer from "@/components/product/Product3DViewer";
+const Product3DViewer = lazy(() => import("@/components/product/Product3DViewer"));
 import ARPreview from "@/components/product/ARPreview";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
@@ -340,7 +340,9 @@ const ProductDetail = () => {
                 <TabsTrigger value="ar">AR Preview</TabsTrigger>
               </TabsList>
               <TabsContent value="viewer" className="mt-6">
-                <Product3DViewer />
+                <Suspense fallback={<div className="h-64 rounded-md bg-muted/40 flex items-center justify-center text-muted-foreground">Loading 3D Viewer…</div>}>
+                  <Product3DViewer />
+                </Suspense>
               </TabsContent>
               <TabsContent value="ar" className="mt-6">
                 {id && (

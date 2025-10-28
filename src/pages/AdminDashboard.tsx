@@ -25,6 +25,7 @@ import AdminStatistics from '@/components/AdminStatistics';
 import AdminExport from '@/components/AdminExport';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
+import AdminSocialMedia from '@/components/admin/AdminSocialMedia';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 
@@ -153,7 +154,7 @@ const AdminDashboard = () => {
   const [isBulkOperating, setIsBulkOperating] = useState(false);
 
   // Tabs state (controlled for mobile select)
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'statistics' | 'export'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'statistics' | 'export' | 'social'>('products');
 
   // Check if user is admin
   useEffect(() => {
@@ -1252,6 +1253,7 @@ const AdminDashboard = () => {
                 <SelectItem value="warehouse">{t('warehouse')}</SelectItem>
                 <SelectItem value="statistics">{t('statistics')}</SelectItem>
                 <SelectItem value="export">Export</SelectItem>
+                <SelectItem value="social">Social Media</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -1264,6 +1266,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">{t('warehouse')}</TabsTrigger>
             <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
             <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">Export</TabsTrigger>
+            <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">Social Media</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">
@@ -2344,6 +2347,10 @@ const AdminDashboard = () => {
               orders,
               customers: profiles
             }} />
+          </TabsContent>
+
+          <TabsContent value="social" className="space-y-4">
+            <AdminSocialMedia />
           </TabsContent>
         </Tabs>
 

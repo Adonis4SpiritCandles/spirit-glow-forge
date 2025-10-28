@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Trash2, GripVertical, Instagram, ExternalLink } from "lucide-react";
+import { Plus, Trash2, GripVertical, Instagram, ExternalLink, Edit2, Upload } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   DndContext,
@@ -36,6 +37,8 @@ interface SocialPost {
   embed_url?: string;
   external_link?: string;
   caption?: string;
+  caption_en?: string;
+  caption_pl?: string;
   is_active: boolean;
   display_order: number;
 }
@@ -44,10 +47,10 @@ interface SortableItemProps {
   post: SocialPost;
   onDelete: (id: string) => void;
   onToggle: (id: string, isActive: boolean) => void;
-  onUpdate: (post: SocialPost) => void;
+  onEdit: (post: SocialPost) => void;
 }
 
-const SortableItem = ({ post, onDelete, onToggle, onUpdate }: SortableItemProps) => {
+const SortableItem = ({ post, onDelete, onToggle, onEdit }: SortableItemProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: post.id });
   const { language } = useLanguage();
 
@@ -84,8 +87,10 @@ const SortableItem = ({ post, onDelete, onToggle, onUpdate }: SortableItemProps)
             </span>
           </div>
           
-          {post.caption && (
-            <p className="text-sm text-muted-foreground line-clamp-2">{post.caption}</p>
+          {(post.caption_en || post.caption_pl) && (
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {language === 'pl' ? post.caption_pl : post.caption_en}
+            </p>
           )}
           
           {post.external_link && (
@@ -112,14 +117,23 @@ const SortableItem = ({ post, onDelete, onToggle, onUpdate }: SortableItemProps)
             />
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDelete(post.id)}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(post)}
+            >
+              <Edit2 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(post.id)}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -130,15 +144,19 @@ const AdminSocialMedia = () => {
   const { language } = useLanguage();
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<SocialPost | null>(null);
+  const [uploading, setUploading] = useState(false);
   
   // Form state
   const [platform, setPlatform] = useState<'instagram' | 'tiktok'>('instagram');
   const [type, setType] = useState<'image' | 'video'>('image');
   const [mediaUrl, setMediaUrl] = useState('');
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [embedUrl, setEmbedUrl] = useState('');
   const [externalLink, setExternalLink] = useState('');
-  const [caption, setCaption] = useState('');
+  const [captionEn, setCaptionEn] = useState('');
+  const [captionPl, setCaptionPl] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -163,6 +181,60 @@ const AdminSocialMedia = () => {
     setLoading(false);
   };
 
+  const resetForm = () => {
+    setPlatform('instagram');
+    setType('image');
+    setMediaUrl('');
+    setMediaFile(null);
+    setEmbedUrl('');
+    setExternalLink('');
+    setCaptionEn('');
+    setCaptionPl('');
+    setEditingPost(null);
+  };
+
+  const handleEdit = (post: SocialPost) => {
+    setEditingPost(post);
+    setPlatform(post.platform);
+    setType(post.type);
+    setMediaUrl(post.media_url);
+    setEmbedUrl(post.embed_url || '');
+    setExternalLink(post.external_link || '');
+    setCaptionEn(post.caption_en || '');
+    setCaptionPl(post.caption_pl || '');
+    setIsDialogOpen(true);
+  };
+
+  const handleFileUpload = async (file: File): Promise<string | null> => {
+    try {
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `social_media/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error: any) {
+      toast({
+        title: language === 'pl' ? 'Błąd uploadu' : 'Upload error',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -172,7 +244,6 @@ const AdminSocialMedia = () => {
 
       const newPosts = arrayMove(posts, oldIndex, newIndex);
       
-      // Update display_order for all posts
       const updates = newPosts.map((post, index) => ({
         id: post.id,
         display_order: index,
@@ -180,7 +251,6 @@ const AdminSocialMedia = () => {
 
       setPosts(newPosts);
 
-      // Update in database
       for (const update of updates) {
         await supabase
           .from('social_posts')
@@ -194,50 +264,86 @@ const AdminSocialMedia = () => {
     }
   };
 
-  const handleAddPost = async () => {
-    if (!mediaUrl) {
+  const handleSubmit = async () => {
+    let finalMediaUrl = mediaUrl;
+
+    // Handle file upload if present
+    if (mediaFile) {
+      const uploadedUrl = await handleFileUpload(mediaFile);
+      if (!uploadedUrl) return;
+      finalMediaUrl = uploadedUrl;
+    }
+
+    if (!finalMediaUrl) {
       toast({
         title: language === 'pl' ? 'Błąd' : 'Error',
-        description: language === 'pl' ? 'URL mediów jest wymagany' : 'Media URL is required',
+        description: language === 'pl' ? 'URL mediów lub plik jest wymagany' : 'Media URL or file is required',
         variant: 'destructive',
       });
       return;
     }
 
-    const { error } = await supabase.from('social_posts').insert({
+    const postData = {
       platform,
       type,
-      media_url: mediaUrl,
+      media_url: finalMediaUrl,
       embed_url: embedUrl || null,
       external_link: externalLink || null,
-      caption: caption || null,
-      display_order: posts.length,
+      caption_en: captionEn || null,
+      caption_pl: captionPl || null,
       is_active: true,
-    });
+    };
 
-    if (error) {
-      toast({
-        title: language === 'pl' ? 'Błąd' : 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+    if (editingPost) {
+      // Update existing post
+      const { error } = await supabase
+        .from('social_posts')
+        .update(postData)
+        .eq('id', editingPost.id);
+
+      if (error) {
+        toast({
+          title: language === 'pl' ? 'Błąd' : 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: language === 'pl' ? 'Post zaktualizowany' : 'Post updated',
+        });
+        setIsDialogOpen(false);
+        resetForm();
+        loadPosts();
+      }
     } else {
-      toast({
-        title: language === 'pl' ? 'Post dodany' : 'Post added',
+      // Add new post
+      const { error } = await supabase.from('social_posts').insert({
+        ...postData,
+        display_order: posts.length,
       });
-      
-      // Reset form
-      setMediaUrl('');
-      setEmbedUrl('');
-      setExternalLink('');
-      setCaption('');
-      setShowAddForm(false);
-      
-      loadPosts();
+
+      if (error) {
+        toast({
+          title: language === 'pl' ? 'Błąd' : 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: language === 'pl' ? 'Post dodany' : 'Post added',
+        });
+        setIsDialogOpen(false);
+        resetForm();
+        loadPosts();
+      }
     }
   };
 
   const handleDeletePost = async (id: string) => {
+    if (!confirm(language === 'pl' ? 'Czy na pewno chcesz usunąć ten post?' : 'Are you sure you want to delete this post?')) {
+      return;
+    }
+
     const { error } = await supabase.from('social_posts').delete().eq('id', id);
 
     if (error) {
@@ -286,104 +392,139 @@ const AdminSocialMedia = () => {
           <h2 className="text-2xl font-bold">
             {language === 'pl' ? 'Zarządzanie Social Media' : 'Social Media Management'}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {language === 'pl' 
               ? 'Zarządzaj postami Instagram i TikTok wyświetlanymi na stronie głównej'
               : 'Manage Instagram and TikTok posts displayed on the homepage'}
           </p>
         </div>
         
-        <Button onClick={() => setShowAddForm(!showAddForm)}>
-          <Plus className="w-4 h-4 mr-2" />
-          {language === 'pl' ? 'Dodaj Post' : 'Add Post'}
-        </Button>
-      </div>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) resetForm();
+        }}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              {language === 'pl' ? 'Dodaj Post' : 'Add Post'}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {editingPost 
+                  ? (language === 'pl' ? 'Edytuj Post' : 'Edit Post')
+                  : (language === 'pl' ? 'Nowy Post' : 'New Post')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'pl' ? 'Platforma' : 'Platform'}</Label>
+                  <Select value={platform} onValueChange={(v: any) => setPlatform(v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="instagram">Instagram</SelectItem>
+                      <SelectItem value="tiktok">TikTok</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* Add Post Form */}
-      {showAddForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{language === 'pl' ? 'Nowy Post' : 'New Post'}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>{language === 'pl' ? 'Platforma' : 'Platform'}</Label>
-                <Select value={platform} onValueChange={(v: any) => setPlatform(v)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="tiktok">TikTok</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-2">
+                  <Label>{language === 'pl' ? 'Typ' : 'Type'}</Label>
+                  <Select value={type} onValueChange={(v: any) => setType(v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="image">{language === 'pl' ? 'Zdjęcie' : 'Image'}</SelectItem>
+                      <SelectItem value="video">{language === 'pl' ? 'Wideo' : 'Video'}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label>{language === 'pl' ? 'Typ' : 'Type'}</Label>
-                <Select value={type} onValueChange={(v: any) => setType(v)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="image">{language === 'pl' ? 'Zdjęcie' : 'Image'}</SelectItem>
-                    <SelectItem value="video">{language === 'pl' ? 'Wideo' : 'Video'}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>{language === 'pl' ? 'Upload Plik' : 'Upload File'}</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept={type === 'image' ? 'image/*' : 'video/*'}
+                    onChange={(e) => setMediaFile(e.target.files?.[0] || null)}
+                    className="flex-1"
+                  />
+                  <Upload className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {language === 'pl' ? 'Lub podaj URL poniżej' : 'Or provide URL below'}
+                </p>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label>{language === 'pl' ? 'URL Mediów (wymagany)' : 'Media URL (required)'}</Label>
-              <Input
-                value={mediaUrl}
-                onChange={(e) => setMediaUrl(e.target.value)}
-                placeholder="https://..."
-              />
-            </div>
-
-            {type === 'video' && (
               <div className="space-y-2">
-                <Label>{language === 'pl' ? 'Embed URL (opcjonalny)' : 'Embed URL (optional)'}</Label>
+                <Label>{language === 'pl' ? 'URL Mediów' : 'Media URL'}</Label>
                 <Input
-                  value={embedUrl}
-                  onChange={(e) => setEmbedUrl(e.target.value)}
+                  value={mediaUrl}
+                  onChange={(e) => setMediaUrl(e.target.value)}
                   placeholder="https://..."
                 />
               </div>
-            )}
 
-            <div className="space-y-2">
-              <Label>{language === 'pl' ? 'Link Zewnętrzny (opcjonalny)' : 'External Link (optional)'}</Label>
-              <Input
-                value={externalLink}
-                onChange={(e) => setExternalLink(e.target.value)}
-                placeholder="https://instagram.com/..."
-              />
-            </div>
+              {type === 'video' && (
+                <div className="space-y-2">
+                  <Label>{language === 'pl' ? 'Embed URL (opcjonalny)' : 'Embed URL (optional)'}</Label>
+                  <Input
+                    value={embedUrl}
+                    onChange={(e) => setEmbedUrl(e.target.value)}
+                    placeholder="https://..."
+                  />
+                </div>
+              )}
 
-            <div className="space-y-2">
-              <Label>{language === 'pl' ? 'Opis (opcjonalny)' : 'Caption (optional)'}</Label>
-              <Textarea
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder={language === 'pl' ? 'Dodaj opis...' : 'Add caption...'}
-                rows={3}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label>{language === 'pl' ? 'Link Zewnętrzny (opcjonalny)' : 'External Link (optional)'}</Label>
+                <Input
+                  value={externalLink}
+                  onChange={(e) => setExternalLink(e.target.value)}
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
 
-            <div className="flex gap-2">
-              <Button onClick={handleAddPost}>
-                {language === 'pl' ? 'Dodaj' : 'Add'}
-              </Button>
-              <Button variant="outline" onClick={() => setShowAddForm(false)}>
-                {language === 'pl' ? 'Anuluj' : 'Cancel'}
-              </Button>
+              <div className="space-y-2">
+                <Label>{language === 'pl' ? 'Opis (EN)' : 'Caption (EN)'}</Label>
+                <Textarea
+                  value={captionEn}
+                  onChange={(e) => setCaptionEn(e.target.value)}
+                  placeholder="Add caption in English..."
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{language === 'pl' ? 'Opis (PL)' : 'Caption (PL)'}</Label>
+                <Textarea
+                  value={captionPl}
+                  onChange={(e) => setCaptionPl(e.target.value)}
+                  placeholder="Dodaj opis po polsku..."
+                  rows={2}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={handleSubmit} disabled={uploading}>
+                  {uploading ? (language === 'pl' ? 'Uploading...' : 'Uploading...') : 
+                   editingPost ? (language === 'pl' ? 'Zaktualizuj' : 'Update') : 
+                   (language === 'pl' ? 'Dodaj' : 'Add')}
+                </Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  {language === 'pl' ? 'Anuluj' : 'Cancel'}
+                </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {/* Posts List */}
       <div className="space-y-4">
@@ -402,9 +543,7 @@ const AdminSocialMedia = () => {
                   post={post}
                   onDelete={handleDeletePost}
                   onToggle={handleToggleActive}
-                  onUpdate={(updated) => {
-                    setPosts(posts.map((p) => (p.id === updated.id ? updated : p)));
-                  }}
+                  onEdit={handleEdit}
                 />
               ))}
             </SortableContext>

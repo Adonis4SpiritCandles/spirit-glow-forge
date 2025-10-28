@@ -26,6 +26,7 @@ import AdminExport from '@/components/AdminExport';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
 import AdminSocialMedia from '@/components/admin/AdminSocialMedia';
+import AdminCoupons from '@/components/admin/AdminCoupons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 
@@ -1252,6 +1253,7 @@ const AdminDashboard = () => {
                 <SelectItem value="customers">{t('customers')}</SelectItem>
                 <SelectItem value="warehouse">{t('warehouse')}</SelectItem>
                 <SelectItem value="statistics">{t('statistics')}</SelectItem>
+                <SelectItem value="coupons">{language === 'pl' ? 'Kupony' : 'Coupons'}</SelectItem>
                 <SelectItem value="export">Export</SelectItem>
                 <SelectItem value="social">Social Media</SelectItem>
               </SelectContent>
@@ -1265,6 +1267,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">{t('customers')}</TabsTrigger>
             <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">{t('warehouse')}</TabsTrigger>
             <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
+            <TabsTrigger value="coupons" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Kupony' : 'Coupons'}</TabsTrigger>
             <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">Export</TabsTrigger>
             <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">Social Media</TabsTrigger>
           </TabsList>
@@ -2339,6 +2342,10 @@ const AdminDashboard = () => {
               monthlyOrders: [],
               categoryBreakdown: []
             }} />
+          </TabsContent>
+
+          <TabsContent value="coupons" className="space-y-4">
+            <AdminCoupons />
           </TabsContent>
 
           <TabsContent value="export" className="space-y-4">

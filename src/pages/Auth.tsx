@@ -12,6 +12,8 @@ import { toast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import spiritLogo from '@/assets/spirit-logo.png';
 import { ResetPasswordModal } from '@/components/ResetPasswordModal';
+import { useReferral } from '@/hooks/useReferral';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -32,6 +34,7 @@ const Auth = () => {
 
   const { user, signIn, signUp } = useAuth();
   const { t, language } = useLanguage();
+  const { getReferralId, clearReferral } = useReferral();
 
   // Redirect if already logged in
   if (user) {
@@ -84,6 +87,65 @@ const Auth = () => {
             variant: "destructive",
           });
         } else {
+          // Handle referral if present
+          const referralId = getReferralId();
+          if (referralId) {
+            setTimeout(async () => {
+              try {
+                // Insert referral record
+                const { data: userData } = await supabase.auth.getUser();
+                if (userData.user) {
+                  await supabase.from('referrals').insert({
+                    referrer_id: referralId,
+                    referee_email: emailOrUsername,
+                    referee_id: userData.user.id,
+                    status: 'completed'
+                  });
+
+                  // Award points to referrer
+                  const { data: referrerPoints } = await supabase
+                    .from('loyalty_points')
+                    .select('*')
+                    .eq('user_id', referralId)
+                    .single();
+
+                  if (referrerPoints) {
+                    await supabase
+                      .from('loyalty_points')
+                      .update({
+                        points: (referrerPoints.points || 0) + 200,
+                        lifetime_points: (referrerPoints.lifetime_points || 0) + 200
+                      })
+                      .eq('user_id', referralId);
+                  } else {
+                    await supabase.from('loyalty_points').insert({
+                      user_id: referralId,
+                      points: 200,
+                      lifetime_points: 200
+                    });
+                  }
+
+                  // Award welcome points to new user
+                  await supabase.from('loyalty_points').insert({
+                    user_id: userData.user.id,
+                    points: 100,
+                    lifetime_points: 100
+                  });
+
+                  // Award badges
+                  await supabase.from('user_badges').insert([
+                    { user_id: referralId, badge_id: 'referral_inviter' },
+                    { user_id: userData.user.id, badge_id: 'welcome' }
+                  ]);
+
+                  clearReferral();
+                }
+              } catch (err) {
+                console.error('Referral processing error:', err);
+              }
+            }, 1000);
+          }
+
           toast({
             title: "Success!",
             description: "Please check your email to verify your account.",

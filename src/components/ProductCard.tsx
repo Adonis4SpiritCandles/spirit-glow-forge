@@ -75,13 +75,13 @@ const ProductCard = ({
 
   return (
     <Card 
-      className="group bg-card border-border/40 hover:border-primary/40 transition-all duration-500 hover:shadow-luxury"
+      className="group bg-card border-border/40 hover:border-primary/40 transition-all duration-500 hover:shadow-luxury flex flex-col h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <CardContent className="p-0">
+      <CardContent className="p-0 flex flex-col h-full">
         {/* Image Section */}
-        <div className="relative overflow-hidden bg-gradient-mystical aspect-square">
+        <div className="relative overflow-hidden bg-gradient-mystical aspect-square flex-shrink-0">
           <img 
             src={image}
             alt={`${name} soy candle — ${fragrance}`}
@@ -131,18 +131,18 @@ const ProductCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="p-6">
-          <div className="space-y-3">
-            <div>
-              <h3 className="font-playfair text-lg font-semibold text-foreground">
+        <div className="p-6 flex flex-col flex-1">
+          <div className="space-y-3 flex flex-col flex-1">
+            <div className="min-h-[3.5rem]">
+              <h3 className="font-playfair text-lg font-semibold text-foreground line-clamp-1">
                 {name}
               </h3>
-              <p className="text-sm text-muted-foreground italic">
+              <p className="text-sm text-muted-foreground italic line-clamp-1">
                 {t('inspiredBy')} {fragrance}
               </p>
             </div>
 
-            <p className="text-sm text-foreground/80 line-clamp-2">
+            <p className="text-sm text-foreground/80 line-clamp-2 min-h-[2.5rem]">
               {description}
             </p>
 
@@ -154,20 +154,20 @@ const ProductCard = ({
                   variant={selectedSize === index ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedSize(index)}
-                  className="text-xs"
+                  className="text-xs font-medium"
                 >
                   {size.weight}
                 </Button>
               ))}
             </div>
 
-            {/* Price */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <div className="text-lg font-semibold text-primary">
+            {/* Price & Add to Cart - always at bottom */}
+            <div className="flex items-center justify-between gap-2 mt-auto pt-2">
+              <div className="space-y-1 flex-shrink-0">
+                <div className="text-lg font-semibold text-primary whitespace-nowrap">
                   {sizes[selectedSize].price.pln.toFixed(2)} PLN
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground whitespace-nowrap">
                   ~{sizes[selectedSize].price.eur.toFixed(2)} EUR
                 </div>
               </div>
@@ -175,10 +175,10 @@ const ProductCard = ({
               <Button 
                 onClick={handleAddToCart}
                 size="sm"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm flex-shrink-0 min-w-fit"
               >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                {t('addToCart')}
+                <ShoppingCart className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                <span className="truncate">{t('addToCart')}</span>
               </Button>
             </div>
           </div>

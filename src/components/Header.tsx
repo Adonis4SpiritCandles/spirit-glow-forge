@@ -16,6 +16,8 @@ import SearchModal from '@/components/SearchModal';
 import spiritLogo from '@/assets/spirit-logo.png';
 import spiritLogoTransparent from '@/assets/spirit-logo-transparent.png';
 import goldShieldIcon from '@/assets/gold-shield-admin-mini.png';
+import iconLogoCandle from '@/assets/icon-logo-candle-transparent.png';
+import goldShieldMiniIcon from '@/assets/gold-shield-admin-mini-2.png';
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,11 +67,11 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
            <div className="flex items-center space-x-4">
             <Link to="/">
               <img 
-                src={spiritLogo} 
+                src={iconLogoCandle} 
                 alt="SPIRIT CANDLES" 
-                className="h-12 w-auto hover:scale-105 transition-all duration-500"
+                className="h-12 w-auto hover:scale-105 transition-all duration-500 animate-glow-pulse"
                 style={{
-                  filter: 'brightness(0) invert(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.8))'
+                  filter: 'brightness(0) invert(1) drop-shadow(0 0 16px rgba(255, 255, 255, 0.9))'
                 }}
               />
             </Link>
@@ -223,32 +225,85 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               )}
             </Button>
 
-            {/* Mobile Icons - Dashboard (for all users) and Admin (for admins only) */}
-            {user && (
-              <>
-                <Link to="/dashboard" className="md:hidden">
-                  <Button variant="ghost" size="sm">
-                    <LayoutDashboard className="h-4 w-4" />
+            {/* Mobile User Icon/Menu - Between Cart and Burger */}
+            <div className="md:hidden">
+              {user ? (
+                <div className="flex items-center gap-2">
+                  {/* Admin Shield Icon for Mobile */}
+                  {userProfile?.role === 'admin' && (
+                    <Link to="/admin">
+                      <Button variant="ghost" size="sm" className="relative">
+                        <img src={goldShieldMiniIcon} alt="Admin" className="h-5 w-5" />
+                        {unseenCount > 0 && (
+                          <Badge 
+                            variant="secondary" 
+                            className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs animate-pulse"
+                          >
+                            {unseenCount}
+                          </Badge>
+                        )}
+                      </Button>
+                    </Link>
+                  )}
+                  
+                  {/* User Dropdown Menu for Mobile */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <User className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 bg-background z-[100]">
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" className="flex items-center cursor-pointer">
+                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                          {t('dashboard')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard?tab=settings" className="flex items-center cursor-pointer">
+                          <SettingsIcon className="h-4 w-4 mr-2" />
+                          {t('settings')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard?tab=profile" className="flex items-center cursor-pointer">
+                          <User className="h-4 w-4 mr-2" />
+                          {t('profile')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard?tab=orders" className="flex items-center cursor-pointer">
+                          <Package className="h-4 w-4 mr-2" />
+                          {t('myOrders')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/shop" className="flex items-center cursor-pointer">
+                          <ShoppingBag className="h-4 w-4 mr-2" />
+                          {t('shop')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={handleSignOut}
+                        className="cursor-pointer text-destructive focus:text-destructive"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        {t('logout')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : (
+                <Link to="/auth">
+                  <Button variant="ghost" size="sm" className="gap-1">
+                    <User className="h-5 w-5" />
+                    <span className="text-xs">{t('login')}</span>
                   </Button>
                 </Link>
-                
-                {userProfile?.role === 'admin' && (
-                  <Link to="/admin" className="md:hidden">
-                    <Button variant="ghost" size="sm" className="relative">
-                      <img src={goldShieldIcon} alt="Admin" className="h-4 w-4" />
-                      {unseenCount > 0 && (
-                        <Badge 
-                          variant="secondary" 
-                          className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs animate-pulse"
-                        >
-                          {unseenCount}
-                        </Badge>
-                      )}
-                    </Button>
-                  </Link>
-                )}
-              </>
-            )}
+              )}
+            </div>
 
             {/* Mobile Menu */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>

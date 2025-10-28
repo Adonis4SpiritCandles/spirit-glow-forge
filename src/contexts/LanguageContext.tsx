@@ -55,6 +55,9 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'heroDescription') return language === 'pl' ? 'Odkryj luksusowe świece sojowe ręcznie wykonane z pasją. Każda świeca to podróż do spokoju i harmonii.' : 'Discover luxurious soy candles handcrafted with passion. Each candle is a journey to peace and harmony.';
     if (key === 'shopCollection') return language === 'pl' ? 'Kup Kolekcję' : 'Shop Collection';
     if (key === 'learnOurStory') return language === 'pl' ? 'Poznaj naszą historię' : 'Learn Our Story';
+    if (key === 'featuredCollection') return language === 'pl' ? 'Polecane Kolekcje' : 'Featured Collection';
+    if (key === 'featuredCollectionDescription') return language === 'pl' ? 'Odkryj naszą wyselekcjonowaną kolekcję luksusowych świec sojowych' : 'Discover our handpicked selection of premium soy candles';
+    if (key === 'exploreFullCollection') return language === 'pl' ? 'Zobacz Pełną Kolekcję' : 'Explore Full Collection';
 
     // Footer
     if (key === 'brandDescription') return language === 'pl' ? 'SPIRIT CANDLES - Luksusowe świece sojowe ręcznie wykonane dla Twojego spokoju i harmonii.' : 'SPIRIT CANDLES - Luxury soy candles handcrafted for your peace and harmony.';

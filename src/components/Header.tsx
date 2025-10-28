@@ -69,9 +69,10 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               <img 
                 src={iconLogoCandle} 
                 alt="SPIRIT CANDLES" 
-                className="h-12 w-auto hover:scale-105 transition-all duration-500 animate-glow-pulse"
+                className="h-9 w-auto hover:scale-105 transition-all duration-700"
                 style={{
-                  filter: 'brightness(0) invert(1) drop-shadow(0 0 16px rgba(255, 255, 255, 0.9))'
+                  filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
+                  animation: 'glow-soft 4s ease-in-out infinite'
                 }}
               />
             </Link>

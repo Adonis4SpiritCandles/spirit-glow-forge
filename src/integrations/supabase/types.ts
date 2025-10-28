@@ -49,6 +49,33 @@ export type Database = {
           },
         ]
       }
+      cart_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          last_reminder_sent: string
+          reminder_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_reminder_sent?: string
+          reminder_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_reminder_sent?: string
+          reminder_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       consent_logs: {
         Row: {
           analytics: boolean

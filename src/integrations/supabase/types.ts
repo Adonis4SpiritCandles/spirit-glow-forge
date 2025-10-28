@@ -154,6 +154,74 @@ export type Database = {
         }
         Relationships: []
       }
+      loyalty_points: {
+        Row: {
+          created_at: string
+          id: string
+          lifetime_points: number | null
+          points: number | null
+          tier: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lifetime_points?: number | null
+          points?: number | null
+          tier?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lifetime_points?: number | null
+          points?: number | null
+          tier?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_points_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean | null
+          name: string | null
+          preferences: Json | null
+          subscribed_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          preferences?: Json | null
+          subscribed_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          preferences?: Json | null
+          subscribed_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -348,6 +416,7 @@ export type Database = {
           newsletter_consent: boolean | null
           newsletter_consent_date: string | null
           preferred_language: string
+          quiz_results: Json | null
           role: string
           updated_at: string
           user_id: string
@@ -366,6 +435,7 @@ export type Database = {
           newsletter_consent?: boolean | null
           newsletter_consent_date?: string | null
           preferred_language?: string
+          quiz_results?: Json | null
           role?: string
           updated_at?: string
           user_id: string
@@ -384,6 +454,7 @@ export type Database = {
           newsletter_consent?: boolean | null
           newsletter_consent_date?: string | null
           preferred_language?: string
+          quiz_results?: Json | null
           role?: string
           updated_at?: string
           user_id?: string
@@ -428,6 +499,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      testimonials: {
+        Row: {
+          avatar: string | null
+          comment: string
+          created_at: string
+          id: string
+          is_featured: boolean | null
+          location: string
+          name: string
+          product: string | null
+          rating: number
+          updated_at: string
+        }
+        Insert: {
+          avatar?: string | null
+          comment: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          location: string
+          name: string
+          product?: string | null
+          rating: number
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string | null
+          comment?: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          location?: string
+          name?: string
+          product?: string | null
+          rating?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       wishlist: {
         Row: {

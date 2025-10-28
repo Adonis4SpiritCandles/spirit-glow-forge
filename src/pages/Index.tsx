@@ -2,6 +2,12 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "@/components/HeroSection";
 import ProductCarousel from "@/components/ProductCarousel";
+import TestimonialsCarousel from "@/components/homepage/TestimonialsCarousel";
+import ScentJourney from "@/components/homepage/ScentJourney";
+import SocialFeed from "@/components/homepage/SocialFeed";
+import NewsletterSignup from "@/components/homepage/NewsletterSignup";
+import TrustBadges from "@/components/homepage/TrustBadges";
+import FloatingActionButton from "@/components/FloatingActionButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useAdminNotifications } from "@/hooks/useAdminNotifications";
@@ -45,6 +51,12 @@ const Index = () => {
       
       <HeroSection />
       <ProductCarousel />
+      <TestimonialsCarousel />
+      <ScentJourney />
+      <TrustBadges />
+      <SocialFeed />
+      <NewsletterSignup />
+      <FloatingActionButton />
     </main>
   );
 };

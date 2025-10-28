@@ -1,0 +1,222 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { Mail, CheckCircle2, Loader2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import Confetti from "react-confetti";
+
+const NewsletterSignup = () => {
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const { language } = useLanguage();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [gdprConsent, setGdprConsent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email || !gdprConsent) {
+      toast.error(language === 'pl' 
+        ? 'Wprowadź email i zaakceptuj politykę prywatności'
+        : 'Please enter your email and accept the privacy policy');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert({
+          email,
+          name: name || null,
+          is_active: true,
+        });
+
+      if (error) {
+        if (error.code === '23505') {
+          toast.error(language === 'pl' 
+            ? 'Ten email jest już zapisany do newslettera!'
+            : 'This email is already subscribed!');
+        } else {
+          throw error;
+        }
+      } else {
+        setIsSuccess(true);
+        setShowConfetti(true);
+        toast.success(language === 'pl'
+          ? 'Dziękujemy za zapisanie się! Sprawdź swoją skrzynkę mailową.'
+          : 'Thank you for subscribing! Check your email for a welcome gift.');
+        
+        // Invoke edge function to send welcome email
+        await supabase.functions.invoke('send-welcome-newsletter', {
+          body: { email, name: name || email.split('@')[0] },
+        });
+
+        setTimeout(() => setShowConfetti(false), 5000);
+        
+        // Reset form
+        setEmail("");
+        setName("");
+        setGdprConsent(false);
+      }
+    } catch (error) {
+      console.error('Newsletter signup error:', error);
+      toast.error(language === 'pl'
+        ? 'Wystąpił błąd. Spróbuj ponownie.'
+        : 'An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <section ref={ref} className="py-20 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 relative overflow-hidden">
+      {showConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={500}
+        />
+      )}
+
+      {/* Background decoration */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={inView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.6 }}
+          className="max-w-2xl mx-auto bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 md:p-12 shadow-xl"
+        >
+          {!isSuccess ? (
+            <>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-center mb-8"
+              >
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/20 rounded-full mb-4">
+                  <Mail className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  {language === 'pl' ? 'Dołącz Do Naszej Społeczności' : 'Join Our Community'}
+                </h2>
+                <p className="text-muted-foreground text-lg">
+                  {language === 'pl'
+                    ? 'Zapisz się i otrzymaj 10% zniżki na pierwsze zamówienie!'
+                    : 'Subscribe and get 10% off your first order!'}
+                </p>
+              </motion.div>
+
+              <motion.form
+                onSubmit={handleSubmit}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="space-y-4"
+              >
+                <div>
+                  <Input
+                    type="email"
+                    placeholder={language === 'pl' ? 'Twój adres email' : 'Your email address'}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <Input
+                    type="text"
+                    placeholder={language === 'pl' ? 'Imię (opcjonalnie)' : 'Name (optional)'}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors"
+                  />
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="gdpr"
+                    checked={gdprConsent}
+                    onCheckedChange={(checked) => setGdprConsent(checked as boolean)}
+                    className="mt-1"
+                  />
+                  <label htmlFor="gdpr" className="text-sm text-muted-foreground cursor-pointer">
+                    {language === 'pl'
+                      ? 'Zgadzam się na otrzymywanie newslettera i akceptuję politykę prywatności. Mogę się wypisać w każdej chwili.'
+                      : 'I agree to receive the newsletter and accept the privacy policy. I can unsubscribe at any time.'}
+                  </label>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isLoading || !gdprConsent}
+                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      {language === 'pl' ? 'Zapisywanie...' : 'Subscribing...'}
+                    </>
+                  ) : (
+                    language === 'pl' ? 'Zapisz Się Teraz' : 'Subscribe Now'
+                  )}
+                </Button>
+
+                <p className="text-xs text-center text-muted-foreground">
+                  {language === 'pl'
+                    ? 'Nie spamujemy! Możesz się wypisać w każdej chwili.'
+                    : 'We don\'t spam! Unsubscribe at any time.'}
+                </p>
+              </motion.form>
+            </>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-8"
+            >
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-6">
+                <CheckCircle2 className="w-10 h-10 text-green-500" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-foreground">
+                {language === 'pl' ? 'Dziękujemy!' : 'Thank You!'}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                {language === 'pl'
+                  ? 'Sprawdź swoją skrzynkę email, aby otrzymać kod rabatowy 10%!'
+                  : 'Check your email to receive your 10% discount code!'}
+              </p>
+              <Button
+                onClick={() => setIsSuccess(false)}
+                variant="outline"
+                className="hover:bg-primary/10"
+              >
+                {language === 'pl' ? 'Zapisz Kolejną Osobę' : 'Subscribe Another'}
+              </Button>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default NewsletterSignup;

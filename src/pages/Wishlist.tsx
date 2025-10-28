@@ -13,7 +13,7 @@ import { toast } from '@/hooks/use-toast';
 
 const Wishlist = () => {
   const { wishlistItems, removeFromWishlist, loading, loadWishlist } = useWishlist();
-  const { user } = useAuth();
+  const { user, initialLoadComplete } = useAuth();
   const { t, language } = useLanguage();
   const { addToCart } = useCart();
   const [products, setProducts] = useState<any[]>([]);
@@ -102,16 +102,18 @@ const Wishlist = () => {
     }
   };
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  if (loading || productsLoading) {
+  // Wait for auth to complete before deciding
+  if (!initialLoadComplete || loading || productsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
+  }
+
+  // Redirect only after auth is ready and user is not logged in
+  if (initialLoadComplete && !user) {
+    return <Navigate to="/auth" replace />;
   }
 
   return (

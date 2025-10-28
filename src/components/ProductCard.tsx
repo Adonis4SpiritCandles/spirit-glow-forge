@@ -7,6 +7,8 @@ import { ShoppingCart, Heart, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProductCardProps {
   id: string;
@@ -40,10 +42,13 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedSize, setSelectedSize] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const { toast } = useToast();
   const { addProductToCart } = useCartContext();
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  
+  const isWishlisted = isInWishlist(id);
 
   // Safe guards for props shape
   const hasSizes = Array.isArray(sizes) && sizes.length > 0;
@@ -74,12 +79,21 @@ const ProductCard = ({
     });
   };
 
-  const toggleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
-    toast({
-      title: isWishlisted ? t('removedFromWishlist') : t('addedToWishlist'),
-      description: `${name} ${isWishlisted ? t('removedFromWishlist').toLowerCase() : t('addedToWishlist').toLowerCase()}.`,
-    });
+  const toggleWishlist = async () => {
+    if (!user) {
+      toast({
+        title: t('pleaseLogin') || 'Please log in',
+        description: t('loginToWishlist') || 'You need to be logged in to use wishlist',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (isWishlisted) {
+      await removeFromWishlist(id);
+    } else {
+      await addToWishlist(id);
+    }
   };
 
   return (

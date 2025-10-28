@@ -162,6 +162,60 @@ export type Database = {
         }
         Relationships: []
       }
+      coupons: {
+        Row: {
+          active: boolean
+          amount_off_eur: number | null
+          amount_off_pln: number | null
+          code: string
+          created_at: string
+          description_en: string | null
+          description_pl: string | null
+          id: string
+          max_redemptions: number | null
+          per_user_limit: number | null
+          percent_off: number | null
+          redemptions_count: number
+          updated_at: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          active?: boolean
+          amount_off_eur?: number | null
+          amount_off_pln?: number | null
+          code: string
+          created_at?: string
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          max_redemptions?: number | null
+          per_user_limit?: number | null
+          percent_off?: number | null
+          redemptions_count?: number
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          active?: boolean
+          amount_off_eur?: number | null
+          amount_off_pln?: number | null
+          code?: string
+          created_at?: string
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          max_redemptions?: number | null
+          per_user_limit?: number | null
+          percent_off?: number | null
+          redemptions_count?: number
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: []
+      }
       furgonetka_tokens: {
         Row: {
           access_token: string

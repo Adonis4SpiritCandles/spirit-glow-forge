@@ -4,13 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Shield, Leaf, Clock } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Shield, Leaf, Clock, View } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useReviews } from "@/hooks/useReviews";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductReviews from "@/components/ProductReviews";
+import Product3DViewer from "@/components/product/Product3DViewer";
+import ARPreview from "@/components/product/ARPreview";
+import RelatedProducts from "@/components/product/RelatedProducts";
+import RecentlyViewed from "@/components/product/RecentlyViewed";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
@@ -29,6 +34,7 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState("details");
 
   const isWishlisted = id ? isInWishlist(id) : false;
 

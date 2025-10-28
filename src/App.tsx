@@ -35,7 +35,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
-  import { CookieBanner } from "./components/CookieBanner";
+import { CookieBanner } from "./components/CookieBanner";
+import LiveChatWidget from "./components/chat/LiveChatWidget";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -104,6 +105,7 @@ const App = () => {
                 <Footer />
                 <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
                 <CookieBanner />
+                <LiveChatWidget />
               </div>
             </BrowserRouter>
           </TooltipProvider>

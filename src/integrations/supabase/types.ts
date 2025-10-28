@@ -76,6 +76,41 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          sender: string
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          sender: string
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          sender?: string
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       consent_logs: {
         Row: {
           analytics: boolean
@@ -462,6 +497,51 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referee_email: string
+          referee_id: string | null
+          referrer_id: string
+          reward_points: number | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referee_email: string
+          referee_id?: string | null
+          referrer_id: string
+          reward_points?: number | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referee_email?: string
+          referee_id?: string | null
+          referrer_id?: string
+          reward_points?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           comment: string | null
@@ -497,6 +577,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          is_public: boolean | null
+          name: string | null
+          share_token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_public?: boolean | null
+          name?: string | null
+          share_token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_public?: boolean | null
+          name?: string | null
+          share_token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_wishlists_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -539,23 +654,61 @@ export type Database = {
         }
         Relationships: []
       }
-      wishlist: {
+      user_badges: {
         Row: {
-          created_at: string
+          badge_id: string
+          earned_at: string
           id: string
-          product_id: string
           user_id: string
         }
         Insert: {
-          created_at?: string
+          badge_id: string
+          earned_at?: string
           id?: string
-          product_id: string
           user_id: string
         }
         Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      wishlist: {
+        Row: {
+          collection: string | null
+          created_at: string
+          id: string
+          price_alert_enabled: boolean | null
+          product_id: string
+          stock_alert_enabled: boolean | null
+          user_id: string
+        }
+        Insert: {
+          collection?: string | null
           created_at?: string
           id?: string
+          price_alert_enabled?: boolean | null
+          product_id: string
+          stock_alert_enabled?: boolean | null
+          user_id: string
+        }
+        Update: {
+          collection?: string | null
+          created_at?: string
+          id?: string
+          price_alert_enabled?: boolean | null
           product_id?: string
+          stock_alert_enabled?: boolean | null
           user_id?: string
         }
         Relationships: [

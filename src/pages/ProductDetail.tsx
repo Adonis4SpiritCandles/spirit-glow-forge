@@ -334,7 +334,7 @@ const ProductDetail = () => {
           {/* Experience Tabs: 3D Viewer & AR */}
           <section className="mt-8">
             <h2 className="sr-only">Product Experience</h2>
-            <Tabs defaultValue="viewer" className="w-full">
+            <Tabs defaultValue="ar" className="w-full">
               <TabsList className="grid grid-cols-2 max-w-md">
                 <TabsTrigger value="viewer">3D Viewer</TabsTrigger>
                 <TabsTrigger value="ar">AR Preview</TabsTrigger>

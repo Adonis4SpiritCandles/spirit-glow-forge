@@ -17,6 +17,9 @@ interface Order {
   total_eur: number;
   shipping_cost_pln?: number;
   shipping_cost_eur?: number;
+  discount_pln?: number;
+  discount_eur?: number;
+  coupon_code?: string;
   carrier_name?: string;
   created_at: string;
   updated_at?: string;
@@ -103,8 +106,10 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
     : order.profiles?.email || 'N/A';
 
   const shippingAddress = order.shipping_address || {};
-  const productSubtotalPLN = Number(order.total_pln - (order.shipping_cost_pln || 0));
-  const productSubtotalEUR = Number(order.total_eur - (order.shipping_cost_eur || 0));
+  const discountPLN = Number(order.discount_pln || 0);
+  const discountEUR = Number(order.discount_eur || 0);
+  const productSubtotalPLN = Number(order.total_pln - (order.shipping_cost_pln || 0) + discountPLN);
+  const productSubtotalEUR = Number(order.total_eur - (order.shipping_cost_eur || 0) + discountEUR);
   const shippingCostPLN = Number(order.shipping_cost_pln || 0);
   const shippingCostEUR = Number(order.shipping_cost_eur || 0);
   const totalPLN = Number(order.total_pln);
@@ -294,6 +299,12 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('shippingCost')}:</span>
                   <span>{shippingCostPLN.toFixed(2)} PLN / {shippingCostEUR.toFixed(2)} EUR</span>
+                </div>
+              )}
+              {discountPLN > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span className="text-muted-foreground">{t('discount')} {order.coupon_code && `(${order.coupon_code})`}:</span>
+                  <span>-{discountPLN.toFixed(2)} PLN / -{discountEUR.toFixed(2)} EUR</span>
                 </div>
               )}
               {(order.carrier_name || order.carrier) && (

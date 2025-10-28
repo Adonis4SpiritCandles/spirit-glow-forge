@@ -34,6 +34,9 @@ interface Order {
   total_eur: number;
   shipping_cost_pln?: number;
   shipping_cost_eur?: number;
+  discount_pln?: number;
+  discount_eur?: number;
+  coupon_code?: string;
   carrier_name?: string;
   status: string;
   created_at: string;
@@ -381,13 +384,14 @@ const UserDashboard = () => {
                   <div className="space-y-4">
                     {orders.map((order) => {
                       const badges = getOrderBadges(order);
-                      // FIX: Use actual cents values, not rounded
-                       const totalPLN = Number(order.total_pln).toFixed(2);
-                       const totalEUR = Number(order.total_eur).toFixed(2);
-                       const shippingCostPLN = Number(order.shipping_cost_pln || 0).toFixed(2);
-                       const shippingCostEUR = Number(order.shipping_cost_eur || 0).toFixed(2);
-                       const productsPLN = Number(order.total_pln - (order.shipping_cost_pln || 0)).toFixed(2);
-                       const productsEUR = Number(order.total_eur - (order.shipping_cost_eur || 0)).toFixed(2);
+                      const discountPLN = Number(order.discount_pln || 0);
+                      const discountEUR = Number(order.discount_eur || 0);
+                      const totalPLN = Number(order.total_pln).toFixed(2);
+                      const totalEUR = Number(order.total_eur).toFixed(2);
+                      const shippingCostPLN = Number(order.shipping_cost_pln || 0).toFixed(2);
+                      const shippingCostEUR = Number(order.shipping_cost_eur || 0).toFixed(2);
+                      const productsPLN = Number(order.total_pln - (order.shipping_cost_pln || 0) + discountPLN).toFixed(2);
+                      const productsEUR = Number(order.total_eur - (order.shipping_cost_eur || 0) + discountEUR).toFixed(2);
 
                       return (
                         <div key={order.id} className="border rounded-lg p-4 space-y-3">
@@ -416,6 +420,12 @@ const UserDashboard = () => {
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">{t('shipping')}:</span>
                               <span>{shippingCostPLN} PLN / {shippingCostEUR} EUR</span>
+                            </div>
+                          )}
+                          {discountPLN > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                              <span className="text-muted-foreground">{t('discount')} {order.coupon_code && `(${order.coupon_code})`}:</span>
+                              <span>-{discountPLN.toFixed(2)} PLN / -{discountEUR.toFixed(2)} EUR</span>
                             </div>
                           )}
                           {(order.carrier_name || order.carrier) && (

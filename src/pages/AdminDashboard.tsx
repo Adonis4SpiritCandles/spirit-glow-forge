@@ -56,6 +56,9 @@ interface Order {
   total_eur: number;
   shipping_cost_pln?: number;
   shipping_cost_eur?: number;
+  discount_pln?: number;
+  discount_eur?: number;
+  coupon_code?: string;
   carrier_name?: string;
   created_at: string;
   deleted_at?: string | null;
@@ -1607,7 +1610,7 @@ const AdminDashboard = () => {
                             <TableHead className="text-xs">{t('status')}</TableHead>
                             <TableHead className="text-xs min-w-[180px]">{t('shipping')}</TableHead>
                             <TableHead className="text-xs">{t('created')}</TableHead>
-                            <TableHead className="text-xs">{t('actions')}</TableHead>
+                            <TableHead className="text-xs min-w-[140px]">{t('actions')}</TableHead>
                           </TableRow>
                         </TableHeader>
                       <TableBody>
@@ -1714,10 +1717,10 @@ const AdminDashboard = () => {
                                   order.status === 'paid' ? 'secondary' :
                                   order.status === 'pending' ? 'outline' : 'destructive'
                                 }
-                                className={
+                                className={`text-[9px] px-1.5 py-0.5 h-auto ${
                                   order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
                                   order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
-                                }
+                                }`}
                               >
                                 {order.status === 'completed' ? t('complete') : order.status}
                               </Badge>
@@ -1756,7 +1759,7 @@ const AdminDashboard = () => {
                                    <Button
                                      size="sm"
                                      variant="outline"
-                                     className="h-7 text-[10px] px-2"
+                                     className="h-7 text-[9px] px-1.5"
                                      onClick={() => updateOrderStatus(order.id, 'completed')}
                                      disabled={order.status === 'completed'}
                                    >
@@ -1780,12 +1783,12 @@ const AdminDashboard = () => {
                                     <Button
                                       size="sm"
                                       variant="default"
-                                      className="h-7 text-[10px] px-1.5 flex items-center gap-1 bg-white hover:bg-gray-100 text-black"
+                                      className="h-7 text-[9px] px-1 whitespace-nowrap flex items-center gap-0.5 bg-white hover:bg-gray-100 text-black"
                                       onClick={() => openShipmentModal(order)}
                                       disabled={order.status !== 'completed'}
                                     >
                                       <span className="order-1">{t('sendTo')}</span>
-                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4 order-2" />
+                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-3.5 w-3.5 order-2" />
                                     </Button>
                                   )}
                                   <Button

@@ -113,12 +113,17 @@ serve(async (req) => {
         ? parseFloat(session.metadata.shipping_cost_eur)
         : 0;
       const carrierName = session.metadata?.carrier_name || null;
+      const couponCode = session.metadata?.coupon_code || null;
+      const discountPLN = session.metadata?.discount_amount 
+        ? parseFloat(session.metadata.discount_amount) 
+        : 0;
+      const discountEUR = discountPLN > 0 ? Number((discountPLN / 4.3).toFixed(2)) : 0;
 
-      // Calculate total including shipping (keep 2 decimals)
-      const orderTotalPLN = Number((totalPLN + shippingCostPLN).toFixed(2));
-      const orderTotalEUR = Number((totalEUR + shippingCostEUR).toFixed(2));
+      // Calculate total including shipping and discount (keep 2 decimals)
+      const orderTotalPLN = Number((totalPLN + shippingCostPLN - discountPLN).toFixed(2));
+      const orderTotalEUR = Number((totalEUR + shippingCostEUR - discountEUR).toFixed(2));
 
-      // Create order
+      // Create order with discount info
       const { data: order, error: orderError } = await supabaseClient
         .from("orders")
         .insert({
@@ -127,6 +132,9 @@ serve(async (req) => {
           total_eur: orderTotalEUR,
           shipping_cost_pln: shippingCostPLN,
           shipping_cost_eur: shippingCostEUR,
+          discount_pln: discountPLN,
+          discount_eur: discountEUR,
+          coupon_code: couponCode,
           carrier_name: carrierName,
           status: "paid",
           shipping_status: "pending",

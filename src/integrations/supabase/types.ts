@@ -685,6 +685,7 @@ export type Database = {
           is_active: boolean | null
           media_url: string
           platform: string
+          preview_image_url: string | null
           type: string
           updated_at: string | null
         }
@@ -700,6 +701,7 @@ export type Database = {
           is_active?: boolean | null
           media_url: string
           platform: string
+          preview_image_url?: string | null
           type: string
           updated_at?: string | null
         }
@@ -715,6 +717,7 @@ export type Database = {
           is_active?: boolean | null
           media_url?: string
           platform?: string
+          preview_image_url?: string | null
           type?: string
           updated_at?: string | null
         }

@@ -23,7 +23,7 @@ const LiveChatWidget = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [sessionId, setSessionId] = useState(() => `session-${Date.now()}-${Math.random()}`);
   const [hasNewMessages, setHasNewMessages] = useState(false);
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { user, initialLoadComplete } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -227,8 +227,8 @@ const LiveChatWidget = () => {
             className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-lg shadow-2xl flex flex-col"
             style={{ height: isMinimized ? 'auto' : '600px', maxHeight: 'calc(100vh - 3rem)' }}
           >
-            {/* Header - fixed height */}
-            <div className="bg-gradient-to-r from-primary to-accent p-4 flex items-center justify-between rounded-t-lg flex-shrink-0" style={{ minHeight: '72px' }}>
+            {/* Header - fixed height with dark gradient */}
+            <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 flex items-center justify-between rounded-t-lg flex-shrink-0" style={{ minHeight: '72px' }}>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                   <MessageCircle className="w-5 h-5 text-white" />
@@ -340,7 +340,7 @@ const LiveChatWidget = () => {
 
                 {/* Input area - fixed at bottom */}
                 {user && (
-                  <div className="p-4 border-t border-border bg-background rounded-b-lg flex-shrink-0">
+                  <div className="p-4 border-t border-border bg-background rounded-b-lg flex-shrink-0 space-y-2">
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
@@ -368,6 +368,15 @@ const LiveChatWidget = () => {
                         )}
                       </Button>
                     </form>
+                    {/* End chat link */}
+                    <div className="text-center">
+                      <button
+                        onClick={handleEndChat}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+                      >
+                        {t('endConversation')}
+                      </button>
+                    </div>
                   </div>
                 )}
               </>

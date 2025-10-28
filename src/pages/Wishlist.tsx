@@ -177,34 +177,38 @@ const Wishlist = () => {
                     />
                   </div>
                 </Link>
-                <CardContent className="p-4 space-y-3">
+                <CardContent className="p-4 flex flex-col gap-3">
                   <Link to={`/product/${product.id}`}>
-                    <h3 className="font-playfair text-lg font-bold hover:text-primary transition-colors">
+                    <h3 className="font-playfair text-base sm:text-lg font-bold hover:text-primary transition-colors line-clamp-1">
                       {language === 'en' ? product.name_en : product.name_pl}
                     </h3>
                   </Link>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-2">
                     <div>
-                      <div className="text-xl font-bold text-primary">
+                      <div className="text-lg sm:text-xl font-bold text-primary">
                         {product.price_pln} PLN
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-xs sm:text-sm text-muted-foreground">
                         ~{product.price_eur} EUR
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Bell className="w-3 h-3" />
-                        {t('alerts') || 'Alerts'}
-                        <Switch checked={!!alerts[product.id]} onCheckedChange={() => toggleAlert(product.id)} />
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Bell className="w-3 h-3 flex-shrink-0" />
+                        <span className="whitespace-nowrap">{t('alerts') || 'Alerts'}</span>
+                        <Switch 
+                          checked={!!alerts[product.id]} 
+                          onCheckedChange={() => toggleAlert(product.id)} 
+                          className="scale-75"
+                        />
                       </div>
                       <Button
                         size="sm"
                         onClick={() => handleAddToCart(product.id)}
-                        className="gap-2"
+                        className="gap-1.5 text-xs sm:text-sm w-full sm:w-auto whitespace-nowrap"
                       >
-                        <ShoppingCart className="w-4 h-4" />
-                        {t('addToCart')}
+                        <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                        <span className="truncate">{t('addToCart')}</span>
                       </Button>
                     </div>
                   </div>

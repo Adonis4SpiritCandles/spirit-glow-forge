@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,8 +9,10 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Trash2, GripVertical, Instagram, ExternalLink, Edit2, Upload } from "lucide-react";
+import { Plus, Trash2, GripVertical, ExternalLink, Edit2, Upload } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import tiktokLogo from '@/assets/tiktok-title.png';
+import instagramLogo from '@/assets/instagram-title.png';
 import {
   DndContext,
   closestCenter,
@@ -34,6 +36,7 @@ interface SocialPost {
   platform: 'instagram' | 'tiktok';
   type: 'image' | 'video';
   media_url: string;
+  preview_image_url?: string;
   embed_url?: string;
   external_link?: string;
   caption?: string;
@@ -70,20 +73,24 @@ const SortableItem = ({ post, onDelete, onToggle, onEdit }: SortableItemProps) =
         <div className="flex-shrink-0">
           {post.type === 'image' ? (
             <img src={post.media_url} alt="Post preview" className="w-20 h-20 object-cover rounded" />
+          ) : post.preview_image_url ? (
+            <img src={post.preview_image_url} alt="Video preview" className="w-20 h-20 object-cover rounded" />
           ) : (
             <div className="w-20 h-20 bg-muted rounded flex items-center justify-center">
-              <Instagram className="w-8 h-8 text-muted-foreground" />
+              <span className="text-2xl">🎥</span>
             </div>
           )}
         </div>
 
         <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium px-2 py-1 bg-primary/10 text-primary rounded">
-              {post.platform}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {post.type === 'image' ? '📷' : '🎥'} {post.type}
+          <div className="flex items-center gap-2 flex-wrap">
+            <img 
+              src={post.platform === 'tiktok' ? tiktokLogo : instagramLogo} 
+              alt={post.platform}
+              className="h-6 w-auto object-contain"
+            />
+            <span className="text-xs font-bold uppercase px-2 py-1 bg-secondary/50 rounded">
+              {post.type}
             </span>
           </div>
           
@@ -153,6 +160,8 @@ const AdminSocialMedia = () => {
   const [type, setType] = useState<'image' | 'video'>('image');
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState('');
+  const [previewImageFile, setPreviewImageFile] = useState<File | null>(null);
   const [embedUrl, setEmbedUrl] = useState('');
   const [externalLink, setExternalLink] = useState('');
   const [captionEn, setCaptionEn] = useState('');
@@ -186,6 +195,8 @@ const AdminSocialMedia = () => {
     setType('image');
     setMediaUrl('');
     setMediaFile(null);
+    setPreviewImageUrl('');
+    setPreviewImageFile(null);
     setEmbedUrl('');
     setExternalLink('');
     setCaptionEn('');
@@ -198,6 +209,7 @@ const AdminSocialMedia = () => {
     setPlatform(post.platform);
     setType(post.type);
     setMediaUrl(post.media_url);
+    setPreviewImageUrl(post.preview_image_url || '');
     setEmbedUrl(post.embed_url || '');
     setExternalLink(post.external_link || '');
     setCaptionEn(post.caption_en || '');
@@ -266,12 +278,19 @@ const AdminSocialMedia = () => {
 
   const handleSubmit = async () => {
     let finalMediaUrl = mediaUrl;
+    let finalPreviewImageUrl = previewImageUrl;
 
-    // Handle file upload if present
+    // Handle file uploads
     if (mediaFile) {
       const uploadedUrl = await handleFileUpload(mediaFile);
       if (!uploadedUrl) return;
       finalMediaUrl = uploadedUrl;
+    }
+
+    if (previewImageFile) {
+      const uploadedUrl = await handleFileUpload(previewImageFile);
+      if (!uploadedUrl) return;
+      finalPreviewImageUrl = uploadedUrl;
     }
 
     if (!finalMediaUrl) {
@@ -283,10 +302,21 @@ const AdminSocialMedia = () => {
       return;
     }
 
+    // Validate preview image for videos
+    if (type === 'video' && !finalPreviewImageUrl) {
+      toast({
+        title: language === 'pl' ? 'Błąd' : 'Error',
+        description: language === 'pl' ? 'Obraz podglądu jest wymagany dla filmów' : 'Preview image is required for videos',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const postData = {
       platform,
       type,
       media_url: finalMediaUrl,
+      preview_image_url: finalPreviewImageUrl || null,
       embed_url: embedUrl || null,
       external_link: externalLink || null,
       caption_en: captionEn || null,
@@ -439,8 +469,12 @@ const AdminSocialMedia = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="image">{language === 'pl' ? 'Zdjęcie' : 'Image'}</SelectItem>
-                      <SelectItem value="video">{language === 'pl' ? 'Wideo' : 'Video'}</SelectItem>
+                      <SelectItem value="image">
+                        <span className="font-bold uppercase">IMAGE</span>
+                      </SelectItem>
+                      <SelectItem value="video">
+                        <span className="font-bold uppercase">VIDEO</span>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -472,14 +506,39 @@ const AdminSocialMedia = () => {
               </div>
 
               {type === 'video' && (
-                <div className="space-y-2">
-                  <Label>{language === 'pl' ? 'Embed URL (opcjonalny)' : 'Embed URL (optional)'}</Label>
-                  <Input
-                    value={embedUrl}
-                    onChange={(e) => setEmbedUrl(e.target.value)}
-                    placeholder="https://..."
-                  />
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-red-500">
+                      {language === 'pl' ? 'Obraz Podglądu (Wymagany dla wideo) *' : 'Preview Image (Required for videos) *'}
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setPreviewImageFile(e.target.files?.[0] || null)}
+                        className="flex-1"
+                      />
+                      <Upload className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {language === 'pl' ? 'Lub podaj URL obrazu podglądu poniżej' : 'Or provide preview image URL below'}
+                    </p>
+                    <Input
+                      value={previewImageUrl}
+                      onChange={(e) => setPreviewImageUrl(e.target.value)}
+                      placeholder="https://..."
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{language === 'pl' ? 'Embed URL (opcjonalny)' : 'Embed URL (optional)'}</Label>
+                    <Input
+                      value={embedUrl}
+                      onChange={(e) => setEmbedUrl(e.target.value)}
+                      placeholder="https://..."
+                    />
+                  </div>
+                </>
               )}
 
               <div className="space-y-2">

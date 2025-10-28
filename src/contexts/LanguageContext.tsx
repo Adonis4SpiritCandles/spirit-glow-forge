@@ -215,6 +215,23 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'payments') return language === 'pl' ? 'Płatności' : 'Payments';
     if (key === 'settings') return language === 'pl' ? 'Ustawienia' : 'Settings';
     if (key === 'accountSettings') return language === 'pl' ? 'Ustawienia konta' : 'Account Settings';
+    
+    // Wishlist translations
+    if (key === 'myWishlist') return language === 'pl' ? 'Lista Życzeń' : 'My Wishlist';
+    if (key === 'alerts') return language === 'pl' ? 'Powiadomienia' : 'Alerts';
+    if (key === 'share') return language === 'pl' ? 'Udostępnij' : 'Share';
+    if (key === 'item') return language === 'pl' ? 'produkt' : 'item';
+    if (key === 'items') return language === 'pl' ? 'produkty' : 'items';
+    if (key === 'emptyWishlist') return language === 'pl' ? 'Twoja lista życzeń jest pusta' : 'Your wishlist is empty';
+    if (key === 'startAddingFavorites') return language === 'pl' ? 'Zacznij dodawać ulubione produkty' : 'Start adding your favorite products';
+    
+    // 3D Viewer translations
+    if (key === 'waxColor') return language === 'pl' ? 'Kolor Wosku' : 'Wax Color';
+    if (key === 'flame') return language === 'pl' ? 'Płomień' : 'Flame';
+    if (key === 'autoRotate') return language === 'pl' ? 'Automatyczny Obrót' : 'Auto Rotate';
+    
+    // Chat translations
+    if (key === 'endConversation') return language === 'pl' ? 'Zakończ rozmowę i zamknij czat' : 'End conversation and close chat';
     if (key === 'manageAccountPrefs') return language === 'pl' ? 'Zarządzaj preferencjami swojego konta' : 'Manage your account preferences';
     if (key === 'accountStatus') return language === 'pl' ? 'Status konta' : 'Account Status';
     if (key === 'user') return language === 'pl' ? 'Użytkownik' : 'User';

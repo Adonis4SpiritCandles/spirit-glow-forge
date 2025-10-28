@@ -292,7 +292,7 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
             <p className="text-xs text-muted-foreground">{t('phonePrefixHint') === 'phonePrefixHint' ? "Telephone prefix (include '+', e.g., +48)" : t('phonePrefixHint') || "Telephone prefix (include '+', e.g., +48)"}</p>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full whitespace-normal min-h-[2.5rem]" disabled={isLoading}>
             {isLoading ? t('calculating') : t('calculateShipping')}
           </Button>
         </form>

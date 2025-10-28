@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,6 +50,9 @@ const Checkout = () => {
   const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
 
   // Redirect to auth if not logged in (only after initial load is complete)
   useEffect(() => {
@@ -127,6 +132,75 @@ const Checkout = () => {
     }
   };
 
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    
+    setIsCouponLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('coupons')
+        .select('*')
+        .eq('code', couponCode.toUpperCase())
+        .eq('active', true)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        toast({
+          title: t('error'),
+          description: t('invalidCoupon') || 'Invalid or expired coupon code',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Validate dates
+      const now = new Date();
+      if (data.valid_from && new Date(data.valid_from) > now) {
+        toast({
+          title: t('error'),
+          description: t('couponNotYetValid') || 'This coupon is not yet valid',
+          variant: 'destructive',
+        });
+        return;
+      }
+      if (data.valid_to && new Date(data.valid_to) < now) {
+        toast({
+          title: t('error'),
+          description: t('couponExpired') || 'This coupon has expired',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Check redemption limit
+      if (data.max_redemptions && data.redemptions_count >= data.max_redemptions) {
+        toast({
+          title: t('error'),
+          description: t('couponMaxRedemptions') || 'This coupon has reached its usage limit',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setAppliedCoupon(data);
+      toast({
+        title: t('success') || 'Success',
+        description: t('couponApplied') || 'Coupon applied successfully',
+      });
+    } catch (error) {
+      console.error('Error applying coupon:', error);
+      toast({
+        title: t('error'),
+        description: t('couponError') || 'Failed to apply coupon',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsCouponLoading(false);
+    }
+  };
+
   const handleShippingConfirm = async () => {
     if (!user || !shippingAddress || !selectedShipping) return;
 
@@ -157,6 +231,7 @@ const Checkout = () => {
           serviceId: selectedShipping.service_id,
           shippingCost: selectedShipping.price.gross,
           carrierName: selectedShipping.carrier,
+          couponCode: appliedCoupon?.code,
         },
       });
 
@@ -178,7 +253,19 @@ const Checkout = () => {
   };
 
   const shippingCost = selectedShipping ? selectedShipping.price.gross : 0;
-  const finalTotalPLN = totalPLN + (selectedShipping?.price.currency === 'PLN' ? shippingCost : 0);
+  let subtotalWithShipping = totalPLN + (selectedShipping?.price.currency === 'PLN' ? shippingCost : 0);
+  
+  // Calculate discount
+  let discountAmount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.percent_off) {
+      discountAmount = (subtotalWithShipping * appliedCoupon.percent_off) / 100;
+    } else if (appliedCoupon.amount_off_pln) {
+      discountAmount = appliedCoupon.amount_off_pln;
+    }
+  }
+  
+  const finalTotalPLN = Math.max(0, subtotalWithShipping - discountAmount);
 
   return (
     <div className="min-h-screen bg-background py-8">
@@ -255,10 +342,64 @@ const Checkout = () => {
 
                   {selectedShipping && (
                     <>
+                      <Card className="p-4 space-y-3">
+                        <h3 className="font-semibold">{t('haveCoupon') || 'Have a coupon?'}</h3>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder={t('enterCouponCode') || 'Enter coupon code'}
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            disabled={!!appliedCoupon}
+                          />
+                          {appliedCoupon ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setAppliedCoupon(null);
+                                setCouponCode('');
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={handleApplyCoupon}
+                              disabled={isCouponLoading || !couponCode.trim()}
+                            >
+                              {isCouponLoading ? t('applying') || 'Applying...' : t('apply') || 'Apply'}
+                            </Button>
+                          )}
+                        </div>
+                        {appliedCoupon && (
+                          <div className="text-sm text-green-600">
+                            ✓ {appliedCoupon.percent_off 
+                              ? `${appliedCoupon.percent_off}% ${t('discount') || 'discount'}` 
+                              : `${appliedCoupon.amount_off_pln} PLN ${t('discount') || 'discount'}`}
+                          </div>
+                        )}
+                      </Card>
+
                       <Card className="p-4 bg-primary/5 border-primary/20">
-                        <div className="flex justify-between items-center text-lg font-semibold">
-                          <span>{t('total')}</span>
-                          <span className="text-primary">{finalTotalPLN.toFixed(2)} PLN</span>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>{t('subtotal')}</span>
+                            <span>{totalPLN.toFixed(2)} PLN</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span>{t('shipping')}</span>
+                            <span>{shippingCost.toFixed(2)} PLN</span>
+                          </div>
+                          {appliedCoupon && discountAmount > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                              <span>{t('discount')}</span>
+                              <span>-{discountAmount.toFixed(2)} PLN</span>
+                            </div>
+                          )}
+                          <Separator />
+                          <div className="flex justify-between items-center text-lg font-semibold">
+                            <span>{t('total')}</span>
+                            <span className="text-primary">{finalTotalPLN.toFixed(2)} PLN</span>
+                          </div>
                         </div>
                       </Card>
 
@@ -349,6 +490,44 @@ const Checkout = () => {
 
                   {selectedShipping && (
                     <>
+                      <Card className="p-4 space-y-3">
+                        <h3 className="font-semibold">{t('haveCoupon') || 'Have a coupon?'}</h3>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder={t('enterCouponCode') || 'Enter coupon code'}
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            disabled={!!appliedCoupon}
+                          />
+                          {appliedCoupon ? (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => {
+                                setAppliedCoupon(null);
+                                setCouponCode('');
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={handleApplyCoupon}
+                              disabled={isCouponLoading || !couponCode.trim()}
+                            >
+                              {isCouponLoading ? t('applying') || 'Applying...' : t('apply') || 'Apply'}
+                            </Button>
+                          )}
+                        </div>
+                        {appliedCoupon && (
+                          <div className="text-sm text-green-600">
+                            ✓ {appliedCoupon.percent_off 
+                              ? `${appliedCoupon.percent_off}% ${t('discount') || 'discount'}` 
+                              : `${appliedCoupon.amount_off_pln} PLN ${t('discount') || 'discount'}`}
+                          </div>
+                        )}
+                      </Card>
+
                       <Card className="p-4 bg-muted/30">
                         <div className="space-y-3">
                           <div className="flex justify-between text-sm">
@@ -359,6 +538,12 @@ const Checkout = () => {
                             <span>{t('shipping')}</span>
                             <span className="font-semibold">{selectedShipping.price.gross.toFixed(2)} {selectedShipping.price.currency}</span>
                           </div>
+                          {appliedCoupon && discountAmount > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                              <span>{t('discount')}</span>
+                              <span>-{discountAmount.toFixed(2)} PLN</span>
+                            </div>
+                          )}
                           <Separator />
                           <div className="flex justify-between font-semibold text-lg">
                             <span>{t('total')}</span>

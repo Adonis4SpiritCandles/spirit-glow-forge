@@ -31,7 +31,7 @@ serve(async (req) => {
     }
 
     // Get request body
-    const { cartItems, shippingAddress, serviceId, shippingCost = 0, carrierName } = await req.json();
+    const { cartItems, shippingAddress, serviceId, shippingCost = 0, carrierName, couponCode } = await req.json();
     
     if (!cartItems || cartItems.length === 0) {
       throw new Error("No cart items provided");
@@ -96,8 +96,49 @@ serve(async (req) => {
     const shippingCostPLN = Number(Number(shippingCost).toFixed(2));
     const shippingCostEUR = Number((Number(shippingCost) / 4.3).toFixed(2)); // Approximate conversion, keep 2 decimals
 
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    // Validate and apply coupon if provided
+    let couponData = null;
+    let discountAmount = 0;
+    
+    if (couponCode) {
+      const { data: coupon, error: couponError } = await supabaseClient
+        .from('coupons')
+        .select('*')
+        .eq('code', couponCode.toUpperCase())
+        .eq('active', true)
+        .maybeSingle();
+
+      if (coupon && !couponError) {
+        const now = new Date();
+        const isValid = 
+          (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
+          (!coupon.valid_to || new Date(coupon.valid_to) >= now) &&
+          (!coupon.max_redemptions || coupon.redemptions_count < coupon.max_redemptions);
+
+        if (isValid) {
+          couponData = coupon;
+          
+          // Calculate subtotal
+          const subtotal = cartItems.reduce((sum: number, item: any) => 
+            sum + (item.product.price_pln * item.quantity), 0) + shippingCostPLN;
+          
+          if (coupon.percent_off) {
+            discountAmount = Math.round((subtotal * coupon.percent_off / 100) * 100); // in grosze
+          } else if (coupon.amount_off_pln) {
+            discountAmount = Math.round(coupon.amount_off_pln * 100); // in grosze
+          }
+
+          // Increment redemption count
+          await supabaseClient
+            .from('coupons')
+            .update({ redemptions_count: coupon.redemptions_count + 1 })
+            .eq('id', coupon.id);
+        }
+      }
+    }
+
+    // Create checkout session with optional discount
+    const sessionParams: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: lineItems,
@@ -111,8 +152,29 @@ serve(async (req) => {
         shipping_cost_pln: shippingCostPLN.toString(),
         shipping_cost_eur: shippingCostEUR.toString(),
         carrier_name: carrierName || undefined,
+        coupon_code: couponData?.code || undefined,
+        discount_amount: discountAmount > 0 ? (discountAmount / 100).toFixed(2) : undefined,
       },
-    });
+    };
+
+    // Add discount as a line item if coupon was applied
+    if (discountAmount > 0) {
+      sessionParams.line_items.push({
+        price_data: {
+          currency: 'pln',
+          product_data: {
+            name: `Discount (${couponData.code})`,
+            description: couponData.percent_off 
+              ? `${couponData.percent_off}% off` 
+              : `${couponData.amount_off_pln} PLN off`,
+          },
+          unit_amount: -discountAmount, // Negative amount for discount
+        },
+        quantity: 1,
+      });
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     console.log(`Created checkout session: ${session.id} for user: ${user.email}`);
 

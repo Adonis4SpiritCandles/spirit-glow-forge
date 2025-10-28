@@ -11,7 +11,20 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useReviews } from "@/hooks/useReviews";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductReviews from "@/components/ProductReviews";
-const Product3DViewer = lazy(() => import("@/components/product/Product3DViewer"));
+const Product3DViewer = lazy(async () => {
+  try {
+    return await import("@/components/product/Product3DViewer");
+  } catch (e) {
+    console.error("3D Viewer failed to load", e);
+    return {
+      default: () => (
+        <div className="h-64 rounded-md bg-muted/40 flex items-center justify-center text-muted-foreground">
+          3D Viewer unavailable
+        </div>
+      ),
+    } as any;
+  }
+});
 import ARPreview from "@/components/product/ARPreview";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
@@ -35,6 +48,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState("details");
+  const [experienceTab, setExperienceTab] = useState<"viewer" | "ar">("ar");
 
   const isWishlisted = id ? isInWishlist(id) : false;
 
@@ -334,16 +348,18 @@ const ProductDetail = () => {
           {/* Experience Tabs: 3D Viewer & AR */}
           <section className="mt-8">
             <h2 className="sr-only">Product Experience</h2>
-            <Tabs defaultValue="ar" className="w-full">
+            <Tabs value={experienceTab} onValueChange={(v) => setExperienceTab(v as "viewer" | "ar")} className="w-full">
               <TabsList className="grid grid-cols-2 max-w-md">
                 <TabsTrigger value="viewer">3D Viewer</TabsTrigger>
                 <TabsTrigger value="ar">AR Preview</TabsTrigger>
               </TabsList>
-              <TabsContent value="viewer" className="mt-6">
-                <Suspense fallback={<div className="h-64 rounded-md bg-muted/40 flex items-center justify-center text-muted-foreground">Loading 3D Viewer…</div>}>
-                  <Product3DViewer />
-                </Suspense>
-              </TabsContent>
+              {experienceTab === 'viewer' && (
+                <TabsContent value="viewer" className="mt-6">
+                  <Suspense fallback={<div className="h-64 rounded-md bg-muted/40 flex items-center justify-center text-muted-foreground">Loading 3D Viewer…</div>}>
+                    <Product3DViewer />
+                  </Suspense>
+                </TabsContent>
+              )}
               <TabsContent value="ar" className="mt-6">
                 {id && (
                   <ARPreview productId={id} productName={product.name} />

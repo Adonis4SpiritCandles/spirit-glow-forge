@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 
 const Wishlist = () => {
-  const { wishlistItems, removeFromWishlist, loading } = useWishlist();
+  const { wishlistItems, removeFromWishlist, loading, loadWishlist } = useWishlist();
   const { user } = useAuth();
   const { t, language } = useLanguage();
   const { addToCart } = useCart();
@@ -41,17 +41,10 @@ const Wishlist = () => {
         setProducts(data || []);
       }
 
-      // Load alert subscriptions
-      if (user) {
-        const { data: alertsData } = await supabase
-          .from('wishlist_alerts')
-          .select('product_id, active')
-          .eq('user_id', user.id)
-          .eq('alert_type', 'restock');
-        const map: Record<string, boolean> = {};
-        alertsData?.forEach(a => { map[a.product_id] = !!a.active; });
-        setAlerts(map);
-      }
+      // Build alerts map from wishlist items (using stock_alert_enabled)
+      const map: Record<string, boolean> = {};
+      wishlistItems.forEach((wi: any) => { map[wi.product_id] = !!wi.stock_alert_enabled; });
+      setAlerts(map);
 
       setProductsLoading(false);
     };
@@ -66,13 +59,17 @@ const Wishlist = () => {
   const handleShare = async () => {
     try {
       const productIds = wishlistItems.map(i => i.product_id);
-      const { data, error } = await supabase
+      const token = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+
+      const { data, error } = await (supabase as any)
         .from('shared_wishlists')
-        .insert({ user_id: user!.id, items: productIds })
-        .select('id')
+        .insert([{ user_id: user!.id, is_public: true, share_token: token, items: productIds }])
+        .select('share_token')
         .single();
       if (error) throw error;
-      const shareUrl = `${window.location.origin}/wishlist/shared/${data.id}`;
+      const shareUrl = `${window.location.origin}/wishlist/shared/${data.share_token}`;
       await navigator.clipboard.writeText(shareUrl);
       toast({ title: t('linkCopied') || 'Link copiato', description: shareUrl });
     } catch (e: any) {
@@ -85,10 +82,21 @@ const Wishlist = () => {
     try {
       const nowActive = !alerts[productId];
       setAlerts(prev => ({ ...prev, [productId]: nowActive }));
-      const { error } = await supabase
-        .from('wishlist_alerts')
-        .upsert({ user_id: user!.id, product_id: productId, alert_type: 'restock', active: nowActive }, { onConflict: 'user_id,product_id,alert_type' });
-      if (error) throw error;
+
+      // Recreate wishlist row with updated alert flag
+      await supabase
+        .from('wishlist')
+        .delete()
+        .eq('user_id', user!.id)
+        .eq('product_id', productId);
+
+      const { error: insErr } = await (supabase as any)
+        .from('wishlist')
+        .insert([{ user_id: user!.id, product_id: productId, stock_alert_enabled: nowActive }]);
+      if (insErr) throw insErr;
+
+      // Refresh local list
+      await loadWishlist();
     } catch (e) {
       console.error('Toggle alert failed', e);
     }

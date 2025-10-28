@@ -585,6 +585,7 @@ export type Database = {
           created_at: string
           id: string
           is_public: boolean | null
+          items: Json
           name: string | null
           share_token: string
           user_id: string
@@ -593,6 +594,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean | null
+          items?: Json
           name?: string | null
           share_token: string
           user_id: string
@@ -601,6 +603,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean | null
+          items?: Json
           name?: string | null
           share_token?: string
           user_id?: string

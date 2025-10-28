@@ -6,29 +6,34 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 
 const SharedWishlist = () => {
-  const { id } = useParams<{ id: string }>();
+  const { token } = useParams<{ token: string }>();
   const { t, language } = useLanguage();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      if (!id) return;
-      const { data: shared } = await supabase
+      if (!token) return;
+      const { data: shared } = await (supabase as any)
         .from('shared_wishlists')
         .select('items')
-        .eq('id', id)
-        .single();
-      if (!shared?.items?.length) { setLoading(false); return; }
-      const { data: prods } = await supabase
+        .eq('share_token', token)
+        .eq('is_public', true)
+        .maybeSingle();
+
+      const itemsJson = (shared as any)?.items as any[] | undefined;
+      const productIds: string[] = Array.isArray(itemsJson) ? (itemsJson as string[]) : [];
+      if (!productIds.length) { setLoading(false); return; }
+
+      const { data: prods } = await (supabase as any)
         .from('products')
         .select('*')
-        .in('id', shared.items);
+        .in('id', productIds as any);
       setProducts(prods || []);
       setLoading(false);
     };
     load();
-  }, [id]);
+  }, [token]);
 
   if (loading) return (
     <div className="min-h-screen bg-background flex items-center justify-center">

@@ -101,7 +101,7 @@ const App = () => {
                   <Route path="/privacy-registration" element={<PrivacyRegistration />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="/wishlist/shared/:id" element={<SharedWishlist />} />
+                  <Route path="/wishlist/shared/:token" element={<SharedWishlist />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Footer />

@@ -1252,6 +1252,7 @@ const AdminDashboard = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="products">{t('products')}</SelectItem>
+                <SelectItem value="collections">{language === 'pl' ? 'Kolekcje' : 'Collections'}</SelectItem>
                 <SelectItem value="orders">{t('orders')}</SelectItem>
                 <SelectItem value="trash">{t('ordersTrash')}</SelectItem>
                 <SelectItem value="customers">{t('customers')}</SelectItem>
@@ -1266,6 +1267,7 @@ const AdminDashboard = () => {
           {/* Tablet/Desktop: wrapped tabs, no horizontal scroll */}
           <TabsList className="hidden sm:flex flex-wrap justify-start gap-1 px-2 py-1">
             <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">{t('products')}</TabsTrigger>
+            <TabsTrigger value="collections" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Kolekcje' : 'Collections'}</TabsTrigger>
             <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">{t('orders')}</TabsTrigger>
             <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">{t('ordersTrash')}</TabsTrigger>
             <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">{t('customers')}</TabsTrigger>
@@ -1515,6 +1517,10 @@ const AdminDashboard = () => {
                 </Table>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="collections" className="space-y-4">
+            <AdminCollections />
           </TabsContent>
 
             <TabsContent value="orders" className="space-y-4">

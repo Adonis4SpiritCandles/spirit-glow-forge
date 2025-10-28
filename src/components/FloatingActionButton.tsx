@@ -64,7 +64,7 @@ const FloatingActionButton = () => {
     {
       icon: ArrowUp,
       label: 'Scroll to Top',
-      color: 'from-blue-500 to-cyan-500',
+      color: 'from-amber-500 to-orange-500',
       onClick: scrollToTop,
     },
   ];
@@ -77,7 +77,7 @@ const FloatingActionButton = () => {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+            className="fixed bottom-32 right-6 z-40"
           >
             {/* Action buttons */}
             <AnimatePresence>
@@ -99,9 +99,9 @@ const FloatingActionButton = () => {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={action.onClick}
-                          className={`relative w-12 h-12 rounded-full bg-gradient-to-r ${action.color} text-white shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center`}
+                          className={`relative w-11 h-11 rounded-full bg-gradient-to-r ${action.color} text-white shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center`}
                         >
-                          <action.icon className="w-5 h-5" />
+                          <action.icon className="w-4 h-4" />
                           {action.badge && (
                             <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
                               {action.badge}
@@ -125,11 +125,11 @@ const FloatingActionButton = () => {
                   whileHover={{ scale: 1.1, rotate: 180 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsOpen(!isOpen)}
-                  className={`w-14 h-14 rounded-full bg-gradient-to-r from-primary via-accent to-primary text-white shadow-xl hover:shadow-2xl transition-shadow flex items-center justify-center ${
+                  className={`w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-xl hover:shadow-2xl transition-shadow flex items-center justify-center ${
                     isOpen ? 'rotate-45' : ''
                   } transition-transform duration-300`}
                 >
-                  <Plus className="w-7 h-7" />
+                  <Plus className="w-6 h-6" />
                 </motion.button>
               </TooltipTrigger>
               <TooltipContent side="left">

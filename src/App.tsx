@@ -33,6 +33,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import PrivacyRegistration from "./pages/PrivacyRegistration";
   import ResetPassword from "./pages/ResetPassword";
   import SharedWishlist from "./pages/SharedWishlist";
+  import ARViewer from "./pages/ARViewer";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
@@ -100,6 +101,7 @@ const App = () => {
                   <Route path="/all-notices" element={<AllNotices />} />
                   <Route path="/privacy-registration" element={<PrivacyRegistration />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/ar/:productId" element={<ARViewer />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="/wishlist/shared/:token" element={<SharedWishlist />} />
                   <Route path="*" element={<NotFound />} />

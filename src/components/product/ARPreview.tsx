@@ -38,7 +38,7 @@ const ARPreview = ({ productId, productName, modelUrl }: ARPreviewProps) => {
     
     if (isMobile) {
       // Try to launch AR viewer directly
-      const arUrl = `https://spirit-candle.com/ar/${productId}`;
+      const arUrl = `${window.location.origin}/ar/${productId}`;
       window.location.href = arUrl;
     } else {
       // Desktop: show QR code to scan with mobile
@@ -46,7 +46,7 @@ const ARPreview = ({ productId, productName, modelUrl }: ARPreviewProps) => {
     }
   };
 
-  const arPageUrl = `https://spirit-candle.com/ar/${productId}`;
+  const arPageUrl = `${window.location.origin}/ar/${productId}`;
 
   return (
     <>

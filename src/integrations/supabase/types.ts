@@ -618,6 +618,48 @@ export type Database = {
           },
         ]
       }
+      social_posts: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          display_order: number | null
+          embed_url: string | null
+          external_link: string | null
+          id: string
+          is_active: boolean | null
+          media_url: string
+          platform: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          embed_url?: string | null
+          external_link?: string | null
+          id?: string
+          is_active?: boolean | null
+          media_url: string
+          platform: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          embed_url?: string | null
+          external_link?: string | null
+          id?: string
+          is_active?: boolean | null
+          media_url?: string
+          platform?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           avatar: string | null

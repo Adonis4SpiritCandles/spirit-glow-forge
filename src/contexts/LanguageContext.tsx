@@ -396,6 +396,31 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'updateProduct') return language === 'pl' ? 'Zaktualizuj produkt' : 'Update Product';
     if (key === 'createProduct') return language === 'pl' ? 'Utwórz produkt' : 'Create Product';
     if (key === 'deleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć ten produkt?' : 'Are you sure you want to delete this product?';
+
+    // Product Detail Page - Missing Translations
+    if (key === 'quantity') return language === 'pl' ? 'Ilość' : 'Quantity';
+    if (key === 'buyNow') return language === 'pl' ? 'Kup teraz' : 'Buy Now';
+    if (key === 'productDetails') return language === 'pl' ? 'Szczegóły produktu' : 'Product Details';
+    if (key === 'waxType') return language === 'pl' ? 'Typ wosku' : 'Wax Type';
+    if (key === 'wick') return language === 'pl' ? 'Knot' : 'Wick';
+    if (key === 'handPoured') return language === 'pl' ? 'Ręcznie wylane' : 'Hand Poured';
+    if (key === 'burnTime') return language === 'pl' ? 'Czas palenia' : 'Burn Time';
+    if (key === 'naturalIngredients') return language === 'pl' ? 'Naturalne składniki' : 'Natural Ingredients';
+    if (key === 'yes') return language === 'pl' ? 'Tak' : 'Yes';
+    if (key === 'no') return language === 'pl' ? 'Nie' : 'No';
+    if (key === 'inspirationNotice') return language === 'pl' ? 'Inspiracja:' : 'Inspiration:';
+    if (key === 'fragranceReferences') return language === 'pl' 
+      ? 'Wszystkie produkty są inspirowane popularnymi zapachami znanych marek, ale nie są z nimi powiązane.' 
+      : 'All products are inspired by popular fragrances from well-known brands but are not affiliated with them.';
+    if (key === 'customerReviews') return language === 'pl' ? 'Opinie klientów' : 'Customer Reviews';
+    if (key === 'reviews') return language === 'pl' ? 'opinie' : 'reviews';
+    if (key === 'basedOnReviews') return language === 'pl' ? 'na podstawie {count} opinii' : 'based on {count} reviews';
+    if (key === 'writeReview') return language === 'pl' ? 'Napisz opinię' : 'Write Review';
+    if (key === 'yourRating') return language === 'pl' ? 'Twoja ocena' : 'Your Rating';
+    if (key === 'yourReview') return language === 'pl' ? 'Twoja opinia' : 'Your Review';
+    if (key === 'shareYourThoughts') return language === 'pl' ? 'Podziel się swoimi przemyśleniami' : 'Share your thoughts';
+    if (key === 'submitReview') return language === 'pl' ? 'Wyślij opinię' : 'Submit Review';
+    if (key === 'allReviews') return language === 'pl' ? 'Wszystkie opinie' : 'All Reviews';
     if (key === 'productWeight') return language === 'pl' ? 'Waga produktu' : 'Product Weight';
     if (key === 'shipmentCreatedSuccess') return language === 'pl' ? 'Przesyłka utworzona pomyślnie' : 'Shipment created successfully';
     if (key === 'admin') return language === 'pl' ? 'Administrator' : 'Admin';

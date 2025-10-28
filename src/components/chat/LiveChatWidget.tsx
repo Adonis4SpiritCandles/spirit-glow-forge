@@ -93,6 +93,9 @@ const LiveChatWidget = () => {
     setInputMessage("");
     setIsTyping(true);
 
+    // Reload messages immediately
+    await loadMessages();
+
     // Auto-response bot
     setTimeout(async () => {
       const botResponse = getBotResponse(inputMessage.toLowerCase());
@@ -106,38 +109,49 @@ const LiveChatWidget = () => {
           sender: 'bot',
         });
 
+      // Reload messages again after bot response
+      await loadMessages();
       setIsTyping(false);
     }, 1500);
   };
 
   const getBotResponse = (message: string): string => {
     const keywords = {
+      wysyłka: language === 'pl' 
+        ? 'Wysyłamy za pomocą Furgonetka. Darmowa dostawa przy zamówieniach powyżej 200 PLN. Standardowa dostawa trwa 2-4 dni robocze.'
+        : 'We ship via Furgonetka. Free shipping on orders over 200 PLN. Standard delivery takes 2-4 business days.',
       shipping: language === 'pl' 
         ? 'Wysyłamy za pomocą Furgonetka. Darmowa dostawa przy zamówieniach powyżej 200 PLN. Standardowa dostawa trwa 2-4 dni robocze.'
         : 'We ship via Furgonetka. Free shipping on orders over 200 PLN. Standard delivery takes 2-4 business days.',
+      zwrot: language === 'pl'
+        ? 'Oferujemy 30-dniowy okres zwrotu. Produkty muszą być nieużywane i w oryginalnym opakowaniu.'
+        : 'We offer a 30-day return period. Products must be unused and in original packaging.',
       returns: language === 'pl'
         ? 'Oferujemy 30-dniowy okres zwrotu. Produkty muszą być nieużywane i w oryginalnym opakowaniu.'
         : 'We offer a 30-day return period. Products must be unused and in original packaging.',
+      zamówienie: language === 'pl'
+        ? 'Możesz sprawdzić status swojego zamówienia w panelu użytkownika. Potrzebujesz pomocy z konkretnym zamówieniem?'
+        : 'You can check your order status in your user dashboard. Need help with a specific order?',
       order: language === 'pl'
         ? 'Możesz sprawdzić status swojego zamówienia w panelu użytkownika. Potrzebujesz pomocy z konkretnym zamówieniem?'
         : 'You can check your order status in your user dashboard. Need help with a specific order?',
+      produkt: language === 'pl'
+        ? 'Mamy szeroki wybór świec sojowych ręcznie robionych. Sprawdź naszą kolekcję w sklepie!'
+        : 'We have a wide selection of handmade soy candles. Check our collection in the shop!',
       products: language === 'pl'
         ? 'Mamy szeroki wybór świec sojowych ręcznie robionych. Sprawdź naszą kolekcję w sklepie!'
         : 'We have a wide selection of handmade soy candles. Check our collection in the shop!',
-      human: language === 'pl'
-        ? 'Przekazuję Cię do naszego zespołu obsługi klienta. Ktoś się z Tobą wkrótce skontaktuje!'
-        : 'Transferring you to our customer service team. Someone will be with you shortly!',
     };
 
     for (const [key, response] of Object.entries(keywords)) {
-      if (message.includes(key) || message.includes(key.toLowerCase())) {
+      if (message.toLowerCase().includes(key.toLowerCase())) {
         return response;
       }
     }
 
     return language === 'pl'
-      ? 'Dziękuję za wiadomość! Jak mogę Ci pomóc? Mogę odpowiedzieć na pytania o wysyłkę, zwroty, zamówienia lub produkty. Wpisz "człowiek" jeśli chcesz rozmawiać z konsultantem.'
-      : 'Thank you for your message! How can I help you? I can answer questions about shipping, returns, orders, or products. Type "human" if you want to talk to a consultant.';
+      ? 'Dziękuję za wiadomość! Jak mogę Ci pomóc? Mogę odpowiedzieć na pytania o wysyłkę, zwroty, zamówienia lub produkty.'
+      : 'Thank you for your message! How can I help you? I can answer questions about shipping, returns, orders, or products.';
   };
 
   return (
@@ -172,30 +186,30 @@ const LiveChatWidget = () => {
             style={{ height: isMinimized ? 'auto' : '600px', maxHeight: isMinimized ? 'auto' : 'calc(100vh - 3rem)' }}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-primary to-accent p-4 flex items-center justify-between text-white">
+            <div className="bg-slate-900 p-4 flex items-center justify-between border-b border-white/10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">
+                  <h3 className="font-semibold text-white">
                     {language === 'pl' ? 'Czat Na Żywo' : 'Live Chat'}
                   </h3>
-                  <p className="text-xs text-white/80">
-                    {language === 'pl' ? 'Zazwyczaj odpowiadamy w ciągu minuty' : 'We typically reply in under a minute'}
+                  <p className="text-xs text-white/70">
+                    {language === 'pl' ? 'Odpowiadamy szybko' : 'We reply quickly'}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  className="p-1 hover:bg-white/10 rounded transition-colors text-white"
                 >
                   <Minimize2 className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  className="p-1 hover:bg-white/10 rounded transition-colors text-white"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -281,7 +295,7 @@ const LiveChatWidget = () => {
                         e.preventDefault();
                         handleSendMessage();
                       }}
-                      className="flex gap-2"
+                      className="flex items-center gap-2"
                     >
                       <Input
                         value={inputMessage}
@@ -293,6 +307,7 @@ const LiveChatWidget = () => {
                         type="submit"
                         size="icon"
                         disabled={!inputMessage.trim() || isTyping}
+                        className="flex-shrink-0"
                       >
                         {isTyping ? (
                           <Loader2 className="w-4 h-4 animate-spin" />

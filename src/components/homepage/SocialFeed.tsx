@@ -1,63 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Instagram, Play, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+
+interface SocialPost {
+  id: string;
+  platform: 'instagram' | 'tiktok';
+  type: 'image' | 'video';
+  media_url: string;
+  embed_url?: string;
+  external_link?: string;
+  caption?: string;
+  is_active: boolean;
+  display_order: number;
+}
 
 const SocialFeed = () => {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { language } = useLanguage();
   const [selectedMedia, setSelectedMedia] = useState<{ type: 'image' | 'video', url: string, platform: string } | null>(null);
   const [filter, setFilter] = useState<'all' | 'instagram' | 'tiktok'>('all');
+  const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample data - sostituire con dati reali o API
-  const socialPosts = [
-    {
-      id: 1,
-      type: 'image' as const,
-      platform: 'instagram',
-      url: 'https://images.unsplash.com/photo-1602874801006-c2b8e1f8da95?w=500&h=500&fit=crop',
-      link: 'https://instagram.com',
-    },
-    {
-      id: 2,
-      type: 'video' as const,
-      platform: 'tiktok',
-      url: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=500&h=500&fit=crop',
-      embedUrl: 'https://www.tiktok.com/embed/v2/7234567890123456789',
-      link: 'https://tiktok.com',
-    },
-    {
-      id: 3,
-      type: 'image' as const,
-      platform: 'instagram',
-      url: 'https://images.unsplash.com/photo-1599899103623-bf207f6e26bc?w=500&h=500&fit=crop',
-      link: 'https://instagram.com',
-    },
-    {
-      id: 4,
-      type: 'image' as const,
-      platform: 'instagram',
-      url: 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=500&h=500&fit=crop',
-      link: 'https://instagram.com',
-    },
-    {
-      id: 5,
-      type: 'video' as const,
-      platform: 'tiktok',
-      url: 'https://images.unsplash.com/photo-1608173488508-877f558bd5cc?w=500&h=500&fit=crop',
-      embedUrl: 'https://www.tiktok.com/embed/v2/7234567890123456790',
-      link: 'https://tiktok.com',
-    },
-    {
-      id: 6,
-      type: 'image' as const,
-      platform: 'instagram',
-      url: 'https://images.unsplash.com/photo-1615486511262-2fec2c9d7b4e?w=500&h=500&fit=crop',
-      link: 'https://instagram.com',
-    },
-  ];
+  useEffect(() => {
+    loadSocialPosts();
+  }, []);
+
+  const loadSocialPosts = async () => {
+    const { data, error } = await supabase
+      .from('social_posts')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (!error && data) {
+      setSocialPosts(data as SocialPost[]);
+    }
+    setLoading(false);
+  };
 
   const filteredPosts = filter === 'all' 
     ? socialPosts 
@@ -99,7 +83,16 @@ const SocialFeed = () => {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : filteredPosts.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            {language === 'pl' ? 'Brak postów do wyświetlenia' : 'No posts to display'}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
           <AnimatePresence mode="popLayout">
             {filteredPosts.map((post, index) => (
               <motion.div
@@ -111,10 +104,10 @@ const SocialFeed = () => {
                 transition={{ duration: 0.4, delay: 0.05 * index }}
                 whileHover={{ scale: 1.05 }}
                 className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
-                onClick={() => setSelectedMedia({ type: post.type, url: post.url, platform: post.platform })}
+                onClick={() => setSelectedMedia({ type: post.type, url: post.media_url, platform: post.platform })}
               >
                 <img
-                  src={post.url}
+                  src={post.media_url}
                   alt={`${post.platform} post`}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
@@ -141,6 +134,7 @@ const SocialFeed = () => {
             ))}
           </AnimatePresence>
         </div>
+        )}
 
         {/* Follow CTA */}
         <motion.div

@@ -385,7 +385,7 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                         <code className="font-mono text-xs bg-muted px-2 py-1 rounded">{order.furgonetka_package_id}</code>
                       </div>
                       {isAdmin && (
-                        <div className="mt-3">
+                        <div className="mt-3 space-y-2">
                           <Button 
                             onClick={handleSyncTracking} 
                             disabled={isSyncing}
@@ -396,6 +396,60 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                             <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
                             {isSyncing ? t('syncingTracking') : t('syncTracking')}
                           </Button>
+                          
+                          {order.tracking_number && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full"
+                              onClick={async () => {
+                                try {
+                                  await supabase.functions.invoke('send-tracking-available', {
+                                    body: {
+                                      orderId: order.id,
+                                      orderNumber: order.order_number,
+                                      trackingNumber: order.tracking_number,
+                                      trackingUrl: order.tracking_url || '',
+                                      carrierName: order.carrier_name || order.carrier || 'Furgonetka',
+                                      userEmail: order.profiles?.email,
+                                      preferredLanguage: order.profiles?.preferred_language || 'en',
+                                    }
+                                  });
+                                  toast.success(t('trackingEmailSent') || 'Tracking email sent');
+                                } catch (error) {
+                                  toast.error(t('error'));
+                                }
+                              }}
+                            >
+                              📧 {t('sendTrackingEmail') || 'Send Tracking Email'}
+                            </Button>
+                          )}
+                          
+                          {order.status === 'completed' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full"
+                              onClick={async () => {
+                                try {
+                                  await supabase.functions.invoke('send-order-accepted', {
+                                    body: {
+                                      orderId: order.id,
+                                      orderNumber: order.order_number,
+                                      userEmail: order.profiles?.email,
+                                      preferredLanguage: order.profiles?.preferred_language || 'en',
+                                      carrierName: order.carrier_name || order.carrier || 'Furgonetka',
+                                    }
+                                  });
+                                  toast.success(t('completionEmailSent') || 'Completion email sent');
+                                } catch (error) {
+                                  toast.error(t('error'));
+                                }
+                              }}
+                            >
+                              📧 {t('sendCompletionEmail') || 'Send Completion Email'}
+                            </Button>
+                          )}
                         </div>
                       )}
                     </>

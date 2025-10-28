@@ -191,36 +191,36 @@ const SocialFeed = () => {
 
       {/* Lightbox Modal - Enhanced */}
       <Dialog open={!!selectedMedia} onOpenChange={() => setSelectedMedia(null)}>
-        <DialogContent className="max-w-md md:max-w-2xl p-0 bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 shadow-2xl overflow-hidden">
+        <DialogContent className="max-w-[95vw] md:max-w-4xl max-h-[95vh] p-0 bg-zinc-900/95 border border-white/10 shadow-2xl backdrop-blur-md">
           <button
             onClick={() => setSelectedMedia(null)}
-            className="absolute -top-12 right-0 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors z-50"
+            className="absolute top-4 right-4 p-3 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-all duration-200 z-50 border border-white/20 shadow-lg"
           >
             <X className="w-6 h-6" />
           </button>
           {selectedMedia && (
-            <div className="relative">
-              {/* Media Container - 9:16 aspect ratio */}
-              <div className="relative aspect-[9/16] max-h-[80vh] overflow-hidden rounded-lg bg-black">
+            <div className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-6">
+              {/* Media Container - Centered */}
+              <div className="relative flex items-center justify-center w-full max-h-[80vh]">
                 {selectedMedia.type === 'image' ? (
                   <img
                     src={selectedMedia.url}
                     alt="Social media post"
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-[75vh] w-auto h-auto object-contain"
                   />
                 ) : (
                   <video
                     src={selectedMedia.url}
                     controls
                     autoPlay
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-[75vh] w-auto h-auto object-contain"
                   />
                 )}
               </div>
               
-              {/* External Link Button */}
+              {/* External Link Button - Always show if link exists */}
               {selectedMedia.externalLink && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+                <div className="mt-6">
                   <Button
                     asChild
                     className="bg-primary/90 hover:bg-primary text-primary-foreground shadow-xl border border-white/20 backdrop-blur-sm"
@@ -234,12 +234,12 @@ const SocialFeed = () => {
                       {selectedMedia.platform === 'tiktok' ? (
                         <>
                           <Play className="w-4 h-4" />
-                          {language === 'pl' ? 'Vedi su TikTok' : 'View on TikTok'}
+                          {language === 'pl' ? 'Zobacz na TikTok' : 'View on TikTok'}
                         </>
                       ) : (
                         <>
                           <Instagram className="w-4 h-4" />
-                          {language === 'pl' ? 'Vedi su Instagram' : 'View on Instagram'}
+                          {language === 'pl' ? 'Zobacz na Instagram' : 'View on Instagram'}
                         </>
                       )}
                     </a>

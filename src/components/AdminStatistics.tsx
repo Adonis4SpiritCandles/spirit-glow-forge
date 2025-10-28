@@ -97,7 +97,22 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgb(39, 39, 42)',
+                    border: '1px solid rgb(63, 63, 70)',
+                    borderRadius: '8px',
+                    padding: '8px 12px'
+                  }}
+                  labelStyle={{
+                    color: 'rgb(250, 250, 250)',
+                    fontWeight: '600'
+                  }}
+                  itemStyle={{
+                    color: 'rgb(250, 204, 21)',
+                    fontWeight: '500'
+                  }}
+                />
                 <Bar dataKey="orders" fill="hsl(var(--primary))" />
               </BarChart>
             </ResponsiveContainer>
@@ -126,7 +141,18 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgb(39, 39, 42)',
+                    border: '1px solid rgb(63, 63, 70)',
+                    borderRadius: '8px',
+                    padding: '8px 12px'
+                  }}
+                  itemStyle={{
+                    color: 'rgb(250, 204, 21)',
+                    fontWeight: '500'
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
@@ -144,7 +170,22 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'rgb(39, 39, 42)',
+                  border: '1px solid rgb(63, 63, 70)',
+                  borderRadius: '8px',
+                  padding: '8px 12px'
+                }}
+                labelStyle={{
+                  color: 'rgb(250, 250, 250)',
+                  fontWeight: '600'
+                }}
+                itemStyle={{
+                  color: 'rgb(250, 204, 21)',
+                  fontWeight: '500'
+                }}
+              />
               <Bar dataKey="revenue" fill="hsl(var(--accent))" />
             </BarChart>
           </ResponsiveContainer>

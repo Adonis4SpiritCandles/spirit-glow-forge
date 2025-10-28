@@ -343,9 +343,14 @@ const Checkout = () => {
 
                   {selectedShipping && (
                     <>
-                      <Card className="p-4 space-y-3">
-                        <h3 className="font-semibold">{t('haveCoupon') || 'Have a coupon?'}</h3>
-                        <div className="flex gap-2">
+                  <Card className="p-4 space-y-3">
+                    <h3 className="font-semibold">{t('haveCoupon') || 'Have a coupon?'}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {language === 'pl' 
+                        ? '💡 Kupon ma zastosowanie tylko do produktów, nie do wysyłki' 
+                        : '💡 Coupon applies to products only, not to shipping'}
+                    </p>
+                    <div className="flex gap-2">
                           <Input
                             placeholder={t('enterCouponCode') || 'Enter coupon code'}
                             value={couponCode}

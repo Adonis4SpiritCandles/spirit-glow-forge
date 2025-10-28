@@ -191,6 +191,14 @@ const handler = async (req: Request): Promise<Response> => {
                       ${Number(shippingCostPLN).toFixed(2)} PLN / ${Number(shippingCostEUR).toFixed(2)} EUR
                     </td>
                   </tr>
+                  <tr>
+                    <td colspan="2" style="padding: 12px; text-align: right; font-weight: 600;">
+                      ${isPolish ? 'Zniżka' : 'Discount'}${coupon_code ? ` (${coupon_code})` : ''}:
+                    </td>
+                    <td style="padding: 12px; text-align: right; color: ${discountPLN > 0 ? '#16a34a' : '#6b7280'};">
+                      ${discountPLN > 0 ? `-${Number(discountPLN).toFixed(2)} PLN / -${Number(discountEUR).toFixed(2)} EUR` : (isPolish ? 'Brak' : 'None')}
+                    </td>
+                  </tr>
                   <tr style="background: #f9f9f9;">
                     <td colspan="2" style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px; border-top: 2px solid #d4af37;">
                       ${isPolish ? 'Razem:' : 'Total:'}

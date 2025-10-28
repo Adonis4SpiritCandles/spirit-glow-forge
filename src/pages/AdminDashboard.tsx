@@ -1007,20 +1007,42 @@ const AdminDashboard = () => {
   };
 
   const manualSyncAll = async () => {
+    const ordersWithPackageId = orders.filter(o => o.furgonetka_package_id && !o.deleted_at);
+    
+    if (ordersWithPackageId.length === 0) {
+      toast({
+        title: t('error'),
+        description: t('noOrdersWithTracking'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       toast({
         title: t('syncing'),
         description: t('syncingAllOrders'),
       });
 
-      await supabase.functions.invoke('auto-sync-tracking');
+      // Sync each order individually
+      let successCount = 0;
+      for (const order of ordersWithPackageId) {
+        try {
+          await supabase.functions.invoke('sync-furgonetka-tracking', {
+            body: { orderId: order.id }
+          });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to sync order ${order.id}:`, error);
+        }
+      }
 
       toast({
         title: t('success'),
-        description: t('syncTriggered'),
+        description: `${successCount}/${ordersWithPackageId.length} ${t('ordersSynced')}`,
       });
 
-      setTimeout(() => loadDashboardData(), 3000);
+      setTimeout(() => loadDashboardData(), 2000);
     } catch (error: any) {
       toast({
         title: t('error'),
@@ -1219,7 +1241,7 @@ const AdminDashboard = () => {
                   onClick={bulkSyncTracking}
                   disabled={isBulkOperating}
                 >
-                  {t('bulkSyncTracking')}
+                  {language === 'pl' ? 'Synchronizuj śledzenie' : 'Sync Tracking'}
                 </Button>
                 <Button 
                   variant="destructive" 
@@ -2578,6 +2600,7 @@ const AdminDashboard = () => {
           }}
           onConfirm={confirmDeleteOrder}
           isLoading={isDeletingOrder}
+          isFromTrash={activeTab === 'trash'}
         />
       </div>
     </div>

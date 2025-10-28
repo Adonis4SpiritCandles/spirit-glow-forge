@@ -15,24 +15,41 @@ interface AdminDeleteOrderDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   isLoading?: boolean;
+  isFromTrash?: boolean;
 }
 
 const AdminDeleteOrderDialog = ({ 
   isOpen, 
   onClose, 
   onConfirm, 
-  isLoading = false 
+  isLoading = false,
+  isFromTrash = false
 }: AdminDeleteOrderDialogProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  // Different texts based on context
+  const title = isFromTrash ? t('deleteOrder') : t('moveToTrash');
+  const description = isFromTrash 
+    ? t('permanentDeletionWarning')
+    : t('moveToTrashWarning');
+  const buttonText = isFromTrash 
+    ? t('iUnderstandProceed')
+    : (language === 'pl' ? 'Przenieś do kosza' : 'Move to Trash');
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t('deleteOrder')}</AlertDialogTitle>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
-            <p>{t('areYouSureDeleteOrder')}</p>
-            <p className="text-destructive font-medium">{t('permanentDeletion')}</p>
+            <p>{description}</p>
+            {isFromTrash && (
+              <p className="text-destructive font-medium">
+                {language === 'pl' 
+                  ? 'Ta akcja jest nieodwracalna. Zamówienie zostanie trwale usunięte.'
+                  : 'This action is permanent. The order will be deleted forever.'}
+              </p>
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -47,7 +64,7 @@ const AdminDeleteOrderDialog = ({
             disabled={isLoading}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isLoading ? t('deleting') : t('iUnderstandProceed')}
+            {isLoading ? t('deleting') : buttonText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -26,7 +26,8 @@ const ReferralDashboard = () => {
 
   const generateReferralLink = () => {
     if (!user) return;
-    const link = `${window.location.origin}?ref=${user.id}`;
+    const baseUrl = 'https://www.spirit-candle.com';
+    const link = `${baseUrl}?ref=${user.id}`;
     setReferralLink(link);
   };
 

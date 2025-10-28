@@ -15,9 +15,24 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-gradient-mystical">
+    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-80"
+        style={{ zIndex: 0 }}
+      >
+        <source src="/videos/hero-background.mp4" type="video/mp4" />
+      </video>
+
+      {/* Black Overlay (40%) */}
+      <div className="absolute inset-0 bg-black/40" style={{ zIndex: 1 }}></div>
+
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30" style={{ zIndex: 2 }}>
         <div className="absolute top-20 left-10 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
         <div className="absolute top-40 right-20 w-1 h-1 bg-accent rounded-full animate-pulse delay-1000"></div>
         <div className="absolute bottom-32 left-20 w-3 h-3 bg-primary/60 rounded-full animate-pulse delay-2000"></div>
@@ -25,7 +40,7 @@ const HeroSection = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 lg:px-8 text-center relative z-10 py-8 md:py-0">
+      <div className="container mx-auto px-4 lg:px-8 text-center relative py-8 md:py-0" style={{ zIndex: 3 }}>
         <div className="max-w-4xl mx-auto">
           {/* Logo with Glow Effect */}
           <div className="mb-12">
@@ -82,7 +97,7 @@ const HeroSection = () => {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 w-full h-16 md:h-32 bg-gradient-to-t from-background/20 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 w-full h-16 md:h-32 bg-gradient-to-t from-background/20 to-transparent" style={{ zIndex: 2 }}></div>
     </section>
   );
 };

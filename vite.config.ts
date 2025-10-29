@@ -5,6 +5,9 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // IMPORTANT per deploy in sottocartella:
+  base: "/spirit-candle/",
+
   server: {
     host: "::",
     port: 8080,
@@ -16,3 +19,4 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+

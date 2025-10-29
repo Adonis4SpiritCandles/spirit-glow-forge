@@ -1,0 +1,75 @@
+name: Deploy to Hostinger (lftp FTPS)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # opzionale: rigenera lock ad ogni run
+      # - name: Clean lock (optional)
+      #   run: rm -f package-lock.json
+
+      - name: Install dependencies (no audit, handle peers)
+        run: |
+          npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Build (Vite)
+        run: npm run build
+
+      - name: Create .htaccess (SPA routing in /spiritcandles/)
+        run: |
+          cat > dist/.htaccess <<'HTACCESS'
+          RewriteEngine On
+          RewriteBase /spiritcandles/
+          RewriteRule ^index\.html$ - [L]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /spiritcandles/index.html [L]
+          HTACCESS
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Upload dist/ to Hostinger via FTPS (lftp mirror)
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          mkdir -p /public_html/spiritcandles
+          mirror -R \
+            --only-newer \
+            --parallel=4 \
+            --exclude-glob .DS_Store \
+            --exclude-glob Thumbs.db \
+            ./dist /public_html/spiritcandles
+          bye
+          LFTP_CMDS

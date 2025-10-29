@@ -38,6 +38,9 @@ jobs:
           RewriteRule . /spiritcandles/index.html [L]
           HTACCESS
 
+      - name: Fix git safe directory (GitHub Actions bug)
+        run: git config --global --add safe.directory /github/workspace
+
       # (opzionale) Escludi file che non vuoi spedire
       - name: Create exclude file
         run: |

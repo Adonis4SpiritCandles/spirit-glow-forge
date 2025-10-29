@@ -3,12 +3,13 @@ name: Deploy to Hostinger
 on:
   push:
     branches:
-      - '**'            # trigger su qualunque branch
-  workflow_dispatch:     # bottone "Run workflow" nella tab Actions
+      - main           # deploy solo da main (consigliato)
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,15 +18,33 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci || npm install
-
-      # STEP NECESSARIO per Playwright (browser + deps)
-      # - run: npx playwright install --with-deps chromium
+        run: npm ci
 
       - name: Build
         run: npm run build
+
+      # Crea .htaccess per routing SPA nella sottocartella /spiritcandles/
+      - name: Create .htaccess
+        run: |
+          cat > dist/.htaccess <<'HTACCESS'
+          RewriteEngine On
+          RewriteBase /spiritcandles/
+          RewriteRule ^index\.html$ - [L]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /spiritcandles/index.html [L]
+          HTACCESS
+
+      # (opzionale) Escludi file che non vuoi spedire
+      - name: Create exclude file
+        run: |
+          cat > .ftp-deploy-sync-state.json <<'EOF'
+          {}
+          EOF
+          echo -e "!.htaccess\n" > .ftp-deploy-ignore
 
       - name: Deploy via FTP to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
@@ -37,4 +56,8 @@ jobs:
           port: 21
           local-dir: dist/
           server-dir: /public_html/spiritcandles/
+          # Di default NON cancella file sul server (bene se convive con altre cose)
           dangerous-clean-slate: false
+          # (opz) più log
+          state-name: .ftp-deploy-sync-state.json
+          log-level: standard

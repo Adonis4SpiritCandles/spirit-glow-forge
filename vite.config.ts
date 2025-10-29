@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: "/",                 // IMPORTANTE: l'app “vive” in root grazie al rewrite .htaccess
   build: { outDir: "dist" },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
@@ -15,5 +15,5 @@ export default defineConfig({
   optimizeDeps: {
     include: ["react", "react-dom", "react/jsx-runtime"],
   },
-});
+}));
 

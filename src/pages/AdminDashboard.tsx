@@ -28,6 +28,7 @@ import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
 import AdminSocialMedia from '@/components/admin/AdminSocialMedia';
 import AdminCoupons from '@/components/admin/AdminCoupons';
 import AdminCollections from '@/components/admin/AdminCollections';
+import SiteSettingsHub from '@/components/admin/SiteSettings/SiteSettingsHub';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 
@@ -1281,6 +1282,7 @@ const AdminDashboard = () => {
                 <SelectItem value="warehouse">{t('warehouse')}</SelectItem>
                 <SelectItem value="coupons">{language === 'pl' ? 'Kupony' : 'Coupons'}</SelectItem>
                 <SelectItem value="social">Social Media</SelectItem>
+                <SelectItem value="settings">{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</SelectItem>
                 <SelectItem value="statistics">{t('statistics')}</SelectItem>
                 <SelectItem value="export">Export</SelectItem>
               </SelectContent>
@@ -1296,6 +1298,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">{t('warehouse')}</TabsTrigger>
             <TabsTrigger value="coupons" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Kupony' : 'Coupons'}</TabsTrigger>
             <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">Social Media</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</TabsTrigger>
             <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
             <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">Export</TabsTrigger>
           </TabsList>
@@ -2386,6 +2389,10 @@ const AdminDashboard = () => {
               orders,
               customers: profiles
             }} />
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-4">
+            <SiteSettingsHub />
           </TabsContent>
 
           <TabsContent value="social" className="space-y-4">

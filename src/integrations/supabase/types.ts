@@ -216,6 +216,114 @@ export type Database = {
         }
         Relationships: []
       }
+      footer_contact_info: {
+        Row: {
+          address_line1: string
+          address_line2: string | null
+          company_legal_name: string
+          company_name: string
+          email: string
+          id: string
+          languages: string
+          nip: string
+          phone: string
+          regon: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          address_line1?: string
+          address_line2?: string | null
+          company_legal_name?: string
+          company_name?: string
+          email?: string
+          id?: string
+          languages?: string
+          nip?: string
+          phone?: string
+          regon?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          address_line1?: string
+          address_line2?: string | null
+          company_legal_name?: string
+          company_name?: string
+          email?: string
+          id?: string
+          languages?: string
+          nip?: string
+          phone?: string
+          regon?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      footer_disclaimers: {
+        Row: {
+          id: string
+          independent_brand_en: string
+          independent_brand_pl: string
+          inspiration_notice_en: string
+          inspiration_notice_pl: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          independent_brand_en?: string
+          independent_brand_pl?: string
+          inspiration_notice_en?: string
+          inspiration_notice_pl?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          independent_brand_en?: string
+          independent_brand_pl?: string
+          inspiration_notice_en?: string
+          inspiration_notice_pl?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      footer_social_icons: {
+        Row: {
+          created_at: string
+          display_order: number
+          icon_url: string | null
+          id: string
+          is_active: boolean | null
+          link_url: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          link_url: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          link_url?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       furgonetka_tokens: {
         Row: {
           access_token: string
@@ -240,6 +348,42 @@ export type Database = {
           id?: string
           refresh_token?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      legal_documents: {
+        Row: {
+          document_type: string
+          id: string
+          page_route: string
+          pdf_url_en: string | null
+          pdf_url_pl: string | null
+          title_en: string
+          title_pl: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          document_type: string
+          id?: string
+          page_route: string
+          pdf_url_en?: string | null
+          pdf_url_pl?: string | null
+          title_en: string
+          title_pl: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          document_type?: string
+          id?: string
+          page_route?: string
+          pdf_url_en?: string | null
+          pdf_url_pl?: string | null
+          title_en?: string
+          title_pl?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }

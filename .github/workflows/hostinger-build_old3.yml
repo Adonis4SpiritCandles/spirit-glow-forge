@@ -1,0 +1,43 @@
+name: Deploy to Hostinger (lftp FTPS)
+
+on:
+  push:
+    branches:
+      - '**'            # trigger su qualunque branch
+  workflow_dispatch:     # bottone "Run workflow" nella tab Actions
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies (no audit, handle peers)
+        run: npm ci || npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Build (Vite)
+        run: npm run build
+ 
+      - name: Deploy via FTP to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: dist/
+          server-dir: /public_html/spiritcandles/
+          dangerous-clean-slate: false

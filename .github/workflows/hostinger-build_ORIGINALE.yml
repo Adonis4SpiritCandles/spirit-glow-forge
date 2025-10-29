@@ -1,0 +1,165 @@
+name: Deploy to Hostinger (lftp FTPS)
+
+on:
+  push:
+    branches:
+      - '**'            # trigger su qualunque branch
+  workflow_dispatch:     # bottone "Run workflow" nella tab Actions
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies (no audit, handle peers)
+        run: npm ci || npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Build (Vite)
+        run: npm run build
+
+      # .htaccess per SPA in /spiritcandles (routing SPA)
+      - name: Create .htaccess for /spiritcandles
+        run: |
+          cat > dist/.htaccess <<'HTACCESS'
+          RewriteEngine On
+          RewriteBase /spiritcandles/
+          RewriteRule ^index\.html$ - [L]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /spiritcandles/index.html [L]
+          HTACCESS
+
+      # .htaccess ROOT (reindirizza la home a /spiritcandles e catch-all per SPA)
+      - name: Create ROOT .htaccess
+        run: |
+          mkdir -p deploy-root
+          cat > deploy-root/.htaccess <<'ROOTHTA'
+          <IfModule mod_rewrite.c>
+          RewriteEngine On
+          
+          # Home del dominio -> SPA
+          RewriteRule ^$ /spiritcandles/ [L]
+          
+          # Non toccare diretto a /spiritcandles/ e /wordpress/
+          RewriteCond %{REQUEST_URI} ^/(spiritcandles|wordpress|ImageFiles|OLD_spirit-candle_OLD)(/|$)
+          RewriteRule . - [L]
+          
+          # Catch-all: qualsiasi rotta non-WP e non-spiritcandles -> SPA
+          RewriteCond %{REQUEST_URI} !^/wordpress/
+          RewriteCond %{REQUEST_URI} !^/spiritcandles/
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^.*$ /spiritcandles/ [L]
+          </IfModule>
+          ROOTHTA
+
+      # .htaccess di WordPress (WP è in /wordpress, non in root)
+      - name: Create WORDPRESS .htaccess (in /wordpress)
+        run: |
+          mkdir -p deploy-wp
+          cat > deploy-wp/.htaccess <<'WPHTA'
+          # BEGIN WordPress (in sottocartella /wordpress)
+          <IfModule mod_rewrite.c>
+          RewriteEngine On
+          RewriteBase /wordpress/
+          RewriteRule ^index\.php$ - [L]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /wordpress/index.php [L]
+          </IfModule>
+          # END WordPress
+          WPHTA
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      # TEST CONNESSIONE FTPS
+      - name: Test FTPS connection
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          echo "Testing FTPS connection..."
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_TEST'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          cls /public_html
+          bye
+          LFTP_TEST
+          echo "FTPS connection successful!"
+
+      # Upload SPA
+      - name: Upload dist/ to /public_html/spiritcandles (FTPS)
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          mkdir -p /public_html/spiritcandles
+          mirror -R --only-newer --parallel=4 ./dist /public_html/spiritcandles
+          bye
+          LFTP_CMDS
+
+      # Upload ROOT .htaccess
+      - name: Upload ROOT .htaccess to /public_html
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          mirror -R --only-newer ./deploy-root /public_html
+          bye
+          LFTP_CMDS
+
+      # Upload WP .htaccess in /wordpress
+      - name: Upload WORDPRESS .htaccess to /public_html/wordpress
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          mkdir -p /public_html/wordpress
+          mirror -R --only-newer ./deploy-wp /public_html/wordpress
+          bye
+          LFTP_CMDS

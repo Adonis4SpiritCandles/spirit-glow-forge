@@ -1,0 +1,31 @@
+name: Build for Hostinger
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - name: Publish dist to hostinger-build branch
+        run: |
+          mv dist ../dist
+          git checkout --orphan hostinger-build
+          git reset --hard
+          git clean -fdx
+          mv ../dist/* .
+          touch .nojekyll
+          git add -A
+          git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' commit -m "Hostinger build $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -f origin hostinger-build

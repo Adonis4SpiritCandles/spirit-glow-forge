@@ -161,7 +161,7 @@ const ProductCard = ({
                 {name}
               </h3>
               <p className="text-sm text-muted-foreground italic line-clamp-1">
-                {t('inspiredBy')} {fragrance}
+                {fragrance}
               </p>
             </div>
 

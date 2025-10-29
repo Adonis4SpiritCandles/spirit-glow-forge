@@ -37,10 +37,10 @@ const TrustBadges = () => {
     },
     {
       icon: Truck,
-      title: language === 'pl' ? 'Darmowa Dostawa' : 'Free Shipping',
+      title: language === 'pl' ? 'Wysyłka' : 'Shipping',
       description: language === 'pl'
-        ? 'Bezpłatna dostawa przy zamówieniach powyżej 200 PLN'
-        : 'Free delivery on orders over 200 PLN',
+        ? 'Spedizione sicura, veloce ed affidabile!'
+        : 'Safe, fast, and reliable shipping!',
     },
     {
       icon: RotateCcw,

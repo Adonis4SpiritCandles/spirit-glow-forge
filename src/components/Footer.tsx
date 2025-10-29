@@ -26,14 +26,22 @@ const Footer = () => {
               {t('brandDescription')}
             </p>
             <div className="flex space-x-3">
-              <Button variant="ghost" size="sm" className="p-2">
-                <Facebook className="h-4 w-4" />
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://www.facebook.com/profile.php?id=61571360287880" target="_blank" rel="noopener noreferrer">
+                  <Facebook className="h-4 w-4" />
+                </a>
               </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <Instagram className="h-4 w-4" />
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://www.instagram.com/spirit_candle_official/" target="_blank" rel="noopener noreferrer">
+                  <Instagram className="h-4 w-4" />
+                </a>
               </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <Twitter className="h-4 w-4" />
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://x.com/SpiritCandlePL" target="_blank" rel="noopener noreferrer">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
               </Button>
             </div>
           </div>
@@ -186,17 +194,51 @@ const Footer = () => {
         <Separator className="my-8" />
 
         {/* Bottom Footer */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-sm text-muted-foreground">
-            © 2025 SPIRIT CANDLES. {t('designedBy')}
+        <div className="flex flex-col gap-6">
+          {/* Copyright & Designer */}
+          <div className="text-sm text-muted-foreground text-center">
+            <p>© 2025 SPIRIT CANDLES. {t('designedBy')}</p>
+            <p className="mt-1">
+              {t('by')}{' '}
+              <a 
+                href="https://www.tiktok.com/@adonis4u" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline inline-flex items-center gap-1"
+              >
+                AdoniS4U
+                <svg className="w-4 h-4 inline" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </svg>
+              </a>
+              {' '}·{' '}
+              <a 
+                href="https://www.facebook.com/adonismickael/" 
+                target="_blank"
+                rel="noopener noreferrer" 
+                className="text-primary hover:underline inline-flex items-center gap-1"
+              >
+                <Facebook className="w-4 h-4 inline" />
+              </a>
+              {' '}·{' '}
+              <a 
+                href="https://www.linkedin.com/in/antonio-adonis-gagliardi/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Adonis Mickael Gagliardi
+              </a>
+            </p>
           </div>
           
-          <div className="text-xs text-muted-foreground text-center md:text-right">
-            <p className="mb-1">
-              <strong>{t('inspirationNoticeFooter').split(':')[0]}:</strong> {t('inspirationNoticeFooter').split(':')[1]}
+          {/* Disclaimers */}
+          <div className="text-xs text-muted-foreground text-center">
+            <p className="mb-2">
+              <strong>{t('inspirationNotice')}:</strong> {t('inspirationNoticeText')}
             </p>
             <p>
-              {t('notAffiliatedDisclaimer')}
+              {t('independentBrand')}
             </p>
           </div>
         </div>

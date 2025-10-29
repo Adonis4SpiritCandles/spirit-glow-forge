@@ -239,9 +239,11 @@ const ProductDetail = () => {
                   <Badge className="bg-primary text-primary-foreground">NEW</Badge>
                 )}
               </div>
-              <p className="text-lg text-muted-foreground italic mb-4">
-                {t('inspiredBy')} {product.fragrance}
-              </p>
+              {product.fragrance && (
+                <p className="text-lg text-muted-foreground italic mb-4">
+                  {product.fragrance}
+                </p>
+              )}
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (

@@ -77,7 +77,11 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'allNotices') return language === 'pl' ? 'Wszystkie informacje' : 'All Notices';
     if (key === 'manageCookies') return language === 'pl' ? 'Zarządzaj ciasteczkami' : 'Manage Cookies';
     if (key === 'availableInLanguages') return language === 'pl' ? 'Dostępne w języku polskim i angielskim' : 'Available in Polish and English';
-    if (key === 'designedBy') return language === 'pl' ? 'Zaprojektowane z pasją' : 'Designed with passion';
+    if (key === 'designedBy') return language === 'pl' ? 'Zaprojektowane i stworzone z ❤️ miłością i pasją' : 'Designed and created with ❤️ love and passion';
+    if (key === 'by') return language === 'pl' ? 'przez' : 'by';
+    if (key === 'inspirationNotice') return language === 'pl' ? 'Inspiracja' : 'Inspiration';
+    if (key === 'inspirationNoticeText') return language === 'pl' ? 'Wszystkie produkty Spirit Candles są inspirowane popularnymi zapachami znanych marek, ale nie są z nimi powiązane.' : 'All Spirit Candles products are inspired by popular fragrances from well-known brands but are not affiliated with them.';
+    if (key === 'independentBrand') return language === 'pl' ? 'Spirit Candles jest niezależną marką firmy M5M Limited' : 'Spirit Candles is an independent brand of M5M Limited';
     if (key === 'inspirationNoticeFooter') return language === 'pl' ? 'Inspiracja: Wszystkie produkty Spirit Candles są inspirowane popularnymi zapachami znanych marek, ale nie są z nimi powiązane.' : 'Inspiration: All Spirit Candles products are inspired by popular fragrances from well-known brands but are not affiliated with them.';
     if (key === 'notAffiliatedDisclaimer') return language === 'pl' ? 'Spirit Candles to niezależna marka. Nie jesteśmy powiązani z żadnymi znakami towarowymi wspomnianych marek.' : 'Spirit Candles is an independent brand. We are not affiliated with any trademarks of the mentioned brands.';
 
@@ -840,7 +844,9 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'couponMaxRedemptions') return language === 'pl' ? 'Ten kupon osiągnął limit użycia' : 'This coupon has reached its usage limit';
     if (key === 'couponError') return language === 'pl' ? 'Błąd podczas stosowania kuponu' : 'Failed to apply coupon';
     if (key === 'checkoutError') return language === 'pl' ? 'Błąd podczas tworzenia sesji zakupu. Spróbuj ponownie.' : 'Failed to create checkout session. Please try again.';
-    if (key === 'discount') return language === 'pl' ? 'Zniżka' : 'Discount';
+    if (key === 'couponProductsOnly') return language === 'pl' ? 'Ten kupon jest ważny tylko dla określonych produktów' : 'This coupon is only valid for specific products';
+    if (key === 'userPromotedToAdmin') return language === 'pl' ? 'Użytkownik został awansowany na administratora' : 'User promoted to administrator';
+    if (key === 'userDemotedToUser') return language === 'pl' ? 'Administrator został obniżony do użytkownika' : 'Administrator demoted to user';
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
     if (key === 'autoRotate') return language === 'pl' ? 'Automatyczna rotacja' : 'Auto-rotate';
     if (key === 'endConversation') return language === 'pl' ? 'Zakończ rozmowę i zamknij czat' : 'End conversation and close chat';

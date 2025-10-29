@@ -30,14 +30,48 @@ jobs:
       - name: Build (Vite)
         run: npm run build
 
-      - name: Deploy dist/ to /public_html/spiritcandles/ via FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: dist/
-          server-dir: /public_html/spiritcandles/
-          dangerous-clean-slate: false
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      # TEST CONNESSIONE FTPS
+      - name: Test FTPS connection
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          echo "Testing FTPS connection..."
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_TEST'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          cls /public_html
+          bye
+          LFTP_TEST
+          echo "FTPS connection successful!"
+
+      # Upload SPA
+      - name: Upload dist/ to /public_html/spiritcandles (FTPS)
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          mkdir -p /public_html/spiritcandles
+          mirror -R --only-newer --parallel=4 ./dist /public_html/spiritcandles
+          bye
+          LFTP_CMDS
+        
+

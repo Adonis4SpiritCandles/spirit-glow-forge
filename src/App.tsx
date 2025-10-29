@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-  import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+  import { Routes, Route, useLocation } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner";
   import Index from "./pages/Index";
   import Shop from "./pages/Shop";
@@ -73,11 +73,10 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
-              <div className="min-h-screen bg-background">
-                <RouteChangeHandler />
-                <Header onCartOpen={() => setIsCartOpen(true)} />
-                <Routes>
+            <div className="min-h-screen bg-background">
+              <RouteChangeHandler />
+              <Header onCartOpen={() => setIsCartOpen(true)} />
+              <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/collections" element={<Collections />} />
@@ -109,13 +108,12 @@ const App = () => {
                   <Route path="/wishlist/shared/:token" element={<SharedWishlist />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                <Footer />
-                <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-                <CookieBanner />
-                <LiveChatWidget />
-                <FloatingActionButton />
-              </div>
-            </BrowserRouter>
+              <Footer />
+              <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+              <CookieBanner />
+              <LiveChatWidget />
+              <FloatingActionButton />
+            </div>
           </TooltipProvider>
         </CartProvider>
       </LanguageProvider>

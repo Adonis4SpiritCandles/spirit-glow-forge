@@ -351,6 +351,153 @@ export type Database = {
         }
         Relationships: []
       }
+      homepage_features: {
+        Row: {
+          created_at: string | null
+          description_en: string
+          description_pl: string
+          display_order: number
+          icon_name: string
+          id: string
+          is_active: boolean | null
+          title_en: string
+          title_pl: string
+          tooltip_en: string | null
+          tooltip_pl: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description_en: string
+          description_pl: string
+          display_order?: number
+          icon_name: string
+          id?: string
+          is_active?: boolean | null
+          title_en: string
+          title_pl: string
+          tooltip_en?: string | null
+          tooltip_pl?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description_en?: string
+          description_pl?: string
+          display_order?: number
+          icon_name?: string
+          id?: string
+          is_active?: boolean | null
+          title_en?: string
+          title_pl?: string
+          tooltip_en?: string | null
+          tooltip_pl?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      homepage_hero_text: {
+        Row: {
+          cta1_link: string
+          cta1_text_en: string
+          cta1_text_pl: string
+          cta2_link: string
+          cta2_text_en: string
+          cta2_text_pl: string
+          description_en: string
+          description_pl: string
+          heading_font_size: string
+          heading_line1_en: string
+          heading_line1_pl: string
+          heading_line2_en: string
+          heading_line2_pl: string
+          id: string
+          subtitle_en: string
+          subtitle_font_size: string
+          subtitle_pl: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          cta1_link?: string
+          cta1_text_en?: string
+          cta1_text_pl?: string
+          cta2_link?: string
+          cta2_text_en?: string
+          cta2_text_pl?: string
+          description_en?: string
+          description_pl?: string
+          heading_font_size?: string
+          heading_line1_en?: string
+          heading_line1_pl?: string
+          heading_line2_en?: string
+          heading_line2_pl?: string
+          id?: string
+          subtitle_en?: string
+          subtitle_font_size?: string
+          subtitle_pl?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          cta1_link?: string
+          cta1_text_en?: string
+          cta1_text_pl?: string
+          cta2_link?: string
+          cta2_text_en?: string
+          cta2_text_pl?: string
+          description_en?: string
+          description_pl?: string
+          heading_font_size?: string
+          heading_line1_en?: string
+          heading_line1_pl?: string
+          heading_line2_en?: string
+          heading_line2_pl?: string
+          id?: string
+          subtitle_en?: string
+          subtitle_font_size?: string
+          subtitle_pl?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      homepage_hero_video: {
+        Row: {
+          autoplay: boolean
+          id: string
+          loop_video: boolean
+          mobile_video_url: string | null
+          muted: boolean
+          opacity_overlay: number
+          updated_at: string | null
+          updated_by: string | null
+          video_url: string
+        }
+        Insert: {
+          autoplay?: boolean
+          id?: string
+          loop_video?: boolean
+          mobile_video_url?: string | null
+          muted?: boolean
+          opacity_overlay?: number
+          updated_at?: string | null
+          updated_by?: string | null
+          video_url?: string
+        }
+        Update: {
+          autoplay?: boolean
+          id?: string
+          loop_video?: boolean
+          mobile_video_url?: string | null
+          muted?: boolean
+          opacity_overlay?: number
+          updated_at?: string | null
+          updated_by?: string | null
+          video_url?: string
+        }
+        Relationships: []
+      }
       legal_documents: {
         Row: {
           document_type: string
@@ -424,6 +571,54 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      newsletter_settings: {
+        Row: {
+          discount_percentage: number
+          gdpr_text_en: string
+          gdpr_text_pl: string
+          heading_en: string
+          heading_pl: string
+          id: string
+          is_active: boolean | null
+          subtitle_en: string
+          subtitle_pl: string
+          success_message_en: string
+          success_message_pl: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          discount_percentage?: number
+          gdpr_text_en?: string
+          gdpr_text_pl?: string
+          heading_en?: string
+          heading_pl?: string
+          id?: string
+          is_active?: boolean | null
+          subtitle_en?: string
+          subtitle_pl?: string
+          success_message_en?: string
+          success_message_pl?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          discount_percentage?: number
+          gdpr_text_en?: string
+          gdpr_text_pl?: string
+          heading_en?: string
+          heading_pl?: string
+          id?: string
+          is_active?: boolean | null
+          subtitle_en?: string
+          subtitle_pl?: string
+          success_message_en?: string
+          success_message_pl?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       newsletter_subscribers: {
         Row: {

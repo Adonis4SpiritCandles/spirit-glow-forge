@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Settings, FileText, Mail, MessageSquare, Home, Palette } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FooterSettings from "./FooterSettings/FooterSettingsMain";
+import HomepageSettings from "./HomepageSettings/HomepageSettingsMain";
 
 const SiteSettingsHub = () => {
   const { t, language } = useLanguage();
@@ -40,7 +41,7 @@ const SiteSettingsHub = () => {
         : 'Edit hero section, product features, and testimonials',
       itemsCount: 8,
       color: "from-green-500/20 to-emerald-500/20",
-      comingSoon: true,
+      comingSoon: false,
     },
   ];
 
@@ -48,6 +49,14 @@ const SiteSettingsHub = () => {
     return (
       <div>
         <FooterSettings onBack={() => setSelectedSection(null)} />
+      </div>
+    );
+  }
+
+  if (selectedSection === "homepage") {
+    return (
+      <div>
+        <HomepageSettings onBack={() => setSelectedSection(null)} />
       </div>
     );
   }

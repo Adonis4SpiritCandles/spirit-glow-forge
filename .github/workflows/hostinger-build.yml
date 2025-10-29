@@ -3,8 +3,12 @@ name: Deploy to Hostinger
 on:
   push:
     branches:
-      - main           # deploy solo da main (consigliato)
+      - main
   workflow_dispatch:
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -26,8 +30,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Crea .htaccess per routing SPA nella sottocartella /spiritcandles/
-      - name: Create .htaccess
+      - name: Create .htaccess (SPA routing in /spiritcandles/)
         run: |
           cat > dist/.htaccess <<'HTACCESS'
           RewriteEngine On
@@ -38,18 +41,20 @@ jobs:
           RewriteRule . /spiritcandles/index.html [L]
           HTACCESS
 
-      - name: Fix git safe directory (GitHub Actions bug)
-        run: git config --global --add safe.directory /github/workspace
-
-      # (opzionale) Escludi file che non vuoi spedire
-      - name: Create exclude file
+      # ✅ Fix robusto per il bug "fatal: unsafe repository"
+      - name: Trust all git directories (workaround)
         run: |
-          cat > .ftp-deploy-sync-state.json <<'EOF'
-          {}
-          EOF
-          echo -e "!.htaccess\n" > .ftp-deploy-ignore
+          git config --global --add safe.directory '*'
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE/dist" || true
+          git --version
 
-      - name: Deploy via FTP to Hostinger
+      # stato per upload differenziale (evita ri-upload completo)
+      - name: Prepare FTP deploy state
+        run: |
+          test -f .ftp-deploy-sync-state.json || echo "{}" > .ftp-deploy-sync-state.json
+
+      - name: Deploy via FTP to Hostinger (FTPS 21)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -59,8 +64,6 @@ jobs:
           port: 21
           local-dir: dist/
           server-dir: /public_html/spiritcandles/
-          # Di default NON cancella file sul server (bene se convive con altre cose)
           dangerous-clean-slate: false
-          # (opz) più log
           state-name: .ftp-deploy-sync-state.json
           log-level: standard

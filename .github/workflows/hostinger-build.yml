@@ -1,4 +1,4 @@
-name: Deploy to Hostinger
+name: Deploy to Hostinger (lftp FTPS)
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build (Vite)
         run: npm run build
 
       - name: Create .htaccess (SPA routing in /spiritcandles/)
@@ -41,29 +41,33 @@ jobs:
           RewriteRule . /spiritcandles/index.html [L]
           HTACCESS
 
-      # ✅ Fix robusto per il bug "fatal: unsafe repository"
-      - name: Trust all git directories (workaround)
+      - name: Install lftp
         run: |
-          git config --global --add safe.directory '*'
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE/dist" || true
-          git --version
+          sudo apt-get update
+          sudo apt-get install -y lftp
 
-      # stato per upload differenziale (evita ri-upload completo)
-      - name: Prepare FTP deploy state
+      # FTPS esplicito (porta 21), passive mode, TLS per dati e controllo
+      - name: Upload dist/ to Hostinger via FTPS (lftp mirror)
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          test -f .ftp-deploy-sync-state.json || echo "{}" > .ftp-deploy-sync-state.json
-
-      - name: Deploy via FTP to Hostinger (FTPS 21)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: dist/
-          server-dir: /public_html/spiritcandles/
-          dangerous-clean-slate: false
-          state-name: .ftp-deploy-sync-state.json
-          log-level: standard
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          # crea la directory di destinazione se non esiste
+          mkdir -p /public_html/spiritcandles
+          # mirror -R = upload ricorsivo; --only-newer e --parallel per velocità; escludi file inutili
+          mirror -R \
+            --only-newer \
+            --parallel=4 \
+            --exclude-glob .DS_Store \
+            --exclude-glob Thumbs.db \
+            ./dist /public_html/spiritcandles
+          bye
+          LFTP_CMDS

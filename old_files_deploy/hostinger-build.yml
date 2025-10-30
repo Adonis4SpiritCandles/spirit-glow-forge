@@ -83,11 +83,8 @@ jobs:
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
           set ftp:ssl-auth TLS
-          put -O /public_html  -o .htaccess ./file_deploy/htaccess_root
-          # opzionale: imposta i permessi (se il server lo supporta)
-          # mettere qui: chmod 644 /public_html/.htaccess
-          # opzionale: verifica presenza
-          cls -l /public_html/.htaccess
+          put -O /public_html ./file_deploy/htaccess_root
+          mv -f /public_html/htaccess_root /public_html/.htaccess
           bye
           LFTP_CMDS
 
@@ -104,10 +101,7 @@ jobs:
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
           set ftp:ssl-auth TLS
-          put -O /public_html/spiritcandles  -o .htaccess ./file_deploy/htaccess_spiritcandles_folder
-          # opzionale: imposta i permessi (se il server lo supporta)
-          # mettere qui: chmod 644 /public_html/.htaccess
-          # opzionale: verifica presenza
-          cls -l /public_html/.htaccess
+          put -O /public_html/spiritcandles ./file_deploy/htaccess_spiritcandles_folder
+          mv -f /public_html/spiritcandles/htaccess_spiritcandles_folder /public_html/spiritcandles/.htaccess
           bye
           LFTP_CMDS

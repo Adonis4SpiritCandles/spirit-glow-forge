@@ -52,6 +52,7 @@ jobs:
           LFTP_TEST
           echo "FTPS connection successful!"
       
+      ### Upload dist after build in site
       - name: Upload dist/ to /public_html/spiritcandles (FTPS)
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
@@ -70,6 +71,7 @@ jobs:
           bye
           LFTP_CMDS
 
+      ### Upload htaccess in ROOT in public-html
       - name: Upload root .htaccess
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
@@ -83,11 +85,12 @@ jobs:
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
           set ftp:ssl-auth TLS
-          put -O /public_html ./file_deploy/htaccess_root
+          put -O /public_html ./deploy/htaccess_root
           mv -f /public_html/htaccess_root /public_html/.htaccess
           bye
           LFTP_CMDS
 
+      ### Upload htaccess in ROOT in public-html
       - name: Upload spiritcandles .htaccess in /spiritcandles/
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
@@ -101,7 +104,7 @@ jobs:
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
           set ftp:ssl-auth TLS
-          put -O /public_html/spiritcandles ./file_deploy/htaccess_spiritcandles_folder
+          put -O /public_html/spiritcandles ./deploy/htaccess_spiritcandles_folder
           mv -f /public_html/spiritcandles/htaccess_spiritcandles_folder /public_html/spiritcandles/.htaccess
           bye
           LFTP_CMDS

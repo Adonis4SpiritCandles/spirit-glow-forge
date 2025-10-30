@@ -2,8 +2,7 @@ name: Deploy to Hostinger (FTPS minimal)
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -13,7 +12,6 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,7 +33,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lftp
 
-      # TEST CONNESSIONE FTPS
       - name: Test FTPS connection
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
@@ -55,7 +52,6 @@ jobs:
           LFTP_TEST
           echo "FTPS connection successful!"
 
-      # Upload SPA
       - name: Upload dist/ to /public_html/spiritcandles (FTPS)
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
@@ -74,7 +70,8 @@ jobs:
           bye
           LFTP_CMDS
 
-        - name: Upload root .htaccess
+      # Upload htaccess in ROOT in public html
+      - name: Upload root .htaccess
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -91,6 +88,26 @@ jobs:
           mv -f /public_html/htaccess_root /public_html/.htaccess
           bye
           LFTP_CMDS
+
+      # Upload .htaccess in ROOT in public_html
+      - name: Upload spiritcandles .htaccess in /spiritcandles/
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          put -O /public_html/spiritcandles ./deploy/htaccess_spiritcandles_folder
+          mv -f /public_html/spiritcandles/htaccess_spiritcandles_folder /public_html/spiritcandles/.htaccess
+          bye
+          LFTP_CMDS
+
 
         
 

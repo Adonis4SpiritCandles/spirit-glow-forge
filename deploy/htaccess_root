@@ -1,0 +1,56 @@
+# === Root: Pretty URL per SPA in /spiritcandles + convivenza WordPress ===
+Options -MultiViews
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 0) HTTPS sempre
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # 1) Se file o dir esiste, passa (evita di toccare asset reali e file WP)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule - - [L]
+
+  # 2) LASCIA PASSARE WordPress “core” (se presente)
+  RewriteRule ^(wp-admin|wp-includes|wp-content|wp-json)(/|$) - [L]
+  RewriteRule ^(wp-login\.php|wp-cron\.php|xmlrpc\.php)(/|$) - [L]
+
+  # 3) LASCIA PASSARE TUTTI GLI ASSET DELLA SPA
+  RewriteRule ^spiritcandles/(assets|images|img|videos|media|fonts|static)/ - [L]
+  RewriteRule ^spiritcandles/(favicon\.(ico|png)|robots\.txt|sitemap\.xml)$ - [L]
+
+  # 4) Mappature comode per path assoluti "brevi"
+  RewriteRule ^videos/(.*)$ /spiritcandles/videos/$1 [L]
+  RewriteRule ^images/(.*)$ /spiritcandles/images/$1 [L]
+  RewriteRule ^assets/(.*)$ /spiritcandles/assets/$1 [L]
+  RewriteRule ^fonts/(.*)$  /spiritcandles/fonts/$1  [L]
+
+  # 5) Blog WP sotto /blog/ (se lo usi)
+  RewriteRule ^blog/ - [L]
+
+  # 6) CATCH-ALL SPA (URL belli: nessun /spiritcandles visibile)
+  RewriteRule ^$                 /spiritcandles/index.html [L]
+  RewriteRule ^(?!blog/).+       /spiritcandles/index.html [L]
+</IfModule>
+
+# BEGIN LSCACHE (lascia invariato)
+<IfModule LiteSpeed>
+RewriteEngine on
+CacheLookup on
+RewriteRule .* - [E=Cache-Control:no-autoflush]
+RewriteRule litespeed/debug/.*\.log$ - [F,L]
+RewriteRule \.litespeed_conf\.dat - [F,L]
+### marker ASYNC start ###
+RewriteCond %{REQUEST_URI} /wp-admin/admin-ajax\.php
+RewriteCond %{QUERY_STRING} action=async_litespeed
+RewriteRule .* - [E=noabort:1]
+### marker ASYNC end ###
+### marker DROPQS start ###
+CacheKeyModify -qs:fbclid
+CacheKeyModify -qs:gclid
+CacheKeyModify -qs:utm*
+CacheKeyModify -qs:_ga
+### marker DROPQS end ###
+</IfModule>

@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   // IMPORTANT per deploy in sottocartella:
-  base: "/spiritcandles/",
+  base: process.env.CI ? "/spiritcandles/" : "/",
 
   server: {
     host: "::",

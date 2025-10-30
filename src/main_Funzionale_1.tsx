@@ -1,20 +1,14 @@
-// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import "./index.css";
 
-const spaBase =
-  typeof window !== "undefined" &&
-  window.location.pathname.startsWith("/spiritcandles")
-    ? "/spiritcandles"
-    : "";
-
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");  // rimuove l'eventuale slash finale
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter basename={spaBase}>
+    <BrowserRouter basename={base}>
       <App />
     </BrowserRouter>
   </React.StrictMode>
 );
-

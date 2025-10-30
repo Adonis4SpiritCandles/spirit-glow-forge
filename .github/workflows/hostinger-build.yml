@@ -73,5 +73,24 @@ jobs:
           mirror -R --only-newer --parallel=4 ./dist /public_html/spiritcandles
           bye
           LFTP_CMDS
+
+        - name: Upload root .htaccess
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP_CMDS'
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set ftp:ssl-allow true
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ftp:ssl-auth TLS
+          put -O /public_html ./deploy/htaccess_root
+          mv -f /public_html/htaccess_root /public_html/.htaccess
+          bye
+          LFTP_CMDS
+
         
 

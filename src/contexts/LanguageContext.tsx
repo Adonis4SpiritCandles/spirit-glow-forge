@@ -199,8 +199,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // Verious Adonis Edit
 
     if (key === 'careInstructions') return language === 'pl' ? 'Obsługa i Instrukcje' : 'Operation and Instructions';
-    if (key === 'sendTrackingEmail') return language === 'pl' ? 'Wyślij użytk. e-mail z numerem śledzenia' : 'Send Email with tracking number to User';
-    if (key === 'sendCompletionEmail') return language === 'pl' ? 'Wyślij e-mail z potwierdzeniem do użytk.' : 'Send Order Completion Email to User';
+    if (key === 'sendTrackingEmail') return language === 'pl' ? 'Wyślij użytk. E-Mail z numerem śledzenia' : 'Send E-Mail with tracking number to User';
+    if (key === 'sendCompletionEmail') return language === 'pl' ? 'Wyślij E-Mail z potwierdzeniem do użytk.' : 'Send Order Completion E-Mail to User';
 
     // Toast messages
     if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to cart';

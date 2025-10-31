@@ -192,6 +192,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'viewOrders') return language === 'pl' ? 'Zobacz zamówienia' : 'View Orders';
     if (key === 'emailConfirmation') return language === 'pl' ? 'Sprawdź swoją skrzynkę pocztową, aby uzyskać szczegóły zamówienia.' : 'Check your email for order details.';
 
+    // Search
+
+    if (key === 'searchPlaceholder') return language === 'pl' ? 'Wyszukaj produkty' : 'Search for products';
+
+    // Verious Adonis Edit
+
+    if (key === 'careInstructions') return language === 'pl' ? 'Obsługa i Instrukcje' : 'Operation and Instructions';
+    if (key === 'sendTrackingEmail') return language === 'pl' ? 'Wyślij użytkownikowi e-mail z numerem śledzenia' : 'Send Email with tracking number to User';
+    if (key === 'sendCompletionEmail') return language === 'pl' ? 'Wyślij użytkownikowi e-mail z potwierdzeniem ukończenia zamówienia' : 'Send Order Completion Email to User';
+
     // Toast messages
     if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to cart';
     if (key === 'removedFromCart') return language === 'pl' ? 'Usunięto z koszyka' : 'Removed from cart';
@@ -212,8 +222,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
     // User Dashboard
     if (key === 'userDashboard') return language === 'pl' ? 'Panel' : 'Dashboard';
-    if (key === 'welcomeBack') return language === 'pl' ? 'Witamy ponownie' : 'Welcome back';
-    if (key === 'welcomeBackUser') return language === 'pl' ? 'Witamy ponownie' : 'Welcome back';
+    if (key === 'welcomeBack') return language === 'pl' ? 'Witamy ponownie :)' : 'Welcome back :)';
+    if (key === 'welcomeBackUser') return language === 'pl' ? 'Witamy ponownie :)' : 'Welcome back :)';
     if (key === 'profile') return language === 'pl' ? 'Profil' : 'Profile';
     if (key === 'orders') return language === 'pl' ? 'Zamówienia' : 'Orders';
     if (key === 'payments') return language === 'pl' ? 'Płatności' : 'Payments';
@@ -394,7 +404,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'restore') return language === 'pl' ? 'Przywróć' : 'Restore';
     if (key === 'deletePermanently') return language === 'pl' ? 'Usuń na stałe' : 'Delete Permanently';
     if (key === 'complete') return language === 'pl' ? 'Zakończ' : 'Complete';
-    if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'Brak płatności Furgonetka' : 'Furgonetka Pay Miss';
+    if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'Brak płatności FURGONETKA' : 'FURGONETKA Pay Miss';
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'czekam na ZAKOŃCZENIE' : 'Awaiting for data COMPLETE';
     if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na przesłanie FURKONEKTA' : 'Awaiting FURKONEKTA submission';
@@ -515,7 +525,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja WSZYSTKICH Zamówień...' : 'Syncing ALL Orders...';
     if (key === 'syncTriggered') return language === 'pl' ? 'Synchronizacja uruchomiona' : 'Sync triggered';
     if (key === 'noPaidOrders') return language === 'pl' ? 'Brak Zamówień do ZREALIZOWANIA (tylko Zamówienia „OPŁACONE”)' : 'No Orders to COMPLETE ("PAID" Orders only)';
-    if (key === 'ordersCompleted') return language === 'pl' ? 'Zamówień zakończonych!' : 'Orders COMPLETED!';
+    if (key === 'ordersCompleted') return language === 'pl' ? 'Zamówień zakończonych' : 'Orders Completed';
     if (key === 'noOrdersWithTracking') return language === 'pl' ? 'Brak Zamówień z przesyłką FURGONETKA' : 'No Orders with FURGONETKA package';
     if (key === 'ordersSynced') return language === 'pl' ? 'Zamówień zsynchronizowanych' : 'Orders Synced';
     if (key === 'bulkDeleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć zaznaczone Zamówienia?' : 'Are you sure you want to delete selected Orders?';

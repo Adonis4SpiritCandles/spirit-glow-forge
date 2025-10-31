@@ -197,7 +197,7 @@ const Footer = () => {
         <div className="flex flex-col gap-6">
           {/* Copyright & Designer */}
           <div className="text-sm text-muted-foreground text-center">
-            <p>© 2025 SPIRIT CANDLES Site{t('designedBy')}</p>
+            <p>© 2025 SPIRIT CANDLES Site</p>
             <p>{t('designedBy')}</p>
             <p className="mt-1">
               {t('by')}{' '}
@@ -237,6 +237,9 @@ const Footer = () => {
           <div className="text-xs text-muted-foreground text-center">
             <p className="mb-2">
               <strong>{t('inspirationNotice')}:</strong>
+              {t('inspirationNoticeText')}
+            </p>
+            <p className="mb-2">
               {t('inspirationNoticeText')}
             </p>
             <p>

@@ -425,7 +425,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // New Shipping Status Translations
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie' : 'Awaiting CONFIRMATION';
     if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na wysyłkę' : 'Awaiting SUBMISSION';
-    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment Created;
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment Created';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped Successfully';
     if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
     if (key === 'trackingNumb') return language === 'pl' ? 'Nr śledzenia' : 'Tracking Numb.';

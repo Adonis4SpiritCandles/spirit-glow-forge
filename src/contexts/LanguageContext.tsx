@@ -48,10 +48,10 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'search') return language === 'pl' ? 'Szukaj' : 'Search';
     if (key === 'wishlist') return language === 'pl' ? 'Lista życzeń' : 'Wishlist';
     if (key === 'myOrders') return language === 'pl' ? 'Moje zamówienia' : 'My Orders';
-    if (key === 'admin') return language === 'pl' ? 'Admin' : 'Admin';
+    if (key === 'admin') return language === 'pl' ? 'Panel Administracyjny' : 'Admin Dashboard';
 
     // Hero Section
-    if (key === 'rebornYourNature') return language === 'pl' ? 'Odrodzenie Twojej Natury' : 'Reborn Your Nature';
+    if (key === 'rebornYourNature') return language === 'pl' ? 'Reborn Your Nature' : 'Reborn Your Nature';
     if (key === 'heroDescription') return language === 'pl' ? 'Odkryj luksusowe świece sojowe ręcznie wykonane z pasją. Każda świeca to podróż do spokoju i harmonii.' : 'Discover luxurious soy candles handcrafted with passion. Each candle is a journey to peace and harmony.';
     if (key === 'shopCollection') return language === 'pl' ? 'Kup Kolekcję' : 'Shop Collection';
     if (key === 'learnOurStory') return language === 'pl' ? 'Poznaj naszą historię' : 'Learn Our Story';
@@ -114,7 +114,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'backToShop') return language === 'pl' ? 'Powrót do sklepu' : 'Back to Shop';
 
     // Admin Dashboard
-    if (key === 'adminDashboard') return language === 'pl' ? 'Panel administratora' : 'Admin Dashboard';
+    if (key === 'adminDashboard') return language === 'pl' ? 'Panel ADMINISTRATORA' : 'ADMIN Dashboard';
     if (key === 'manageProductInventory') return language === 'pl' ? 'Zarządzaj swoim asortymentem' : 'Manage your product inventory';
     if (key === 'manageCustomerOrders') return language === 'pl' ? 'Zarządzaj zamówieniami klientów i wysyłką' : 'Manage customer orders and shipping';
     if (key === 'addProduct') return language === 'pl' ? 'Dodaj produkt' : 'Add Product';
@@ -122,13 +122,13 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'addNewProduct') return language === 'pl' ? 'Dodaj nowy produkt' : 'Add New Product';
     if (key === 'dataType') return language === 'pl' ? 'Typ danych' : 'Data Type';
     if (key === 'format') return language === 'pl' ? 'Format' : 'Format';
-    if (key === 'exportOrdersCsv') return language === 'pl' ? 'Eksportuj zamówienia jako CSV' : 'Export orders as CSV';
+    if (key === 'exportOrdersCsv') return language === 'pl' ? 'Eksportuj zamówienia jako CSV' : 'Export Orders as CSV';
     if (key === 'warehouse') return language === 'pl' ? 'Magazyn' : 'Warehouse';
     if (key === 'monthlyOrders') return language === 'pl' ? 'Miesięczne zamówienia' : 'Monthly Orders';
     if (key === 'salesByCategory') return language === 'pl' ? 'Sprzedaż według kategorii' : 'Sales by Category';
     if (key === 'monthlyRevenue') return language === 'pl' ? 'Miesięczny przychód' : 'Monthly Revenue';
     if (key === 'fromLastMonth') return language === 'pl' ? 'od ostatniego miesiąca' : 'from last month';
-    if (key === 'resetDemoOrders') return language === 'pl' ? 'Resetuj zamówienia demo' : 'Reset Demo Orders';
+    if (key === 'resetDemoOrders') return language === 'pl' ? 'Zresetuj WSZYSTKIE zamówienia' : 'Reset ALL Orders';
     if (key === 'resetDemoOrdersConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć wszystkie zamówienia i zresetować numerację? Tej operacji nie można cofnąć.' : 'Are you sure you want to delete all orders and reset the order number sequence? This action cannot be undone.';
     if (key === 'resettingOrders') return language === 'pl' ? 'Resetowanie zamówień...' : 'Resetting orders...';
     if (key === 'ordersResetSuccess') return language === 'pl' ? 'Wszystkie zamówienia demo zostały usunięte' : 'All demo orders have been deleted successfully';
@@ -144,17 +144,17 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'shippingInfo') return language === 'pl' ? 'Informacje o wysyłce' : 'Shipping Info';
     if (key === 'newOrdersToConfirm') return language === 'pl' ? 'Nowe zamówienia do potwierdzenia' : 'New orders to confirm';
     if (key === 'youHaveXOrders') return language === 'pl' ? 'Masz {count} zamówień oczekujących na potwierdzenie' : 'You have {count} orders awaiting confirmation';
-    if (key === 'goToAdminDashboard') return language === 'pl' ? 'Przejdź do panelu administratora' : 'Go to Admin Dashboard';
-    if (key === 'viewNewOrders') return language === 'pl' ? 'Zobacz nowe zamówienia' : 'View new orders';
-    if (key === 'markAllAsSeen') return language === 'pl' ? 'Oznacz wszystkie jako przeczytane' : 'Mark all as seen';
-    if (key === 'newOrder') return language === 'pl' ? 'Nowe zamówienie' : 'New order';
+    if (key === 'goToAdminDashboard') return language === 'pl' ? 'Przejdź do panelu ADMINISTRATORA' : 'Go to ADMIN Dashboard';
+    if (key === 'viewNewOrders') return language === 'pl' ? 'Zobacz Nowe Zamówienia' : 'View New Orders';
+    if (key === 'markAllAsSeen') return language === 'pl' ? 'Oznacz WSZYSTKIE jako widoczne' : 'Mark ALL as Seen';
+    if (key === 'newOrder') return language === 'pl' ? 'Nowe Zamówienie' : 'New Order';
     if (key === 'orderReceived') return language === 'pl' ? 'Zamówienie otrzymano' : 'Order received';
     if (key === 'orderBeingPrepared') return language === 'pl' ? 'Twoje zamówienie jest przygotowywane' : 'Your order is being prepared';
     if (key === 'trackingAvailable') return language === 'pl' ? 'Numer śledzenia dostępny' : 'Tracking available';
-    if (key === 'trackYourOrder') return language === 'pl' ? 'Śledź swoje zamówienie' : 'Track your order';
+    if (key === 'trackYourOrder') return language === 'pl' ? 'Śledź swoje Zamówienie' : 'Track your Order';
     if (key === 'orderConfirmedAndPreparing') return language === 'pl' ? 'Zamówienie potwierdzone i jest przygotowywane do wysyłki' : 'Order confirmed and being prepared for shipment';
-    if (key === 'youWillReceiveTracking') return language === 'pl' ? 'Otrzymasz kolejnego e-maila z numerem śledzenia, gdy zamówienie zostanie wysłane' : 'You will receive another email with tracking number when your order is shipped';
-    if (key === 'orderHasBeenShipped') return language === 'pl' ? 'Twoje zamówienie zostało wysłane' : 'Your order has been shipped';
+    if (key === 'youWillReceiveTracking') return language === 'pl' ? 'Otrzymasz kolejnego e-maila z numerem śledzenia, gdy zamówienie zostanie wysłane' : 'You will receive another email with tracking number when your order is Shipped';
+    if (key === 'orderHasBeenShipped') return language === 'pl' ? 'Twoje Zamówienie zostało wysłane!' : 'Your Order has been shipped!';
     if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
     
     // Admin Dashboard - Additional translations
@@ -239,7 +239,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     
     // Coupon and checkout translations
     if (key === 'haveCoupon') return language === 'pl' ? 'Masz kupon?' : 'Have a coupon?';
-    if (key === 'enterCouponCode') return language === 'pl' ? 'Wprowadź kod kuponu' : 'Enter coupon code';
+    if (key === 'enterCouponCode') return language === 'pl' ? 'Wprowadź swój kod kuponu' : 'Enter your coupon code';
     if (key === 'apply') return language === 'pl' ? 'Zastosuj' : 'Apply';
     if (key === 'applying') return language === 'pl' ? 'Zastosowanie...' : 'Applying...';
     if (key === 'couponApplied') return language === 'pl' ? 'Kupon został pomyślnie zastosowany!' : 'Coupon applied successfully!';
@@ -329,7 +329,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'iAccept') return language === 'pl' ? 'Akceptuję' : 'I accept';
     if (key === 'and') return language === 'pl' ? 'i' : 'and';
     if (key === 'newsletterOptIn') return language === 'pl' ? 'Chcę otrzymywać newsletter z wiadomościami i ofertami' : 'I want to receive newsletters with news and offers';
-    if (key === 'joinFamily') return language === 'pl' ? 'Dołącz do rodziny Spirit of Candles' : 'Join the Spirit of Candles family';
+    if (key === 'joinFamily') return language === 'pl' ? 'Dołącz do rodziny Spirit of Candles' : 'Join in the Spirit of Candles family';
 
     // Common
     if (key === 'products') return language === 'pl' ? 'Produkty' : 'Products';
@@ -380,7 +380,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'billingDescription') return language === 'pl' ? 'Zarządzaj swoimi metodami płatności' : 'Manage your payment methods';
     if (key === 'viewOrdersForPayments') return language === 'pl' ? 'Zobacz swoje zamówienia, aby uzyskać szczegóły płatności' : 'View your orders for payment details';
     if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
-    if (key === 'trackPackage') return language === 'pl' ? 'Śledź paczkę' : 'Track package';
+    if (key === 'trackPackage') return language === 'pl' ? 'Śledź paczkę' : 'Num. Track package';
     if (key === 'completeInformation') return language === 'pl' ? 'Pełne informacje dla zamówienia' : 'Complete information for order';
     if (key === 'deliveryName') return language === 'pl' ? 'Nazwa dostawy' : 'Delivery Name';
     if (key === 'shippingLabel') return language === 'pl' ? 'Etykieta wysyłkowa' : 'Shipping Label';
@@ -396,14 +396,14 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'complete') return language === 'pl' ? 'Zakończ' : 'Complete';
     if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'Brak płatności Furgonetka' : 'Furgonetka Pay Miss';
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';
-    if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie wysyłki' : 'Awaiting shipment confirmation';
-    if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na przesłanie do Furgonetki' : 'Awaiting Furgonetka submission';
-    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment created';
-    if (key === 'shipped') return language === 'pl' ? 'Wysłano' : 'Shipped';
+    if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'czekam na ZAKOŃCZENIE' : 'Awaiting for data COMPLETE';
+    if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na przesłanie FURKONEKTA' : 'Awaiting FURKONEKTA submission';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment CREATED!';
+    if (key === 'shipped') return language === 'pl' ? 'WYSŁANY' : 'SHIPPED';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped successfully';
     if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
-    if (key === 'noShipmentCreated') return language === 'pl' ? 'Brak przesyłki' : 'No shipment';
-    if (key === 'syncTracking') return language === 'pl' ? 'Synchronizuj śledzenie z Furgonetki' : 'Sync Tracking from Furgonetka';
+    if (key === 'noShipmentCreated') return language === 'pl' ? 'BRAK Przesyłki' : 'NO Shipment';
+    if (key === 'syncTracking') return language === 'pl' ? 'Synchronizuj śledzenie z FURGONETKI' : 'Sync Tracking from FURGONETKA';
     if (key === 'syncingTracking') return language === 'pl' ? 'Synchronizowanie...' : 'Syncing...';
     if (key === 'serviceCarrierId') return language === 'pl' ? 'ID usługi przewoźnika' : 'Service Carrier ID';
     if (key === 'viewOrderId') return language === 'pl' ? 'Zobacz ID zamówienia' : 'View Order ID';
@@ -413,10 +413,10 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'created') return language === 'pl' ? 'Utworzono' : 'Created';
     
     // New Shipping Status Translations
-    if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie' : 'Awaiting confirmation';
-    if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na wysyłkę' : 'Awaiting submission';
-    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment created';
-    if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped successfully';
+    if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie' : 'Awaiting CONFIRMATION';
+    if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na wysyłkę' : 'Awaiting SUBMISSION';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment CREATED!';
+    if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped SUCCESSFULLY!';
     if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
     if (key === 'trackingNumb') return language === 'pl' ? 'Nr śledzenia' : 'Tracking Numb.';
     if (key === 'shipTo') return language === 'pl' ? 'Wysyłka do' : 'Ship to';
@@ -428,7 +428,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'syncTracking') return language === 'pl' ? 'Synchronizuj tracking' : 'Sync Tracking';
     if (key === 'syncingTracking') return language === 'pl' ? 'Synchronizacja...' : 'Syncing...';
     if (key === 'trackingSynced') return language === 'pl' ? 'Tracking zsynchronizowany' : 'Tracking synced';
-    if (key === 'noShipmentCreated') return language === 'pl' ? 'Brak przesyłki' : 'No shipment';
+    if (key === 'noShipmentCreated') return language === 'pl' ? 'BRAK Przesyłki' : 'NO Shipment';
 
     // Product form fields
     if (key === 'nameEn') return language === 'pl' ? 'Nazwa (EN)' : 'Name (EN)';
@@ -470,7 +470,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'allReviews') return language === 'pl' ? 'Wszystkie opinie' : 'All Reviews';
     if (key === 'productWeight') return language === 'pl' ? 'Waga produktu' : 'Product Weight';
     if (key === 'shipmentCreatedSuccess') return language === 'pl' ? 'Przesyłka utworzona pomyślnie' : 'Shipment created successfully';
-    if (key === 'admin') return language === 'pl' ? 'Administrator' : 'Admin';
+    if (key === 'admin') return language === 'pl' ? 'Administrator' : 'Administrator';
 
     // Categories
     if (key === 'luxury') return language === 'pl' ? 'Luksus' : 'Luxury';
@@ -481,16 +481,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'orderTimeline') return language === 'pl' ? 'Oś czasu zamówienia' : 'Order Timeline';
     if (key === 'orderPlaced') return language === 'pl' ? 'Zamówienie złożone' : 'Order placed';
     if (key === 'paymentReceived') return language === 'pl' ? 'Płatność otrzymana' : 'Payment received';
-    if (key === 'orderConfirmedByAdmin') return language === 'pl' ? 'Potwierdzone przez Admina' : 'Confirmed by Admin';
+    if (key === 'orderConfirmedByAdmin') return language === 'pl' ? 'Potwierdzone przez Spirit Candle' : 'Confirmed by Spirit Candle';
     if (key === 'shipmentCreatedAwaitingPayment') return language === 'pl' ? 'Przesyłka utworzona, oczekiwanie na płatność' : 'Shipment created, awaiting payment';
     if (key === 'packageShipped') return language === 'pl' ? 'Paczka wysłana' : 'Package shipped';
     if (key === 'estimatedDelivery') return language === 'pl' ? 'Szacowana dostawa' : 'Estimated delivery';
-    if (key === 'ordersSelected') return language === 'pl' ? 'Zamówień zaznaczonych' : 'orders selected';
-    if (key === 'bulkComplete') return language === 'pl' ? 'Zakończ wszystkie' : 'Complete All';
-    if (key === 'bulkSyncTracking') return language === 'pl' ? 'Synchronizuj wszystkie' : 'Sync All';
+    if (key === 'ordersSelected') return language === 'pl' ? 'Zamówień zaznaczonych' : 'Orders Selected';
+    if (key === 'bulkComplete') return language === 'pl' ? 'Zrealizuj wszystkie zamówienia' : 'Complete All Orders';
+    if (key === 'bulkSyncTracking') return language === 'pl' ? 'Synchronizuj wszystkie śledzenia' : 'Sync All Tracking';
     if (key === 'bulkDelete') return language === 'pl' ? 'Usuń wszystkie' : 'Delete All';
     if (key === 'clearSelection') return language === 'pl' ? 'Wyczyść zaznaczenie' : 'Clear Selection';
-    if (key === 'manualSyncAll') return language === 'pl' ? 'Ręcznie synchronizuj wszystkie' : 'Manual Sync All';
+    if (key === 'manualSyncAll') return language === 'pl' ? 'Ręczna synchronizacja wszystkich śledzenia' : 'Manual Sync All Tracking';
     if (key === 'syncing') return language === 'pl' ? 'Synchronizacja...' : 'Syncing...';
     
     // Password Reset
@@ -506,24 +506,24 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'passwordTooShort') return language === 'pl' ? 'Hasło musi mieć co najmniej 8 znaków' : 'Password must be at least 8 characters';
     if (key === 'passwordResetSuccess') return language === 'pl' ? 'Hasło zresetowane pomyślnie! Przekierowanie...' : 'Password reset successfully! Redirecting...';
     if (key === 'resetting') return language === 'pl' ? 'Resetowanie...' : 'Resetting...';
-    if (key === 'emailRequired') return language === 'pl' ? 'Email jest wymagany' : 'Email is required';
+    if (key === 'emailRequired') return language === 'pl' ? 'Email jest wymagany!' : 'Email is required!';
     
     // Toast messages
     if (key === 'removed') return language === 'pl' ? 'Usunięto' : 'Removed';
     if (key === 'updated') return language === 'pl' ? 'Zaktualizowano' : 'Updated';
     if (key === 'synced') return language === 'pl' ? 'Zsynchronizowano' : 'Synced';
-    if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja wszystkich zamówień...' : 'Syncing all orders...';
+    if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja WSZYSTKICH Zamówień...' : 'Syncing ALL Orders...';
     if (key === 'syncTriggered') return language === 'pl' ? 'Synchronizacja uruchomiona' : 'Sync triggered';
-    if (key === 'noPaidOrders') return language === 'pl' ? 'Brak zamówień do zakończenia (tylko zamówienia zapłacone)' : 'No orders to complete (paid orders only)';
-    if (key === 'ordersCompleted') return language === 'pl' ? 'zamówień zakończonych' : 'orders completed';
-    if (key === 'noOrdersWithTracking') return language === 'pl' ? 'Brak zamówień z przesyłką Furgonetka' : 'No orders with Furgonetka package';
-    if (key === 'ordersSynced') return language === 'pl' ? 'zamówień zsynchronizowanych' : 'orders synced';
-    if (key === 'bulkDeleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć zaznaczone zamówienia?' : 'Are you sure you want to delete selected orders?';
-    if (key === 'ordersDeleted') return language === 'pl' ? 'zamówień usuniętych' : 'orders deleted';
+    if (key === 'noPaidOrders') return language === 'pl' ? 'Brak Zamówień do ZREALIZOWANIA (tylko Zamówienia „OPŁACONE”)' : 'No Orders to COMPLETE ("PAID" Orders only)';
+    if (key === 'ordersCompleted') return language === 'pl' ? 'Zamówień zakończonych!' : 'Orders COMPLETED!';
+    if (key === 'noOrdersWithTracking') return language === 'pl' ? 'Brak Zamówień z przesyłką FURGONETKA' : 'No Orders with FURGONETKA package';
+    if (key === 'ordersSynced') return language === 'pl' ? 'Zamówień zsynchronizowanych' : 'Orders Synced';
+    if (key === 'bulkDeleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć zaznaczone Zamówienia?' : 'Are you sure you want to delete selected Orders?';
+    if (key === 'ordersDeleted') return language === 'pl' ? 'Zamówień usuniętych!' : 'Orders DELETED!';
     if (key === 'syncAllTracking') return language === 'pl' ? 'Synchronizuj wszystkie' : 'Sync All Tracking';
-    if (key === 'resetDemoOrders') return language === 'pl' ? 'Reset zamówień (demo)' : 'Reset Orders (demo)';
-    if (key === 'resetDemoOrdersConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć wszystkie zamówienia testowe? Ta akcja jest nieodwracalna.' : 'Are you sure you want to delete all demo orders? This action cannot be undone.';
-    if (key === 'allOrdersDeleted') return language === 'pl' ? 'Wszystkie zamówienia usunięte pomyślnie' : 'All orders deleted successfully';
+    if (key === 'resetDemoOrders') return language === 'pl' ? 'Reset zamówień' : 'Reset Orders';
+    if (key === 'resetDemoOrdersConfirm') return language === 'pl' ? 'Czy na pewno chcesz usunąć wszystkie Zamówienia? Tej czynności nie można cofnąć.' : 'Are you sure you want to delete all Orders? This action cannot be undone.';
+    if (key === 'allOrdersDeleted') return language === 'pl' ? 'Wszystkie Zamówienia usunięte pomyślnie!' : 'All Orders deleted successfully!';
     if (key === 'doneButton') return language === 'pl' ? 'Zrobione' : 'Done';
     
     // Name Validation
@@ -532,7 +532,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     
     // Carrier Names & Shipping
     if (key === 'sendTo') return language === 'pl' ? 'Wyślij do' : 'Send to';
-    if (key === 'furgonetka') return language === 'pl' ? 'Furgonetka' : 'Furgonetka';
+    if (key === 'furgonetka') return language === 'pl' ? 'FURGONETKA' : 'FURGONETKA';
     
     // Existing translations continuation...
 
@@ -715,18 +715,18 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'bulkComplete') return language === 'pl' ? 'Zakończ wybrane' : 'Complete Selected';
     if (key === 'bulkSyncTracking') return language === 'pl' ? 'Synchronizuj śledzenie' : 'Sync Tracking';
     if (key === 'bulkDelete') return language === 'pl' ? 'Usuń wybrane' : 'Delete Selected';
-    if (key === 'ordersSelected') return language === 'pl' ? 'zamówień wybranych' : 'orders selected';
+    if (key === 'ordersSelected') return language === 'pl' ? 'Zamówień wybranych' : 'Orders selected';
     if (key === 'clearSelection') return language === 'pl' ? 'Wyczyść wybór' : 'Clear Selection';
-    if (key === 'ordersCompleted') return language === 'pl' ? 'zamówień zakończonych' : 'orders completed';
-    if (key === 'ordersSynced') return language === 'pl' ? 'zamówień zsynchronizowanych' : 'orders synced';
-    if (key === 'ordersDeleted') return language === 'pl' ? 'zamówień przeniesiono do kosza' : 'orders moved to trash';
-    if (key === 'bulkDeleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz przenieść wybrane zamówienia do kosza?' : 'Are you sure you want to move selected orders to trash?';
-    if (key === 'noPaidOrders') return language === 'pl' ? 'Nie wybrano opłaconych zamówień' : 'No paid orders selected';
-    if (key === 'noOrdersWithTracking') return language === 'pl' ? 'Nie wybrano zamówień z przesyłkami Furgonetka' : 'No orders with Furgonetka packages selected';
+    if (key === 'ordersCompleted') return language === 'pl' ? 'Zamówień zakończonych' : 'Orders completed';
+    if (key === 'ordersSynced') return language === 'pl' ? 'Zamówień zsynchronizowanych' : 'Orders synced';
+    if (key === 'ordersDeleted') return language === 'pl' ? 'Zamówień przeniesiono do kosza' : 'Orders moved to trash';
+    if (key === 'bulkDeleteConfirm') return language === 'pl' ? 'Czy na pewno chcesz przenieść wybrane Zamówienia do kosza?' : 'Are you sure you want to move selected Orders to trash?';
+    if (key === 'noPaidOrders') return language === 'pl' ? 'Nie wybrano zamówień OPŁACONYCH' : 'No PAID Orders selected';
+    if (key === 'noOrdersWithTracking') return language === 'pl' ? 'NIE wybrano Zamówień z przesyłkami FURGONETKA' : 'NO Orders with FURGONETKA packages selected';
     if (key === 'syncing') return language === 'pl' ? 'Synchronizacja...' : 'Syncing...';
-    if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja wszystkich zamówień ze śledzeniem' : 'Syncing all orders with tracking';
+    if (key === 'syncingAllOrders') return language === 'pl' ? 'Synchronizacja wszystkich Zamówień ze śledzeniem' : 'Syncing all Orders with Tracking';
     if (key === 'syncTriggered') return language === 'pl' ? 'Ręczna synchronizacja uruchomiona' : 'Manual sync triggered successfully';
-    if (key === 'syncAllTracking') return language === 'pl' ? 'Synchronizuj wszystko' : 'Sync All Tracking';
+    if (key === 'syncAllTracking') return language === 'pl' ? 'Synchronizuj Wszystko' : 'Sync All Tracking';
 
     // About Page
     if (key === 'naturalSoyWax') return language === 'pl' ? 'Naturalny wosk sojowy' : 'Natural Soy Wax';
@@ -833,16 +833,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'phoneHours') return language === 'pl' ? 'Pon-Pt: 9:00-18:00 CET' : 'Mon-Fri: 9:00-18:00 CET';
 
     // Coupon & Checkout translations
-    if (key === 'haveCoupon') return language === 'pl' ? 'Masz kupon?' : 'Have a coupon?';
-    if (key === 'enterCouponCode') return language === 'pl' ? 'Wprowadź kod kuponu' : 'Enter coupon code';
+    if (key === 'haveCoupon') return language === 'pl' ? 'Masz KUPON?' : 'Have a COUPON?';
+    if (key === 'enterCouponCode') return language === 'pl' ? 'Wprowadź Kod Kuponu' : 'Enter Coupon Code';
     if (key === 'apply') return language === 'pl' ? 'Zastosuj' : 'Apply';
     if (key === 'applying') return language === 'pl' ? 'Zastosowanie...' : 'Applying...';
-    if (key === 'couponApplied') return language === 'pl' ? 'Kupon został pomyślnie zastosowany!' : 'Coupon applied successfully!';
-    if (key === 'invalidCoupon') return language === 'pl' ? 'Nieprawidłowy lub wygasły kod kuponu' : 'Invalid or expired coupon code';
-    if (key === 'couponNotYetValid') return language === 'pl' ? 'Ten kupon nie jest jeszcze ważny' : 'This coupon is not yet valid';
-    if (key === 'couponExpired') return language === 'pl' ? 'Ten kupon wygasł' : 'This coupon has expired';
-    if (key === 'couponMaxRedemptions') return language === 'pl' ? 'Ten kupon osiągnął limit użycia' : 'This coupon has reached its usage limit';
-    if (key === 'couponError') return language === 'pl' ? 'Błąd podczas stosowania kuponu' : 'Failed to apply coupon';
+    if (key === 'couponApplied') return language === 'pl' ? 'Kupon został pomyślnie zastosowany!' : 'Coupon APPLIED successfully!';
+    if (key === 'invalidCoupon') return language === 'pl' ? 'Nieprawidłowy lub wygasły kod Kuponu' : 'Invalid or expired Coupon Code';
+    if (key === 'couponNotYetValid') return language === 'pl' ? 'Ten Kupon nie jest jeszcze ważny' : 'This Coupon is not yet valid';
+    if (key === 'couponExpired') return language === 'pl' ? 'Ten Kupon wygasł' : 'This Coupon has expired';
+    if (key === 'couponMaxRedemptions') return language === 'pl' ? 'Ten Cupon osiągnął limit użycia' : 'This Coupon has reached its usage limit';
+    if (key === 'couponError') return language === 'pl' ? 'Błąd podczas stosowania Cuponu' : 'Failed to apply Coupon';
     if (key === 'checkoutError') return language === 'pl' ? 'Błąd podczas tworzenia sesji zakupu. Spróbuj ponownie.' : 'Failed to create checkout session. Please try again.';
     if (key === 'couponProductsOnly') return language === 'pl' ? 'Ten kupon jest ważny tylko dla określonych produktów' : 'This coupon is only valid for specific products';
     if (key === 'userPromotedToAdmin') return language === 'pl' ? 'Użytkownik został awansowany na administratora' : 'User promoted to administrator';

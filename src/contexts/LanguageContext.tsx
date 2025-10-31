@@ -199,8 +199,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // Verious Adonis Edit
 
     if (key === 'careInstructions') return language === 'pl' ? 'Obsługa i Instrukcje' : 'Operation and Instructions';
-    if (key === 'sendTrackingEmail') return language === 'pl' ? 'Wyślij użytkownikowi e-mail z numerem śledzenia' : 'Send Email with tracking number to User';
-    if (key === 'sendCompletionEmail') return language === 'pl' ? 'Wyślij użytkownikowi e-mail z potwierdzeniem ukończenia zamówienia' : 'Send Order Completion Email to User';
+    if (key === 'sendTrackingEmail') return language === 'pl' ? 'Wyślij użytk. e-mail z numerem śledzenia' : 'Send Email with tracking number to User';
+    if (key === 'sendCompletionEmail') return language === 'pl' ? 'Wyślij e-mail z potwierdzeniem do użytk.' : 'Send Order Completion Email to User';
 
     // Toast messages
     if (key === 'addedToCart') return language === 'pl' ? 'Dodano do koszyka' : 'Added to cart';
@@ -425,8 +425,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // New Shipping Status Translations
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'Oczekiwanie na potwierdzenie' : 'Awaiting CONFIRMATION';
     if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na wysyłkę' : 'Awaiting SUBMISSION';
-    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment CREATED!';
-    if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped SUCCESSFULLY!';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment Created;
+    if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped Successfully';
     if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
     if (key === 'trackingNumb') return language === 'pl' ? 'Nr śledzenia' : 'Tracking Numb.';
     if (key === 'shipTo') return language === 'pl' ? 'Wysyłka do' : 'Ship to';

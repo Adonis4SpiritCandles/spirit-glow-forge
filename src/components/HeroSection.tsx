@@ -11,7 +11,7 @@ const HeroSection = () => {
 
   useEffect(() => {
     // Simple logo glow effect
-    setTimeout(() => setLogoGlow(true), 500);
+    setTimeout(() => setLogoGlow(true), 600);
   }, []);
 
   return (
@@ -55,6 +55,7 @@ const HeroSection = () => {
 
           {/* Text Content */}
           <div className="animate-fade-in">
+          {/* Main Content 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6">
               <span className="block">SPIRIT</span>
               <span className="block text-primary">CANDLES</span>
@@ -63,7 +64,7 @@ const HeroSection = () => {
             <p className="text-xl md:text-2xl text-muted-foreground mb-4 italic">
               {t('rebornYourNature')}
             </p>
-            
+          */}  
             <p className="text-lg text-foreground/80 mb-8 max-w-2xl mx-auto leading-relaxed">
               {t('heroDescription')}
             </p>

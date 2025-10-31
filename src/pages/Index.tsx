@@ -29,7 +29,7 @@ const Index = () => {
             <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex-1">
                 <strong className="text-lg font-semibold text-amber-200 drop-shadow-md flex items-center gap-2">
-                  🔔 {t('newOrdersToConfirm')}
+                  🔔 Hey! {t('newOrdersToConfirm')}
                 </strong>
                 <p className="text-amber-100/90 mt-2 font-medium">
                   {t('youHaveXOrders').replace('{count}', unseenCount.toString())}

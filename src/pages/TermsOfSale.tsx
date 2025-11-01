@@ -26,7 +26,7 @@ const TermsOfSale = () => {
         <Card className="p-8 space-y-6">
           <section>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('lastUpdated')}: {language === 'pl' ? '8 października 2025 r.' : '8 October 2025'}
+              {language === 'pl' ? 'Ostatnia aktualizacja: 1 listopada 2025' : 'Last updated: 1 November 2025'}
             </p>
             <p className="mb-4">
               {language === 'pl'

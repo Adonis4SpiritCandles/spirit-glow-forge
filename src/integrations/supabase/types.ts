@@ -791,6 +791,7 @@ export type Database = {
           exclude_from_stats: boolean | null
           id: string
           image_url: string | null
+          image_urls: string[] | null
           name_en: string
           name_pl: string
           price_eur: number
@@ -798,6 +799,8 @@ export type Database = {
           published: boolean
           size: string | null
           stock_quantity: number
+          summary_en: string | null
+          summary_pl: string | null
           updated_at: string
           weight: string | null
         }
@@ -809,6 +812,7 @@ export type Database = {
           exclude_from_stats?: boolean | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           name_en: string
           name_pl: string
           price_eur: number
@@ -816,6 +820,8 @@ export type Database = {
           published?: boolean
           size?: string | null
           stock_quantity?: number
+          summary_en?: string | null
+          summary_pl?: string | null
           updated_at?: string
           weight?: string | null
         }
@@ -827,6 +833,7 @@ export type Database = {
           exclude_from_stats?: boolean | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           name_en?: string
           name_pl?: string
           price_eur?: number
@@ -834,6 +841,8 @@ export type Database = {
           published?: boolean
           size?: string | null
           stock_quantity?: number
+          summary_en?: string | null
+          summary_pl?: string | null
           updated_at?: string
           weight?: string | null
         }

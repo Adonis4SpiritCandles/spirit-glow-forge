@@ -32,7 +32,7 @@ const CookiePolicy = () => {
         <Card className="p-8 space-y-6">
           <section>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('lastUpdated')}: {language === 'pl' ? '8 października 2025 r.' : '8 October 2025'}
+              {language === 'pl' ? 'Ostatnia aktualizacja: 1 listopada 2025' : 'Last updated: 1 November 2025'}
             </p>
             <p className="mb-4">
               {language === 'pl' 
@@ -186,7 +186,8 @@ const CookiePolicy = () => {
               <li><strong>Meta Pixel</strong> - {language === 'pl' ? 'Reklamy i konwersje' : 'Advertising and conversions'}</li>
               <li><strong>Stripe</strong> - {language === 'pl' ? 'Przetwarzanie płatności' : 'Payment processing'}</li>
               <li><strong>Supabase</strong> - {language === 'pl' ? 'Hosting i baza danych' : 'Hosting and database'}</li>
-              <li><strong>Furgonetka</strong> - {language === 'pl' ? 'Agregator usług kurierskich' : 'Shipping aggregator'}</li>
+              <li><strong>Hostinger International Ltd.</strong> - {language === 'pl' ? 'Hosting infrastruktury strony' : 'Website infrastructure hosting'}</li>
+              <li><strong>Furgonetka (DHL, InPost, UPS, FedEx, GLS, DPD)</strong> - {language === 'pl' ? 'Agregator usług kurierskich' : 'Shipping aggregator'}</li>
               <li><strong>Resend</strong> - {language === 'pl' ? 'Usługa wysyłania e‑maili' : 'Email service'}</li>
               <li><strong>TikTok Pixel</strong> - {language === 'pl' ? 'Reklamy TikTok' : 'TikTok advertising'}</li>
               <li><strong>Twitter Pixel</strong> - {language === 'pl' ? 'Reklamy Twitter' : 'Twitter advertising'}</li>

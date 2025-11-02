@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ const Auth = () => {
   const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState('en');
+  const [referralCode, setReferralCode] = useState('');
   const [termsConsent, setTermsConsent] = useState(false);
   const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -35,6 +36,14 @@ const Auth = () => {
   const { user, signIn, signUp } = useAuth();
   const { t, language } = useLanguage();
   const { getReferralId, clearReferral } = useReferral();
+
+  // Precompile referral code if available
+  useEffect(() => {
+    const refId = getReferralId();
+    if (refId) {
+      setReferralCode(refId);
+    }
+  }, [getReferralId]);
 
   // Redirect if already logged in
   if (user) {
@@ -55,8 +64,18 @@ const Auth = () => {
             variant: "destructive",
           });
         } else {
+          // Fetch user profile for personalized toast
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name')
+            .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+            .single();
+          
+          const userName = profile?.first_name || '';
           toast({
-            title: t('loginSuccessTitle'),
+            title: language === 'pl' 
+              ? `Witaj ponownie${userName ? `, ${userName}` : ''}! 😉`
+              : `Welcome back${userName ? `, ${userName}` : ''}! 😉`,
             description: t('loginSuccessDesc'),
           });
         }
@@ -87,8 +106,8 @@ const Auth = () => {
             variant: "destructive",
           });
         } else {
-          // Handle referral if present
-          const referralId = getReferralId();
+          // Handle referral if present (from localStorage or manually entered)
+          const referralId = referralCode || getReferralId();
           if (referralId) {
             setTimeout(async () => {
               try {
@@ -293,6 +312,25 @@ const Auth = () => {
                     <SelectItem value="pl">Polski</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            )}
+
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="referral">{language === 'pl' ? 'Kod Polecający (Opcjonalnie)' : 'Referral Code (Optional)'}</Label>
+                <Input
+                  id="referral"
+                  type="text"
+                  placeholder={language === 'pl' ? 'Wprowadź kod polecający' : 'Enter referral code'}
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
+                  className="bg-background/50 border-border/40"
+                />
+                {referralCode && (
+                  <p className="text-xs text-muted-foreground">
+                    🎁 {language === 'pl' ? 'Otrzymasz 100 punktów bonusowych!' : 'You\'ll receive 100 bonus points!'}
+                  </p>
+                )}
               </div>
             )}
 

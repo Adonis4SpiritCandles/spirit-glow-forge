@@ -44,7 +44,7 @@ const Index = () => {
         title={title}
         description={description}
         type="website"
-        image="https://spirit-candle.com/spirit-logo.png"
+        image="https://spirit-candle.com/og-image-home.jpg"
         url={`https://spirit-candle.com/${language}`}
         structuredData={generateWebSiteStructuredData()}
         alternateUrls={{

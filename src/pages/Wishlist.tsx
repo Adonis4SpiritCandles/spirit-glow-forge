@@ -10,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
+import SEOManager from '@/components/SEO/SEOManager';
+import { getFullUrl, generateAlternateUrls } from '@/utils/seoUtils';
 
 const Wishlist = () => {
   const { wishlistItems, removeFromWishlist, loading, loadWishlist } = useWishlist();
@@ -117,7 +119,16 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12">
+    <>
+      <SEOManager
+        title={t('myWishlist')}
+        description={language === 'en'
+          ? 'Your SPIRIT CANDLES wishlist. Save your favorite luxury candles and get notified about stock availability.'
+          : 'Twoja lista życzeń SPIRIT CANDLES. Zapisuj ulubione luksusowe świece i otrzymuj powiadomienia o dostępności.'}
+        noindex={true}
+        nofollow={true}
+      />
+      <div className="min-h-screen bg-background py-12">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -218,7 +229,8 @@ const Wishlist = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

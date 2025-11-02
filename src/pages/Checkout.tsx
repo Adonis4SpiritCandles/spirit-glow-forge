@@ -14,6 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import ShippingAddressForm from '@/components/ShippingAddressForm';
 import ShippingOptions from '@/components/ShippingOptions';
+import SEOManager from '@/components/SEO/SEOManager';
 
 interface ShippingAddress {
   name: string;
@@ -269,7 +270,16 @@ const Checkout = () => {
   const finalTotalPLN = Math.max(0, (totalPLN - discountAmount) + shippingCost);
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <>
+      <SEOManager
+        title={t('checkout') || 'Checkout'}
+        description={language === 'en'
+          ? 'Complete your SPIRIT CANDLES order. Secure checkout with multiple payment and shipping options.'
+          : 'Dokończ zamówienie SPIRIT CANDLES. Bezpieczna płatność z wieloma opcjami płatności i wysyłki.'}
+        noindex={true}
+        nofollow={true}
+      />
+      <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         <h1 className="font-playfair text-3xl font-bold mb-6 capitalize">{t('checkout')}</h1>
         
@@ -691,7 +701,8 @@ const Checkout = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

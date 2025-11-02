@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import Confetti from "react-confetti";
 import { useNavigate } from "react-router-dom";
+import SEOManager from "@/components/SEO/SEOManager";
+import { getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
 
 interface LoyaltyData {
   points: number;
@@ -164,7 +166,16 @@ const LoyaltyProgram = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background via-background/50 to-background py-20">
+      <>
+        <SEOManager
+          title={language === 'pl' ? 'Program Lojalnościowy' : 'Loyalty Program'}
+          description={language === 'en'
+            ? 'Join SPIRIT CANDLES Loyalty Program. Earn points, unlock exclusive rewards, and enjoy special benefits with every purchase.'
+            : 'Dołącz do Programu Lojalnościowego SPIRIT CANDLES. Zdobywaj punkty, odblokowuj ekskluzywne nagrody i ciesz się specjalnymi korzyściami przy każdym zakupie.'}
+          url={getFullUrl('/loyalty', language)}
+          alternateUrls={generateAlternateUrls('/loyalty')}
+        />
+        <div className="min-h-screen bg-gradient-to-b from-background via-background/50 to-background py-20">
         <div className="container mx-auto px-4 text-center">
           <Trophy className="w-20 h-20 mx-auto mb-6 text-primary" />
           <h1 className="text-4xl font-bold mb-4 text-foreground">
@@ -180,17 +191,28 @@ const LoyaltyProgram = () => {
           </Button>
         </div>
       </div>
+      </>
     );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background via-background/50 to-background py-20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{language === 'pl' ? 'Ładowanie...' : 'Loading...'}</p>
+      <>
+        <SEOManager
+          title={language === 'pl' ? 'Program Lojalnościowy' : 'Loyalty Program'}
+          description={language === 'en'
+            ? 'Join SPIRIT CANDLES Loyalty Program. Earn points, unlock exclusive rewards, and enjoy special benefits with every purchase.'
+            : 'Dołącz do Programu Lojalnościowego SPIRIT CANDLES. Zdobywaj punkty, odblokowuj ekskluzywne nagrody i ciesz się specjalnymi korzyściami przy każdym zakupie.'}
+          url={getFullUrl('/loyalty', language)}
+          alternateUrls={generateAlternateUrls('/loyalty')}
+        />
+        <div className="min-h-screen bg-gradient-to-b from-background via-background/50 to-background py-20 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">{language === 'pl' ? 'Ładowanie...' : 'Loading...'}</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -199,7 +221,16 @@ const LoyaltyProgram = () => {
   const tierProgress = getTierProgress();
 
   return (
-    <div ref={ref} className="min-h-screen bg-gradient-to-b from-background via-background/50 to-background py-20">
+    <>
+      <SEOManager
+        title={language === 'pl' ? 'Program Lojalnościowy' : 'Loyalty Program'}
+        description={language === 'en'
+          ? 'Join SPIRIT CANDLES Loyalty Program. Earn points, unlock exclusive rewards, and enjoy special benefits with every purchase.'
+          : 'Dołącz do Programu Lojalnościowego SPIRIT CANDLES. Zdobywaj punkty, odblokowuj ekskluzywne nagrody i ciesz się specjalnymi korzyściami przy każdym zakupie.'}
+        url={getFullUrl('/loyalty', language)}
+        alternateUrls={generateAlternateUrls('/loyalty')}
+      />
+      <div ref={ref} className="min-h-screen bg-gradient-to-b from-background via-background/50 to-background py-20">
       {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={500} />}
       
       <div className="container mx-auto px-4 max-w-6xl">
@@ -345,7 +376,8 @@ const LoyaltyProgram = () => {
           </div>
         </motion.div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

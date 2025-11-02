@@ -2,6 +2,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
+import SEOManager from '@/components/SEO/SEOManager';
+import { getFullUrl, generateAlternateUrls } from '@/utils/seoUtils';
 
 const LegalNotice = () => {
   const { t, language } = useLanguage();
@@ -10,7 +12,16 @@ const LegalNotice = () => {
     : '/documents/legal-notice-en.pdf';
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
+    <>
+      <SEOManager
+        title={t('legalNotice')}
+        description={language === 'en'
+          ? 'SPIRIT CANDLES Legal Notice. Information about the website operator, intellectual property rights and disclaimers.'
+          : 'Nota Prawna SPIRIT CANDLES. Informacje o operatorze strony, prawach własności intelektualnej i zastrzeżeniach.'}
+        url={getFullUrl('/legal-notice', language)}
+        alternateUrls={generateAlternateUrls('/legal-notice')}
+      />
+      <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">{t('legalNotice')}</h1>
         
@@ -95,7 +106,8 @@ const LegalNotice = () => {
           </section>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

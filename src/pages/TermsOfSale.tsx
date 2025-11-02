@@ -2,6 +2,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
+import SEOManager from '@/components/SEO/SEOManager';
+import { getFullUrl, generateAlternateUrls } from '@/utils/seoUtils';
 
 const TermsOfSale = () => {
   const { t, language } = useLanguage();
@@ -10,7 +12,16 @@ const TermsOfSale = () => {
     : '/documents/terms-of-sale-en.pdf';
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
+    <>
+      <SEOManager
+        title={t('termsOfSale')}
+        description={language === 'en'
+          ? 'Read SPIRIT CANDLES Terms of Sale. Learn about ordering, payment, delivery, returns and refund policies.'
+          : 'Przeczytaj Regulamin Sprzedaży SPIRIT CANDLES. Dowiedz się o zamówieniach, płatnościach, dostawie, zwrotach i polityce zwrotów.'}
+        url={getFullUrl('/terms-of-sale', language)}
+        alternateUrls={generateAlternateUrls('/terms-of-sale')}
+      />
+      <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">{t('termsOfSale')}</h1>
         
@@ -148,7 +159,8 @@ const TermsOfSale = () => {
           </section>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -7,6 +7,7 @@ import { ShoppingCart, Minus, Plus, X, ArrowLeft, Eye } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
+import SEOManager from '@/components/SEO/SEOManager';
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, totalPLN, totalEUR, itemCount, loading, clearCart } = useCart();
@@ -71,7 +72,16 @@ const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <>
+      <SEOManager
+        title={t('shoppingCart')}
+        description={language === 'en'
+          ? 'Your SPIRIT CANDLES shopping cart. Review items and proceed to checkout.'
+          : 'Twój koszyk SPIRIT CANDLES. Przejrzyj produkty i przejdź do kasy.'}
+        noindex={true}
+        nofollow={true}
+      />
+      <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -254,7 +264,8 @@ const Cart = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

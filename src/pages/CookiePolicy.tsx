@@ -2,6 +2,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
+import SEOManager from '@/components/SEO/SEOManager';
+import { getFullUrl, generateAlternateUrls } from '@/utils/seoUtils';
 
 const CookiePolicy = () => {
   const { t, language } = useLanguage();
@@ -16,7 +18,16 @@ const CookiePolicy = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
+    <>
+      <SEOManager
+        title={t('cookiePolicy')}
+        description={language === 'en'
+          ? 'SPIRIT CANDLES Cookie Policy. Learn how we use cookies and similar technologies on our website.'
+          : 'Polityka plików cookie SPIRIT CANDLES. Dowiedz się, jak używamy plików cookie i podobnych technologii na naszej stronie.'}
+        url={getFullUrl('/cookie-policy', language)}
+        alternateUrls={generateAlternateUrls('/cookie-policy')}
+      />
+      <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">{t('cookiePolicy')}</h1>
         
@@ -216,7 +227,8 @@ const CookiePolicy = () => {
           </section>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

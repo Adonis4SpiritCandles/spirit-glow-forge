@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import SEOManager from "@/components/SEO/SEOManager";
+import { getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
 
 const ShippingReturns = () => {
   const { t, language } = useLanguage();
@@ -10,7 +12,16 @@ const ShippingReturns = () => {
     : '/documents/shipping-returns-en.pdf';
 
   return (
-    <main className="min-h-screen bg-gradient-mystical py-16">
+    <>
+      <SEOManager
+        title={t('shippingReturnsTitle')}
+        description={language === 'en'
+          ? 'SPIRIT CANDLES shipping and returns policy. Learn about delivery times, shipping costs, return procedures and refunds.'
+          : 'Polityka wysyłki i zwrotów SPIRIT CANDLES. Dowiedz się o czasach dostawy, kosztach wysyłki, procedurach zwrotów i zwrotach pieniędzy.'}
+        url={getFullUrl('/shipping-returns', language)}
+        alternateUrls={generateAlternateUrls('/shipping-returns')}
+      />
+      <main className="min-h-screen bg-gradient-mystical py-16">
       <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
         <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-8 text-center">
           {t('shippingReturnsTitle')}
@@ -158,7 +169,8 @@ const ShippingReturns = () => {
           </CardContent>
         </Card>
       </div>
-    </main>
+      </main>
+    </>
   );
 };
 

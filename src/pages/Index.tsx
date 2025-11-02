@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { useAdminNotifications } from "@/hooks/useAdminNotifications";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Bell, Gift } from "lucide-react";
+import SEOManager from "@/components/SEO/SEOManager";
+import { generateWebSiteStructuredData } from "@/utils/seoUtils";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -28,8 +30,28 @@ const Index = () => {
     }
   }, [searchParams]);
 
+  const title = language === 'en' 
+    ? 'SPIRIT CANDLES — Reborn Your Nature | Luxury Soy Candles'
+    : 'SPIRIT CANDLES — Odrodź Swoją Naturę | Luksusowe Świece Sojowe';
+  
+  const description = language === 'en'
+    ? 'Discover SPIRIT CANDLES luxury soy candles inspired by iconic fragrances. Handcrafted with natural soy wax and wooden wicks for an elevated sensory experience. Reborn your nature.'
+    : 'Odkryj luksusowe świece sojowe SPIRIT CANDLES inspirowane kultowymi zapachami. Ręcznie robione z naturalnego wosku sojowego i drewnianymi knotami dla wyjątkowych doznań zmysłowych. Odrodź swoją naturę.';
+
   return (
     <main>
+      <SEOManager
+        title={title}
+        description={description}
+        type="website"
+        image="https://spirit-candle.com/spirit-logo.png"
+        url={`https://spirit-candle.com/${language}`}
+        structuredData={generateWebSiteStructuredData()}
+        alternateUrls={{
+          en: 'https://spirit-candle.com/en',
+          pl: 'https://spirit-candle.com/pl'
+        }}
+      />
       {/* Referral Banner */}
       {showReferralBanner && (
         <div className="container mx-auto px-4 pt-4">

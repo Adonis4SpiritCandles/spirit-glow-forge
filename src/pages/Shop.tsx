@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import ProductCard from "@/components/ProductCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import SEOManager from "@/components/SEO/SEOManager";
+import { generateBreadcrumbStructuredData } from "@/utils/seoUtils";
 
 const Shop = () => {
   const { t, language } = useLanguage();
@@ -81,8 +83,28 @@ const Shop = () => {
     }
   });
 
+  const title = language === 'en' ? 'Shop Luxury Candles' : 'Sklep z luksusowymi świecami';
+  const description = language === 'en'
+    ? `Browse our complete collection of luxury soy candles. Premium quality, iconic fragrances, wooden wicks. ${sortedProducts.length} products available. Free shipping on orders over 250 PLN.`
+    : `Przeglądaj naszą pełną kolekcję luksusowych świec sojowych. Najwyższa jakość, kultowe zapachy, drewniane knoty. ${sortedProducts.length} produktów dostępnych. Darmowa wysyłka przy zamówieniach powyżej 250 PLN.`;
+
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: language === 'en' ? 'Home' : 'Strona główna', url: `https://spirit-candle.com/${language}` },
+    { name: language === 'en' ? 'Shop' : 'Sklep', url: `https://spirit-candle.com/${language}/shop` }
+  ]);
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
+      <SEOManager
+        title={title}
+        description={description}
+        url={`https://spirit-candle.com/${language}/shop`}
+        structuredData={breadcrumbData}
+        alternateUrls={{
+          en: 'https://spirit-candle.com/en/shop',
+          pl: 'https://spirit-candle.com/pl/shop'
+        }}
+      />
       <div className="container mx-auto px-4 lg:px-8 py-8">
         {/* Animated Header */}
         <motion.div

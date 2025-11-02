@@ -11,6 +11,8 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useReviews } from "@/hooks/useReviews";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductReviews from "@/components/ProductReviews";
+import SEOManager from "@/components/SEO/SEOManager";
+import { generateProductStructuredData, generateBreadcrumbStructuredData, getProductAvailability, truncateDescription } from "@/utils/seoUtils";
 const Product3DViewer = lazy(async () => {
   try {
     return await import("@/components/product/Product3DViewer");
@@ -203,8 +205,39 @@ const ProductDetail = () => {
     eur: selectedPrice.eur * quantity 
   };
 
+  // SEO structured data
+  const productStructuredData = generateProductStructuredData({
+    name: product.name,
+    description: truncateDescription(product.description || product.fragrance),
+    image: product.image,
+    price: selectedPrice.pln,
+    currency: 'PLN',
+    availability: 'InStock',
+    rating: averageRating,
+    reviewCount: reviewCount,
+    url: `https://spirit-candle.com/${language}/product/${id}`
+  });
+
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: language === 'en' ? 'Home' : 'Strona główna', url: `https://spirit-candle.com/${language}` },
+    { name: language === 'en' ? 'Shop' : 'Sklep', url: `https://spirit-candle.com/${language}/shop` },
+    { name: product.name, url: `https://spirit-candle.com/${language}/product/${id}` }
+  ]);
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOManager
+        title={product.name}
+        description={truncateDescription(product.summary || product.description || product.fragrance)}
+        type="product"
+        image={product.image}
+        url={`https://spirit-candle.com/${language}/product/${id}`}
+        structuredData={[productStructuredData, breadcrumbData]}
+        alternateUrls={{
+          en: `https://spirit-candle.com/en/product/${id}`,
+          pl: `https://spirit-candle.com/pl/product/${id}`
+        }}
+      />
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 lg:px-8 py-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">

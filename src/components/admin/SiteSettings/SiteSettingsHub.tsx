@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, FileText, Mail, MessageSquare, Home, Palette } from "lucide-react";
+import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FooterSettings from "./FooterSettings/FooterSettingsMain";
 import HomepageSettings from "./HomepageSettings/HomepageSettingsMain";
 import ChatSettings from "./ChatSettings/ChatSettingsMain";
+import SEOSettings from "./SEOSettings/SEOSettingsMain";
 
 const SiteSettingsHub = () => {
   const { t, language } = useLanguage();
@@ -55,6 +56,17 @@ const SiteSettingsHub = () => {
       color: "from-green-500/20 to-emerald-500/20",
       comingSoon: false,
     },
+    {
+      id: "seo",
+      icon: Search,
+      title: language === 'pl' ? 'Ustawienia SEO' : 'SEO Settings',
+      description: language === 'pl'
+        ? 'Zarządzaj meta tagami, tytułami i opisami dla wszystkich stron'
+        : 'Manage meta tags, titles, and descriptions for all pages',
+      itemsCount: 6,
+      color: "from-orange-500/20 to-red-500/20",
+      comingSoon: false,
+    },
   ];
 
   if (selectedSection === "footer") {
@@ -77,6 +89,14 @@ const SiteSettingsHub = () => {
     return (
       <div>
         <HomepageSettings onBack={() => setSelectedSection(null)} />
+      </div>
+    );
+  }
+
+  if (selectedSection === "seo") {
+    return (
+      <div>
+        <SEOSettings onBack={() => setSelectedSection(null)} />
       </div>
     );
   }

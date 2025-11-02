@@ -622,31 +622,61 @@ export type Database = {
       }
       newsletter_subscribers: {
         Row: {
+          confirmed_at: string | null
+          consent: boolean
+          consent_ip: unknown
+          consent_text: string | null
           created_at: string
+          double_opt_in_token: string | null
           email: string
           id: string
           is_active: boolean | null
+          language: string | null
           name: string | null
           preferences: Json | null
+          source: string | null
+          status: string | null
           subscribed_at: string
+          unsubscribed_at: string | null
+          user_agent: string | null
         }
         Insert: {
+          confirmed_at?: string | null
+          consent?: boolean
+          consent_ip?: unknown
+          consent_text?: string | null
           created_at?: string
+          double_opt_in_token?: string | null
           email: string
           id?: string
           is_active?: boolean | null
+          language?: string | null
           name?: string | null
           preferences?: Json | null
+          source?: string | null
+          status?: string | null
           subscribed_at?: string
+          unsubscribed_at?: string | null
+          user_agent?: string | null
         }
         Update: {
+          confirmed_at?: string | null
+          consent?: boolean
+          consent_ip?: unknown
+          consent_text?: string | null
           created_at?: string
+          double_opt_in_token?: string | null
           email?: string
           id?: string
           is_active?: boolean | null
+          language?: string | null
           name?: string | null
           preferences?: Json | null
+          source?: string | null
+          status?: string | null
           subscribed_at?: string
+          unsubscribed_at?: string | null
+          user_agent?: string | null
         }
         Relationships: []
       }
@@ -703,6 +733,7 @@ export type Database = {
           coupon_code: string | null
           created_at: string
           deleted_at: string | null
+          delivered_email_sent: boolean
           discount_eur: number | null
           discount_pln: number | null
           estimated_delivery_date: string | null
@@ -719,6 +750,7 @@ export type Database = {
           status: string
           total_eur: number
           total_pln: number
+          tracking_email_sent: boolean
           tracking_number: string | null
           tracking_url: string | null
           updated_at: string
@@ -731,6 +763,7 @@ export type Database = {
           coupon_code?: string | null
           created_at?: string
           deleted_at?: string | null
+          delivered_email_sent?: boolean
           discount_eur?: number | null
           discount_pln?: number | null
           estimated_delivery_date?: string | null
@@ -747,6 +780,7 @@ export type Database = {
           status?: string
           total_eur: number
           total_pln: number
+          tracking_email_sent?: boolean
           tracking_number?: string | null
           tracking_url?: string | null
           updated_at?: string
@@ -759,6 +793,7 @@ export type Database = {
           coupon_code?: string | null
           created_at?: string
           deleted_at?: string | null
+          delivered_email_sent?: boolean
           discount_eur?: number | null
           discount_pln?: number | null
           estimated_delivery_date?: string | null
@@ -775,6 +810,7 @@ export type Database = {
           status?: string
           total_eur?: number
           total_pln?: number
+          tracking_email_sent?: boolean
           tracking_number?: string | null
           tracking_url?: string | null
           updated_at?: string

@@ -146,52 +146,50 @@ const LiveChatWidget = () => {
     }, 1500);
   };
 
+  const [chatResponses, setChatResponses] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadChatResponses();
+  }, []);
+
+  const loadChatResponses = async () => {
+    const { data } = await supabase
+      .from('chat_responses' as any)
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+    
+    if (data) {
+      setChatResponses(data as any);
+    }
+  };
+
   const getBotResponse = (message: string): string => {
     const lowerMsg = message.toLowerCase();
     
-    // Spirit Candles info
-    if (lowerMsg.includes('spirit') || lowerMsg.includes('candel') || lowerMsg.includes('świec') || lowerMsg.includes('candle')) {
-      return language === 'pl'
-        ? 'Spirit Candles to marka luksusowych świec sojowych ręcznie robionych. 🕯️✨\n\n• 100% naturalny wosk sojowy\n• Wysokiej jakości olejki zapachowe\n• Czas palenia: 40-50 godzin\n• Ręcznie wykonane z pasją'
-        : 'Spirit Candles offers luxury handmade soy candles. 🕯️✨\n\n• 100% natural soy wax\n• Premium fragrance oils\n• Burn time: 40-50 hours\n• Handcrafted with passion';
+    // Search through database responses
+    for (const response of chatResponses) {
+      const keywords = language === 'pl' 
+        ? response.trigger_keywords_pl 
+        : response.trigger_keywords_en;
+      
+      // Check if any keyword matches
+      const hasMatch = keywords.some((keyword: string) => 
+        lowerMsg.includes(keyword.toLowerCase())
+      );
+      
+      if (hasMatch) {
+        return language === 'pl' ? response.response_pl : response.response_en;
+      }
     }
     
-    // Shipping
-    if (lowerMsg.includes('wysyłka') || lowerMsg.includes('shipping') || lowerMsg.includes('dostawa') || lowerMsg.includes('delivery')) {
-      return language === 'pl'
-        ? '📦 **Wysyłka i Dostawa**\n\n• Wysyłamy przez Furgonetka\n• Darmowa dostawa od 200 PLN\n• Standardowa dostawa: 2-4 dni robocze\n• Śledzenie przesyłki w panelu użytkownika'
-        : '📦 **Shipping & Delivery**\n\n• We ship via Furgonetka\n• Free shipping on orders over 200 PLN\n• Standard delivery: 2-4 business days\n• Track your package in your dashboard';
+    // Return default response
+    const defaultResponse = chatResponses.find(r => r.is_default);
+    if (defaultResponse) {
+      return language === 'pl' ? defaultResponse.response_pl : defaultResponse.response_en;
     }
     
-    // Returns
-    if (lowerMsg.includes('zwrot') || lowerMsg.includes('return') || lowerMsg.includes('refund')) {
-      return language === 'pl'
-        ? '↩️ **Polityka Zwrotów**\n\n• 30-dniowy okres zwrotu\n• Produkty nieużywane\n• Oryginalne opakowanie\n• Kontakt: support@spiritcandles.com'
-        : '↩️ **Return Policy**\n\n• 30-day return period\n• Products must be unused\n• Original packaging required\n• Contact: support@spiritcandles.com';
-    }
-    
-    // Orders & Tracking
-    if (lowerMsg.includes('zamówienie') || lowerMsg.includes('order') || lowerMsg.includes('tracking') || lowerMsg.includes('śledzenie')) {
-      return language === 'pl'
-        ? '📋 **Status Zamówienia**\n\nMożesz sprawdzić status zamówienia w:\n• Panel Użytkownika → Dashboard\n• Otrzymasz email z linkiem śledzenia\n\nPotrzebujesz pomocy? Podaj numer zamówienia.'
-        : '📋 **Order Status**\n\nCheck your order status in:\n• User Dashboard\n• Email with tracking link\n\nNeed help? Provide your order number.';
-    }
-    
-    // Coupons & Discounts
-    if (lowerMsg.includes('coupon') || lowerMsg.includes('kupon') || lowerMsg.includes('sconto') || lowerMsg.includes('zniżka') || lowerMsg.includes('discount') || lowerMsg.includes('promo')) {
-      return language === 'pl'
-        ? '🎁 **Aktualne Promocje**\n\n• WELCOME10 - 10% zniżki na pierwsze zamówienie\n• Newsletter - ekskluzywne kody\n• Śledź nas na Instagram/TikTok dla więcej promocji!\n\n@spiritcandles'
-        : '🎁 **Current Promotions**\n\n• WELCOME10 - 10% off your first order\n• Newsletter - exclusive codes\n• Follow us on Instagram/TikTok for more!\n\n@spiritcandles';
-    }
-    
-    // Product recommendations
-    if (lowerMsg.includes('recommend') || lowerMsg.includes('polec') || lowerMsg.includes('best') || lowerMsg.includes('najleps')) {
-      return language === 'pl'
-        ? '✨ **Nasze Bestsellery**\n\n🌹 Mystic Rose - romantyczny i zmysłowy\n🍊 Golden Amber - ciepły i przytulny\n🌿 Fresh Linen - świeży i czysty\n\nSprawdź kolekcję w zakładce Shop!'
-        : '✨ **Our Bestsellers**\n\n🌹 Mystic Rose - romantic & sensual\n🍊 Golden Amber - warm & cozy\n🌿 Fresh Linen - fresh & clean\n\nExplore our collection in the Shop!';
-    }
-    
-    // Default response with menu
+    // Fallback if no database responses
     return language === 'pl'
       ? '💬 **Jak mogę Ci pomóc?**\n\nMogę odpowiedzieć na pytania o:\n• 🕯️ Nasze świece Spirit\n• 📦 Wysyłkę i dostawę\n• ↩️ Zwroty\n• 📋 Zamówienia\n• 🎁 Kupony promocyjne\n• ✨ Rekomendacje produktów'
       : '💬 **How can I help you?**\n\nI can answer questions about:\n• 🕯️ Our Spirit candles\n• 📦 Shipping & delivery\n• ↩️ Returns\n• 📋 Orders\n• 🎁 Promo coupons\n• ✨ Product recommendations';

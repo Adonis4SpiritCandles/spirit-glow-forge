@@ -5,6 +5,7 @@ import { Settings, FileText, Mail, MessageSquare, Home, Palette } from "lucide-r
 import { useLanguage } from "@/contexts/LanguageContext";
 import FooterSettings from "./FooterSettings/FooterSettingsMain";
 import HomepageSettings from "./HomepageSettings/HomepageSettingsMain";
+import ChatSettings from "./ChatSettings/ChatSettingsMain";
 
 const SiteSettingsHub = () => {
   const { t, language } = useLanguage();
@@ -20,6 +21,17 @@ const SiteSettingsHub = () => {
         : 'Manage social icons, contact information, and legal documents',
       itemsCount: 12,
       color: "from-blue-500/20 to-cyan-500/20",
+    },
+    {
+      id: "chat",
+      icon: MessageSquare,
+      title: language === 'pl' ? 'Ustawienia Live Chat' : 'Live Chat Settings',
+      description: language === 'pl'
+        ? 'Zarządzaj automatycznymi odpowiedziami bota czatu'
+        : 'Manage automatic chat bot responses',
+      itemsCount: 7,
+      color: "from-indigo-500/20 to-purple-500/20",
+      comingSoon: false,
     },
     {
       id: "header",
@@ -49,6 +61,14 @@ const SiteSettingsHub = () => {
     return (
       <div>
         <FooterSettings onBack={() => setSelectedSection(null)} />
+      </div>
+    );
+  }
+
+  if (selectedSection === "chat") {
+    return (
+      <div>
+        <ChatSettings onBack={() => setSelectedSection(null)} />
       </div>
     );
   }

@@ -30,12 +30,12 @@ const PrivacyRegistration = () => {
         <Card className="p-8 space-y-6">
           <section>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('lastUpdated')}: 07/01/2025
+              {t('lastUpdated')}: {language === 'pl' ? '1 listopada 2025 r.' : '1 November 2025'}
             </p>
             <p className="mb-4">
               {language === 'en'
-                ? 'This Privacy Notice applies specifically to the creation of a customer account on SPIRIT CANDLES. By registering an account, you provide us with certain personal data as described below.'
-                : 'Niniejsza Informacja o Prywatności dotyczy szczególnie tworzenia konta klienta w SPIRIT CANDLES. Rejestrując konto, dostarczasz nam określone dane osobowe opisane poniżej.'
+                ? 'This notice explains how SPIRIT CANDLE processes personal data when you create an account on our website. It supplements our Privacy Policy and should be read together with it.'
+                : 'Niniejsza informacja wyjaśnia, w jaki sposób SPIRIT CANDLE przetwarza dane osobowe podczas zakładania konta w naszym sklepie internetowym. Jest uzupełnieniem Polityki prywatności i należy czytać ją łącznie z nią.'
               }
             </p>
           </section>
@@ -53,123 +53,147 @@ const PrivacyRegistration = () => {
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">
-              {language === 'en' ? '2. Categories of Data Collected' : '2. Kategorie Zbieranych Danych'}
+              {language === 'en' ? '1. Data collected during registration' : '1. Dane zbierane podczas rejestracji'}
             </h2>
             <p className="mb-3">
               {language === 'en'
-                ? 'When you create an account, we collect:'
-                : 'Podczas tworzenia konta zbieramy:'
+                ? 'When you register for an account, we collect the following information:'
+                : 'Podczas zakładania konta zbieramy następujące informacje:'
               }
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li><strong>{language === 'en' ? 'Account Information' : 'Informacje o koncie'}:</strong> {language === 'en' ? 'Email address, password (encrypted), username' : 'Adres e-mail, hasło (zaszyfrowane), nazwa użytkownika'}</li>
-              <li><strong>{language === 'en' ? 'Profile Data' : 'Dane profilu'}:</strong> {language === 'en' ? 'First name, last name, preferred language' : 'Imię, nazwisko, preferowany język'}</li>
-              <li><strong>{language === 'en' ? 'Technical Data' : 'Dane techniczne'}:</strong> {language === 'en' ? 'IP address, browser type, device information, registration timestamp' : 'Adres IP, typ przeglądarki, informacje o urządzeniu, znacznik czasowy rejestracji'}</li>
-              <li><strong>{language === 'en' ? 'Consent Records' : 'Zapisy zgód'}:</strong> {language === 'en' ? 'Marketing consent, newsletter subscription status, consent timestamps' : 'Zgoda marketingowa, status subskrypcji newslettera, znaczniki czasowe zgód'}</li>
+              <li>
+                <strong>{language === 'en' ? 'Identity information' : 'Dane identyfikacyjne'}:</strong>{' '}
+                {language === 'en' ? 'your name and surname' : 'imię i nazwisko'}
+              </li>
+              <li>
+                <strong>{language === 'en' ? 'Contact details' : 'Dane kontaktowe'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'email address, phone number and billing/shipping addresses' 
+                  : 'adres e-mail, numer telefonu oraz adres do fakturowania i wysyłki'}
+              </li>
+              <li>
+                <strong>{language === 'en' ? 'Account credentials' : 'Dane logowania'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'a username and password (stored in encrypted form)' 
+                  : 'nazwa użytkownika i hasło (przechowywane w zaszyfrowanej formie)'}
+              </li>
+              <li>
+                <strong>{language === 'en' ? 'Optional information' : 'Dane opcjonalne'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'date of birth, language preference and marketing preferences if you choose to provide them' 
+                  : 'data urodzenia, preferencje językowe i zgody marketingowe, jeśli zdecydujesz się je podać'}
+              </li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">
-              {language === 'en' ? '3. Purposes of Processing' : '3. Cele Przetwarzania'}
-            </h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>{language === 'en' ? 'Creating and managing your customer account' : 'Tworzenie i zarządzanie Twoim kontem klienta'}</li>
-              <li>{language === 'en' ? 'Providing access to order history and account features' : 'Zapewnienie dostępu do historii zamówień i funkcji konta'}</li>
-              <li>{language === 'en' ? 'Personalizing your shopping experience' : 'Personalizacja doświadczenia zakupowego'}</li>
-              <li>{language === 'en' ? 'Sending order confirmations and account notifications' : 'Wysyłanie potwierdzeń zamówień i powiadomień o koncie'}</li>
-              <li>{language === 'en' ? 'Marketing communications (only with your consent)' : 'Komunikacja marketingowa (tylko za Twoją zgodą)'}</li>
-              <li>{language === 'en' ? 'Fraud prevention and account security' : 'Zapobieganie oszustwom i bezpieczeństwo konta'}</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">
-              {language === 'en' ? '4. Legal Basis' : '4. Podstawa Prawna'}
-            </h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>{language === 'en' ? 'Contract Performance' : 'Wykonanie umowy'}:</strong> {language === 'en' ? 'Account creation is necessary to provide you with our services' : 'Utworzenie konta jest niezbędne do świadczenia naszych usług'}</li>
-              <li><strong>{language === 'en' ? 'Consent' : 'Zgoda'}:</strong> {language === 'en' ? 'Marketing emails and optional features' : 'E-maile marketingowe i opcjonalne funkcje'}</li>
-              <li><strong>{language === 'en' ? 'Legitimate Interest' : 'Prawnie uzasadniony interes'}:</strong> {language === 'en' ? 'Security, fraud prevention, service improvement' : 'Bezpieczeństwo, zapobieganie oszustwom, ulepszanie usług'}</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">
-              {language === 'en' ? '5. Third Parties' : '5. Strony Trzecie'}
+              {language === 'en' ? '2. Purpose and legal basis' : '2. Cel i podstawa prawna przetwarzania'}
             </h2>
             <p className="mb-3">
               {language === 'en'
-                ? 'Your account data may be shared with:'
-                : 'Twoje dane konta mogą być udostępniane:'
+                ? 'We process this data for the following purposes:'
+                : 'Dane rejestracyjne wykorzystujemy do następujących celów:'
               }
             </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Supabase Inc.</strong>: {language === 'en' ? 'Database hosting and authentication' : 'Hosting bazy danych i uwierzytelnianie'}</li>
-              <li><strong>Resend, Inc.</strong>: {language === 'en' ? 'Email delivery service' : 'Usługa dostarczania e-mail'}</li>
-              <li><strong>Stripe, Inc.</strong>: {language === 'en' ? 'Payment processing (if you make purchases)' : 'Przetwarzanie płatności (jeśli dokonujesz zakupów)'}</li>
+            <ul className="list-disc pl-6 space-y-3">
+              <li>
+                <strong>{language === 'en' ? 'Account creation and management' : 'Utworzenie i zarządzanie kontem'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'to create your account, authenticate you and enable you to log in, view order history and manage your wishlist. The legal basis is performance of a contract (Art. 6 (1)(b) GDPR).' 
+                  : 'w celu utworzenia konta, uwierzytelniania, umożliwienia logowania, wglądu w historię zamówień i zarządzania listą życzeń. Podstawa prawna: wykonanie umowy (art. 6 ust. 1 lit. b RODO).'}
+              </li>
+              <li>
+                <strong>{language === 'en' ? 'Customer service' : 'Obsługa klienta'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'to provide support, respond to your enquiries and send important account information. The legal basis is our legitimate interest (Art. 6 (1)(f) GDPR) and performance of a contract.' 
+                  : 'aby zapewnić wsparcie, odpowiadać na zapytania i wysyłać ważne informacje dotyczące konta. Podstawa prawna: nasz prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO) oraz wykonanie umowy.'}
+              </li>
+              <li>
+                <strong>{language === 'en' ? 'Personalisation' : 'Personalizacja'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'to remember your preferences, suggest products and tailor your shopping experience. The legal basis is our legitimate interest.' 
+                  : 'aby zapamiętać Twoje preferencje, proponować produkty i dostosowywać zakupy. Podstawa prawna: nasz prawnie uzasadniony interes.'}
+              </li>
+              <li>
+                <strong>{language === 'en' ? 'Marketing' : 'Marketing'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'if you opt in, to send you newsletters and special offers. The legal basis is your consent (Art. 6 (1)(a) GDPR). You may withdraw your consent at any time.' 
+                  : 'jeśli wyrazisz zgodę, wysyłanie newsletterów i specjalnych ofert. Podstawa prawna: zgoda (art. 6 ust. 1 lit. a RODO). Zgodę możesz wycofać w dowolnym momencie.'}
+              </li>
+              <li>
+                <strong>{language === 'en' ? 'Compliance' : 'Spełnienie obowiązków prawnych'}:</strong>{' '}
+                {language === 'en' 
+                  ? 'to meet our legal obligations, such as tax and accounting rules, and to prevent fraud. The legal basis is legal obligation (Art. 6 (1)(c) GDPR) and our legitimate interest.' 
+                  : 'aby spełnić obowiązki wynikające z przepisów podatkowych, rachunkowych oraz w celu zapobiegania oszustwom. Podstawa prawna: obowiązek prawny (art. 6 ust. 1 lit. c RODO) i nasz prawnie uzasadniony interes.'}
+              </li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">
-              {language === 'en' ? '6. Retention Period' : '6. Okres Przechowywania'}
-            </h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>{language === 'en' ? 'Active Account' : 'Aktywne konto'}:</strong> {language === 'en' ? 'Data retained while account is active' : 'Dane przechowywane podczas gdy konto jest aktywne'}</li>
-              <li><strong>{language === 'en' ? 'After Account Deletion' : 'Po usunięciu konta'}:</strong> {language === 'en' ? 'Data deleted within 30 days (except where legal retention applies)' : 'Dane usuwane w ciągu 30 dni (z wyjątkiem obowiązków prawnych)'}</li>
-              <li><strong>{language === 'en' ? 'Order History' : 'Historia zamówień'}:</strong> {language === 'en' ? 'Retained for 10 years (tax/legal requirements)' : 'Przechowywane przez 10 lat (wymogi podatkowe/prawne)'}</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">
-              {language === 'en' ? '7. Your Rights' : '7. Twoje Prawa'}
-            </h2>
-            <p className="mb-3">
-              {language === 'en'
-                ? 'Under GDPR, you have the following rights regarding your account data:'
-                : 'Zgodnie z RODO masz następujące prawa dotyczące danych swojego konta:'
-              }
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>{t('rightAccess')}:</strong> {t('rightAccessDesc')}</li>
-              <li><strong>{t('rightRectification')}:</strong> {t('rightRectificationDesc')}</li>
-              <li><strong>{t('rightErasure')}:</strong> {t('rightErasureDesc')}</li>
-              <li><strong>{t('rightPortability')}:</strong> {t('rightPortabilityDesc')}</li>
-              <li><strong>{t('rightObject')}:</strong> {t('rightObjectDesc')}</li>
-              <li><strong>{t('rightWithdraw')}:</strong> {t('rightWithdrawDesc')}</li>
-            </ul>
-            <p className="mt-4">
-              {t('exerciseRights')} <a href="/data-request" className="text-primary hover:underline font-medium">{t('dataRequestForm')}</a>
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">
-              {language === 'en' ? '8. Security' : '8. Bezpieczeństwo'}
+              {language === 'en' ? '3. Data sharing' : '3. Udostępnianie danych'}
             </h2>
             <p>
               {language === 'en'
-                ? 'We implement industry-standard security measures to protect your account data, including encryption of passwords, secure HTTPS connections, and regular security audits.'
-                : 'Wdrażamy branżowe standardy bezpieczeństwa w celu ochrony danych Twojego konta, w tym szyfrowanie haseł, bezpieczne połączenia HTTPS i regularne audyty bezpieczeństwa.'
+                ? 'We share registration data with trusted partners as described in our Privacy Policy, including payment processors, shipping providers, analytics and marketing partners. We do not sell your personal data.'
+                : 'Dane rejestracyjne mogą być udostępniane zaufanym partnerom tak jak opisano w naszej Polityce prywatności, w tym dostawcom płatności, firmom kurierskim, partnerom analitycznym i marketingowym. Nie sprzedajemy Twoich danych osobowych.'
               }
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">
+              {language === 'en' ? '4. Data retention' : '4. Okres przechowywania'}
+            </h2>
+            <p>
+              {language === 'en'
+                ? 'Registration data is stored for as long as your account remains active. If you delete your account, we retain minimal information (such as order history) for up to six years to comply with legal obligations.'
+                : 'Dane rejestracyjne przechowujemy tak długo, jak Twoje konto pozostaje aktywne. Po usunięciu konta przechowujemy minimalne informacje (np. historię zamówień) przez maksymalnie sześć lat w celu spełnienia obowiązków prawnych.'
+              }
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">
+              {language === 'en' ? '5. Your rights' : '5. Twoje prawa'}
+            </h2>
+            <p className="mb-3">
+              {language === 'en'
+                ? 'You have the rights set out in our Privacy Policy, including the right to access, rectify, delete and restrict the processing of your data, object to processing and withdraw consent.'
+                : 'Przysługują Ci prawa opisane w naszej Polityce prywatności, w tym prawo dostępu, sprostowania, usunięcia i ograniczenia przetwarzania danych, sprzeciwu wobec przetwarzania oraz wycofania zgody.'
+              }
+            </p>
+            <p>
+              {language === 'en' 
+                ? 'To exercise these rights, please use our' 
+                : 'Aby skorzystać z tych praw, użyj naszego'
+              }{' '}
+              <a href="/data-request" className="text-primary hover:underline font-medium">
+                {language === 'en' ? 'Data Request Form' : 'Formularza wniosku o dane'}
+              </a>
+              {' '}{language === 'en' ? 'or contact us at' : 'lub skontaktuj się z nami pod adresem'}{' '}
+              <a href="mailto:m5moffice@proton.me" className="text-primary hover:underline">m5moffice@proton.me</a>.
             </p>
           </section>
 
           <section className="bg-muted/30 p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-3">
-              {t('contactInformation')}
+              {language === 'en' ? '6. Contact' : '6. Kontakt'}
             </h2>
             <p className="mb-2">
               {language === 'en'
-                ? 'For questions about your account data or to exercise your rights:'
-                : 'W przypadku pytań dotyczących danych konta lub skorzystania z praw:'
+                ? 'If you have questions about this notice, please contact us at:'
+                : 'Jeśli masz pytania dotyczące niniejszej informacji, skontaktuj się z nami:'
               }
             </p>
-            <p className="mb-2">Email: m5moffice@proton.me</p>
-            <p className="mb-2">{t('phone')}: +48 729877557</p>
-            <p>{language === 'en' ? 'Address' : 'Adres'}: Grzybowska 2/31, 00-131 Warszawa, Poland</p>
+            <p className="mb-2">
+              <strong>Email:</strong> <a href="mailto:m5moffice@proton.me" className="text-primary hover:underline">m5moffice@proton.me</a>
+            </p>
+            <p>
+              <strong>{language === 'en' ? 'Address' : 'Adres'}:</strong> M5M Limited sp. z o.o., Grzybowska 2/31, 00-131 {language === 'en' ? 'Warsaw' : 'Warszawa'}, Poland
+            </p>
           </section>
         </Card>
       </div>

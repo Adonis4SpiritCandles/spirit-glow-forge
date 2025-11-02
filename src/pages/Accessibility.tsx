@@ -26,7 +26,7 @@ const Accessibility = () => {
         <Card className="p-8 space-y-6">
           <section>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('lastUpdated')}: {language === 'pl' ? '8 października 2025 r.' : '8 October 2025'}
+              {t('lastUpdated')}: {language === 'pl' ? '1 listopada 2025 r.' : '1 November 2025'}
             </p>
             <p className="mb-4">
               {language === 'pl'

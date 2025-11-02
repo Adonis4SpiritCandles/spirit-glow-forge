@@ -5,8 +5,8 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // Deploy su root domain spirit-candle.com
-  base: "/",
+  // Deploy in /spiritcandles/ su Hostinger, root per sviluppo
+  base: process.env.CI ? "/spiritcandles/" : "/",
 
   server: {
     host: "::",

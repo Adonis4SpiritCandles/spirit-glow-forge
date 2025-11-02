@@ -3,6 +3,18 @@ project_id = "fhtuqmdlgzmpsbflxhra"
 [functions.contact-form]
 verify_jwt = false
 
+[functions.newsletter-subscribe]
+verify_jwt = false
+
+[functions.newsletter-confirm]
+verify_jwt = false
+
+[functions.newsletter-unsubscribe]
+verify_jwt = false
+
+[functions.send-referral-emails]
+verify_jwt = false
+
 [functions.create-checkout]
 verify_jwt = true
 

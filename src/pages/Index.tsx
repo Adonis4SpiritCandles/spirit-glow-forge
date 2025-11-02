@@ -15,12 +15,13 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Bell, Gift } from "lucide-react";
 import SEOManager from "@/components/SEO/SEOManager";
 import { generateWebSiteStructuredData } from "@/utils/seoUtils";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
   const { unseenCount, isAdmin } = useAdminNotifications();
   const { t, language } = useLanguage();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showReferralBanner, setShowReferralBanner] = useState(false);
 
   useEffect(() => {
@@ -28,7 +29,35 @@ const Index = () => {
     if (ref && ref.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
       setShowReferralBanner(true);
     }
-  }, [searchParams]);
+
+    // Handle newsletter confirmation status
+    const newsletterStatus = searchParams.get('newsletter');
+    if (newsletterStatus === 'success') {
+      toast.success(
+        language === 'pl' 
+          ? '✓ Newsletter potwierdzony! Sprawdź swoją skrzynkę email, aby otrzymać kod rabatowy 10%!'
+          : '✓ Newsletter confirmed! Check your email to receive your 10% discount code!',
+        { duration: 5000 }
+      );
+      setSearchParams({});
+    } else if (newsletterStatus === 'error') {
+      toast.error(
+        language === 'pl'
+          ? 'Błąd potwierdzenia. Skontaktuj się z nami.'
+          : 'Confirmation error. Please contact us.',
+        { duration: 5000 }
+      );
+      setSearchParams({});
+    } else if (newsletterStatus === 'invalid') {
+      toast.error(
+        language === 'pl'
+          ? 'Nieprawidłowy lub wygasły link. Zapisz się ponownie.'
+          : 'Invalid or expired link. Please subscribe again.',
+        { duration: 5000 }
+      );
+      setSearchParams({});
+    }
+  }, [searchParams, language, setSearchParams]);
 
   const title = language === 'en' 
     ? 'SPIRIT CANDLES — Reborn Your Nature | Luxury Soy Candles'

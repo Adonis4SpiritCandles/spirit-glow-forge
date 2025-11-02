@@ -117,7 +117,11 @@ const Contact = () => {
 
       toast({
         title: t('messageSentSuccessfully'),
-        description: t('thankYouContact'),
+        description: newsletterConsent 
+          ? (language === 'pl' 
+            ? 'Twoja wiadomość została wysłana! Sprawdź email, aby potwierdzić subskrypcję newslettera.'
+            : 'Your message was sent! Check your email to confirm newsletter subscription.')
+          : t('thankYouContact'),
       });
 
       // Reset form

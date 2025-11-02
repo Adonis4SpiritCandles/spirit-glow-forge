@@ -28,6 +28,10 @@ const handler = async (req: Request): Promise<Response> => {
             <p>Use this code at checkout to enjoy your discount!</p>
             <a href="https://spirit-candle.com/shop" style="display:inline-block;background:#8B4513;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;margin:20px 0;">Shop Now</a>
             <p style="color:#666;font-size:14px;margin-top:30px;">Dziękujemy za zapisanie się! Oto Twój kod rabatowy: <strong>${discountCode}</strong></p>
+            <p style="color:#999;font-size:12px;margin-top:20px;text-align:center;">
+              Not interested? <a href="https://spirit-candle.com/api/newsletter/unsubscribe?email=${email}" style="color:#999;">Unsubscribe</a> |
+              Nie jesteś zainteresowany? <a href="https://spirit-candle.com/api/newsletter/unsubscribe?email=${email}" style="color:#999;">Wypisz się</a>
+            </p>
           </div>
         </body>
       </html>

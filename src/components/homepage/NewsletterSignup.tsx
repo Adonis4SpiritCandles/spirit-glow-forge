@@ -33,41 +33,33 @@ const NewsletterSignup = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase
-        .from('newsletter_subscribers')
-        .insert({
+      // Call new newsletter-subscribe function with double opt-in
+      const { data, error } = await supabase.functions.invoke('newsletter-subscribe', {
+        body: { 
           email,
           name: name || null,
-          is_active: true,
-        });
+          language: language,
+          source: 'footer',
+          consent: gdprConsent,
+          consent_text: language === 'pl'
+            ? 'Zgadzam się na otrzymywanie newslettera i akceptuję politykę prywatności.'
+            : 'I agree to receive the newsletter and accept the privacy policy.',
+          ip: null,
+          ua: navigator.userAgent
+        },
+      });
 
-      if (error) {
-        if (error.code === '23505') {
-          toast.error(language === 'pl' 
-            ? 'Ten email jest już zapisany do newslettera!'
-            : 'This email is already subscribed!');
-        } else {
-          throw error;
-        }
-      } else {
-        setIsSuccess(true);
-        setShowConfetti(true);
-        toast.success(language === 'pl'
-          ? 'Dziękujemy za zapisanie się! Sprawdź swoją skrzynkę mailową.'
-          : 'Thank you for subscribing! Check your email for a welcome gift.');
-        
-        // Invoke edge function to send welcome email
-        await supabase.functions.invoke('send-welcome-newsletter', {
-          body: { email, name: name || email.split('@')[0] },
-        });
+      if (error) throw error;
 
-        setTimeout(() => setShowConfetti(false), 5000);
-        
-        // Reset form
-        setEmail("");
-        setName("");
-        setGdprConsent(false);
-      }
+      setIsSuccess(true);
+      toast.success(language === 'pl'
+        ? 'Sprawdź swoją skrzynkę mailową, aby potwierdzić subskrypcję!'
+        : 'Check your email to confirm your subscription!');
+      
+      // Reset form
+      setEmail("");
+      setName("");
+      setGdprConsent(false);
     } catch (error) {
       console.error('Newsletter signup error:', error);
       toast.error(language === 'pl'
@@ -201,8 +193,8 @@ const NewsletterSignup = () => {
               </h3>
               <p className="text-muted-foreground mb-6">
                 {language === 'pl'
-                  ? 'Sprawdź swoją skrzynkę email, aby otrzymać kod rabatowy 10%!'
-                  : 'Check your email to receive your 10% discount code!'}
+                  ? 'Sprawdź swoją skrzynkę email i kliknij link potwierdzający, aby otrzymać kod rabatowy 10%!'
+                  : 'Check your email and click the confirmation link to receive your 10% discount code!'}
               </p>
               <Button
                 onClick={() => setIsSuccess(false)}

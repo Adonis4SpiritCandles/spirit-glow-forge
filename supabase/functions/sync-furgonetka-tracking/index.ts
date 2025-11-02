@@ -204,12 +204,13 @@ Deno.serve(async (req) => {
       .eq('id', orderId)
       .single();
 
-    // Check if tracking number was just added (wasn't there before)
+    // Check if tracking number was just added AND email not sent yet
     const wasTrackingJustAdded = !order.tracking_number && trackingNumber;
+    const needsTrackingEmail = wasTrackingJustAdded && !orderData.tracking_email_sent;
 
-    // Send tracking update email if tracking number was just added
-    if (wasTrackingJustAdded && trackingNumber && orderData?.profiles?.email) {
-      console.log(`Sending tracking available email for order ${orderId} to ${orderData.profiles.email}`);
+    // Send tracking update email ONLY if tracking just added and email not sent
+    if (needsTrackingEmail && orderData?.profiles?.email) {
+      console.log(`[Sync Tracking] Sending tracking email for order ${orderId}`);
       try {
         const emailResponse = await fetch(
           `${supabaseUrl}/functions/v1/send-status-update`,
@@ -232,23 +233,32 @@ Deno.serve(async (req) => {
           }
         );
         
-        if (!emailResponse.ok) {
-          const errorText = await emailResponse.text();
-          console.error(`Failed to send tracking email (${emailResponse.status}):`, errorText);
+        if (emailResponse.ok) {
+          // Mark tracking email as sent
+          await supabase
+            .from('orders')
+            .update({ tracking_email_sent: true })
+            .eq('id', orderId);
+          
+          console.log(`[Sync Tracking] Tracking email sent and marked for order ${orderId}`);
         } else {
-          const emailData = await emailResponse.json();
-          console.log(`Tracking available email sent successfully for order ${orderId}:`, emailData);
+          const errorText = await emailResponse.text();
+          console.error(`[Sync Tracking] Failed to send tracking email (${emailResponse.status}):`, errorText);
         }
       } catch (emailError) {
-        console.error(`Exception sending tracking email for order ${orderId}:`, emailError);
+        console.error(`[Sync Tracking] Exception sending tracking email:`, emailError);
       }
     }
 
-    // If order is delivered, send admin and customer notifications
-    if (shippingStatus === 'delivered' && orderData) {
-      console.log(`Order ${orderId} marked as delivered, sending notifications`);
+    // If order is delivered AND email not sent yet, send notifications
+    const needsDeliveryEmail = shippingStatus === 'delivered' && !orderData.delivered_email_sent;
+
+    if (needsDeliveryEmail && orderData) {
+      console.log(`[Sync Tracking] Order ${orderId} delivered, sending notifications`);
+      
+      // Send admin notification
       try {
-        const adminEmailResponse = await fetch(
+        await fetch(
           `${supabaseUrl}/functions/v1/send-admin-delivered-notification`,
           {
             method: 'POST',
@@ -264,16 +274,12 @@ Deno.serve(async (req) => {
             }),
           }
         );
-        
-        if (!adminEmailResponse.ok) {
-          console.error(`Failed to send admin delivered notification (${adminEmailResponse.status})`);
-        } else {
-          console.log(`Admin delivered notification sent for order ${orderId}`);
-        }
-      } catch (emailError) {
-        console.error(`Failed to send admin delivered notification for order ${orderId}:`, emailError);
+        console.log(`[Sync Tracking] Admin delivered notification sent`);
+      } catch (e) {
+        console.error(`[Sync Tracking] Failed to send admin notification:`, e);
       }
 
+      // Send customer email
       try {
         const customerEmailResponse = await fetch(
           `${supabaseUrl}/functions/v1/send-status-update`,
@@ -296,13 +302,19 @@ Deno.serve(async (req) => {
           }
         );
         
-        if (!customerEmailResponse.ok) {
-          console.error(`Failed to send delivered email (${customerEmailResponse.status})`);
+        if (customerEmailResponse.ok) {
+          // Mark delivered email as sent
+          await supabase
+            .from('orders')
+            .update({ delivered_email_sent: true })
+            .eq('id', orderId);
+          
+          console.log(`[Sync Tracking] Delivered email sent and marked for order ${orderId}`);
         } else {
-          console.log(`Customer delivered email sent for order ${orderId}`);
+          console.error(`[Sync Tracking] Failed to send delivered email (${customerEmailResponse.status})`);
         }
-      } catch (emailError) {
-        console.error(`Failed to send delivered email for order ${orderId}:`, emailError);
+      } catch (e) {
+        console.error(`[Sync Tracking] Failed to send delivered email:`, e);
       }
     }
 

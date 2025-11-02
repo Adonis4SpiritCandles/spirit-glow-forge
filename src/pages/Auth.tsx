@@ -158,6 +158,30 @@ const Auth = () => {
                     { user_id: userData.user.id, badge_id: 'welcome' }
                   ]);
 
+                  // Send referral emails
+                  try {
+                    const { data: referrerProfile } = await supabase
+                      .from('profiles')
+                      .select('email, first_name, preferred_language')
+                      .eq('user_id', referralId)
+                      .single();
+
+                    if (referrerProfile) {
+                      await supabase.functions.invoke('send-referral-emails', {
+                        body: {
+                          referrerEmail: referrerProfile.email,
+                          referrerName: referrerProfile.first_name || 'Friend',
+                          refereeName: `${firstName} ${lastName}`,
+                          refereeEmail: emailOrUsername,
+                          language: referrerProfile.preferred_language || 'en'
+                        }
+                      });
+                      console.log('Referral emails sent successfully');
+                    }
+                  } catch (emailErr) {
+                    console.error('Failed to send referral emails:', emailErr);
+                  }
+
                   clearReferral();
                 }
               } catch (err) {

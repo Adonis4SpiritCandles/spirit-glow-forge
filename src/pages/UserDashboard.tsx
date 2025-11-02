@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
+import SEOManager from '@/components/SEO/SEOManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -240,7 +241,16 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <>
+      <SEOManager
+        title={t('dashboard') || 'Dashboard'}
+        description={language === 'en'
+          ? 'Manage your SPIRIT CANDLES account, view orders, update profile settings, and track your rewards.'
+          : 'Zarządzaj kontem SPIRIT CANDLES, przeglądaj zamówienia, aktualizuj ustawienia profilu i śledź nagrody.'}
+        noindex={true}
+        nofollow={true}
+      />
+      <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="mb-8">
           <h1 className="font-playfair text-3xl font-bold text-foreground mb-2">
@@ -585,7 +595,8 @@ const UserDashboard = () => {
         }}
         isAdmin={false}
       />
-    </div>
+      </div>
+    </>
   );
 };
 

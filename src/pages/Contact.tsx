@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
+import SEOManager from "@/components/SEO/SEOManager";
+import { generateBreadcrumbStructuredData, getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
 
 const Contact = () => {
   const { t, language } = useLanguage();
@@ -59,6 +61,11 @@ const Contact = () => {
       [name]: value
     }));
   };
+
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: getFullUrl('/', language) },
+    { name: language === 'en' ? 'Contact' : 'Kontakt', url: getFullUrl('/contact', language) }
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +141,20 @@ const Contact = () => {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-mystical">
+    <>
+      <SEOManager
+        title={language === 'en' ? 'Contact Us' : 'Kontakt'}
+        description={language === 'en'
+          ? 'Get in touch with SPIRIT CANDLES. We are here to help with your questions about our luxury soy candles.'
+          : 'Skontaktuj się z SPIRIT CANDLES. Jesteśmy tu, aby pomóc z pytaniami dotyczącymi naszych luksusowych świec sojowych.'}
+        keywords={language === 'en'
+          ? 'contact spirit candles, customer service, candle support, email contact'
+          : 'kontakt spirit candles, obsługa klienta, wsparcie świec, kontakt email'}
+        url={getFullUrl('/contact', language)}
+        structuredData={breadcrumbData}
+        alternateUrls={generateAlternateUrls('/contact')}
+      />
+      <main className="min-h-screen bg-gradient-mystical">
       <div className="container mx-auto px-4 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-16">
@@ -397,7 +417,8 @@ const Contact = () => {
           </CardContent>
         </Card>
       </div>
-    </main>
+      </main>
+    </>
   );
 };
 

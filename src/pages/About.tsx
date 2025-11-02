@@ -4,9 +4,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 import candleWax from "@/assets/candle-wax.png";
 import spiritLogo from "@/assets/spirit-logo.png";
+import SEOManager from "@/components/SEO/SEOManager";
+import { generateBreadcrumbStructuredData, getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
 
 const About = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: getFullUrl('/', language) },
+    { name: language === 'en' ? 'About Us' : 'O Nas', url: getFullUrl('/about', language) }
+  ]);
   
   const features = [
     {
@@ -42,7 +49,20 @@ const About = () => {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-mystical">
+    <>
+      <SEOManager
+        title={language === 'en' ? 'About Us' : 'O Nas'}
+        description={language === 'en' 
+          ? 'Learn about SPIRIT CANDLES - our story, values, and commitment to creating luxury soy candles inspired by iconic fragrances.'
+          : 'Poznaj SPIRIT CANDLES - naszą historię, wartości i zaangażowanie w tworzenie luksusowych świec sojowych inspirowanych kultowymi zapachami.'}
+        keywords={language === 'en'
+          ? 'about spirit candles, candle brand story, luxury candle company, handcrafted candles'
+          : 'o spirit candles, historia marki świec, luksusowa firma świec, ręcznie robione świece'}
+        url={getFullUrl('/about', language)}
+        structuredData={breadcrumbData}
+        alternateUrls={generateAlternateUrls('/about')}
+      />
+      <main className="min-h-screen bg-gradient-mystical">
       {/* Hero Section */}
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-8">
@@ -164,7 +184,8 @@ const About = () => {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 };
 

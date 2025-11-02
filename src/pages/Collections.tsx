@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import candleLit from "@/assets/candle-lit.png";
 import candleUnlit from "@/assets/candle-unlit.png";
 import candleWax from "@/assets/candle-wax.png";
+import SEOManager from "@/components/SEO/SEOManager";
+import { generateBreadcrumbStructuredData, getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
 
 const Collections = () => {
   const { t, language } = useLanguage();
@@ -106,8 +108,28 @@ const Collections = () => {
     ? products.filter(product => product.collection === selectedCollection)
     : [];
 
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: getFullUrl('/', language) },
+    { name: language === 'en' ? 'Collections' : 'Kolekcje', url: getFullUrl('/collections', language) }
+  ]);
+
+  const selectedCollectionName = collections.find(c => c.id === selectedCollection)?.name;
+
   return (
-    <div className="min-h-screen bg-background overflow-hidden">
+    <>
+      <SEOManager
+        title={selectedCollectionName || (language === 'en' ? 'Our Collections' : 'Nasze Kolekcje')}
+        description={language === 'en'
+          ? 'Explore SPIRIT CANDLES curated collections of luxury soy candles. From fresh scents to romantic evenings, find your perfect candle.'
+          : 'Odkryj kolekcje luksusowych świec sojowych SPIRIT CANDLES. Od świeżych zapachów po romantyczne wieczory, znajdź idealną świecę.'}
+        keywords={language === 'en'
+          ? 'candle collections, luxury candles, scent collections, candle categories'
+          : 'kolekcje świec, luksusowe świece, kolekcje zapachów, kategorie świec'}
+        url={getFullUrl('/collections', language)}
+        structuredData={breadcrumbData}
+        alternateUrls={generateAlternateUrls('/collections')}
+      />
+      <div className="min-h-screen bg-background overflow-hidden">
       {/* Animated Hero Section */}
       <section ref={heroRef} className="relative py-24 bg-gradient-to-br from-background via-background to-muted overflow-hidden">
         <motion.div
@@ -370,7 +392,8 @@ const Collections = () => {
           )}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 

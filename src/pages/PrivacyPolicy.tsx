@@ -3,6 +3,8 @@ import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Download, ExternalLink } from 'lucide-react';
+import SEOManager from '@/components/SEO/SEOManager';
+import { getFullUrl, generateAlternateUrls } from '@/utils/seoUtils';
 
 const PrivacyPolicy = () => {
   const { t, language } = useLanguage();
@@ -11,7 +13,16 @@ const PrivacyPolicy = () => {
     : '/documents/privacy-policy-en.pdf';
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
+    <>
+      <SEOManager
+        title={t('privacyPolicy')}
+        description={language === 'en'
+          ? 'Read SPIRIT CANDLES privacy policy. Learn how we collect, use, and protect your personal data in compliance with GDPR.'
+          : 'Przeczytaj politykę prywatności SPIRIT CANDLES. Dowiedz się, jak zbieramy, używamy i chronimy Twoje dane osobowe zgodnie z RODO.'}
+        url={getFullUrl('/privacy-policy', language)}
+        alternateUrls={generateAlternateUrls('/privacy-policy')}
+      />
+      <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">{t('privacyPolicy')}</h1>
         
@@ -213,7 +224,8 @@ const PrivacyPolicy = () => {
           </section>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

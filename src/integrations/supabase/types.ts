@@ -1027,6 +1027,51 @@ export type Database = {
           },
         ]
       }
+      seo_settings: {
+        Row: {
+          created_at: string | null
+          description_en: string | null
+          description_pl: string | null
+          id: string
+          keywords_en: string | null
+          keywords_pl: string | null
+          noindex: boolean | null
+          og_image_url: string | null
+          page_type: string
+          title_en: string | null
+          title_pl: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          keywords_en?: string | null
+          keywords_pl?: string | null
+          noindex?: boolean | null
+          og_image_url?: string | null
+          page_type: string
+          title_en?: string | null
+          title_pl?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          keywords_en?: string | null
+          keywords_pl?: string | null
+          noindex?: boolean | null
+          og_image_url?: string | null
+          page_type?: string
+          title_en?: string | null
+          title_pl?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       shared_wishlists: {
         Row: {
           created_at: string

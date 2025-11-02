@@ -14,6 +14,7 @@ import spiritLogo from '@/assets/spirit-logo.png';
 import { ResetPasswordModal } from '@/components/ResetPasswordModal';
 import { useReferral } from '@/hooks/useReferral';
 import { supabase } from '@/integrations/supabase/client';
+import SEOManager from '@/components/SEO/SEOManager';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -177,7 +178,16 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <>
+      <SEOManager
+        title={isLogin ? (language === 'en' ? 'Sign In' : 'Zaloguj się') : (language === 'en' ? 'Sign Up' : 'Zarejestruj się')}
+        description={language === 'en'
+          ? 'Sign in or create an account to access your SPIRIT CANDLES profile, track orders, and enjoy exclusive benefits.'
+          : 'Zaloguj się lub utwórz konto, aby uzyskać dostęp do profilu SPIRIT CANDLES, śledzić zamówienia i korzystać z ekskluzywnych korzyści.'}
+        noindex={true}
+        nofollow={true}
+      />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border/40">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-6">
@@ -402,7 +412,8 @@ const Auth = () => {
         isOpen={showResetPassword} 
         onClose={() => setShowResetPassword(false)} 
       />
-    </div>
+      </div>
+    </>
   );
 };
 

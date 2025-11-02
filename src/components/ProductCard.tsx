@@ -19,6 +19,7 @@ interface ProductCardProps {
     eur: number;
   };
   image: string;
+  summary?: string;
   description: string;
   sizes: Array<{
     size: string;
@@ -35,6 +36,7 @@ const ProductCard = ({
   fragrance, 
   price, 
   image, 
+  summary,
   description, 
   sizes, 
   isNew, 
@@ -166,7 +168,7 @@ const ProductCard = ({
             </div>
 
             <p className="text-sm text-foreground/80 line-clamp-2 min-h-[2.5rem]">
-              {description}
+              {summary || description}
             </p>
 
             {/* Size Selection */}

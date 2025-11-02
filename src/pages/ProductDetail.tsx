@@ -49,6 +49,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState("details");
   const [experienceTab, setExperienceTab] = useState<"viewer" | "ar">("ar");
+  const [selectedImage, setSelectedImage] = useState(0);
 
   const isWishlisted = id ? isInWishlist(id) : false;
 
@@ -64,13 +65,18 @@ const ProductDetail = () => {
         setProduct(null);
         return;
       }
+      const imageUrls = (data as any).image_urls || [];
+      const allImages = [data.image_url || candleLit, ...imageUrls].filter(Boolean);
+      
       const mapped = {
         id: data.id,
         name: language === 'en' ? data.name_en : data.name_pl,
+        summary: language === 'en' ? ((data as any).summary_en || '') : ((data as any).summary_pl || ''),
         fragrance: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
         category: data.category,
         price: { pln: Number(data.price_pln), eur: Number(data.price_eur) },
         image: data.image_url || candleLit,
+        images: allImages,
         description: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
         longDescription: language === 'en' ? (data.description_en || '') : (data.description_pl || ''),
         sizes: [{ size: data.size, weight: data.size || '180g', price: { pln: Number(data.price_pln), eur: Number(data.price_eur) }, burnTime: '40-45 hours' }],
@@ -216,15 +222,35 @@ const ProductDetail = () => {
 
       <div className="container mx-auto px-4 lg:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image */}
+          {/* Product Image Gallery */}
           <div className="space-y-4">
             <div className="aspect-square bg-gradient-mystical rounded-lg overflow-hidden">
               <img 
-                src={product.image}
+                src={product.images[selectedImage] || product.image}
                 alt={`${product.name} soy candle — ${product.fragrance}`}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>
+            {/* Thumbnails */}
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-5 gap-2">
+                {product.images.map((img: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`aspect-square rounded-md overflow-hidden border-2 transition-all ${
+                      selectedImage === idx ? 'border-primary' : 'border-transparent hover:border-muted-foreground'
+                    }`}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`${product.name} view ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}

@@ -118,6 +118,8 @@ const AdminDashboard = () => {
   const [productForm, setProductForm] = useState({
     name_en: '',
     name_pl: '',
+    summary_en: '',
+    summary_pl: '',
     description_en: '',
     description_pl: '',
     price_pln: '', // keep as string to allow comma or dot while typing
@@ -126,7 +128,8 @@ const AdminDashboard = () => {
     size: '180g',
     weight: '',
     stock_quantity: 0,
-    image_url: ''
+    image_url: '',
+    image_urls: [] as string[]
   });
 
   // Customer modal state
@@ -574,6 +577,8 @@ const AdminDashboard = () => {
     setProductForm({
       name_en: product.name_en,
       name_pl: product.name_pl,
+      summary_en: (product as any).summary_en || '',
+      summary_pl: (product as any).summary_pl || '',
       description_en: product.description_en || '',
       description_pl: product.description_pl || '',
       price_pln: Number(product.price_pln).toFixed(2),
@@ -582,7 +587,8 @@ const AdminDashboard = () => {
       size: product.size || '180g',
       weight: product.weight || '',
       stock_quantity: product.stock_quantity,
-      image_url: product.image_url || ''
+      image_url: product.image_url || '',
+      image_urls: (product as any).image_urls || []
     });
     setIsEditModalOpen(true);
   };
@@ -736,6 +742,51 @@ const AdminDashboard = () => {
       toast({
         title: t('imageUploaded'),
         description: "Image uploaded successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
+  // Additional images upload handler
+  const handleAdditionalImagesUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setImageUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+      
+      for (let i = 0; i < Math.min(files.length, 4); i++) {
+        const file = files[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('products')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('products')
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(publicUrl);
+      }
+
+      setProductForm({ ...productForm, image_urls: uploadedUrls });
+      
+      toast({
+        title: t('imageUploaded'),
+        description: `${uploadedUrls.length} ${language === 'pl' ? 'obrazów wgranych' : 'images uploaded'}`,
       });
     } catch (error: any) {
       toast({
@@ -1315,6 +1366,8 @@ const AdminDashboard = () => {
                   setProductForm({
                     name_en: '',
                     name_pl: '',
+                    summary_en: '',
+                    summary_pl: '',
                     description_en: '',
                     description_pl: '',
                     price_pln: '',
@@ -1323,7 +1376,8 @@ const AdminDashboard = () => {
                     size: '180g',
                     weight: '',
                     stock_quantity: 0,
-                    image_url: ''
+                    image_url: '',
+                    image_urls: []
                   });
                   setShowProductForm(true);
                 }}>
@@ -1424,8 +1478,11 @@ const AdminDashboard = () => {
                           placeholder="Available quantity"
                         />
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-2 md:col-span-2">
                         <Label>{t('uploadImage')}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {language === 'pl' ? 'Główne zdjęcie (wyświetlane w karcie produktu i jako pierwsze w galerii)' : 'Main image (displayed in product card and as first in gallery)'}
+                        </p>
                         <div className="flex gap-2">
                           <Input
                             type="file"
@@ -1451,15 +1508,69 @@ const AdminDashboard = () => {
                           </div>
                         )}
                       </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>{language === 'pl' ? 'Dodatkowe Zdjęcia (Opcjonalnie)' : 'Additional Images (Optional)'}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {language === 'pl' ? 'Maksymalnie 4 zdjęcia dodatkowe (wyświetlane w galerii produktu)' : 'Maximum 4 additional images (displayed in product gallery)'}
+                        </p>
+                        <div className="flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleAdditionalImagesUpload}
+                            className="flex-1"
+                          />
+                          <Button 
+                            type="button" 
+                            variant="outline"
+                            onClick={() => setProductForm({ ...productForm, image_urls: [] })}
+                          >
+                            {t('clear')}
+                          </Button>
+                        </div>
+                        {productForm.image_urls && productForm.image_urls.length > 0 && (
+                          <div className="mt-2 flex gap-2 flex-wrap">
+                            {productForm.image_urls.map((url, idx) => (
+                              <img 
+                                key={idx}
+                                src={url} 
+                                alt={`Additional ${idx + 1}`} 
+                                className="w-20 h-20 object-cover rounded border"
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="grid grid-cols-1 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>{language === 'pl' ? 'Krótki Opis (Angielski)' : 'Summary (English)'}</Label>
+                        <Textarea
+                          value={productForm.summary_en}
+                          onChange={(e) => setProductForm({ ...productForm, summary_en: e.target.value })}
+                          placeholder="Short product summary for cards"
+                          rows={2}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{language === 'pl' ? 'Krótki Opis (Polski)' : 'Summary (Polish)'}</Label>
+                        <Textarea
+                          value={productForm.summary_pl}
+                          onChange={(e) => setProductForm({ ...productForm, summary_pl: e.target.value })}
+                          placeholder="Krótkie podsumowanie dla kart produktu"
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label>{t('descriptionEn')}</Label>
                         <Textarea
                           value={productForm.description_en}
                           onChange={(e) => setProductForm({ ...productForm, description_en: e.target.value })}
-                          placeholder="Product description in English"
-                          rows={3}
+                          placeholder="Full product description in English"
+                          rows={4}
                         />
                       </div>
                       <div className="space-y-2">
@@ -1467,8 +1578,8 @@ const AdminDashboard = () => {
                         <Textarea
                           value={productForm.description_pl}
                           onChange={(e) => setProductForm({ ...productForm, description_pl: e.target.value })}
-                          placeholder="Opis produktu po polsku"
-                          rows={3}
+                          placeholder="Pełny opis produktu po polsku"
+                          rows={4}
                         />
                       </div>
                     </div>

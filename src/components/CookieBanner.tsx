@@ -32,7 +32,7 @@ export const CookieBanner = () => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [customConsent, setCustomConsent] = useState<CookieConsent>({
     strictlyNecessary: true,
-    functional: false,
+    functional: true,
     analytics: false,
     marketing: false,
   });
@@ -67,6 +67,13 @@ export const CookieBanner = () => {
           description: t('stripeServiceDesc'),
           link: 'https://stripe.com/privacy',
           provider: 'Stripe, Inc.',
+        },
+        {
+          key: 'hostinger',
+          name: t('hostingerService'),
+          description: t('hostingerServiceDesc'),
+          link: 'https://www.hostinger.com/privacy',
+          provider: 'Hostinger International Ltd.',
         },
       ],
       required: true,

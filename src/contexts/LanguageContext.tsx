@@ -76,6 +76,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'privacyRegistration') return language === 'pl' ? 'Polityka prywatności rejestracji' : 'Privacy Registration';
     if (key === 'allNotices') return language === 'pl' ? 'Wszystkie informacje' : 'All Notices';
     if (key === 'manageCookies') return language === 'pl' ? 'Zarządzaj ciasteczkami' : 'Manage Cookies';
+    if (key === 'manageCookiePreferences') return language === 'pl' ? 'Zarządzaj preferencjami plików cookie' : 'Manage cookie preferences';
     if (key === 'availableInLanguages') return language === 'pl' ? 'Dostępne w języku polskim i angielskim' : 'Available in Polish and English';
     if (key === 'designedBy') return language === 'pl' ? 'Zaprojektowane i stworzone z ❤️ miłością i pasją' : 'Designed and created with ❤️ love and passion';
     if (key === 'by') return language === 'pl' ? 'przez' : 'by';
@@ -660,6 +661,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'supabaseServiceDesc') return language === 'pl' ? 'Zarządza uwierzytelnianiem użytkowników, sesjami i przechowywaniem danych.' : 'Manages user authentication, sessions, and data storage.';
     if (key === 'stripeService') return language === 'pl' ? 'Stripe (Przetwarzanie płatności)' : 'Stripe (Payment Processing)';
     if (key === 'stripeServiceDesc') return language === 'pl' ? 'Bezpieczne przetwarzanie płatności i zapobieganie oszustwom.' : 'Secure payment processing and fraud prevention.';
+    if (key === 'hostingerService') return language === 'pl' ? 'Hostinger (Hosting strony)' : 'Hostinger (Website Hosting)';
+    if (key === 'hostingerServiceDesc') return language === 'pl' ? 'Zapewnia infrastrukturę dla naszej strony internetowej i przetwarza dane dotyczące użytkowania.' : 'Provides infrastructure for our website and processes usage data.';
     if (key === 'functionalCookies') return language === 'pl' ? 'Funkcjonalne pliki cookie' : 'Functional Cookies';
     if (key === 'functionalDescription') return language === 'pl' ? 'Zapewniają usprawnione funkcje, takie jak wysyłka i komunikacja e-mailowa.' : 'Enable enhanced features like shipping and email communication.';
     if (key === 'furgonetkaService') return language === 'pl' ? 'Furgonetka (Usługi wysyłkowe)' : 'Furgonetka (Shipping Services)';

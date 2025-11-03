@@ -1,0 +1,9 @@
+# SPA fallback per tutte le rotte sotto /spiritcandles
+RewriteEngine On
+RewriteBase /spiritcandles/
+
+# Servi index.html se la risorsa non esiste come file o directory
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /spiritcandles/index.html [L]

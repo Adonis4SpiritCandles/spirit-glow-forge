@@ -302,19 +302,21 @@ export default function PublicProfile() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Cover Image with Default */}
+      {/* Cover Image with Amber Background */}
       <div 
         className="h-64 bg-gradient-to-r from-primary/20 to-primary/10 relative"
-        style={profile.cover_image_url ? {
-          backgroundImage: `url(${profile.cover_image_url})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        } : {
-          backgroundImage: `url(/assets/spirit-logo-transparent.png)`,
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-        }}
+        style={
+          profile.cover_image_url ? {
+            backgroundImage: `url(${profile.cover_image_url})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : {
+            backgroundImage: `url(/assets/spirit-logo-transparent.png)`,
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+          }
+        }
       >
         <Link to="/" className="absolute top-4 left-4">
           <Button variant="secondary" size="sm">

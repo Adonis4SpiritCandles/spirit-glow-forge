@@ -213,6 +213,18 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
     if (key === 'processing') return language === 'pl' ? 'Przetwarzanie...' : 'Processing...';
     if (key === 'pleaseTryAgain') return language === 'pl' ? 'Spróbuj ponownie' : 'Please try again';
+
+    // Admin Dashboard - Additional translations
+    if (key === 'loading') return language === 'pl' ? 'Ładowanie...' : 'Loading...';
+    if (key === 'accessDenied') return language === 'pl' ? 'Dostęp zabroniony' : 'Access Denied';
+    if (key === 'noPermission') return language === 'pl' ? 'Nie masz uprawnień do panelu administratora.' : 'You don\'t have permission to access the admin dashboard.';
+    if (key === 'save') return language === 'pl' ? 'Zapisz' : 'Save';
+    if (key === 'outOfStock') return language === 'pl' ? 'Brak w magazynie' : 'Out of Stock';
+    if (key === 'lowStock') return language === 'pl' ? 'Niski stan' : 'Low Stock';
+    if (key === 'inStock') return language === 'pl' ? 'W magazynie' : 'In Stock';
+    if (key === 'yes') return language === 'pl' ? 'Tak' : 'Yes';
+    if (key === 'no') return language === 'pl' ? 'Nie' : 'No';
+    if (key === 'published') return language === 'pl' ? 'Opublikowany' : 'Published';
     if (key === 'removed') return language === 'pl' ? 'Usunięto' : 'Removed';
     if (key === 'updated') return language === 'pl' ? 'Zaktualizowano' : 'Updated';
     if (key === 'synced') return language === 'pl' ? 'Zsynchronizowano' : 'Synced';

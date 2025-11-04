@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3, X, Bell } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3, X, Bell, Settings, Database, Tags, Gift, FileText, Globe } from 'lucide-react';
 import furgonetkaIco from '@/assets/furgonetka-logo-ico.png';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
@@ -1241,7 +1241,7 @@ const AdminDashboard = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     );
@@ -1255,9 +1255,9 @@ const AdminDashboard = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md mx-auto text-center p-8">
-          <h2 className="font-playfair text-2xl font-semibold mb-4">Access Denied</h2>
+          <h2 className="font-playfair text-2xl font-semibold mb-4">{t('accessDenied')}</h2>
           <p className="text-muted-foreground">
-            You don't have permission to access the admin dashboard.
+            {t('noPermission')}
           </p>
         </Card>
       </div>
@@ -1359,42 +1359,138 @@ const AdminDashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="space-y-4">
-          {/* Mobile: compact selector instead of horizontal scroll */}
+          {/* Mobile: compact selector with icons */}
           <div className="sm:hidden">
             <Select value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
               <SelectTrigger>
                 <SelectValue placeholder={t('products')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="products">{t('products')}</SelectItem>
-                <SelectItem value="collections">{language === 'pl' ? 'Kolekcje' : 'Collections'}</SelectItem>
-                <SelectItem value="orders">{t('orders')}</SelectItem>
-                <SelectItem value="trash">{t('ordersTrash')}</SelectItem>
-                <SelectItem value="customers">{t('customers')}</SelectItem>
-                <SelectItem value="warehouse">{t('warehouse')}</SelectItem>
-                <SelectItem value="coupons">{language === 'pl' ? 'Kupony' : 'Coupons'}</SelectItem>
-                <SelectItem value="referral-rewards">{language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}</SelectItem>
-                <SelectItem value="social">Social Media</SelectItem>
-                <SelectItem value="settings">{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</SelectItem>
-                <SelectItem value="statistics">{t('statistics')}</SelectItem>
-                <SelectItem value="export">Export</SelectItem>
+                <SelectItem value="products">
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    <span>{t('products')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="collections">
+                  <div className="flex items-center gap-2">
+                    <Tags className="h-4 w-4" />
+                    <span>{language === 'pl' ? 'Kolekcje' : 'Collections'}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="orders">
+                  <div className="flex items-center gap-2">
+                    <ShoppingCart className="h-4 w-4" />
+                    <span>{t('orders')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="trash">
+                  <div className="flex items-center gap-2">
+                    <Trash2 className="h-4 w-4" />
+                    <span>{t('ordersTrash')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="customers">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    <span>{t('customers')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="warehouse">
+                  <div className="flex items-center gap-2">
+                    <Database className="h-4 w-4" />
+                    <span>{t('warehouse')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="coupons">
+                  <div className="flex items-center gap-2">
+                    <Tags className="h-4 w-4" />
+                    <span>{language === 'pl' ? 'Kupony' : 'Coupons'}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="referral-rewards">
+                  <div className="flex items-center gap-2">
+                    <Gift className="h-4 w-4" />
+                    <span>{language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="social">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    <span>Social Media</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="settings">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span>{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="statistics">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
+                    <span>{t('statistics')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="export">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span>Export</span>
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
-          {/* Tablet/Desktop: wrapped tabs, no horizontal scroll */}
+          {/* Tablet/Desktop: wrapped tabs with icons */}
           <TabsList className="hidden sm:flex flex-wrap justify-start gap-1 px-2 py-1">
-            <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">{t('products')}</TabsTrigger>
-            <TabsTrigger value="collections" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Kolekcje' : 'Collections'}</TabsTrigger>
-            <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">{t('orders')}</TabsTrigger>
-            <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">{t('ordersTrash')}</TabsTrigger>
-            <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">{t('customers')}</TabsTrigger>
-            <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">{t('warehouse')}</TabsTrigger>
-            <TabsTrigger value="coupons" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Kupony' : 'Coupons'}</TabsTrigger>
-            <TabsTrigger value="referral-rewards" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}</TabsTrigger>
-            <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">Social Media</TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</TabsTrigger>
-            <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
-            <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">Export</TabsTrigger>
+            <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">
+              <Package className="h-4 w-4 mr-1" />
+              {t('products')}
+            </TabsTrigger>
+            <TabsTrigger value="collections" className="text-xs sm:text-sm flex-shrink-0">
+              <Tags className="h-4 w-4 mr-1" />
+              {language === 'pl' ? 'Kolekcje' : 'Collections'}
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">
+              <ShoppingCart className="h-4 w-4 mr-1" />
+              {t('orders')}
+            </TabsTrigger>
+            <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">
+              <Trash2 className="h-4 w-4 mr-1" />
+              {t('ordersTrash')}
+            </TabsTrigger>
+            <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">
+              <Users className="h-4 w-4 mr-1" />
+              {t('customers')}
+            </TabsTrigger>
+            <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">
+              <Database className="h-4 w-4 mr-1" />
+              {t('warehouse')}
+            </TabsTrigger>
+            <TabsTrigger value="coupons" className="text-xs sm:text-sm flex-shrink-0">
+              <Tags className="h-4 w-4 mr-1" />
+              {language === 'pl' ? 'Kupony' : 'Coupons'}
+            </TabsTrigger>
+            <TabsTrigger value="referral-rewards" className="text-xs sm:text-sm flex-shrink-0">
+              <Gift className="h-4 w-4 mr-1" />
+              {language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}
+            </TabsTrigger>
+            <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">
+              <Globe className="h-4 w-4 mr-1" />
+              Social Media
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs sm:text-sm flex-shrink-0">
+              <Settings className="h-4 w-4 mr-1" />
+              {language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}
+            </TabsTrigger>
+            <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">
+              <BarChart3 className="h-4 w-4 mr-1" />
+              {t('statistics')}
+            </TabsTrigger>
+            <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">
+              <FileText className="h-4 w-4 mr-1" />
+              Export
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">
@@ -2711,6 +2807,9 @@ const AdminDashboard = () => {
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label>{t('uploadImage')}</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {language === 'pl' ? 'Główne zdjęcie (wyświetlane w karcie produktu i jako pierwsze w galerii)' : 'Main image (displayed in product card and as first in gallery)'}
+                  </p>
                   <div className="flex gap-2">
                     <Input
                       type="file"
@@ -2723,7 +2822,7 @@ const AdminDashboard = () => {
                       variant="outline"
                       onClick={() => setProductForm({ ...productForm, image_url: '' })}
                     >
-                      Clear
+                      {t('clear')}
                     </Button>
                   </div>
                   {productForm.image_url && (
@@ -2733,6 +2832,40 @@ const AdminDashboard = () => {
                         alt="Product preview" 
                         className="w-20 h-20 object-cover rounded border"
                       />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label>{language === 'pl' ? 'Dodatkowe Zdjęcia (Opcjonalnie)' : 'Additional Images (Optional)'}</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {language === 'pl' ? 'Maksymalnie 4 zdjęcia dodatkowe (wyświetlane w galerii produktu)' : 'Maximum 4 additional images (displayed in product gallery)'}
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleAdditionalImagesUpload}
+                      className="flex-1"
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => setProductForm({ ...productForm, image_urls: [] })}
+                    >
+                      {t('clear')}
+                    </Button>
+                  </div>
+                  {productForm.image_urls && productForm.image_urls.length > 0 && (
+                    <div className="mt-2 flex gap-2 flex-wrap">
+                      {productForm.image_urls.map((url, idx) => (
+                        <img 
+                          key={idx}
+                          src={url} 
+                          alt={`Additional ${idx + 1}`} 
+                          className="w-20 h-20 object-cover rounded border"
+                        />
+                      ))}
                     </div>
                   )}
                 </div>

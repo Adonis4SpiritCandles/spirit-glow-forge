@@ -435,23 +435,60 @@ const AdminDashboard = () => {
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: newStatus })
-      .eq('id', orderId);
+    try {
+      // Get order details
+      const { data: order } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .single();
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update order status",
-        variant: "destructive",
-      });
-    } else {
+      if (!order) throw new Error('Order not found');
+
+      // Get user profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('email, preferred_language, first_name')
+        .eq('user_id', order.user_id)
+        .single();
+
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      // Send completion email if status is 'completed'
+      if (newStatus === 'completed' && profile) {
+        try {
+          await supabase.functions.invoke('send-status-update', {
+            body: {
+              orderId: order.id,
+              orderNumber: order.order_number,
+              status: 'completed',
+              userEmail: profile.email,
+              preferredLanguage: profile.preferred_language || 'en',
+              updateType: 'completed'
+            }
+          });
+          console.log('Order completion email sent');
+        } catch (emailError) {
+          console.error('Failed to send completion email:', emailError);
+        }
+      }
+
       toast({
         title: "Success",
         description: "Order status updated successfully",
       });
       loadDashboardData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 

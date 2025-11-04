@@ -241,7 +241,7 @@ export default function AdminReferralRewards() {
               </div>
 
               <div className="space-y-2">
-                <Label>{language === 'pl' ? 'Punkty za Polecenie' : 'Points per Referral'}</Label>
+                <Label>{language === 'pl' ? 'SpiritPoints za Polecenie' : 'SpiritPoints per Referral'}</Label>
                 <Input
                   type="number"
                   value={referralSettings.points_per_referral}
@@ -254,13 +254,13 @@ export default function AdminReferralRewards() {
                 />
                 <p className="text-sm text-muted-foreground">
                   {language === 'pl' 
-                    ? 'Punkty przyznawane polecającemu'
-                    : 'Points awarded to referrer'}
+                    ? 'SpiritPoints przyznawane polecającemu'
+                    : 'SpiritPoints awarded to referrer'}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label>{language === 'pl' ? 'Punkty Powitalne' : 'Welcome Points'}</Label>
+                <Label>{language === 'pl' ? 'Powitalne SpiritPoints' : 'Welcome SpiritPoints'}</Label>
                 <Input
                   type="number"
                   value={referralSettings.referee_welcome_points}
@@ -273,8 +273,8 @@ export default function AdminReferralRewards() {
                 />
                 <p className="text-sm text-muted-foreground">
                   {language === 'pl' 
-                    ? 'Punkty przyznawane nowemu użytkownikowi'
-                    : 'Points awarded to new user'}
+                    ? 'SpiritPoints przyznawane nowemu użytkownikowi'
+                    : 'SpiritPoints awarded to new user'}
                 </p>
               </div>
 

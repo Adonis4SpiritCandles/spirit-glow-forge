@@ -41,8 +41,8 @@ const SiteSettingsHub = () => {
       icon: Gift,
       title: language === 'pl' ? 'System Poleceń & Nagrody' : 'Referral System & Rewards',
       description: language === 'pl'
-        ? 'Konfiguruj program poleceń, nagrody za odznaki i punkty lojalnościowe'
-        : 'Configure referral program, badge rewards, and loyalty points',
+        ? 'Konfiguruj program poleceń, nagrody za odznaki i SpiritPoints'
+        : 'Configure referral program, badge rewards, and SpiritPoints',
       itemsCount: 8,
       color: "from-green-500/20 to-teal-500/20",
       comingSoon: false,

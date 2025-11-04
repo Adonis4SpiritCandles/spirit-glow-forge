@@ -93,8 +93,8 @@ const Index = () => {
                 </strong>
                 <p className="text-foreground/90 mt-2 font-medium">
                   {language === 'pl' 
-                    ? 'Zarejestruj się teraz, aby zyskać 10% zniżki na pierwsze zamówienie i 100 punktów bonusowych!' 
-                    : 'Sign up now to get 10% off your first order and 100 bonus points!'}
+                    ? 'Zarejestruj się teraz, aby zyskać 10% zniżki na pierwsze zamówienie i 100 Bonus SpiritPoints!' 
+                    : 'Sign up now to get 10% off your first order and 100 Bonus SpiritPoints!'}
                 </p>
               </div>
               <div className="flex gap-2">

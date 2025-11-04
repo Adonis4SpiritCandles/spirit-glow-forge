@@ -12,6 +12,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import Contact from "./pages/Contact";
   import FAQ from "./pages/FAQ";
   import Collections from "./pages/Collections";
+  import CollectionDetail from "./pages/CollectionDetail";
   import ProductDetail from "./pages/ProductDetail";
   import Cart from "./pages/Cart";
   import Checkout from "./pages/Checkout";
@@ -82,7 +83,7 @@ const App = () => {
               <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/shop" element={<Shop />} />
-                  <Route path="/collections" element={<Collections />} />
+                  <Route path="/collections/:slug" element={<CollectionDetail />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />

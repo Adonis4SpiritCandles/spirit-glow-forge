@@ -111,7 +111,7 @@ const ReferralDashboard = () => {
           </div>
           <div className="p-4 bg-accent/10 rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">
-              {language === 'pl' ? 'Punkty Zdobyte' : 'Points Earned'}
+              {language === 'pl' ? 'SpiritPoints Zdobyte' : 'SpiritPoints Earned'}
             </p>
             <p className="text-3xl font-bold text-accent">{completedReferrals * 200}</p>
           </div>
@@ -220,8 +220,8 @@ const ReferralDashboard = () => {
             <li className="flex gap-2">
               <span className="font-bold text-primary">3.</span>
               {language === 'pl'
-                ? 'Ty otrzymujesz 200 punktów za każde udane polecenie'
-                : 'You earn 200 points for each successful referral'}
+                ? 'Ty otrzymujesz 200 SpiritPoints za każde udane polecenie'
+                : 'You earn 200 SpiritPoints for each successful referral'}
             </li>
           </ol>
         </div>

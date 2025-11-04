@@ -52,7 +52,7 @@ const Checkout = () => {
   const [isCalculating, setIsCalculating] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
   const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [appliedCoupons, setAppliedCoupons] = useState<any[]>([]);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
 
   // Redirect to auth if not logged in (only after initial load is complete)
@@ -217,7 +217,18 @@ const Checkout = () => {
         }
       }
 
-      setAppliedCoupon(data);
+      // Check if coupon already applied
+      if (appliedCoupons.some(c => c.code === data.code)) {
+        toast({
+          title: t('error'),
+          description: language === 'pl' ? 'Kupon już zastosowany' : 'Coupon already applied',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setAppliedCoupons([...appliedCoupons, data]);
+      setCouponCode('');
       toast({
         title: t('success') || 'Success',
         description: t('couponApplied') || 'Coupon applied successfully',
@@ -264,7 +275,7 @@ const Checkout = () => {
           serviceId: selectedShipping.service_id,
           shippingCost: selectedShipping.price.gross,
           carrierName: selectedShipping.carrier,
-          couponCode: appliedCoupon?.code,
+          couponCodes: appliedCoupons.map(c => c.code),
         },
       });
 
@@ -289,14 +300,18 @@ const Checkout = () => {
   
   // Calculate discount - ONLY on products, NOT on shipping (aligns with backend)
   let discountAmount = 0;
-  if (appliedCoupon) {
-    if (appliedCoupon.percent_off) {
-      // Discount percentage applies ONLY to product subtotal
-      discountAmount = (totalPLN * appliedCoupon.percent_off) / 100;
-    } else if (appliedCoupon.amount_off_pln) {
-      // Fixed discount, capped at product subtotal
-      discountAmount = Math.min(appliedCoupon.amount_off_pln, totalPLN - 0.01);
+  if (appliedCoupons.length > 0) {
+    for (const coupon of appliedCoupons) {
+      if (coupon.percent_off) {
+        // Percentage discounts are cumulative
+        discountAmount += (totalPLN * coupon.percent_off) / 100;
+      } else if (coupon.amount_off_pln) {
+        // Fixed discounts are cumulative
+        discountAmount += coupon.amount_off_pln;
+      }
     }
+    // Cap discount at product subtotal
+    discountAmount = Math.min(discountAmount, totalPLN - 0.01);
   }
   
   const finalTotalPLN = Math.max(0, (totalPLN - discountAmount) + shippingCost);
@@ -397,32 +412,40 @@ const Checkout = () => {
                             placeholder={t('enterCouponCode') || 'Enter coupon code'}
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                            disabled={!!appliedCoupon}
                           />
-                          {appliedCoupon ? (
-                            <Button
-                              variant="outline"
-                              onClick={() => {
-                                setAppliedCoupon(null);
-                                setCouponCode('');
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={handleApplyCoupon}
-                              disabled={isCouponLoading || !couponCode.trim()}
-                            >
-                              {isCouponLoading ? t('applying') || 'Applying...' : t('apply') || 'Apply'}
-                            </Button>
-                          )}
+                          <Button
+                            onClick={handleApplyCoupon}
+                            disabled={isCouponLoading || !couponCode.trim()}
+                          >
+                            {isCouponLoading ? t('applying') || 'Applying...' : t('apply') || 'Apply'}
+                          </Button>
                         </div>
-                        {appliedCoupon && (
-                          <div className="text-sm text-green-600">
-                            ✓ {appliedCoupon.percent_off 
-                              ? `${appliedCoupon.percent_off}% ${t('discount') || 'discount'}` 
-                              : `${appliedCoupon.amount_off_pln} PLN ${t('discount') || 'discount'}`}
+                        {appliedCoupons.length > 0 && (
+                          <div className="space-y-2">
+                            <Label className="text-sm font-semibold">
+                              {language === 'pl' ? 'Zastosowane Kupony' : 'Applied Coupons'}
+                            </Label>
+                            {appliedCoupons.map((coupon, idx) => (
+                              <div key={idx} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded">
+                                <span className="text-sm text-green-700 dark:text-green-300 font-medium">
+                                  {coupon.code} - {coupon.percent_off 
+                                    ? `${coupon.percent_off}% ${t('discount')}` 
+                                    : `${coupon.amount_off_pln} PLN ${t('discount')}`}
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setAppliedCoupons(appliedCoupons.filter((_, i) => i !== idx));
+                                    toast({
+                                      description: language === 'pl' ? 'Kupon usunięty' : 'Coupon removed',
+                                    });
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
                           </div>
                         )}
                       </Card>
@@ -437,7 +460,7 @@ const Checkout = () => {
                             <span>{t('shipping')}</span>
                             <span>{shippingCost.toFixed(2)} PLN</span>
                           </div>
-                          {appliedCoupon && discountAmount > 0 && (
+                          {appliedCoupons.length > 0 && discountAmount > 0 && (
                             <div className="flex justify-between text-sm text-green-600">
                               <span>{t('discount')}</span>
                               <span>-{discountAmount.toFixed(2)} PLN</span>
@@ -545,33 +568,40 @@ const Checkout = () => {
                             placeholder={t('enterCouponCode') || 'Enter coupon code'}
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                            disabled={!!appliedCoupon}
                           />
-                          {appliedCoupon ? (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => {
-                                setAppliedCoupon(null);
-                                setCouponCode('');
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={handleApplyCoupon}
-                              disabled={isCouponLoading || !couponCode.trim()}
-                            >
-                              {isCouponLoading ? t('applying') || 'Applying...' : t('apply') || 'Apply'}
-                            </Button>
-                          )}
+                          <Button
+                            onClick={handleApplyCoupon}
+                            disabled={isCouponLoading || !couponCode.trim()}
+                          >
+                            {isCouponLoading ? t('applying') || 'Applying...' : t('apply') || 'Apply'}
+                          </Button>
                         </div>
-                        {appliedCoupon && (
-                          <div className="text-sm text-green-600">
-                            ✓ {appliedCoupon.percent_off 
-                              ? `${appliedCoupon.percent_off}% ${t('discount') || 'discount'}` 
-                              : `${appliedCoupon.amount_off_pln} PLN ${t('discount') || 'discount'}`}
+                        {appliedCoupons.length > 0 && (
+                          <div className="space-y-2">
+                            <Label className="text-sm font-semibold">
+                              {language === 'pl' ? 'Zastosowane Kupony' : 'Applied Coupons'}
+                            </Label>
+                            {appliedCoupons.map((coupon, idx) => (
+                              <div key={idx} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded">
+                                <span className="text-sm text-green-700 dark:text-green-300 font-medium">
+                                  {coupon.code} - {coupon.percent_off 
+                                    ? `${coupon.percent_off}% ${t('discount') || 'discount'}` 
+                                    : `${coupon.amount_off_pln} PLN ${t('discount') || 'discount'}`}
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setAppliedCoupons(appliedCoupons.filter((_, i) => i !== idx));
+                                    toast({
+                                      description: language === 'pl' ? 'Kupon usunięty' : 'Coupon removed',
+                                    });
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
                           </div>
                         )}
                       </Card>
@@ -586,7 +616,7 @@ const Checkout = () => {
                             <span>{t('shipping')}</span>
                             <span className="font-semibold">{selectedShipping.price.gross.toFixed(2)} {selectedShipping.price.currency}</span>
                           </div>
-                          {appliedCoupon && discountAmount > 0 && (
+                          {appliedCoupons.length > 0 && discountAmount > 0 && (
                             <div className="flex justify-between text-sm text-green-600">
                               <span>{t('discount')}</span>
                               <span>-{discountAmount.toFixed(2)} PLN</span>
@@ -682,7 +712,7 @@ const Checkout = () => {
                         <span>{shippingCost.toFixed(2)} PLN</span>
                       </div>
                     )}
-                    {appliedCoupon && discountAmount > 0 && (
+                    {appliedCoupons.length > 0 && discountAmount > 0 && (
                       <div className="flex justify-between text-sm text-green-600">
                         <span>{t('discount')}</span>
                         <span>-{discountAmount.toFixed(2)} PLN</span>

@@ -20,9 +20,60 @@ const Collections = () => {
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [products, setProducts] = useState<any[]>([]);
+  const [collections, setCollections] = useState<any[]>([]);
+  const [collectionsLoading, setCollectionsLoading] = useState(true);
   const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: true });
   const [collectionsRef, collectionsInView] = useInView({ threshold: 0.1, triggerOnce: true });
   const [moodRef, moodInView] = useInView({ threshold: 0.1, triggerOnce: true });
+
+  useEffect(() => {
+    loadCollections();
+  }, [language]);
+
+  const loadCollections = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('collections')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+
+      // Count products for each collection
+      const collectionsWithCount = await Promise.all(
+        (data || []).map(async (col) => {
+          const { count } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('collection_id', col.id)
+            .eq('published', true);
+
+          return {
+            id: col.slug,
+            name: language === 'en' ? col.name_en : col.name_pl,
+            description: language === 'en' ? col.description_en : col.description_pl,
+            icon: getIconComponent(col.icon_name),
+            image: col.image_url || candleLit,
+            productCount: count || 0,
+            gradient: col.gradient_classes || 'from-primary/20',
+            featured: col.featured || false,
+          };
+        })
+      );
+
+      setCollections(collectionsWithCount);
+    } catch (error) {
+      console.error('Error loading collections:', error);
+    } finally {
+      setCollectionsLoading(false);
+    }
+  };
+
+  const getIconComponent = (iconName: string | null) => {
+    const icons: Record<string, any> = { Crown, Leaf, Heart, Sparkles };
+    return icons[iconName || 'Sparkles'] || Sparkles;
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -53,47 +104,6 @@ const Collections = () => {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [language]);
-
-  const collections = [
-    {
-      id: "luxury",
-      name: t('luxuryCollection'),
-      description: t('luxuryCollectionDesc'),
-      icon: Crown,
-      image: candleLit,
-      productCount: 12,
-      gradient: "from-amber-500/20 via-yellow-500/20 to-orange-500/20",
-      featured: true,
-    },
-    {
-      id: "fresh",
-      name: t('freshAndClean'),
-      description: t('freshDesc'),
-      icon: Leaf,
-      image: candleUnlit,
-      productCount: 8,
-      gradient: "from-green-500/20 via-emerald-500/20 to-teal-500/20",
-    },
-    {
-      id: "romantic",
-      name: t('romanticEvening'),
-      description: t('romanticDesc'),
-      icon: Heart,
-      image: candleWax,
-      productCount: 10,
-      gradient: "from-rose-500/20 via-pink-500/20 to-red-500/20",
-    },
-    {
-      id: "bestsellers",
-      name: t('bestSellers'),
-      description: t('bestSellersDesc'),
-      icon: Sparkles,
-      image: candleLit,
-      productCount: 6,
-      gradient: "from-purple-500/20 via-violet-500/20 to-indigo-500/20",
-      featured: true,
-    },
-  ];
 
   const moods = [
     { id: "energize", name: language === 'en' ? "Energize" : "Energiczny", icon: Sun, color: "text-amber-400" },
@@ -293,6 +303,7 @@ const Collections = () => {
                             <Button 
                               variant="ghost" 
                               className="text-primary hover:text-primary-glow p-0 h-auto group/btn"
+                              onClick={() => window.location.href = `/collections/${collection.id}`}
                             >
                               {t('exploreCollectionPage')}
                               <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-2 transition-transform duration-300" />

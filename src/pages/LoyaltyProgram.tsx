@@ -263,7 +263,7 @@ const LoyaltyProgram = () => {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <p className="text-white/80 mb-2">
-                    {language === 'pl' ? 'Twoje Punkty' : 'Your Points'}
+                    {language === 'pl' ? 'Twoje SpiritPoints' : 'Your SpiritPoints'}
                   </p>
                   <motion.h2
                     initial={{ scale: 0 }}
@@ -298,7 +298,7 @@ const LoyaltyProgram = () => {
               </div>
 
               <p className="text-sm text-white/60">
-                {language === 'pl' ? 'Punkty życiowe:' : 'Lifetime points:'} {loyaltyData?.lifetime_points || 0}
+                {language === 'pl' ? 'SpiritPoints Życiowe:' : 'Lifetime SpiritPoints:'} {loyaltyData?.lifetime_points || 0}
               </p>
             </CardContent>
           </Card>
@@ -312,7 +312,7 @@ const LoyaltyProgram = () => {
           className="mb-12"
         >
           <h2 className="text-2xl font-bold mb-6 text-foreground">
-            {language === 'pl' ? 'Jak Zdobywać Punkty' : 'How to Earn Points'}
+            {language === 'pl' ? 'Jak Zdobywać SpiritPoints' : 'How to Earn SpiritPoints'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[

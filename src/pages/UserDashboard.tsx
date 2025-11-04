@@ -309,94 +309,101 @@ const UserDashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 gap-1">
-              <TabsTrigger value="profile" className="flex items-center gap-1 text-xs sm:text-sm">
-                <User className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{language === 'pl' ? 'Dati User' : 'User Data'}</span>
-                <span className="sm:hidden">Data</span>
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-1 overflow-x-auto lg:overflow-visible">
+              <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm">
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">{t('settings')}</span>
+                <span className="sm:hidden">Settings</span>
               </TabsTrigger>
               <TabsTrigger value="social" className="flex items-center gap-1 text-xs sm:text-sm">
                 <Users className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{language === 'pl' ? 'Profil' : 'Profile'}</span>
-                <span className="sm:hidden">Profil</span>
+                <span className="sm:hidden">Profile</span>
               </TabsTrigger>
               <TabsTrigger value="orders" className="flex items-center gap-1 text-xs sm:text-sm">
                 <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t('orders')}</span>
                 <span className="sm:hidden">Orders</span>
               </TabsTrigger>
-              <TabsTrigger value="billing" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
+              <TabsTrigger value="billing" className="flex items-center gap-1 text-xs sm:text-sm">
                 <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t('billing')}</span>
+                <span className="sm:hidden">Billing</span>
               </TabsTrigger>
-              <TabsTrigger value="rewards" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
+              <TabsTrigger value="rewards" className="flex items-center gap-1 text-xs sm:text-sm">
                 <Package className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t('rewards') || 'Rewards'}</span>
+                <span className="sm:hidden">Rewards</span>
               </TabsTrigger>
-              <TabsTrigger value="referrals" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
+              <TabsTrigger value="referrals" className="flex items-center gap-1 text-xs sm:text-sm">
                 <Users className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t('referrals') || 'Referrals'}</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
-                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('settings')}</span>
+                <span className="sm:hidden">Referrals</span>
               </TabsTrigger>
             </TabsList>
 
-            {/* User Data Tab (renamed from Profile) */}
-            <TabsContent value="profile" className="mt-6 space-y-6">
+            {/* Settings Tab - Merged User Data content */}
+            <TabsContent value="settings" className="mt-6 space-y-6">
+              {/* Profile Image Section */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="w-5 h-5" />
-                    {language === 'pl' ? 'Informacje Profilowe' : 'Profile Information'}
+                    {language === 'pl' ? 'Zdjęcie Profilowe' : 'Profile Image'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col md:flex-row items-center gap-6">
+                    <div className="relative">
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5">
+                        {profile?.profile_image_url ? (
+                          <img 
+                            src={profile.profile_image_url} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <img 
+                              src="/assets/mini-spirit-logo.png" 
+                              alt="Default" 
+                              className="w-20 h-20 opacity-30"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {language === 'pl' 
+                          ? 'Prześlij zdjęcie profilowe, aby spersonalizować swoje konto' 
+                          : 'Upload your profile picture to personalize your account'}
+                      </p>
+                      <ProfileImageUpload 
+                        userId={user?.id || ''} 
+                        currentImageUrl={profile?.profile_image_url}
+                        imageType="profile"
+                        onUploadComplete={() => loadUserData()}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Personal Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="w-5 h-5" />
+                    {language === 'pl' ? 'Informacje Osobiste' : 'Personal Information'}
                   </CardTitle>
                   <CardDescription>
                     {language === 'pl' 
-                      ? 'Przeglądaj i edytuj swoje dane osobowe' 
-                      : 'View and edit your personal information'}
+                      ? 'Zarządzaj swoimi danymi osobowymi' 
+                      : 'Manage your personal information'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {/* Profile Image Section */}
-                  <div className="mb-6 pb-6 border-b">
-                    <div className="flex flex-col md:flex-row items-center gap-6">
-                      <div className="relative">
-                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5">
-                          {profile?.profile_image_url ? (
-                            <img 
-                              src={profile.profile_image_url} 
-                              alt="Profile" 
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <img 
-                                src="/assets/mini-spirit-logo.png" 
-                                alt="Default" 
-                                className="w-20 h-20 opacity-30"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex-1 text-center md:text-left">
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {language === 'pl' 
-                            ? 'Prześlij zdjęcie profilowe, aby spersonalizować swoje konto' 
-                            : 'Upload your profile picture to personalize your account'}
-                        </p>
-                        <ProfileImageUpload 
-                          userId={user?.id || ''} 
-                          currentImageUrl={profile?.profile_image_url}
-                          imageType="profile"
-                          onUploadComplete={() => loadUserData()}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Personal Information Editing */}
                   {isEditing ? (
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
@@ -467,6 +474,30 @@ const UserDashboard = () => {
                       <Button onClick={() => setIsEditing(true)}>{t('editProfile')}</Button>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+
+              {/* Language Preferences */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{language === 'pl' ? 'Preferencje Językowe' : 'Language Preferences'}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label>{language === 'pl' ? 'Preferowany język' : 'Preferred Language'}</Label>
+                    <Select 
+                      value={profile?.preferred_language || 'en'}
+                      onValueChange={updateLanguagePreference}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="pl">Polski</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

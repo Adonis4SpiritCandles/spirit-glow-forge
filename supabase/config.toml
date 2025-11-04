@@ -18,6 +18,9 @@ verify_jwt = false
 [functions.send-registration-welcome]
 verify_jwt = false
 
+[functions.generate-referral-code]
+verify_jwt = true
+
 [functions.create-checkout]
 verify_jwt = true
 

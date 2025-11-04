@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      badge_rewards: {
+        Row: {
+          badge_id: string
+          created_at: string | null
+          description_en: string | null
+          description_pl: string | null
+          id: string
+          is_active: boolean | null
+          reward_type: string
+          reward_value: string
+        }
+        Insert: {
+          badge_id: string
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          reward_type: string
+          reward_value: string
+        }
+        Update: {
+          badge_id?: string
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          reward_type?: string
+          reward_value?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string
@@ -162,6 +195,84 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          category: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          newsletter_consent: boolean | null
+          subject: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          newsletter_consent?: boolean | null
+          subject?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          newsletter_consent?: boolean | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      coupon_redemptions: {
+        Row: {
+          amount_saved_eur: number | null
+          amount_saved_pln: number | null
+          coupon_id: string
+          id: string
+          order_id: string | null
+          redeemed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_saved_eur?: number | null
+          amount_saved_pln?: number | null
+          coupon_id: string
+          id?: string
+          order_id?: string | null
+          redeemed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_saved_eur?: number | null
+          amount_saved_pln?: number | null
+          coupon_id?: string
+          id?: string
+          order_id?: string | null
+          redeemed_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupon_redemptions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupons: {
         Row: {
           active: boolean
@@ -176,6 +287,7 @@ export type Database = {
           per_user_limit: number | null
           percent_off: number | null
           redemptions_count: number
+          referral_only: boolean | null
           updated_at: string
           valid_from: string | null
           valid_to: string | null
@@ -193,6 +305,7 @@ export type Database = {
           per_user_limit?: number | null
           percent_off?: number | null
           redemptions_count?: number
+          referral_only?: boolean | null
           updated_at?: string
           valid_from?: string | null
           valid_to?: string | null
@@ -210,9 +323,94 @@ export type Database = {
           per_user_limit?: number | null
           percent_off?: number | null
           redemptions_count?: number
+          referral_only?: boolean | null
           updated_at?: string
           valid_from?: string | null
           valid_to?: string | null
+        }
+        Relationships: []
+      }
+      data_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          details: string | null
+          email: string
+          id: string
+          name: string
+          processed_at: string | null
+          request_type: string
+          status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          details?: string | null
+          email: string
+          id?: string
+          name: string
+          processed_at?: string | null
+          request_type: string
+          status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          details?: string | null
+          email?: string
+          id?: string
+          name?: string
+          processed_at?: string | null
+          request_type?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          created_at: string | null
+          description_en: string | null
+          description_pl: string | null
+          edge_function_name: string
+          id: string
+          is_active: boolean | null
+          last_sent_at: string | null
+          name_en: string
+          name_pl: string
+          subject_en: string
+          subject_pl: string
+          template_key: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          edge_function_name: string
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          name_en: string
+          name_pl: string
+          subject_en: string
+          subject_pl: string
+          template_key: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          edge_function_name?: string
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          name_en?: string
+          name_pl?: string
+          subject_en?: string
+          subject_pl?: string
+          template_key?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -884,8 +1082,40 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_comments: {
+        Row: {
+          comment: string
+          commenter_id: string
+          created_at: string | null
+          id: string
+          is_visible: boolean | null
+          profile_user_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          comment: string
+          commenter_id: string
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          profile_user_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          comment?: string
+          commenter_id?: string
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          profile_user_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          bio: string | null
+          cover_image_url: string | null
           created_at: string
           email: string
           email_language_preference: string | null
@@ -898,13 +1128,18 @@ export type Database = {
           newsletter_consent: boolean | null
           newsletter_consent_date: string | null
           preferred_language: string
+          profile_image_url: string | null
+          public_profile: boolean | null
           quiz_results: Json | null
+          referral_short_code: string | null
           role: string
           updated_at: string
           user_id: string
           username: string | null
         }
         Insert: {
+          bio?: string | null
+          cover_image_url?: string | null
           created_at?: string
           email: string
           email_language_preference?: string | null
@@ -917,13 +1152,18 @@ export type Database = {
           newsletter_consent?: boolean | null
           newsletter_consent_date?: string | null
           preferred_language?: string
+          profile_image_url?: string | null
+          public_profile?: boolean | null
           quiz_results?: Json | null
+          referral_short_code?: string | null
           role?: string
           updated_at?: string
           user_id: string
           username?: string | null
         }
         Update: {
+          bio?: string | null
+          cover_image_url?: string | null
           created_at?: string
           email?: string
           email_language_preference?: string | null
@@ -936,11 +1176,47 @@ export type Database = {
           newsletter_consent?: boolean | null
           newsletter_consent_date?: string | null
           preferred_language?: string
+          profile_image_url?: string | null
+          public_profile?: boolean | null
           quiz_results?: Json | null
+          referral_short_code?: string | null
           role?: string
           updated_at?: string
           user_id?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      referral_rewards: {
+        Row: {
+          created_at: string | null
+          description_en: string | null
+          description_pl: string | null
+          id: string
+          is_active: boolean | null
+          referrals_count: number
+          reward_type: string
+          reward_value: string
+        }
+        Insert: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          referrals_count: number
+          reward_type: string
+          reward_value: string
+        }
+        Update: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          referrals_count?: number
+          reward_type?: string
+          reward_value?: string
         }
         Relationships: []
       }

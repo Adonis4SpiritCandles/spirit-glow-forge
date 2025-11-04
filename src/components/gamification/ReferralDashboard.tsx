@@ -12,7 +12,9 @@ import { toast } from "sonner";
 
 const ReferralDashboard = () => {
   const [referralLink, setReferralLink] = useState("");
+  const [shortCode, setShortCode] = useState("");
   const [copiedRecently, setCopiedRecently] = useState(false);
+  const [copiedCodeRecently, setCopiedCodeRecently] = useState(false);
   const [referrals, setReferrals] = useState<any[]>([]);
   const { user } = useAuth();
   const { language } = useLanguage();
@@ -21,14 +23,47 @@ const ReferralDashboard = () => {
     if (user) {
       generateReferralLink();
       loadReferrals();
+      loadShortCode();
     }
   }, [user]);
+
+  const loadShortCode = async () => {
+    if (!user) return;
+
+    try {
+      // Try to load existing short code
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('referral_short_code')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profile?.referral_short_code) {
+        setShortCode(profile.referral_short_code);
+      } else {
+        // Generate new short code
+        const { data, error } = await supabase.functions.invoke('generate-referral-code');
+        if (!error && data?.code) {
+          setShortCode(data.code);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading short code:', error);
+    }
+  };
 
   const generateReferralLink = () => {
     if (!user) return;
     const baseUrl = 'https://www.spirit-candle.com';
     const link = `${baseUrl}?ref=${user.id}`;
     setReferralLink(link);
+  };
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(shortCode);
+    setCopiedCodeRecently(true);
+    toast.success(language === 'pl' ? 'Kod skopiowany!' : 'Code copied!');
+    setTimeout(() => setCopiedCodeRecently(false), 2000);
   };
 
   const loadReferrals = async () => {

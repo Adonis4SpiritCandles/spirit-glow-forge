@@ -125,7 +125,23 @@ const Auth = () => {
           }
 
           // Handle referral if present (from localStorage or manually entered)
-          const referralId = referralCode || getReferralId();
+          let referralId = referralCode || getReferralId();
+          
+          // If it's a short code (8 chars), convert to UUID
+          if (referralId && referralId.length === 8) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('user_id')
+              .eq('referral_short_code', referralId.toUpperCase())
+              .single();
+            
+            if (profileData) {
+              referralId = profileData.user_id;
+            } else {
+              referralId = null; // Invalid short code
+            }
+          }
+          
           if (referralId) {
             setTimeout(async () => {
               try {

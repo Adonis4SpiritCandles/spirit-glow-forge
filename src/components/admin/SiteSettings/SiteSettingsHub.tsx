@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search } from "lucide-react";
+import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search, Users, Award } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FooterSettings from "./FooterSettings/FooterSettingsMain";
 import HomepageSettings from "./HomepageSettings/HomepageSettingsMain";
 import ChatSettings from "./ChatSettings/ChatSettingsMain";
 import SEOSettings from "./SEOSettings/SEOSettingsMain";
+import AdminReferralRewards from "@/components/admin/AdminReferralRewards";
+import AdminEmailManager from "@/components/admin/AdminEmailManager";
 
 const SiteSettingsHub = () => {
   const { t, language } = useLanguage();

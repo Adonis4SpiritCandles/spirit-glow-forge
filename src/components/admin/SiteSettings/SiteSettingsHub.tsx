@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search, Users, Award } from "lucide-react";
+import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search, Users, Award, Gift } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FooterSettings from "./FooterSettings/FooterSettingsMain";
 import HomepageSettings from "./HomepageSettings/HomepageSettingsMain";
@@ -24,6 +24,28 @@ const SiteSettingsHub = () => {
         : 'Manage social icons, contact information, and legal documents',
       itemsCount: 12,
       color: "from-blue-500/20 to-cyan-500/20",
+    },
+    {
+      id: "email",
+      icon: Mail,
+      title: language === 'pl' ? 'Zarządzanie Email' : 'Email Management',
+      description: language === 'pl'
+        ? 'Zarządzaj szablonami email, aktywuj/dezaktywuj powiadomienia'
+        : 'Manage email templates, activate/deactivate notifications',
+      itemsCount: 12,
+      color: "from-red-500/20 to-orange-500/20",
+      comingSoon: false,
+    },
+    {
+      id: "referrals",
+      icon: Gift,
+      title: language === 'pl' ? 'System Poleceń & Nagrody' : 'Referral System & Rewards',
+      description: language === 'pl'
+        ? 'Konfiguruj program poleceń, nagrody za odznaki i punkty lojalnościowe'
+        : 'Configure referral program, badge rewards, and loyalty points',
+      itemsCount: 8,
+      color: "from-green-500/20 to-teal-500/20",
+      comingSoon: false,
     },
     {
       id: "chat",
@@ -99,6 +121,22 @@ const SiteSettingsHub = () => {
     return (
       <div>
         <SEOSettings onBack={() => setSelectedSection(null)} />
+      </div>
+    );
+  }
+
+  if (selectedSection === "email") {
+    return (
+      <div>
+        <AdminEmailManager />
+      </div>
+    );
+  }
+
+  if (selectedSection === "referrals") {
+    return (
+      <div>
+        <AdminReferralRewards />
       </div>
     );
   }

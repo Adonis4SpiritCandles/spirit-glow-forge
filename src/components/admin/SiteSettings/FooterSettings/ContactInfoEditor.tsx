@@ -20,6 +20,7 @@ interface ContactInfo {
   phone: string;
   email: string;
   languages: string;
+  languages_pl?: string;
 }
 
 const ContactInfoEditor = () => {
@@ -196,13 +197,24 @@ const ContactInfoEditor = () => {
           </div>
         </div>
 
-        <div>
-          <Label>{language === 'pl' ? 'Dostępne Języki' : 'Available Languages'}</Label>
-          <Input
-            value={formData.languages}
-            onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
-            placeholder="Available in Polish and English"
-          />
+        <div className="space-y-4">
+          <div>
+            <Label>{language === 'pl' ? 'Dostępne Języki (EN)' : 'Available Languages (EN)'}</Label>
+            <Input
+              value={formData.languages}
+              onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
+              placeholder="Available in Polish and English"
+            />
+          </div>
+
+          <div>
+            <Label>{language === 'pl' ? 'Dostępne Języki (PL)' : 'Available Languages (PL)'}</Label>
+            <Input
+              value={formData.languages_pl || formData.languages}
+              onChange={(e) => setFormData({ ...formData, languages_pl: e.target.value })}
+              placeholder="Dostępny w języku polskim i angielskim"
+            />
+          </div>
         </div>
 
         <div className="flex justify-end">

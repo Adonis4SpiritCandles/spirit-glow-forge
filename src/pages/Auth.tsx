@@ -210,6 +210,12 @@ const Auth = () => {
                         }
                       });
                       console.log('Referral emails sent successfully');
+
+                      // Process referral rewards for referrer
+                      await supabase.functions.invoke('process-referral-rewards', {
+                        body: { referrerId: referralId }
+                      });
+                      console.log('Referral rewards processed');
                     }
                   } catch (emailErr) {
                     console.error('Failed to send referral emails:', emailErr);

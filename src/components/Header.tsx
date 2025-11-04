@@ -28,19 +28,22 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const { wishlistCount } = useWishlist();
   const { unseenCount, isAdmin } = useAdminNotifications();
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
-  // Load user profile to check role
+  // Load user profile to check role and profile image
   useEffect(() => {
     const loadUserProfile = async () => {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('role')
+          .select('role, profile_image_url, first_name')
           .eq('user_id', user.id)
           .single();
         setUserProfile(data);
+        setProfileImageUrl(data?.profile_image_url || null);
       } else {
         setUserProfile(null);
+        setProfileImageUrl(null);
       }
     };
     
@@ -152,12 +155,33 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                   {/* User Dropdown Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-1">
-                        <User className="h-4 w-4" />
-                        <ChevronDown className="h-3 w-3" />
+                      <Button variant="ghost" size="sm" className="gap-1 relative">
+                        {profileImageUrl ? (
+                          <div className="relative">
+                            <img 
+                              src={profileImageUrl} 
+                              alt="Profile" 
+                              className="h-6 w-6 rounded-full object-cover"
+                            />
+                            <ChevronDown className="h-3 w-3 absolute -bottom-1 -right-1 bg-background rounded-full" />
+                          </div>
+                        ) : (
+                          <>
+                            <User className="h-4 w-4" />
+                            <ChevronDown className="h-3 w-3" />
+                          </>
+                        )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
+                      {profileImageUrl && userProfile?.first_name && (
+                        <>
+                          <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
+                            {userProfile.first_name}
+                          </div>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
                       <DropdownMenuItem asChild>
                         <Link to="/dashboard" className="flex items-center cursor-pointer">
                           <LayoutDashboard className="h-4 w-4 mr-2" />

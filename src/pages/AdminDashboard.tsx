@@ -2541,8 +2541,8 @@ const AdminDashboard = () => {
                             <TableHead>{t('size')} / Rozmiar</TableHead>
                             <TableHead>{t('category')} / Kategoria</TableHead>
                             <TableHead className="text-right">{t('stockQuantity')} / Zapas</TableHead>
-                            <TableHead className="text-right">Status</TableHead>
-                            <TableHead>{t('published')} / Opublikowany</TableHead>
+                            <TableHead className="text-center w-28">Status</TableHead>
+                            <TableHead className="text-center w-28">{t('published')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -2610,25 +2610,25 @@ const AdminDashboard = () => {
                                       variant="ghost"
                                       onClick={() => updateStockQuantity(product.id, editingStock[product.id])}
                                     >
-                                      Save
+                                      {t('save')}
                                     </Button>
                                   )}
                                 </div>
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell className="text-center">
                                 {(product.stock_quantity || 0) === 0 ? (
-                                  <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Out of Stock</span>
+                                  <Badge className="bg-red-500 text-white hover:bg-red-600 whitespace-nowrap">{t('outOfStock')}</Badge>
                                 ) : (product.stock_quantity || 0) < 10 ? (
-                                  <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Low Stock</span>
+                                  <Badge className="bg-orange-500 text-white hover:bg-orange-600 whitespace-nowrap">{t('lowStock')}</Badge>
                                 ) : (
-                                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">In Stock</span>
+                                  <Badge className="bg-green-600 text-white hover:bg-green-700 whitespace-nowrap">{t('inStock')}</Badge>
                                 )}
                               </TableCell>
-                              <TableCell>
+                              <TableCell className="text-center">
                                 {product.published ? (
-                                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Yes / Tak</span>
+                                  <Badge className="bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap">{t('yes')}</Badge>
                                 ) : (
-                                  <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">No / Nie</span>
+                                  <Badge variant="secondary" className="whitespace-nowrap">{t('no')}</Badge>
                                 )}
                               </TableCell>
                             </TableRow>

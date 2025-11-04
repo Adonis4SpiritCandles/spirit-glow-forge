@@ -135,8 +135,8 @@ const UserDashboard = () => {
     } catch (error) {
       console.error('Error loading user data:', error);
       toast({
-        title: "Error",
-        description: "Failed to load user data",
+        title: t('error'),
+        description: language === 'pl' ? 'Nie udało się załadować danych użytkownika' : 'Failed to load user data',
         variant: "destructive",
       });
     } finally {
@@ -161,15 +161,15 @@ const UserDashboard = () => {
       if (error) throw error;
 
       toast({
-        title: "Success",
-        description: "Profile updated successfully",
+        title: t('success'),
+        description: language === 'pl' ? 'Profil zaktualizowany pomyślnie' : 'Profile updated successfully',
       });
       
       setIsEditing(false);
       loadUserData();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -215,14 +215,14 @@ const UserDashboard = () => {
       if (error) throw error;
 
       toast({
-        title: "Success",
-        description: "Language preference updated",
+        title: t('success'),
+        description: language === 'pl' ? 'Preferencja językowa zaktualizowana' : 'Language preference updated',
       });
       
       loadUserData();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -278,7 +278,7 @@ const UserDashboard = () => {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">{t('loading')}</div>
       </div>
     );
   }
@@ -847,7 +847,7 @@ const UserDashboard = () => {
                     <Label htmlFor="language">{t('language')}</Label>
                     <Select value={language} onValueChange={updateLanguagePreference}>
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select a language" />
+                        <SelectValue placeholder={t('selectLanguage')} />
                       </SelectTrigger>
                       <SelectContent>
                         {languageOptions.map((lang) => (

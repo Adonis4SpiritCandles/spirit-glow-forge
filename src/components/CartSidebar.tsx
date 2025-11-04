@@ -48,8 +48,8 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
         {!user ? (
           <div className="flex-1 flex items-center justify-center flex-col text-center py-8">
             <ShoppingCart className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="font-playfair text-xl font-semibold mb-2">Please Log In</h3>
-            <p className="text-muted-foreground mb-6">You need to be logged in to view your cart</p>
+            <h3 className="font-playfair text-xl font-semibold mb-2">{t('pleaseLogIn')}</h3>
+            <p className="text-muted-foreground mb-6">{t('needLoginCart')}</p>
             <Button asChild>
               <Link to="/auth" onClick={onClose}>
                 {t('login')}

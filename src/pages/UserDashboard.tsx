@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
-import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye, Save, Users } from 'lucide-react';
+import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye, Save, Users, Award, Gift } from 'lucide-react';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import { CarrierBadge } from '@/utils/carrierStyles';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
@@ -85,7 +85,7 @@ const UserDashboard = () => {
   const { t, language } = useLanguage();
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam || 'profile');
+  const [activeTab, setActiveTab] = useState(tabParam || 'settings');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -309,38 +309,34 @@ const UserDashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-1 overflow-x-auto lg:overflow-visible">
-              <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm">
-                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('settings')}</span>
-                <span className="sm:hidden">Settings</span>
-              </TabsTrigger>
-              <TabsTrigger value="social" className="flex items-center gap-1 text-xs sm:text-sm">
-                <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{language === 'pl' ? 'Profil' : 'Profile'}</span>
-                <span className="sm:hidden">Profile</span>
-              </TabsTrigger>
-              <TabsTrigger value="orders" className="flex items-center gap-1 text-xs sm:text-sm">
-                <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('orders')}</span>
-                <span className="sm:hidden">Orders</span>
-              </TabsTrigger>
-              <TabsTrigger value="billing" className="flex items-center gap-1 text-xs sm:text-sm">
-                <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('billing')}</span>
-                <span className="sm:hidden">Billing</span>
-              </TabsTrigger>
-              <TabsTrigger value="rewards" className="flex items-center gap-1 text-xs sm:text-sm">
-                <Package className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('rewards') || 'Rewards'}</span>
-                <span className="sm:hidden">Rewards</span>
-              </TabsTrigger>
-              <TabsTrigger value="referrals" className="flex items-center gap-1 text-xs sm:text-sm">
-                <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('referrals') || 'Referrals'}</span>
-                <span className="sm:hidden">Referrals</span>
-              </TabsTrigger>
-            </TabsList>
+            <div className="w-full overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0 mb-6">
+              <TabsList className="inline-flex w-auto min-w-full lg:grid lg:grid-cols-6 lg:w-full gap-1">
+                <TabsTrigger value="settings" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
+                  <Settings className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{t('settings')}</span>
+                </TabsTrigger>
+                <TabsTrigger value="social" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
+                  <Users className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{language === 'pl' ? 'Profil' : 'Profile'}</span>
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
+                  <ShoppingBag className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{t('orders')}</span>
+                </TabsTrigger>
+                <TabsTrigger value="billing" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
+                  <CreditCard className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{t('billing')}</span>
+                </TabsTrigger>
+                <TabsTrigger value="rewards" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
+                  <Award className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{t('rewards') || 'Rewards'}</span>
+                </TabsTrigger>
+                <TabsTrigger value="referrals" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
+                  <Gift className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{t('referrals') || 'Referrals'}</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Settings Tab - Merged User Data content */}
             <TabsContent value="settings" className="mt-6 space-y-6">

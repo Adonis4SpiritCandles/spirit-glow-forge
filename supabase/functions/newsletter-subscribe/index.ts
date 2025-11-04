@@ -28,22 +28,50 @@ serve(async (req) => {
   }
 
   try {
-    const { email, name, language = 'en', source = 'footer', consent, consent_text, ip, ua }: SubscribeRequest = await req.json();
+    const rawData = await req.json();
+    const { email, name, language = 'en', source = 'footer', consent, consent_text, ip, ua }: SubscribeRequest = rawData;
 
+    // ===== SERVER-SIDE INPUT VALIDATION =====
     if (!email || !consent) {
       throw new Error('Email and consent are required');
     }
+
+    // Validate email format
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      throw new Error('Invalid email format');
+    }
+
+    // Validate lengths
+    if (email.length > 255) throw new Error('Email must be less than 255 characters');
+    if (name && name.length > 100) throw new Error('Name must be less than 100 characters');
+    if (consent_text && consent_text.length > 500) throw new Error('Consent text too long');
+
+    // Validate language
+    if (!['en', 'pl'].includes(language)) {
+      throw new Error('Invalid language. Must be "en" or "pl"');
+    }
+
+    // Validate source
+    const validSources = ['footer', 'signup', 'contact', 'admin'];
+    if (!validSources.includes(source)) {
+      throw new Error('Invalid source');
+    }
+
+    // Sanitize inputs
+    const sanitizedEmail = email.trim().toLowerCase();
+    const sanitizedName = name?.trim().replace(/<[^>]*>/g, '') || null;
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const token = crypto.randomUUID();
     const confirmUrl = `https://spirit-candle.com/newsletter/confirm?token=${token}`;
 
-    // Insert/update subscriber
+    // Insert/update subscriber using sanitized inputs
     const { error: upsertError } = await supabase
       .from('newsletter_subscribers')
       .upsert({
-        email: email.toLowerCase().trim(),
-        name: name || null,
+        email: sanitizedEmail,
+        name: sanitizedName,
         language,
         source,
         consent,
@@ -57,13 +85,13 @@ serve(async (req) => {
 
     if (upsertError) throw upsertError;
 
-    console.log(`[Newsletter Subscribe] Sending confirmation email to ${email}`);
+    console.log(`[Newsletter Subscribe] Sending confirmation email to ${sanitizedEmail}`);
 
-    // Send confirmation email
+    // Send confirmation email using sanitized inputs
     const isPl = language === 'pl';
     const { error: emailError } = await resend.emails.send({
       from: 'Spirit Candles <team@spirit-candle.com>',
-      to: [email],
+      to: [sanitizedEmail],
       subject: isPl ? 'Potwierdź subskrypcję newslettera 📧' : 'Confirm your newsletter subscription 📧',
       html: `
         <!DOCTYPE html>
@@ -81,7 +109,7 @@ serve(async (req) => {
                 ${isPl ? '✨ Witaj w Spirit Candles!' : '✨ Welcome to Spirit Candles!'}
               </h1>
               <p style="font-size:16px;color:#333;">
-                ${isPl ? `Cześć ${name || 'tam'},` : `Hi ${name || 'there'},`}
+                ${isPl ? `Cześć ${sanitizedName || 'tam'},` : `Hi ${sanitizedName || 'there'},`}
               </p>
               <p style="font-size:16px;color:#666;">
                 ${isPl 
@@ -113,7 +141,7 @@ serve(async (req) => {
       throw emailError;
     }
 
-    console.log(`[Newsletter Subscribe] Confirmation email sent to ${email}`);
+    console.log(`[Newsletter Subscribe] Confirmation email sent to ${sanitizedEmail}`);
 
     return new Response(
       JSON.stringify({ 

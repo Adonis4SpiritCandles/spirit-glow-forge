@@ -1583,6 +1583,7 @@ export type Database = {
       }
       get_current_user_role: { Args: never; Returns: string }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      is_admin_from_profile: { Args: never; Returns: boolean }
       search_products: {
         Args: { search_text: string }
         Returns: {
@@ -1599,6 +1600,7 @@ export type Database = {
           stock_quantity: number
         }[]
       }
+      validate_email: { Args: { email: string }; Returns: boolean }
     }
     Enums: {
       app_role: "user" | "admin"

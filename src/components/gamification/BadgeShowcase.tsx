@@ -43,6 +43,13 @@ const BadgeShowcase = () => {
       color: 'from-blue-500 to-cyan-500',
     },
     {
+      id: 'social_butterfly',
+      name: { en: 'Social Butterfly', pl: 'Motyl Społeczny' },
+      description: { en: 'Referred your first friend', pl: 'Poleciłeś pierwszego znajomego' },
+      icon: Users,
+      color: 'from-teal-500 to-cyan-500',
+    },
+    {
       id: 'ambassador',
       name: { en: 'Ambassador', pl: 'Ambasador' },
       description: { en: 'Referred 3+ friends', pl: 'Polecono 3+ znajomych' },

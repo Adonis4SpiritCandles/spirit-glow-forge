@@ -172,12 +172,25 @@ export default function PublicProfile() {
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-6">
-              <Avatar className="h-32 w-32 border-4 border-background">
-                <AvatarImage src={profile.profile_image_url} />
-                <AvatarFallback className="text-3xl">
-                  {profile.first_name?.[0]}{profile.last_name?.[0]}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5">
+                  {profile.profile_image_url ? (
+                    <img 
+                      src={profile.profile_image_url} 
+                      alt={`${profile.first_name} ${profile.last_name}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <img 
+                        src="/assets/mini-spirit-logo.png" 
+                        alt="Default" 
+                        className="w-20 h-20 opacity-30"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <div className="flex-1">
                 <h1 className="text-3xl font-bold mb-2">

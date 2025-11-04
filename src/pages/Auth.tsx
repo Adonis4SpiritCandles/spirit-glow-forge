@@ -107,6 +107,23 @@ const Auth = () => {
             variant: "destructive",
           });
         } else {
+          // Send welcome email with WELCOME10 coupon
+          const hasReferral = !!(referralCode || getReferralId());
+          try {
+            await supabase.functions.invoke('send-registration-welcome', {
+              body: {
+                userEmail: emailOrUsername,
+                firstName,
+                lastName,
+                preferredLanguage,
+                hasReferral
+              }
+            });
+            console.log('Welcome email sent successfully');
+          } catch (emailErr) {
+            console.error('Failed to send welcome email:', emailErr);
+          }
+
           // Handle referral if present (from localStorage or manually entered)
           const referralId = referralCode || getReferralId();
           if (referralId) {

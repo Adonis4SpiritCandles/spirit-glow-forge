@@ -309,7 +309,7 @@ const UserDashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-1">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 gap-1">
               <TabsTrigger value="profile" className="flex items-center gap-1 text-xs sm:text-sm">
                 <User className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{language === 'pl' ? 'Dati User' : 'User Data'}</span>
@@ -329,13 +329,17 @@ const UserDashboard = () => {
                 <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t('billing')}</span>
               </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
-                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('settings')}</span>
-              </TabsTrigger>
               <TabsTrigger value="rewards" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
                 <Package className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t('rewards') || 'Rewards'}</span>
+              </TabsTrigger>
+              <TabsTrigger value="referrals" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">{t('referrals') || 'Referrals'}</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm hidden lg:flex">
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">{t('settings')}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -482,6 +486,47 @@ const UserDashboard = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {/* Profile Image Section - Synced with User Data */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      {language === 'pl' ? 'Zdjęcie Profilowe' : 'Profile Picture'}
+                    </label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      {language === 'pl' 
+                        ? 'Prześlij zdjęcie profilowe, aby spersonalizować swoje konto'
+                        : 'Upload your profile picture to personalize your account'}
+                    </p>
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                      <div className="relative">
+                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5">
+                          {profile?.profile_image_url ? (
+                            <img 
+                              src={profile.profile_image_url} 
+                              alt="Profile" 
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <img 
+                                src="/assets/mini-spirit-logo.png" 
+                                alt="Default" 
+                                className="w-20 h-20 opacity-30"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1 text-center md:text-left">
+                        <ProfileImageUpload 
+                          userId={user?.id || ''} 
+                          currentImageUrl={profile?.profile_image_url}
+                          imageType="profile"
+                          onUploadComplete={() => loadUserData()}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Cover Image Upload */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">
@@ -586,7 +631,7 @@ const UserDashboard = () => {
               <BadgeShowcase />
             </TabsContent>
 
-            <TabsContent value="referrals" className="mt-6 hidden lg:block">
+            <TabsContent value="referrals" className="mt-6">
               <ReferralDashboard />
             </TabsContent>
 

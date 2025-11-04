@@ -309,34 +309,80 @@ const UserDashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="w-full overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0 mb-6">
-              <TabsList className="inline-flex w-auto min-w-full lg:grid lg:grid-cols-6 lg:w-full gap-1">
-                <TabsTrigger value="settings" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
-                  <Settings className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{t('settings')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="social" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
-                  <Users className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{language === 'pl' ? 'Profil' : 'Profile'}</span>
-                </TabsTrigger>
-                <TabsTrigger value="orders" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
-                  <ShoppingBag className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{t('orders')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="billing" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
-                  <CreditCard className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{t('billing')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="rewards" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
-                  <Award className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{t('rewards') || 'Rewards'}</span>
-                </TabsTrigger>
-                <TabsTrigger value="referrals" className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
-                  <Gift className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{t('referrals') || 'Referrals'}</span>
-                </TabsTrigger>
-              </TabsList>
+            {/* Mobile: compact selector */}
+            <div className="sm:hidden mb-6">
+              <Select value={activeTab} onValueChange={setActiveTab}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="settings">
+                    <div className="flex items-center gap-2">
+                      <Settings className="h-4 w-4" />
+                      <span>{t('settings')}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="social">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      <span>{language === 'pl' ? 'Profil' : 'Profile'}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="orders">
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag className="h-4 w-4" />
+                      <span>{t('orders')}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="billing">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      <span>{t('billing')}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="rewards">
+                    <div className="flex items-center gap-2">
+                      <Award className="h-4 w-4" />
+                      <span>{t('rewards') || 'Rewards'}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="referrals">
+                    <div className="flex items-center gap-2">
+                      <Gift className="h-4 w-4" />
+                      <span>{t('referrals') || 'Referrals'}</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            
+            {/* Tablet/Desktop: visible tabs */}
+            <TabsList className="hidden sm:grid sm:grid-cols-3 md:grid-cols-6 w-full gap-1 mb-6">
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('settings')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="social" className="flex items-center gap-2">
+                <Users className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{language === 'pl' ? 'Profil' : 'Profile'}</span>
+              </TabsTrigger>
+              <TabsTrigger value="orders" className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('orders')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="billing" className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('billing')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="rewards" className="flex items-center gap-2">
+                <Award className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('rewards') || 'Rewards'}</span>
+              </TabsTrigger>
+              <TabsTrigger value="referrals" className="flex items-center gap-2">
+                <Gift className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('referrals') || 'Referrals'}</span>
+              </TabsTrigger>
+            </TabsList>
 
             {/* Settings Tab - Merged User Data content */}
             <TabsContent value="settings" className="mt-6 space-y-6">

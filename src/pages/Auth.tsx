@@ -390,11 +390,13 @@ const Auth = () => {
 
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="referral">{language === 'pl' ? 'Kod Polecający (Opcjonalnie)' : 'Referral Code (Optional)'}</Label>
+                <Label htmlFor="referral">
+                  {language === 'pl' ? 'Kod Linku Polecającego / Kod (Opcjonalnie)' : 'Referral Link Code / Code (Optional)'}
+                </Label>
                 <Input
                   id="referral"
                   type="text"
-                  placeholder={language === 'pl' ? 'Wprowadź kod polecający' : 'Enter referral code'}
+                  placeholder={language === 'pl' ? 'Wprowadź kod linku lub krótki kod' : 'Enter link code or short code'}
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value)}
                   className="bg-background/50 border-border/40"

@@ -185,6 +185,38 @@ const Checkout = () => {
         return;
       }
 
+      // Check referral_only flag
+      if ((data as any).referral_only) {
+        if (!user) {
+          toast({
+            title: t('error'),
+            description: language === 'pl' 
+              ? 'Musisz być zalogowany, aby użyć tego kuponu'
+              : 'You must be logged in to use this coupon',
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        // Check if user was referred
+        const { data: referralData } = await supabase
+          .from('referrals')
+          .select('id')
+          .eq('referee_id', user.id)
+          .maybeSingle();
+
+        if (!referralData) {
+          toast({
+            title: t('error'),
+            description: language === 'pl'
+              ? 'Ten kupon jest dostępny tylko dla użytkowników poleconych'
+              : 'This coupon is only available for referred users',
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+
       setAppliedCoupon(data);
       toast({
         title: t('success') || 'Success',

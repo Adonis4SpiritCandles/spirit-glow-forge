@@ -48,6 +48,7 @@ const AdminCoupons = () => {
     valid_to: '',
     max_redemptions: '',
     per_user_limit: '1',
+    referral_only: false,
   });
 
   useEffect(() => {
@@ -87,6 +88,7 @@ const AdminCoupons = () => {
       valid_to: '',
       max_redemptions: '',
       per_user_limit: '1',
+      referral_only: false,
     });
     setEditingCoupon(null);
   };
@@ -105,6 +107,7 @@ const AdminCoupons = () => {
       valid_to: coupon.valid_to?.split('T')[0] || '',
       max_redemptions: coupon.max_redemptions?.toString() || '',
       per_user_limit: coupon.per_user_limit?.toString() || '1',
+      referral_only: (coupon as any).referral_only || false,
     });
     setIsDialogOpen(true);
   };
@@ -143,6 +146,7 @@ const AdminCoupons = () => {
       valid_to: formData.valid_to || null,
       max_redemptions: formData.max_redemptions ? parseInt(formData.max_redemptions) : null,
       per_user_limit: parseInt(formData.per_user_limit) || 1,
+      referral_only: formData.referral_only,
     };
 
     if (editingCoupon) {
@@ -397,6 +401,22 @@ const AdminCoupons = () => {
                     onCheckedChange={(checked) => setFormData({ ...formData, active: checked })}
                   />
                   <Label htmlFor="active">{language === 'pl' ? 'Aktywny' : 'Active'}</Label>
+                </div>
+
+                <div className="col-span-2 flex items-center gap-2">
+                  <Switch
+                    id="referral_only"
+                    checked={formData.referral_only}
+                    onCheckedChange={(checked) => setFormData({ ...formData, referral_only: checked })}
+                  />
+                  <div>
+                    <Label htmlFor="referral_only">{language === 'pl' ? 'Tylko dla Poleceń' : 'Referral Only'}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {language === 'pl' 
+                        ? 'Kupon może być użyty tylko przez użytkowników zarejestrowanych przez polecenie'
+                        : 'This coupon can only be used by users registered via referral link'}
+                    </p>
+                  </div>
                 </div>
               </div>
 

@@ -293,13 +293,7 @@ const UserDashboard = () => {
           </TabsList>
 
           <TabsContent value="profile" className="mt-6">
-            <ProfileImageUpload 
-              userId={user?.id || ''} 
-              imageType="profile"
-              onUploadComplete={() => loadUserData()}
-            />
-            
-            <Card className="mt-6">
+            <Card>
               <CardHeader>
                 <CardTitle>{t('profileInformation')}</CardTitle>
                 <CardDescription>
@@ -307,6 +301,44 @@ const UserDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Profile Image Section */}
+                <div className="mb-6 pb-6 border-b">
+                  <div className="flex flex-col md:flex-row items-center gap-6">
+                    <div className="relative">
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5">
+                        {(profile as any)?.profile_image_url ? (
+                          <img 
+                            src={(profile as any).profile_image_url} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <img 
+                              src="/assets/mini-spirit-logo.png" 
+                              alt="Default" 
+                              className="w-20 h-20 opacity-30"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {language === 'pl' 
+                          ? 'Prześlij zdjęcie profilowe, aby spersonalizować swoje konto' 
+                          : 'Upload your profile picture to personalize your account'}
+                      </p>
+                      <ProfileImageUpload 
+                        userId={user?.id || ''} 
+                        currentImageUrl={(profile as any)?.profile_image_url}
+                        imageType="profile"
+                        onUploadComplete={() => loadUserData()}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {isEditing ? (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">

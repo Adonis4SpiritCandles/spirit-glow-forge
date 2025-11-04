@@ -135,6 +135,38 @@ const ReferralDashboard = () => {
           </p>
         </div>
 
+        {/* Short Referral Code */}
+        <div>
+          <label className="text-sm font-medium mb-2 block">
+            {language === 'pl' ? 'Twój Kod Polecający' : 'Your Referral Code'}
+          </label>
+          <p className="text-xs text-muted-foreground mb-2">
+            {language === 'pl' 
+              ? 'Udostępnij ten krótki kod osobom, które chcą się zarejestrować'
+              : 'Share this short code with people who want to register'}
+          </p>
+          <div className="flex gap-2">
+            <Input
+              value={shortCode}
+              readOnly
+              className="flex-1 bg-muted text-center text-2xl font-mono font-bold"
+            />
+            <Button onClick={handleCopyCode} variant="outline" className="gap-2">
+              {copiedCodeRecently ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  {language === 'pl' ? 'Skopiowano' : 'Copied'}
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  {language === 'pl' ? 'Kopiuj' : 'Copy'}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+
         {/* Referral link */}
         <div>
           <label className="text-sm font-medium mb-2 block">

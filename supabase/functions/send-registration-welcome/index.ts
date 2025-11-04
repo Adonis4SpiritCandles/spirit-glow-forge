@@ -35,8 +35,8 @@ Deno.serve(async (req) => {
     
     // Subject
     const subject = isPolish
-      ? '🎉 Witamy w Spirit Candles!'
-      : '🎉 Welcome to Spirit Candles!';
+      ? '🎉 Witamy w Spirit Candles! Mamy dla Ciebie PREZENT!'
+      : '🎉 Welcome to Spirit Candles! We have a GIFT for you!';
 
     // Greeting
     const greeting = isPolish
@@ -71,19 +71,25 @@ Deno.serve(async (req) => {
     // Referral bonus (if applicable)
     const referralBonus = hasReferral ? (isPolish
       ? `<div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4caf50;">
-          <p style="color: #2e7d32; margin: 0; font-size: 14px; font-weight: bold;">
+          <p style="color: #2e7d32; margin: 0; font-size: 18px; font-weight: bold;">
             🎉 Bonus Referral!
           </p>
           <p style="color: #333; margin: 10px 0 0 0; font-size: 14px;">
-            Ponieważ zarejestrowałeś się za pomocą kodu polecającego, <strong>otrzymasz dodatkowy kupon REFERRAL10</strong> na kolejne <strong>10% zniżki</strong>! Sprawdź swoją skrzynkę odbiorczą, aby uzyskać szczegóły.
+            Ponieważ zarejestrowałeś się za pomocą kodu polecającego, <strong>otrzymasz dodatkowy kupon REFERRAL10</strong> na kolejne <strong>10% zniżki</strong>!
+          </p>
+          <p style="color: #333; margin: 10px 0 0 0; font-size: 13px; font-style: italic;">
+            Ten kupon może być używany <strong>dla dowolnego zamówienia</strong> (nie tylko pierwszego) i może być <strong>łączony z innymi kuponami</strong>!
           </p>
         </div>`
       : `<div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4caf50;">
-          <p style="color: #2e7d32; margin: 0; font-size: 14px; font-weight: bold;">
+          <p style="color: #2e7d32; margin: 0; font-size: 18px; font-weight: bold;">
             🎉 Referral Bonus!
           </p>
           <p style="color: #333; margin: 10px 0 0 0; font-size: 14px;">
-            Because you registered using a referral code, <strong>you'll receive an additional REFERRAL10 coupon</strong> for another <strong>10% off</strong>! Check your inbox for details.
+            Because you registered using a referral code, <strong>you'll receive an additional REFERRAL10 coupon</strong> for another <strong>10% off</strong>!
+          </p>
+          <p style="color: #333; margin: 10px 0 0 0; font-size: 13px; font-style: italic;">
+            This coupon can be used for <strong>any purchase</strong> (not just your first) and can be <strong>combined with other coupons</strong>!
           </p>
         </div>`)
       : '';
@@ -174,11 +180,11 @@ Deno.serve(async (req) => {
 
           <!-- Footer -->
           <div style="background: #f5f5f5; padding: 30px 20px; text-align: center; margin-top: 40px;">
-            <p style="color: #666; font-size: 14px; margin: 0;">
+            <p style="color: #666; font-size: 14px; margin: 0 0 5px 0;">
               <strong>www.spirit-candle.com</strong>
             </p>
-            <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
-              Spirit Candles - ${isPolish ? 'Oświetlamy Twoją Drogę' : 'Illuminating Your Path'}
+            <p style="color: #999; font-size: 12px; margin: 0;">
+              ${isPolish ? 'Jeśli masz pytania, skontaktuj się z nami pod adresem' : 'If you have questions, contact us at'} <a href="mailto:m5moffice@proton.me" style="color: #d4af37; text-decoration: none;">m5moffice@proton.me</a>
             </p>
           </div>
         </body>

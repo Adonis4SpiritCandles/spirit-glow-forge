@@ -189,15 +189,15 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/dashboard?tab=settings" className="flex items-center cursor-pointer">
-                          <SettingsIcon className="h-4 w-4 mr-2" />
-                          {t('settings')}
+                        <Link to="/dashboard?tab=social" className="flex items-center cursor-pointer">
+                          <User className="h-4 w-4 mr-2" />
+                          {language === 'pl' ? 'Profil Publiczny' : 'Public Profile'}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/dashboard?tab=profile" className="flex items-center cursor-pointer">
-                          <User className="h-4 w-4 mr-2" />
-                          {t('profile')}
+                        <Link to="/dashboard?tab=settings" className="flex items-center cursor-pointer">
+                          <SettingsIcon className="h-4 w-4 mr-2" />
+                          {t('settings')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>

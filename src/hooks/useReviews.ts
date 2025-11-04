@@ -15,6 +15,7 @@ interface Review {
     first_name?: string;
     last_name?: string;
     username?: string;
+    profile_image_url?: string;
   };
 }
 
@@ -44,7 +45,7 @@ export const useReviews = (productId?: string) => {
         (data || []).map(async (review) => {
           const { data: profileData } = await supabase
             .from('profiles')
-            .select('first_name, last_name, username')
+            .select('first_name, last_name, username, profile_image_url')
             .eq('user_id', review.user_id)
             .single();
           

@@ -81,10 +81,10 @@ const Index = () => {
           pl: 'https://spirit-candle.com/pl'
         }}
       />
-      {/* Referral Banner */}
+      {/* Referral Banner - Fixed Overlay */}
       {showReferralBanner && (
-        <div className="container mx-auto px-4 pt-4">
-          <Alert className="bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 border-2 border-primary/50 shadow-lg shadow-primary/20 animate-fade-in backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-start justify-center pt-20 px-4 animate-fade-in">
+          <Alert className="bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 border-2 border-primary/50 shadow-2xl shadow-primary/30 backdrop-blur-md max-w-2xl w-full">
             <Gift className="h-5 w-5 text-primary animate-pulse drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
             <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex-1">
@@ -119,10 +119,10 @@ const Index = () => {
         </div>
       )}
 
-      {/* Admin Notification Banner */}
+      {/* Admin Notification Banner - Fixed Overlay */}
       {isAdmin && unseenCount > 0 && (
-        <div className="container mx-auto px-4 pt-4">
-          <Alert className="bg-gradient-to-r from-amber-900/20 via-amber-800/20 to-amber-900/20 border-2 border-amber-500/50 shadow-lg shadow-amber-500/20 animate-fade-in backdrop-blur-sm">
+        <div className="fixed top-20 right-4 z-50 max-w-md animate-fade-in">
+          <Alert className="bg-gradient-to-r from-amber-900/20 via-amber-800/20 to-amber-900/20 border-2 border-amber-500/50 shadow-2xl shadow-amber-500/30 backdrop-blur-md">
             <Bell className="h-5 w-5 text-amber-400 animate-pulse drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
             <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex-1">

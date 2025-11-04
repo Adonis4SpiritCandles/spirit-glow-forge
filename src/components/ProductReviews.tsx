@@ -6,7 +6,7 @@ import { Star, Edit, Trash2 } from 'lucide-react';
 import { useReviews } from '@/hooks/useReviews';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface ProductReviewsProps {
   productId: string;
@@ -145,6 +145,7 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
               <CardContent className="p-6">
                 <div className="flex gap-4">
                   <Avatar className="w-10 h-10">
+                    <AvatarImage src={review.profiles?.profile_image_url || '/assets/mini-spirit-logo.png'} />
                     <AvatarFallback className="bg-primary/10 text-primary">
                       {(review.profiles?.first_name?.[0] || review.profiles?.username?.[0] || 'U').toUpperCase()}
                     </AvatarFallback>

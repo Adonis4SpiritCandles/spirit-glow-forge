@@ -144,6 +144,57 @@ export type Database = {
           },
         ]
       }
+      collections: {
+        Row: {
+          created_at: string | null
+          description_en: string | null
+          description_pl: string | null
+          display_order: number | null
+          featured: boolean | null
+          gradient_classes: string | null
+          icon_name: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name_en: string
+          name_pl: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          display_order?: number | null
+          featured?: boolean | null
+          gradient_classes?: string | null
+          icon_name?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name_en: string
+          name_pl: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description_en?: string | null
+          description_pl?: string | null
+          display_order?: number | null
+          featured?: boolean | null
+          gradient_classes?: string | null
+          icon_name?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name_en?: string
+          name_pl?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       consent_logs: {
         Row: {
           analytics: boolean
@@ -1019,6 +1070,7 @@ export type Database = {
       products: {
         Row: {
           category: string
+          collection_id: string | null
           created_at: string
           description_en: string | null
           description_pl: string | null
@@ -1040,6 +1092,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          collection_id?: string | null
           created_at?: string
           description_en?: string | null
           description_pl?: string | null
@@ -1061,6 +1114,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          collection_id?: string | null
           created_at?: string
           description_en?: string | null
           description_pl?: string | null
@@ -1080,7 +1134,44 @@ export type Database = {
           updated_at?: string
           weight?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "profile_comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_comments: {
         Row: {
@@ -1089,6 +1180,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_visible: boolean | null
+          parent_comment_id: string | null
           profile_user_id: string
           updated_at: string | null
         }
@@ -1098,6 +1190,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_visible?: boolean | null
+          parent_comment_id?: string | null
           profile_user_id: string
           updated_at?: string | null
         }
@@ -1107,10 +1200,19 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_visible?: boolean | null
+          parent_comment_id?: string | null
           profile_user_id?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profile_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "profile_comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

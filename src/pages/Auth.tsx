@@ -402,9 +402,14 @@ const Auth = () => {
                   className="bg-background/50 border-border/40"
                 />
                 {referralCode && (
-                  <p className="text-xs text-muted-foreground">
-                    🎁 {language === 'pl' ? 'Otrzymasz 100 punktów bonusowych!' : 'You\'ll receive 100 bonus points!'}
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      🎁 {language === 'pl' ? 'Otrzymasz 100 punktów bonusowych!' : 'You\'ll receive 100 bonus points!'}
+                    </p>
+                    <p className="text-xs text-primary font-semibold">
+                      {language === 'pl' ? 'Plus 10% zniżki na pierwsze zamówienie!' : 'Plus 10% discount on your first order!'}
+                    </p>
+                  </div>
                 )}
               </div>
             )}

@@ -28,6 +28,7 @@ import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
 import AdminSocialMedia from '@/components/admin/AdminSocialMedia';
 import AdminCoupons from '@/components/admin/AdminCoupons';
 import AdminCollections from '@/components/admin/AdminCollections';
+import AdminReferralRewards from '@/components/admin/AdminReferralRewards';
 import SiteSettingsHub from '@/components/admin/SiteSettings/SiteSettingsHub';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
@@ -1332,6 +1333,7 @@ const AdminDashboard = () => {
                 <SelectItem value="customers">{t('customers')}</SelectItem>
                 <SelectItem value="warehouse">{t('warehouse')}</SelectItem>
                 <SelectItem value="coupons">{language === 'pl' ? 'Kupony' : 'Coupons'}</SelectItem>
+                <SelectItem value="referral-rewards">{language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}</SelectItem>
                 <SelectItem value="social">Social Media</SelectItem>
                 <SelectItem value="settings">{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</SelectItem>
                 <SelectItem value="statistics">{t('statistics')}</SelectItem>
@@ -1348,6 +1350,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">{t('customers')}</TabsTrigger>
             <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">{t('warehouse')}</TabsTrigger>
             <TabsTrigger value="coupons" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Kupony' : 'Coupons'}</TabsTrigger>
+            <TabsTrigger value="referral-rewards" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}</TabsTrigger>
             <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">Social Media</TabsTrigger>
             <TabsTrigger value="settings" className="text-xs sm:text-sm flex-shrink-0">{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</TabsTrigger>
             <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">{t('statistics')}</TabsTrigger>
@@ -2492,6 +2495,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="coupons" className="space-y-4">
             <AdminCoupons />
+          </TabsContent>
+
+          <TabsContent value="referral-rewards" className="space-y-4">
+            <AdminReferralRewards />
           </TabsContent>
 
           <TabsContent value="export" className="space-y-4">

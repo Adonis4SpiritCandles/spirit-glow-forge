@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useReferral = () => {
   const [searchParams] = useSearchParams();
@@ -7,10 +8,27 @@ export const useReferral = () => {
   useEffect(() => {
     const ref = searchParams.get('ref');
     
-    if (ref && ref.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-      // Valid UUID format - save to localStorage
-      localStorage.setItem('referral_id', ref);
-      localStorage.setItem('referral_timestamp', Date.now().toString());
+    if (ref) {
+      // Check if it's a UUID
+      if (ref.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        localStorage.setItem('referral_id', ref);
+        localStorage.setItem('referral_timestamp', Date.now().toString());
+      } 
+      // Check if it's an 8-character short code
+      else if (ref.match(/^[A-Za-z0-9]{8}$/)) {
+        // Convert short code to UUID
+        supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('referral_short_code', ref)
+          .single()
+          .then(({ data }) => {
+            if (data?.user_id) {
+              localStorage.setItem('referral_id', data.user_id);
+              localStorage.setItem('referral_timestamp', Date.now().toString());
+            }
+          });
+      }
     }
   }, [searchParams]);
 

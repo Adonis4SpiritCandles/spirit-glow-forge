@@ -6,9 +6,11 @@ import SEOManager from '@/components/SEO/SEOManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye } from 'lucide-react';
@@ -16,6 +18,7 @@ import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import { CarrierBadge } from '@/utils/carrierStyles';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import ReferralDashboard from '@/components/gamification/ReferralDashboard';
+import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
 
 interface UserProfile {
   id: string;
@@ -290,7 +293,13 @@ const UserDashboard = () => {
           </TabsList>
 
           <TabsContent value="profile" className="mt-6">
-            <Card>
+            <ProfileImageUpload 
+              userId={user?.id || ''} 
+              imageType="profile"
+              onUploadComplete={() => loadUserData()}
+            />
+            
+            <Card className="mt-6">
               <CardHeader>
                 <CardTitle>{t('profileInformation')}</CardTitle>
                 <CardDescription>
@@ -330,10 +339,13 @@ const UserDashboard = () => {
                       <label className="text-sm font-medium">{t('email')}</label>
                       <Input
                         value={editForm.email}
-                        onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                        placeholder={t('email')}
+                        disabled
+                        className="bg-muted cursor-not-allowed"
                         type="email"
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {language === 'pl' ? 'Email nie może być zmieniony' : 'Email cannot be changed'}
+                      </p>
                     </div>
                     <div className="flex gap-2">
                       <Button onClick={updateProfile}>{t('saveChanges')}</Button>

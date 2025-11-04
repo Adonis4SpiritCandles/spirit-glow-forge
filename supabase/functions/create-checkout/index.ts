@@ -31,7 +31,10 @@ serve(async (req) => {
     }
 
     // Get request body
-    const { cartItems, shippingAddress, serviceId, shippingCost = 0, carrierName, couponCode } = await req.json();
+    const { cartItems, shippingAddress, serviceId, shippingCost = 0, carrierName, couponCode, couponCodes } = await req.json();
+    
+    // Support both single and multiple coupons
+    const codes = couponCodes || (couponCode ? [couponCode] : []);
     
     if (!cartItems || cartItems.length === 0) {
       throw new Error("No cart items provided");
@@ -96,51 +99,48 @@ serve(async (req) => {
     const shippingCostPLN = Number(Number(shippingCost).toFixed(2));
     const shippingCostEUR = Number((Number(shippingCost) / 4.3).toFixed(2)); // Approximate conversion, keep 2 decimals
 
-    // Validate and apply coupon if provided
+    // Validate and apply coupons (support multiple)
     let couponData = null;
     let discountAmount = 0;
+    const validCoupons = [];
     
-    if (couponCode) {
-      const { data: coupon, error: couponError } = await supabaseClient
-        .from('coupons')
-        .select('*')
-        .eq('code', couponCode.toUpperCase())
-        .eq('active', true)
-        .maybeSingle();
+    if (codes && codes.length > 0) {
+      for (const code of codes) {
+        const { data: coupon, error: couponError } = await supabaseClient
+          .from('coupons')
+          .select('*')
+          .eq('code', code.toUpperCase())
+          .eq('active', true)
+          .maybeSingle();
 
-      if (coupon && !couponError) {
-        const now = new Date();
-        const isValid = 
-          (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
-          (!coupon.valid_to || new Date(coupon.valid_to) >= now) &&
-          (!coupon.max_redemptions || coupon.redemptions_count < coupon.max_redemptions);
+        if (coupon && !couponError) {
+          const now = new Date();
+          const isValid = 
+            (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
+            (!coupon.valid_to || new Date(coupon.valid_to) >= now) &&
+            (!coupon.max_redemptions || coupon.redemptions_count < coupon.max_redemptions);
 
-        if (isValid) {
-          couponData = coupon;
-          
-          // Calculate subtotal of PRODUCTS ONLY (excluding shipping) in grosze
-          const productsSubtotalGrosze = cartItems.reduce((sum: number, item: any) => 
-            sum + Math.round(item.product.price_pln * 100 * item.quantity), 0);
-          
-          // Calculate discount ONLY on products (never on shipping)
-          if (coupon.percent_off) {
-            discountAmount = Math.round(productsSubtotalGrosze * coupon.percent_off / 100);
-          } else if (coupon.amount_off_pln) {
-            discountAmount = Math.round(coupon.amount_off_pln * 100);
-            // Cap discount to products subtotal - 1 grosz minimum
-            if (discountAmount >= productsSubtotalGrosze) {
-              discountAmount = productsSubtotalGrosze - 1;
+          if (isValid) {
+            validCoupons.push(coupon);
+            const productsSubtotalGrosze = cartItems.reduce((sum: number, item: any) => 
+              sum + Math.round(item.product.price_pln * 100 * item.quantity), 0);
+            
+            if (coupon.percent_off) {
+              discountAmount += Math.round(productsSubtotalGrosze * coupon.percent_off / 100);
+            } else if (coupon.amount_off_pln) {
+              discountAmount += Math.round(coupon.amount_off_pln * 100);
             }
+
+            await supabaseClient
+              .from('coupons')
+              .update({ redemptions_count: coupon.redemptions_count + 1 })
+              .eq('id', coupon.id);
           }
-
-          console.log(`Coupon applied: ${coupon.code}, discount: ${discountAmount / 100} PLN`);
-
-          // Increment redemption count
-          await supabaseClient
-            .from('coupons')
-            .update({ redemptions_count: coupon.redemptions_count + 1 })
-            .eq('id', coupon.id);
         }
+      }
+      
+      if (validCoupons.length > 0) {
+        couponData = validCoupons[0]; // For metadata
       }
     }
 

@@ -33,8 +33,8 @@ serve(async (req) => {
       from: 'Spirit Candles <team@spirit-candle.com>',
       to: [referrerEmail],
       subject: isPl 
-        ? '🎉 Gratulacje! Zdobyłeś 200 punktów!' 
-        : '🎉 Congratulations! You earned 200 points!',
+        ? '🎉 Gratulacje! Zdobyłeś 200 SpiritPoints!' 
+        : '🎉 Congratulations! You earned 200 SpiritPoints!',
       html: `
         <!DOCTYPE html>
         <html>
@@ -56,7 +56,7 @@ serve(async (req) => {
                   : `<strong>${refereeName}</strong> used your referral link and just created an account with Spirit Candles!`}
               </p>
               <div style="background:#f0f8ff;border-left:4px solid #d4af37;padding:20px;margin:30px 0;">
-                <h2 style="margin:0;color:#d4af37;font-size:32px;">+200 points</h2>
+                <h2 style="margin:0;color:#d4af37;font-size:32px;">+200 SpiritPoints</h2>
                 <p style="margin:5px 0;color:#666;">
                   ${isPl 
                     ? 'Zostały dodane do Twojego konta lojalnościowego!'
@@ -122,8 +122,8 @@ serve(async (req) => {
               </div>
               <p style="font-size:16px;color:#666;">
                 ${isPl 
-                  ? 'Dodatkowo otrzymałeś <strong>100 punktów lojalnościowych</strong> do wykorzystania przy kolejnych zakupach!'
-                  : 'Additionally, you received <strong>100 loyalty points</strong> to use on future purchases!'}
+                  ? 'Dodatkowo otrzymałeś <strong>100 SpiritPoints</strong> do wykorzystania przy kolejnych zakupach!'
+                  : 'Additionally, you received <strong>100 SpiritPoints</strong> to use on future purchases!'}
               </p>
               <div style="text-align:center;margin:30px 0;">
                 <a href="https://spirit-candle.com/shop" 

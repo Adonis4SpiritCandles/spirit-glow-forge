@@ -263,6 +263,15 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'discount') return language === 'pl' ? 'Zniżka' : 'Discount';
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
     
+    // SpiritPoints Loyalty System
+    if (key === 'spiritPoints') return 'SpiritPoints';
+    if (key === 'earnSpiritPoints') return language === 'pl' ? 'Zdobądź SpiritPoints' : 'Earn SpiritPoints';
+    if (key === 'yourSpiritPoints') return language === 'pl' ? 'Twoje SpiritPoints' : 'Your SpiritPoints';
+    if (key === 'bonusSpiritPoints') return language === 'pl' ? 'Bonusowe SpiritPoints' : 'Bonus SpiritPoints';
+    if (key === 'spiritPointsBalance') return language === 'pl' ? 'Saldo SpiritPoints' : 'SpiritPoints Balance';
+    if (key === 'totalSpiritPoints') return language === 'pl' ? 'Łącznie SpiritPoints' : 'Total SpiritPoints';
+    if (key === 'lifetimeSpiritPoints') return language === 'pl' ? 'SpiritPoints przez całe życie' : 'Lifetime SpiritPoints';
+    
     // Review translations
     if (key === 'noReviewsYet') return language === 'pl' ? 'Brak recenzji. Bądź pierwszym!' : 'No reviews yet. Be the first to review!';
     

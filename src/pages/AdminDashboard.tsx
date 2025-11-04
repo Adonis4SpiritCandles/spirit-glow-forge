@@ -105,6 +105,7 @@ const AdminDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [deletedOrders, setDeletedOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [collections, setCollections] = useState<any[]>([]);
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalOrders: 0,
@@ -130,7 +131,8 @@ const AdminDashboard = () => {
     weight: '',
     stock_quantity: 0,
     image_url: '',
-    image_urls: [] as string[]
+    image_urls: [] as string[],
+    collection_id: null as string | null
   });
 
   // Customer modal state
@@ -622,13 +624,14 @@ const AdminDashboard = () => {
       price_pln: Number(product.price_pln).toFixed(2),
       price_eur: Number(product.price_eur).toFixed(2),
       category: product.category,
-      size: product.size || '180g',
+      size: product.size,
       weight: product.weight || '',
       stock_quantity: product.stock_quantity,
       image_url: product.image_url || '',
-      image_urls: (product as any).image_urls || []
+      image_urls: (product as any).image_urls || [],
+      collection_id: (product as any).collection_id || null
     });
-    setIsEditModalOpen(true);
+    setShowProductForm(true);
   };
 
   const deleteProduct = async (productId: string) => {
@@ -1417,7 +1420,8 @@ const AdminDashboard = () => {
                     weight: '',
                     stock_quantity: 0,
                     image_url: '',
-                    image_urls: []
+                    image_urls: [],
+                    collection_id: null
                   });
                   setShowProductForm(true);
                 }}>
@@ -1482,6 +1486,29 @@ const AdminDashboard = () => {
                             <SelectItem value="luxury">{t('luxury')}</SelectItem>
                             <SelectItem value="nature">{t('nature')}</SelectItem>
                             <SelectItem value="fresh">{t('fresh')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{language === 'pl' ? 'Kolekcja' : 'Collection'}</Label>
+                        <Select
+                          value={productForm.collection_id || 'none'}
+                          onValueChange={(value) => 
+                            setProductForm({ ...productForm, collection_id: value === 'none' ? null : value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={language === 'pl' ? 'Wybierz kolekcję' : 'Select collection'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">
+                              {language === 'pl' ? 'Brak kolekcji' : 'No collection'}
+                            </SelectItem>
+                            {collections.map(col => (
+                              <SelectItem key={col.id} value={col.id}>
+                                {language === 'en' ? col.name_en : col.name_pl}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>

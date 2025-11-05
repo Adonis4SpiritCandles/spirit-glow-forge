@@ -282,18 +282,34 @@ export default function PublicProfile() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background">
         <Card className="max-w-md w-full">
-          <CardContent className="pt-6 text-center">
-            <p className="text-lg font-medium mb-4">
-              {language === 'pl' ? 'Profil nie znaleziony' : 'Profile not found'}
+          <CardContent className="pt-8 pb-6 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+              <Award className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">
+              {language === 'pl' ? 'Profil Nie Znaleziony' : 'Profile Not Found'}
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              {language === 'pl' 
+                ? 'Ten profil nie istnieje lub nie jest publiczny.' 
+                : 'This profile does not exist or is not public.'}
             </p>
-            <Link to="/">
-              <Button variant="outline">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                {language === 'pl' ? 'Powrót do strony głównej' : 'Back to home'}
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link to="/">
+                <Button variant="outline">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  {language === 'pl' ? 'Strona Główna' : 'Home'}
+                </Button>
+              </Link>
+              <Link to="/shop">
+                <Button>
+                  <ShoppingBag className="h-4 w-4 mr-2" />
+                  {language === 'pl' ? 'Sklep' : 'Shop'}
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -302,23 +318,29 @@ export default function PublicProfile() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Cover Image with Amber Background */}
+      {/* Cover Image with Logo */}
       <div 
-        className="h-64 bg-gradient-to-r from-primary/20 to-primary/10 relative"
+        className="h-80 bg-gradient-to-r from-amber-900/40 via-amber-800/30 to-amber-900/40 relative flex items-center justify-center"
         style={
           profile.cover_image_url ? {
-            backgroundImage: `url(${profile.cover_image_url})`,
+            backgroundImage: `linear-gradient(to right, rgba(120, 53, 15, 0.4), rgba(146, 64, 14, 0.3), rgba(120, 53, 15, 0.4)), url(${profile.cover_image_url})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-          } : {
-            backgroundImage: `url(/assets/spirit-logo-transparent.png)`,
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-          }
+          } : {}
         }
       >
-        <Link to="/" className="absolute top-4 left-4">
+        {/* Logo centrale sempre visibile */}
+        <div className="absolute inset-0 flex items-start justify-center pt-12 pointer-events-none">
+          <img 
+            src="/assets/spirit-logo-transparent.png" 
+            alt="Spirit Candles" 
+            className="h-40 w-auto opacity-90"
+            style={{ filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5))' }}
+          />
+        </div>
+        
+        {/* Back button */}
+        <Link to="/" className="absolute top-4 left-4 z-10">
           <Button variant="secondary" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             {language === 'pl' ? 'Powrót' : 'Back'}
@@ -326,7 +348,7 @@ export default function PublicProfile() {
         </Link>
       </div>
 
-      <div className="container max-w-4xl mx-auto px-4 -mt-20 pb-12">
+      <div className="container max-w-4xl mx-auto px-4 -mt-16 pb-12 relative z-10">
         {/* Profile Header */}
         <Card className="mb-6">
           <CardContent className="pt-6">
@@ -357,7 +379,7 @@ export default function PublicProfile() {
           </CardContent>
         </Card>
 
-        {/* Badges Showcase */}
+        {/* Mini Badges */}
         <Card className="mb-6">
           <CardHeader>
             <h2 className="text-xl font-bold flex items-center gap-2">
@@ -366,7 +388,13 @@ export default function PublicProfile() {
             </h2>
           </CardHeader>
           <CardContent>
-            <BadgeShowcase />
+            <div className="flex flex-wrap gap-3">
+              {/* Questi badge verranno caricati dinamicamente */}
+              <div className="flex flex-col items-center gap-1 p-3 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors cursor-pointer" title="Welcome Badge">
+                <Award className="h-6 w-6 text-primary" />
+                <span className="text-xs font-medium text-center">Welcome</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -493,7 +521,26 @@ export default function PublicProfile() {
             </h2>
           </CardHeader>
           <CardContent>
+            {/* User Points Counter */}
+            <div className="mb-6 p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+              <p className="text-sm text-muted-foreground mb-1">
+                {language === 'pl' ? 'SpiritPoints Zdobyte' : 'SpiritPoints Earned'}
+              </p>
+              <p className="text-4xl font-bold text-primary">
+                {leaderboard.find(entry => entry.user_id === userId)?.points || 0}
+              </p>
+              {userRank && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  {language === 'pl' ? 'Pozycja' : 'Rank'}: #{userRank}
+                </p>
+              )}
+            </div>
+            
+            {/* Top 10 Leaderboard */}
             <div className="space-y-2">
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                {language === 'pl' ? 'Top 10 Liderów' : 'Top 10 Leaders'}
+              </h3>
               {leaderboard.map((entry, index) => (
                 <div 
                   key={entry.user_id}

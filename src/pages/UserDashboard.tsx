@@ -46,6 +46,7 @@ interface UserProfile {
   username: string;
   role: string;
   preferred_language: string;
+  email_language?: string;
   profile_image_url?: string;
   cover_image_url?: string;
   bio?: string;
@@ -522,16 +523,40 @@ const UserDashboard = () => {
               {/* Language Preferences */}
               <Card>
                 <CardHeader>
-                  <CardTitle>{language === 'pl' ? 'Preferencje Językowe' : 'Language Preferences'}</CardTitle>
+                  <CardTitle>{t('languagePreferences') || (language === 'pl' ? 'Preferencje Językowe' : 'Language Preferences')}</CardTitle>
+                  <CardDescription>
+                    {language === 'pl' ? 'Zarządzaj ustawieniami językowymi' : 'Manage your language settings'}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
+                  {/* Website Language */}
                   <div className="space-y-2">
-                    <Label>{language === 'pl' ? 'Preferowany język' : 'Preferred Language'}</Label>
+                    <Label htmlFor="site-language">{t('preferredLanguage')}</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('preferredLanguageDesc')}
+                    </p>
                     <Select 
                       value={profile?.preferred_language || 'en'}
                       onValueChange={updateLanguagePreference}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="site-language">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="pl">Polski</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Email Language - Coming Soon */}
+                  <div className="space-y-2 opacity-50 pointer-events-none">
+                    <Label htmlFor="email-language">{t('emailLanguage')}</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('emailLanguageDesc')} {language === 'pl' ? '(Wkrótce)' : '(Coming Soon)'}
+                    </p>
+                    <Select value={profile?.preferred_language || 'en'} disabled>
+                      <SelectTrigger id="email-language">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

@@ -428,6 +428,30 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'permanentDeleteConfirm') return language === 'pl' ? 'Ta akcja nie może być cofnięta. Usunąć na stałe?' : 'This action cannot be undone. Delete permanently?';
     if (key === 'restore') return language === 'pl' ? 'Przywróć' : 'Restore';
     if (key === 'deletePermanently') return language === 'pl' ? 'Usuń na stałe' : 'Delete Permanently';
+    
+    // Additional warehouse keys
+    if (key === 'warehouseManagement') return language === 'pl' ? 'Zarządzanie Magazynem' : 'Warehouse Management';
+    if (key === 'stockOverview') return language === 'pl' ? 'Przegląd Zapasów' : 'Stock Overview';
+    if (key === 'product') return language === 'pl' ? 'Produkt' : 'Product';
+    if (key === 'actions') return language === 'pl' ? 'Akcje' : 'Actions';
+    if (key === 'size') return language === 'pl' ? 'Rozmiar' : 'Size';
+    if (key === 'category') return language === 'pl' ? 'Kategoria' : 'Category';
+    if (key === 'stockQuantity') return language === 'pl' ? 'Zapas' : 'Stock Quantity';
+    if (key === 'editDetails') return language === 'pl' ? 'Edytuj Szczegóły' : 'Edit Details';
+    if (key === 'viewPage') return language === 'pl' ? 'Zobacz Stronę' : 'View Page';
+    if (key === 'totalItems') return language === 'pl' ? 'Przedmioty Ogółem' : 'Total Items';
+    if (key === 'lowStockAlerts') return language === 'pl' ? 'Niski Stan' : 'Low Stock Alerts';
+    if (key === 'outOfStockItems') return language === 'pl' ? 'Brak Towaru' : 'Out of Stock';
+    
+    // Language settings
+    if (key === 'preferredLanguage') return language === 'pl' ? 'Preferowany Język' : 'Preferred Language';
+    if (key === 'preferredLanguageDesc') return language === 'pl' ? 'Wybierz preferowany język dla witryny' : 'Choose your preferred language for the website';
+    if (key === 'emailLanguage') return language === 'pl' ? 'Język Wiadomości E-mail' : 'Email Language';
+    if (key === 'emailLanguageDesc') return language === 'pl' ? 'Wybierz język dla wiadomości e-mail z witryny' : 'Choose the language for emails from the website';
+    if (key === 'emailLanguageUpdated') return language === 'pl' ? 'Język e-mail zaktualizowany' : 'Email language updated';
+    
+    // Reviews  
+    if (key === 'anonymous') return language === 'pl' ? 'Anonimowy' : 'Anonymous';
     if (key === 'complete') return language === 'pl' ? 'Zakończ' : 'Complete';
     if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'Brak płatności FURGONETKA' : 'FURGONETKA Pay Miss';
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';

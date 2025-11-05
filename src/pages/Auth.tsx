@@ -374,18 +374,21 @@ const Auth = () => {
             )}
             
             {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="language">Preferred Language / Język preferowany</Label>
-                <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
-                  <SelectTrigger id="language" className="bg-background/50 border-border/40">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="pl">Polski</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="site-language">{language === 'pl' ? 'Język Witryny' : 'Website Language'}</Label>
+                  <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
+                    <SelectTrigger id="site-language" className="bg-background/50 border-border/40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="pl">Polski</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+              </>
             )}
 
             {!isLogin && (

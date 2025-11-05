@@ -81,9 +81,10 @@ const App = () => {
               <RouteChangeHandler />
               <Header onCartOpen={() => setIsCartOpen(true)} />
               <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/collections/:slug" element={<CollectionDetail />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/collections" element={<Collections />} />
+                <Route path="/collections/:slug" element={<CollectionDetail />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />

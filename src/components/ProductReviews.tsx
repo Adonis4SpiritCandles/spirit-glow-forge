@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -156,8 +157,15 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                         <h4 className="font-semibold">
                           {review.profiles?.first_name && review.profiles?.last_name
                             ? `${review.profiles.first_name} ${review.profiles.last_name}`
-                            : review.profiles?.username || 'Anonymous'}
+                            : review.profiles?.username || t('anonymous')}
                         </h4>
+                        
+                        {review.profiles?.username && (
+                          <p className="text-sm text-muted-foreground">
+                            @{review.profiles.username}
+                          </p>
+                        )}
+                        
                         <div className="flex items-center gap-2 mt-1">
                           {renderStars(review.rating, false, 'w-4 h-4')}
                           <span className="text-sm text-muted-foreground">

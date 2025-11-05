@@ -2493,20 +2493,20 @@ const AdminDashboard = () => {
           <TabsContent value="warehouse">
             <Card>
               <CardHeader>
-                <CardTitle>Warehouse Management / Zarządzanie Magazynem</CardTitle>
+                <CardTitle>{t('warehouseManagement')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {/* Stock Overview */}
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Stock Overview / Przegląd Zapasów</h3>
+                    <h3 className="text-lg font-semibold mb-4">{t('stockOverview')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <Card>
                         <CardContent className="pt-6">
                           <div className="text-2xl font-bold">
                             {products.reduce((sum, p) => sum + (p.stock_quantity || 0), 0)}
                           </div>
-                          <p className="text-sm text-muted-foreground">Total Items / Przedmioty Ogółem</p>
+                          <p className="text-sm text-muted-foreground">{t('totalItems')}</p>
                         </CardContent>
                       </Card>
                       <Card>
@@ -2514,7 +2514,7 @@ const AdminDashboard = () => {
                           <div className="text-2xl font-bold text-orange-600">
                             {products.filter(p => (p.stock_quantity || 0) < 10).length}
                           </div>
-                          <p className="text-sm text-muted-foreground">Low Stock Alerts / Niski Stan</p>
+                          <p className="text-sm text-muted-foreground">{t('lowStockAlerts')}</p>
                         </CardContent>
                       </Card>
                       <Card>
@@ -2522,7 +2522,7 @@ const AdminDashboard = () => {
                           <div className="text-2xl font-bold text-red-600">
                             {products.filter(p => (p.stock_quantity || 0) === 0).length}
                           </div>
-                          <p className="text-sm text-muted-foreground">Out of Stock / Brak Towaru</p>
+                          <p className="text-sm text-muted-foreground">{t('outOfStockItems')}</p>
                         </CardContent>
                       </Card>
                     </div>
@@ -2530,61 +2530,43 @@ const AdminDashboard = () => {
 
                   {/* Stock Table */}
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Product Stock Levels / Poziomy Zapasów Produktów</h3>
+                    <h3 className="text-lg font-semibold mb-4">{language === 'pl' ? 'Poziomy Zapasów Produktów' : 'Product Stock Levels'}</h3>
                     <div className="border rounded-lg">
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="w-12"></TableHead>
-                            <TableHead>{t('product')} / Produkt</TableHead>
-                            <TableHead>{t('actions')} / {t('actions')}</TableHead>
-                            <TableHead>{t('size')} / Rozmiar</TableHead>
-                            <TableHead>{t('category')} / Kategoria</TableHead>
-                            <TableHead className="text-right">{t('stockQuantity')} / Zapas</TableHead>
+                            <TableHead className="w-16 sm:w-24"></TableHead>
+                            <TableHead>{t('product')}</TableHead>
+                            <TableHead>{t('size')}</TableHead>
+                            <TableHead>{t('category')}</TableHead>
+                            <TableHead className="text-right">{t('stockQuantity')}</TableHead>
                             <TableHead className="text-center w-28">Status</TableHead>
                             <TableHead className="text-center w-28">{t('published')}</TableHead>
+                            <TableHead className="text-center">{t('actions')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {products.map((product) => (
                             <TableRow key={product.id}>
                               <TableCell>
-                                {product.image_url ? (
-                                  <img 
-                                    src={product.image_url} 
-                                    alt={product.name_en}
-                                    className="w-10 h-10 object-cover rounded border"
-                                  />
-                                ) : (
-                                  <div className="w-10 h-10 bg-muted rounded border flex items-center justify-center">
-                                    <Package className="h-5 w-5 text-muted-foreground" />
-                                  </div>
-                                )}
-                              </TableCell>
-                              <TableCell className="font-medium">{product.name_en}</TableCell>
-                              <TableCell>
-                                <div className="flex gap-1">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => editProduct(product)}
-                                    title={`${t('editProductDetails')} / ${t('editProductDetails')}`}
-                                    className="h-8 px-2"
-                                  >
-                                    <Edit className="h-4 w-4 mr-1" />
-                                    <span className="text-xs">{t('editProductDetails')}</span>
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => window.open(`/product/${product.id}`, '_blank')}
-                                    title={`${t('viewProductPage')} / ${t('viewProductPage')}`}
-                                    className="h-8 px-2"
-                                  >
-                                    <ExternalLink className="h-4 w-4 mr-1" />
-                                    <span className="text-xs">{t('viewProductPage')}</span>
-                                  </Button>
+                                <div className="flex items-center gap-3">
+                                  {product.image_url ? (
+                                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden border border-border/40 flex-shrink-0">
+                                      <img 
+                                        src={product.image_url} 
+                                        alt={product.name_en}
+                                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
+                                      <Package className="h-6 w-6 text-muted-foreground" />
+                                    </div>
+                                  )}
                                 </div>
+                              </TableCell>
+                              <TableCell className="font-medium">
+                                <div className="line-clamp-2">{language === 'en' ? product.name_en : product.name_pl}</div>
                               </TableCell>
                               <TableCell>{product.size || "-"}</TableCell>
                               <TableCell>
@@ -2625,11 +2607,33 @@ const AdminDashboard = () => {
                                 )}
                               </TableCell>
                               <TableCell className="text-center">
-                                {product.published ? (
-                                  <Badge className="bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap">{t('yes')}</Badge>
-                                ) : (
-                                  <Badge variant="secondary" className="whitespace-nowrap">{t('no')}</Badge>
-                                )}
+                                <Badge 
+                                  className={`whitespace-nowrap ${product.published ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-400 text-white hover:bg-gray-500'}`}
+                                >
+                                  {product.published ? t('yes') : t('no')}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <div className="flex gap-1 justify-center">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => editProduct(product)}
+                                    title={t('editDetails')}
+                                    className="h-8 px-2"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => window.open(`/product/${product.id}`, '_blank')}
+                                    title={t('viewPage')}
+                                    className="h-8 px-2"
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}

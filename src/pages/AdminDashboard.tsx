@@ -247,6 +247,15 @@ const AdminDashboard = () => {
 
       setProducts(productsData || []);
 
+      // Load collections
+      const { data: collectionsData } = await supabase
+        .from('collections')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      setCollections(collectionsData || []);
+
       // Load orders with profile data - filter out soft-deleted orders
       const { data: ordersData } = await supabase
         .from('orders')

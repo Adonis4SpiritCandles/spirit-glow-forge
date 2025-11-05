@@ -549,13 +549,30 @@ const UserDashboard = () => {
                     </Select>
                   </div>
 
-                  {/* Email Language - Coming Soon */}
-                  <div className="space-y-2 opacity-50 pointer-events-none">
+                  {/* Email Language */}
+                  <div className="space-y-2">
                     <Label htmlFor="email-language">{t('emailLanguage')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      {t('emailLanguageDesc')} {language === 'pl' ? '(Wkrótce)' : '(Coming Soon)'}
+                      {t('emailLanguageDesc')}
                     </p>
-                    <Select value={profile?.preferred_language || 'en'} disabled>
+                    <Select 
+                      value={profile?.email_language || 'en'}
+                      onValueChange={async (value) => {
+                        if (!user) return;
+                        const { error } = await supabase
+                          .from('profiles')
+                          .update({ email_language: value })
+                          .eq('user_id', user.id);
+                        
+                        if (!error) {
+                          setProfile({ ...profile!, email_language: value });
+                          toast({
+                            title: t('success'),
+                            description: t('emailLanguageUpdated'),
+                          });
+                        }
+                      }}
+                    >
                       <SelectTrigger id="email-language">
                         <SelectValue />
                       </SelectTrigger>

@@ -1220,6 +1220,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string
           email: string
+          email_language: string | null
           email_language_preference: string | null
           exclude_from_stats: boolean | null
           first_name: string | null
@@ -1244,6 +1245,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           email: string
+          email_language?: string | null
           email_language_preference?: string | null
           exclude_from_stats?: boolean | null
           first_name?: string | null
@@ -1268,6 +1270,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           email?: string
+          email_language?: string | null
           email_language_preference?: string | null
           exclude_from_stats?: boolean | null
           first_name?: string | null

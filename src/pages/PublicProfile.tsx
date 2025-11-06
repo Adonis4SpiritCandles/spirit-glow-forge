@@ -500,6 +500,20 @@ export default function PublicProfile() {
           }
         }
       >
+        {/* Upload Cover Button - only for owner and only if no cover image */}
+        {user?.id === userId && !profile.cover_image_url && (
+          <div className="absolute top-4 right-4 z-10">
+            <ProfileImageUpload
+              userId={user.id}
+              currentImageUrl={profile.cover_image_url}
+              imageType="cover"
+              onUploadComplete={(url) => {
+                setProfile({ ...profile, cover_image_url: url });
+              }}
+            />
+          </div>
+        )}
+        
         {/* Logo centrale - SOLO se NON c'è cover image custom */}
         {!profile.cover_image_url && (
           <div className="absolute inset-0 flex items-center justify-center pt-8 pointer-events-none">
@@ -538,6 +552,20 @@ export default function PublicProfile() {
                     </AvatarFallback>
                   </Avatar>
                 </div>
+                
+                {/* Upload Profile Button - only for owner and only if no profile image */}
+                {user?.id === userId && !profile.profile_image_url && (
+                  <div className="absolute bottom-0 right-0">
+                    <ProfileImageUpload
+                      userId={user.id}
+                      currentImageUrl={profile.profile_image_url}
+                      imageType="profile"
+                      onUploadComplete={(url) => {
+                        setProfile({ ...profile, profile_image_url: url });
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex-1">
@@ -549,28 +577,6 @@ export default function PublicProfile() {
                 )}
                 {profile.bio && (
                   <p className="text-sm mb-4">{profile.bio}</p>
-                )}
-                
-                {/* Profile Image Upload - only for owner */}
-                {user?.id === userId && (
-                  <div className="space-y-3 mt-4">
-                    <ProfileImageUpload
-                      userId={user.id}
-                      currentImageUrl={profile.profile_image_url}
-                      imageType="profile"
-                      onUploadComplete={(url) => {
-                        setProfile({ ...profile, profile_image_url: url });
-                      }}
-                    />
-                    <ProfileImageUpload
-                      userId={user.id}
-                      currentImageUrl={profile.cover_image_url}
-                      imageType="cover"
-                      onUploadComplete={(url) => {
-                        setProfile({ ...profile, cover_image_url: url });
-                      }}
-                    />
-                  </div>
                 )}
               </div>
             </div>

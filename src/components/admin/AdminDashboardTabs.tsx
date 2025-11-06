@@ -28,15 +28,15 @@ const AdminDashboardTabs = ({ activeTab, setActiveTab }: AdminDashboardTabsProps
 
   return (
     <>
-      {/* Desktop/Tablet - Pills con flex-wrap */}
-      <div className="hidden sm:flex flex-wrap gap-2 p-2 bg-muted/40 rounded-lg mb-6">
+      {/* Desktop/Tablet - Grid centrato con wrapping */}
+      <div className="hidden sm:grid sm:grid-cols-5 md:grid-cols-6 gap-2 p-2 bg-muted/40 rounded-lg mb-6 place-items-center">
         {tabs.map(tab => (
           <Button
             key={tab.value}
             variant={activeTab === tab.value ? "default" : "ghost"}
             size="sm"
             onClick={() => setActiveTab(tab.value)}
-            className={`gap-2 px-3 py-2 transition-all ${
+            className={`gap-2 px-3 py-2 transition-all w-full ${
               activeTab === tab.value 
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                 : 'hover:bg-primary/20 hover:text-primary'

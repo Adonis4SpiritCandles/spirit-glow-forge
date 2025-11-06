@@ -128,11 +128,11 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Button>
                   </Link>
                   
-                  {/* Dashboard Button - For all users */}
+                  {/* Dashboard Button - For all users, solo icona su tablet */}
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="gap-1">
                       <LayoutDashboard className="h-4 w-4" />
-                      <span className="text-sm">{t('dashboard')}</span>
+                      <span className="text-sm hidden xl:inline">{t('dashboard')}</span>
                     </Button>
                   </Link>
                   

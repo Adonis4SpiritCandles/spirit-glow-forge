@@ -756,7 +756,7 @@ const UserDashboard = () => {
                         const productsEUR = Number(order.total_eur - (order.shipping_cost_eur || 0) + discountEUR).toFixed(2);
 
                         return (
-                          <Card key={order.id} className="hover:shadow-md transition-shadow">
+                          <Card key={order.id} className="bg-card/70 dark:bg-card/60 border-border/60 hover:shadow-md transition-shadow">
                             <CardContent className="p-6">
                               {/* Header con Order Number, Data e Badge Status */}
                               <div className="flex justify-between items-start mb-4">
@@ -790,7 +790,7 @@ const UserDashboard = () => {
                                 {order.coupon_code && (
                                   <div className="flex justify-between items-center py-3 px-4 border-b bg-muted/20">
                                     <span className="text-sm text-muted-foreground">{t('discount')}:</span>
-                                    <span className="font-semibold text-sm text-green-600 dark:text-green-400">
+                                    <span className="font-semibold text-sm sm:text-base text-green-600 dark:text-green-400 whitespace-nowrap ml-auto text-right">
                                       -{discountPLN.toFixed(2)} PLN / -{discountEUR.toFixed(2)} EUR ({order.coupon_code})
                                     </span>
                                   </div>
@@ -814,8 +814,8 @@ const UserDashboard = () => {
 
                                 {/* Total */}
                                 <div className="flex justify-between items-center py-4 px-4 bg-muted/30">
-                                  <span className="font-bold text-base">{t('total')}:</span>
-                                  <span className="font-bold text-lg text-primary">{totalPLN} PLN / {totalEUR} EUR</span>
+                                  <span className="font-bold text-sm sm:text-base">{t('total')}:</span>
+                                  <span className="font-bold text-base sm:text-lg text-primary whitespace-nowrap ml-auto text-right">{totalPLN} PLN / {totalEUR} EUR</span>
                                 </div>
                               </div>
 
@@ -826,7 +826,7 @@ const UserDashboard = () => {
                                     <Package className="h-4 w-4 text-primary" />
                                     <span>{t('shippingInformation')}</span>
                                   </div>
-                                  <div className="grid grid-cols-2 gap-3 text-sm mb-2">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-3">
                                     <div>
                                       <span className="text-muted-foreground">{t('carrier')}:</span>
                                       <div className="mt-1">
@@ -840,20 +840,31 @@ const UserDashboard = () => {
                                     <div>
                                       <span className="text-muted-foreground">{t('status')}:</span>
                                       <div className="mt-1">
-                                        {badges.find(b => b.label.includes('Shipped') || b.label.includes('Delivered')) ? (
-                                          <Badge variant="default" className="bg-green-600">
+                                        {order.shipping_status === 'delivered' || order.shipping_status === 'shipped' ? (
+                                          <Badge className="bg-green-500 text-white rounded-[4px] hover:bg-green-600">
                                             <Truck className="h-3 w-3 mr-1" />
-                                            {order.shipping_status || 'Shipped'}
+                                            {order.shipping_status === 'delivered' ? t('delivered') : t('shippedSuccessfully')}
                                           </Badge>
                                         ) : (
-                                          <Badge variant="outline">{order.shipping_status || 'Pending'}</Badge>
+                                          <Badge variant="outline" className="rounded-[4px]">{order.shipping_status || 'Pending'}</Badge>
                                         )}
                                       </div>
                                     </div>
                                   </div>
                                   <div className="text-sm">
                                     <span className="text-muted-foreground">{t('trackingNumber')}:</span>
-                                    <p className="font-mono text-xs mt-1 break-all">{order.tracking_number}</p>
+                                    {order.tracking_url ? (
+                                      <a 
+                                        href={order.tracking_url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="inline-block mt-1 font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors"
+                                      >
+                                        {order.tracking_number}
+                                      </a>
+                                    ) : (
+                                      <p className="font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded mt-1 inline-block">{order.tracking_number}</p>
+                                    )}
                                   </div>
                                 </div>
                               )}

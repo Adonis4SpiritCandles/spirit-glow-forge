@@ -2591,7 +2591,7 @@ const AdminDashboard = () => {
             <AdminCoupons />
           </TabsContent>
 
-          <TabsContent value="referral-rewards" className="space-y-4">
+          <TabsContent value="rewards" className="space-y-4">
             <AdminReferralRewards />
           </TabsContent>
 

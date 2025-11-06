@@ -125,6 +125,11 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'format') return language === 'pl' ? 'Format' : 'Format';
     if (key === 'exportOrdersCsv') return language === 'pl' ? 'Eksportuj zamówienia jako CSV' : 'Export Orders as CSV';
     if (key === 'warehouse') return language === 'pl' ? 'Magazyn' : 'Warehouse';
+    if (key === 'coupons') return language === 'pl' ? 'Kupony' : 'Coupons';
+    if (key === 'export') return language === 'pl' ? 'Eksport' : 'Export';
+    if (key === 'siteSettings') return language === 'pl' ? 'Ustawienia Strony' : 'Site Settings';
+    if (key === 'socialMedia') return language === 'pl' ? 'Media Społecznościowe' : 'Social Media';
+    if (key === 'referralsRewards') return language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards';
     if (key === 'monthlyOrders') return language === 'pl' ? 'Miesięczne zamówienia' : 'Monthly Orders';
     if (key === 'salesByCategory') return language === 'pl' ? 'Sprzedaż według kategorii' : 'Sales by Category';
     if (key === 'monthlyRevenue') return language === 'pl' ? 'Miesięczny przychód' : 'Monthly Revenue';

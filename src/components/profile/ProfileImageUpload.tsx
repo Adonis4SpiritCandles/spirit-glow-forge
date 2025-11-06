@@ -113,7 +113,7 @@ export default function ProfileImageUpload({
       const fileName = `${userId}/${imageType}-${Date.now()}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
-        .from('products')
+        .from('profiles')
         .upload(fileName, croppedBlob, {
           cacheControl: '3600',
           upsert: true
@@ -122,7 +122,7 @@ export default function ProfileImageUpload({
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('products')
+        .from('profiles')
         .getPublicUrl(fileName);
 
       // Update profile

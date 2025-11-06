@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { useReviews } from '@/hooks/useReviews';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProductReviewsProps {
   productId: string;
@@ -21,8 +22,24 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
   const [comment, setComment] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string>('user');
 
   const userReview = getUserReview();
+
+  // Load user role for admin permissions
+  useEffect(() => {
+    if (user) {
+      const loadUserRole = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+        setUserRole(data?.role || 'user');
+      };
+      loadUserRole();
+    }
+  }, [user]);
 
   const handleSubmit = async () => {
     if (!user) return;
@@ -181,8 +198,8 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                           </span>
                         </div>
                       </div>
-                      {/* Edit/Delete buttons - OWNER O ADMIN */}
-                      {user && (review.user_id === user.id) && (
+                      {/* Edit/Delete buttons - OWNER OR ADMIN */}
+                      {user && (review.user_id === user.id || userRole === 'admin') && (
                         <div className="flex gap-2">
                           <Button
                             variant="ghost"

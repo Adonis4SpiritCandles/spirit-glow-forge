@@ -36,13 +36,29 @@ const Shop = () => {
         .eq('published', true)
         .order('created_at', { ascending: false });
       if (!error && data) {
+        // Load collections for products
+        const collectionsMap = new Map();
+        const collectionIds = [...new Set(data.map(p => p.collection_id).filter(Boolean))];
+        if (collectionIds.length > 0) {
+          const { data: collectionsData } = await supabase
+            .from('collections')
+            .select('id, name_en, name_pl')
+            .in('id', collectionIds);
+          collectionsData?.forEach(col => {
+            collectionsMap.set(col.id, language === 'en' ? col.name_en : col.name_pl);
+          });
+        }
+
         const mapped = data.map((p) => ({
           id: p.id,
           name: language === 'en' ? p.name_en : p.name_pl,
-          fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+          summary: language === 'en' ? (p.summary_en || '') : (p.summary_pl || ''),
+          description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+          category: p.category,
+          collection: p.collection_id ? collectionsMap.get(p.collection_id) : null,
+          preferred_card_tag: p.preferred_card_tag,
           price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
           image: p.image_url,
-          description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
           sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
           isNew: false,
           isBestseller: false,

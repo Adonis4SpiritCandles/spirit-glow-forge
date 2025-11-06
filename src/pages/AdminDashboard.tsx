@@ -1723,6 +1723,7 @@ const AdminDashboard = () => {
                       <TableHead>{t('pricePln')}</TableHead>
                       <TableHead>{t('stock')}</TableHead>
                       <TableHead>{t('size')}</TableHead>
+                      <TableHead>{t('lastModified')}</TableHead>
                       <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1744,6 +1745,10 @@ const AdminDashboard = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>{product.size}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                          <div>{new Date(product.updated_at).toLocaleDateString()}</div>
+                          <div className="text-xs">{new Date(product.updated_at).toLocaleTimeString()}</div>
+                        </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
                             <Button 

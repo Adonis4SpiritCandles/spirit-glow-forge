@@ -31,11 +31,11 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
     if (user) {
       const loadUserRole = async () => {
         const { data } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('user_id', user.id)
-          .single();
-        setUserRole(data?.role || 'user');
+          .rpc('has_role', { 
+            _user_id: user.id, 
+            _role: 'admin' 
+          });
+        setUserRole(data === true ? 'admin' : 'user');
       };
       loadUserRole();
     }

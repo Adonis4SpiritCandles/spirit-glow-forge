@@ -107,6 +107,8 @@ const AdminDashboard = () => {
   const [deletedOrders, setDeletedOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [collections, setCollections] = useState<any[]>([]);
+  const [coupons, setCoupons] = useState<any[]>([]);
+  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalOrders: 0,
@@ -133,7 +135,8 @@ const AdminDashboard = () => {
     stock_quantity: 0,
     image_url: '',
     image_urls: [] as string[],
-    collection_id: null as string | null
+    collection_id: null as string | null,
+    preferred_card_tag: 'category' as string
   });
 
   // Customer modal state
@@ -166,8 +169,13 @@ const AdminDashboard = () => {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isBulkOperating, setIsBulkOperating] = useState(false);
 
-  // Tabs state (controlled for mobile select)
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'statistics' | 'export' | 'social'>('products');
+  // Tabs state (controlled for mobile select) - expanded to include all tabs
+  const [activeTab, setActiveTab] = useState<'products' | 'collections' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'coupons' | 'rewards' | 'statistics' | 'export' | 'settings' | 'social'>('products');
+  
+  // Wrapper function to handle setActiveTab with type safety
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab as typeof activeTab);
+  };
 
   // Check if user is admin
   useEffect(() => {
@@ -586,6 +594,8 @@ const AdminDashboard = () => {
         price_eur: priceEur,
       };
 
+      let productId: string;
+
       if (editingProduct) {
         const { error } = await supabase
           .from('products')
@@ -593,20 +603,44 @@ const AdminDashboard = () => {
           .eq('id', editingProduct.id);
         
         if (error) throw error;
+        productId = editingProduct.id;
+        
+        // Delete existing product_collections
+        await supabase
+          .from('product_collections')
+          .delete()
+          .eq('product_id', productId);
+        
         toast({ 
           title: t('success'), 
           description: language === 'en' ? 'Product updated successfully' : 'Produkt zaktualizowany pomyślnie'
         });
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('products')
-          .insert([payload]);
+          .insert([payload])
+          .select()
+          .single();
         
         if (error) throw error;
+        productId = data.id;
+        
         toast({ 
           title: t('success'), 
           description: language === 'en' ? 'Product created successfully' : 'Produkt utworzony pomyślnie'
         });
+      }
+
+      // Save product_collections associations
+      if (selectedCollections.length > 0) {
+        const associations = selectedCollections.map(collectionId => ({
+          product_id: productId,
+          collection_id: collectionId
+        }));
+
+        await supabase
+          .from('product_collections')
+          .insert(associations);
       }
       
       setShowProductForm(false);
@@ -622,8 +656,17 @@ const AdminDashboard = () => {
     }
   };
 
-  const editProduct = (product: Product) => {
+  const editProduct = async (product: Product) => {
     setEditingProduct(product);
+    
+    // Load existing collections for this product
+    const { data: existingCollections } = await supabase
+      .from('product_collections')
+      .select('collection_id')
+      .eq('product_id', product.id);
+    
+    setSelectedCollections(existingCollections?.map(pc => pc.collection_id) || []);
+    
     setProductForm({
       name_en: product.name_en,
       name_pl: product.name_pl,
@@ -639,7 +682,8 @@ const AdminDashboard = () => {
       stock_quantity: product.stock_quantity,
       image_url: product.image_url || '',
       image_urls: (product as any).image_urls || [],
-      collection_id: (product as any).collection_id || null
+      collection_id: (product as any).collection_id || null,
+      preferred_card_tag: (product as any).preferred_card_tag || 'category'
     });
     setShowProductForm(true);
   };
@@ -1368,89 +1412,9 @@ const AdminDashboard = () => {
         )}
 
         {/* Dashboard Tabs */}
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="space-y-4">
-          {/* Mobile: compact selector with icons */}
-          <div className="sm:hidden">
-            <Select value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('products')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="products">
-                  <div className="flex items-center gap-2">
-                    <Package className="h-4 w-4" />
-                    <span>{t('products')}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="collections">
-                  <div className="flex items-center gap-2">
-                    <Tags className="h-4 w-4" />
-                    <span>{language === 'pl' ? 'Kolekcje' : 'Collections'}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="orders">
-                  <div className="flex items-center gap-2">
-                    <ShoppingCart className="h-4 w-4" />
-                    <span>{t('orders')}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="trash">
-                  <div className="flex items-center gap-2">
-                    <Trash2 className="h-4 w-4" />
-                    <span>{t('ordersTrash')}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="customers">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    <span>{t('customers')}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="warehouse">
-                  <div className="flex items-center gap-2">
-                    <Database className="h-4 w-4" />
-                    <span>{t('warehouse')}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="coupons">
-                  <div className="flex items-center gap-2">
-                    <Tags className="h-4 w-4" />
-                    <span>{language === 'pl' ? 'Kupony' : 'Coupons'}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="referral-rewards">
-                  <div className="flex items-center gap-2">
-                    <Gift className="h-4 w-4" />
-                    <span>{language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="social">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
-                    <span>Social Media</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="settings">
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
-                    <span>{language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="statistics">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4" />
-                    <span>{t('statistics')}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="export">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    <span>Export</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
+          {/* Use AdminDashboardTabs component for all screen sizes */}
+          <AdminDashboardTabs activeTab={activeTab} setActiveTab={handleTabChange} />
 
           <TabsContent value="products" className="space-y-4">
             <Card>
@@ -1476,8 +1440,10 @@ const AdminDashboard = () => {
                     stock_quantity: 0,
                     image_url: '',
                     image_urls: [],
-                    collection_id: null
+                    collection_id: null,
+                    preferred_card_tag: 'category'
                   });
+                  setSelectedCollections([]);
                   setShowProductForm(true);
                 }}>
                   {t('addProduct')}
@@ -2836,6 +2802,53 @@ const AdminDashboard = () => {
                       ))}
                     </div>
                   )}
+                </div>
+                
+                {/* Multiple Collections Selector */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label>{t('collections')} ({t('multipleAllowed')})</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t('selectMultipleCollections')}
+                  </p>
+                  <div className="flex flex-wrap gap-2 p-3 border rounded-md bg-muted/30">
+                    {collections.map(collection => {
+                      const isSelected = selectedCollections.includes(collection.id);
+                      return (
+                        <Badge
+                          key={collection.id}
+                          variant={isSelected ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-primary/80 transition-colors text-sm py-1.5 px-3"
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedCollections(selectedCollections.filter(id => id !== collection.id));
+                            } else {
+                              setSelectedCollections([...selectedCollections, collection.id]);
+                            }
+                          }}
+                        >
+                          {language === 'en' ? collection.name_en : collection.name_pl}
+                          {isSelected && <X className="ml-1 h-3 w-3" />}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Preferred Tag Selector */}
+                <div className="space-y-2">
+                  <Label>{t('preferredCardTag')}</Label>
+                  <Select 
+                    value={productForm.preferred_card_tag || 'category'}
+                    onValueChange={(value) => setProductForm({...productForm, preferred_card_tag: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="category">{t('showCategory')}</SelectItem>
+                      <SelectItem value="collection">{t('showCollection')}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-6">

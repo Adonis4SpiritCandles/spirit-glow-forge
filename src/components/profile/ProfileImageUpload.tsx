@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
+import Cropper, { Area, Point } from 'react-easy-crop';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
-import { Camera, Upload } from 'lucide-react';
+import { Camera, Upload, Loader2, ZoomIn, ZoomOut, Move } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,10 +24,18 @@ export default function ProfileImageUpload({
   const { language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>('');
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [zoom, setZoom] = useState([1]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Crop state
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,24 +54,70 @@ export default function ProfileImageUpload({
 
     setSelectedFile(file);
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
+    reader.addEventListener('load', () => {
+      setImageSrc(reader.result as string);
       setIsOpen(true);
-    };
+    });
     reader.readAsDataURL(file);
   };
 
+  const createCroppedImage = async (): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.src = imageSrc!;
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx || !croppedAreaPixels) {
+          reject(new Error('No crop area'));
+          return;
+        }
+
+        canvas.width = croppedAreaPixels.width;
+        canvas.height = croppedAreaPixels.height;
+
+        ctx.drawImage(
+          image,
+          croppedAreaPixels.x,
+          croppedAreaPixels.y,
+          croppedAreaPixels.width,
+          croppedAreaPixels.height,
+          0,
+          0,
+          croppedAreaPixels.width,
+          croppedAreaPixels.height
+        );
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Canvas to Blob failed'));
+          }
+        }, 'image/jpeg', 0.95);
+      };
+    });
+  };
+
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || !croppedAreaPixels) return;
 
     setUploading(true);
     try {
+      // Create cropped image
+      const croppedBlob = await createCroppedImage();
+      
+      // Upload to Supabase
       const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${userId}/${imageType}-${Date.now()}.${fileExt}`;
       
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('products')
-        .upload(fileName, selectedFile, { upsert: true });
+        .upload(fileName, croppedBlob, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) throw uploadError;
 
@@ -81,6 +136,9 @@ export default function ProfileImageUpload({
 
       onUploadComplete(publicUrl);
       setIsOpen(false);
+      setImageSrc(null);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
       
       toast({
         title: language === 'pl' ? 'Sukces' : 'Success',
@@ -122,9 +180,10 @@ export default function ProfileImageUpload({
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Move className="h-5 w-5" />
               {language === 'pl' 
                 ? `Dostosuj obraz ${imageType === 'profile' ? 'profilu' : 'okładki'}`
                 : `Adjust ${imageType === 'profile' ? 'profile' : 'cover'} image`}
@@ -132,49 +191,50 @@ export default function ProfileImageUpload({
           </DialogHeader>
 
           <div className="space-y-4">
-            {preview && (
-              <div className="relative overflow-hidden rounded-lg border">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full"
-                  style={{
-                    transform: `scale(${zoom[0]})`,
-                    transition: 'transform 0.2s',
-                  }}
+            {/* Cropper */}
+            <div className="relative h-96 bg-muted rounded-lg overflow-hidden">
+              {imageSrc && (
+                <Cropper
+                  image={imageSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={imageType === 'profile' ? 1 : 16 / 9}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
                 />
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {language === 'pl' ? 'Powiększenie' : 'Zoom'}
-              </label>
-              <Slider
-                value={zoom}
-                onValueChange={setZoom}
-                min={1}
-                max={3}
-                step={0.1}
-              />
+              )}
             </div>
 
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsOpen(false)}
-                className="flex-1"
-              >
+            {/* Zoom Control */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <ZoomOut className="h-4 w-4 text-muted-foreground" />
+                <Slider
+                  value={[zoom]}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  onValueChange={(value) => setZoom(value[0])}
+                  className="flex-1"
+                />
+                <ZoomIn className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                {language === 'pl' 
+                  ? 'Przeciągnij, aby przesunąć • Przewiń lub użyj suwaka, aby powiększyć'
+                  : 'Drag to move • Scroll or use slider to zoom'}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setIsOpen(false)} disabled={uploading}>
                 {language === 'pl' ? 'Anuluj' : 'Cancel'}
               </Button>
-              <Button
-                onClick={handleUpload}
-                disabled={uploading}
-                className="flex-1"
-              >
-                {uploading 
-                  ? (language === 'pl' ? 'Przesyłanie...' : 'Uploading...')
-                  : (language === 'pl' ? 'Zapisz' : 'Save')}
+              <Button onClick={handleUpload} disabled={uploading}>
+                {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {language === 'pl' ? 'Zapisz Obraz' : 'Save Image'}
               </Button>
             </div>
           </div>

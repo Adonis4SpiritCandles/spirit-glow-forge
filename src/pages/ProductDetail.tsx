@@ -298,9 +298,10 @@ const ProductDetail = () => {
                   <Badge className="bg-primary text-primary-foreground">NEW</Badge>
                 )}
               </div>
-              {product.fragrance && (
-                <p className="text-lg text-muted-foreground italic mb-4">
-                  {product.fragrance}
+              {/* Summary sotto il nome */}
+              {product.summary && (
+                <p className="text-lg text-foreground/80 mb-4">
+                  {product.summary}
                 </p>
               )}
               <div className="flex items-center gap-4">
@@ -330,13 +331,10 @@ const ProductDetail = () => {
 
             <Separator />
 
-            {/* Description */}
+            {/* Description - UNA SOLA VOLTA */}
             <div>
-              <p className="text-foreground/80 leading-relaxed mb-4">
+              <p className="text-foreground font-medium leading-relaxed">
                 {product.description}
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {product.longDescription}
               </p>
             </div>
 

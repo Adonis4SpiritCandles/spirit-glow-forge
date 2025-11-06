@@ -1080,6 +1080,7 @@ export type Database = {
           image_urls: string[] | null
           name_en: string
           name_pl: string
+          preferred_card_tag: string | null
           price_eur: number
           price_pln: number
           published: boolean
@@ -1102,6 +1103,7 @@ export type Database = {
           image_urls?: string[] | null
           name_en: string
           name_pl: string
+          preferred_card_tag?: string | null
           price_eur: number
           price_pln: number
           published?: boolean
@@ -1124,6 +1126,7 @@ export type Database = {
           image_urls?: string[] | null
           name_en?: string
           name_pl?: string
+          preferred_card_tag?: string | null
           price_eur?: number
           price_pln?: number
           published?: boolean
@@ -1173,8 +1176,48 @@ export type Database = {
           },
         ]
       }
+      profile_comment_ratings: {
+        Row: {
+          comment_id: string | null
+          created_at: string | null
+          id: string
+          rating: number | null
+          user_id: string | null
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_comment_ratings_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "profile_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_comment_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       profile_comments: {
         Row: {
+          average_rating: number | null
           comment: string
           commenter_id: string
           created_at: string | null
@@ -1182,9 +1225,11 @@ export type Database = {
           is_visible: boolean | null
           parent_comment_id: string | null
           profile_user_id: string
+          rating_count: number | null
           updated_at: string | null
         }
         Insert: {
+          average_rating?: number | null
           comment: string
           commenter_id: string
           created_at?: string | null
@@ -1192,9 +1237,11 @@ export type Database = {
           is_visible?: boolean | null
           parent_comment_id?: string | null
           profile_user_id: string
+          rating_count?: number | null
           updated_at?: string | null
         }
         Update: {
+          average_rating?: number | null
           comment?: string
           commenter_id?: string
           created_at?: string | null
@@ -1202,6 +1249,7 @@ export type Database = {
           is_visible?: boolean | null
           parent_comment_id?: string | null
           profile_user_id?: string
+          rating_count?: number | null
           updated_at?: string | null
         }
         Relationships: [
@@ -1235,6 +1283,7 @@ export type Database = {
           public_profile: boolean | null
           quiz_results: Json | null
           referral_short_code: string | null
+          referral_source_id: string | null
           role: string
           updated_at: string
           user_id: string
@@ -1260,6 +1309,7 @@ export type Database = {
           public_profile?: boolean | null
           quiz_results?: Json | null
           referral_short_code?: string | null
+          referral_source_id?: string | null
           role?: string
           updated_at?: string
           user_id: string
@@ -1285,12 +1335,21 @@ export type Database = {
           public_profile?: boolean | null
           quiz_results?: Json | null
           referral_short_code?: string | null
+          referral_source_id?: string | null
           role?: string
           updated_at?: string
           user_id?: string
           username?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referral_source_id_fkey"
+            columns: ["referral_source_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       referral_rewards: {
         Row: {
@@ -1677,6 +1736,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_referral: {
+        Args: { referee_user_id: string; referrer_user_id: string }
+        Returns: undefined
+      }
       find_user_by_username_or_email: {
         Args: { identifier: string }
         Returns: {

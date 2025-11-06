@@ -191,7 +191,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                       <DropdownMenuItem asChild>
                         <Link to="/dashboard?tab=social" className="flex items-center cursor-pointer">
                           <User className="h-4 w-4 mr-2" />
-                          {language === 'pl' ? 'Profil Publiczny' : 'Public Profile'}
+                          {t('publicProfile')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>

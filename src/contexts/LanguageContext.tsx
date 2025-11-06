@@ -911,6 +911,50 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
     if (key === 'autoRotate') return language === 'pl' ? 'Automatyczna rotacja' : 'Auto-rotate';
     if (key === 'endConversation') return language === 'pl' ? 'Zakończ rozmowę i zamknij czat' : 'End conversation and close chat';
+    
+    // Billing translations
+    if (key === 'billing') return language === 'pl' ? 'Płatności' : 'Billing';
+    if (key === 'billingSettings') return language === 'pl' ? 'Ustawienia Płatności' : 'Billing Settings';
+    if (key === 'billingSettingsDesc') return language === 'pl' ? 'Zarządzaj metodami płatności i fakturami' : 'Manage payment methods and invoices';
+    if (key === 'billingInfo') return language === 'pl' ? 'Informacje o Płatnościach' : 'Billing Information';
+    
+    // Dashboard tabs
+    if (key === 'rewards') return language === 'pl' ? 'Nagrody' : 'Rewards';
+    if (key === 'referrals') return language === 'pl' ? 'Polecenia' : 'Referrals';
+    if (key === 'referralsRewards') return language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards';
+    
+    // Public Profile
+    if (key === 'publicProfile') return language === 'pl' ? 'Profil Publiczny' : 'Public Profile';
+    if (key === 'profileNotAvailable') return language === 'pl' ? 'Profil niedostępny' : 'Profile Not Available';
+    if (key === 'profileNotAvailableDesc') return language === 'pl' ? 'Ten profil nie jest jeszcze dostępny.' : 'This profile is not available yet.';
+    if (key === 'createYourProfile') return language === 'pl' ? 'Utwórz swój profil' : 'Create Your Profile';
+    if (key === 'createProfileDesc') return language === 'pl' ? 'Skonfiguruj swój publiczny profil, aby dzielić się swoją historią z innymi.' : 'Set up your public profile to share your story with others.';
+    if (key === 'goToSettings') return language === 'pl' ? 'Przejdź do Ustawień' : 'Go to Settings';
+    if (key === 'backToHome') return language === 'pl' ? 'Wróć do Strony Głównej' : 'Back to Home';
+    if (key === 'backToShop') return language === 'pl' ? 'Wróć do Sklepu' : 'Back to Shop';
+    if (key === 'backToProduct') return language === 'pl' ? 'Wróć do Produktu' : 'Back to Product';
+    
+    // Comments social system
+    if (key === 'addComment') return language === 'pl' ? 'Dodaj Komentarz' : 'Add Comment';
+    if (key === 'writeComment') return language === 'pl' ? 'Napisz komentarz...' : 'Write a comment...';
+    if (key === 'reply') return language === 'pl' ? 'Odpowiedz' : 'Reply';
+    if (key === 'writeReply') return language === 'pl' ? 'Napisz odpowiedź...' : 'Write a reply...';
+    if (key === 'send') return language === 'pl' ? 'Wyślij' : 'Send';
+    if (key === 'cancel') return language === 'pl' ? 'Anuluj' : 'Cancel';
+    if (key === 'commentAdded') return language === 'pl' ? 'Komentarz został dodany' : 'Comment added';
+    if (key === 'commentFailed') return language === 'pl' ? 'Nie udało się dodać komentarza' : 'Failed to add comment';
+    if (key === 'rateComment') return language === 'pl' ? 'Oceń komentarz' : 'Rate comment';
+    if (key === 'likes') return language === 'pl' ? 'Polubień' : 'Likes';
+    if (key === 'replies') return language === 'pl' ? 'Odpowiedzi' : 'Replies';
+    
+    // Load More
+    if (key === 'loadMore') return language === 'pl' ? 'Załaduj Więcej' : 'Load More';
+    if (key === 'loadMoreProducts') return language === 'pl' ? 'Załaduj Więcej Produktów' : 'Load More Products';
+    
+    // Language Preferences
+    if (key === 'languagePreferences') return language === 'pl' ? 'Preferencje Językowe' : 'Language Preferences';
+    if (key === 'settingsDesc') return language === 'pl' ? 'Zarządzaj ustawieniami języka witryny i wiadomości e-mail' : 'Manage your site and email language settings';
+    if (key === 'emailLanguageUpdated') return language === 'pl' ? 'Język e-mail zaktualizowany' : 'Email language updated';
 
     // Default fallback
     return key;

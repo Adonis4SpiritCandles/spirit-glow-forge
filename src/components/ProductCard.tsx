@@ -28,6 +28,9 @@ interface ProductCardProps {
   }>;
   isNew?: boolean;
   isBestseller?: boolean;
+  category?: string;
+  collection?: string | null;
+  preferredTag?: 'category' | 'collection';
 }
 
 const ProductCard = ({ 
@@ -40,17 +43,25 @@ const ProductCard = ({
   description, 
   sizes, 
   isNew, 
-  isBestseller 
+  isBestseller,
+  category,
+  collection,
+  preferredTag = 'category'
 }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedSize, setSelectedSize] = useState(0);
   const { toast } = useToast();
   const { addProductToCart } = useCartContext();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   
   const isWishlisted = isInWishlist(id);
+  
+  // Determine which tag to display
+  const displayTag = preferredTag === 'collection' && collection 
+    ? collection 
+    : category || collection;
 
   // Safe guards for props shape
   const hasSizes = Array.isArray(sizes) && sizes.length > 0;
@@ -158,18 +169,31 @@ const ProductCard = ({
         {/* Content Section */}
         <div className="p-6 flex flex-col flex-1">
           <div className="space-y-3 flex flex-col flex-1">
-            <div className="min-h-[3.5rem]">
+            <div className="min-h-[5rem]">
               <h3 className="font-playfair text-lg font-semibold text-foreground line-clamp-1">
                 {name}
               </h3>
+              {displayTag && (
+                <Badge variant="outline" className="text-xs my-1">
+                  {displayTag}
+                </Badge>
+              )}
               <p className="text-sm text-muted-foreground italic line-clamp-1">
                 {fragrance}
               </p>
             </div>
 
+            {/* Summary sotto nome/tag/fragrance */}
             <p className="text-sm text-foreground/80 line-clamp-2 min-h-[2.5rem]">
               {summary || description}
             </p>
+            
+            {/* Description completa - solo se diversa da summary */}
+            {description && description !== (summary || description) && summary && (
+              <p className="text-xs text-muted-foreground line-clamp-3">
+                {description}
+              </p>
+            )}
 
             {/* Size Selection */}
             {hasSizes && (
@@ -192,10 +216,16 @@ const ProductCard = ({
             <div className="flex items-center justify-between gap-2 mt-auto pt-2">
               <div className="space-y-1 flex-shrink-0">
                 <div className="text-lg font-semibold text-primary whitespace-nowrap">
-                  {Number(displayPrice?.pln ?? 0).toFixed(2)} PLN
+                  {language === 'pl' 
+                    ? `${Number(displayPrice?.pln ?? 0).toFixed(2)} PLN`
+                    : `€${Number(displayPrice?.eur ?? 0).toFixed(2)}`
+                  }
                 </div>
                 <div className="text-xs text-muted-foreground whitespace-nowrap">
-                  ~{Number(displayPrice?.eur ?? 0).toFixed(2)} EUR
+                  {language === 'pl' 
+                    ? `~€${Number(displayPrice?.eur ?? 0).toFixed(2)}`
+                    : `~${Number(displayPrice?.pln ?? 0).toFixed(2)} PLN`
+                  }
                 </div>
               </div>
               

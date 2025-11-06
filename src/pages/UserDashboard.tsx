@@ -183,7 +183,6 @@ const UserDashboard = () => {
         .from('profiles')
         .update({
           bio: profile?.bio,
-          public_profile: profile?.public_profile,
         })
         .eq('user_id', user?.id);
 
@@ -701,25 +700,6 @@ const UserDashboard = () => {
                     </p>
                   </div>
 
-                  {/* Public Profile Toggle */}
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <label className="text-sm font-medium">
-                        {language === 'pl' ? 'Profil Publiczny' : 'Public Profile'}
-                      </label>
-                      <p className="text-xs text-muted-foreground">
-                        {language === 'pl' 
-                          ? 'Zezwól innym na przeglądanie twojego profilu'
-                          : 'Allow others to view your profile'}
-                      </p>
-                    </div>
-                    <Switch
-                      checked={profile?.public_profile || false}
-                      onCheckedChange={(checked) => 
-                        setProfile({ ...profile!, public_profile: checked })
-                      }
-                    />
-                  </div>
 
                   {/* Save Button */}
                   <Button onClick={handleProfileUpdate} className="w-full">
@@ -728,16 +708,14 @@ const UserDashboard = () => {
                   </Button>
 
                   {/* View Public Profile Button */}
-                  {profile?.public_profile && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => window.open(`/profile/${user.id}`, '_blank')}
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      {language === 'pl' ? 'Zobacz Mój Profil Publiczny' : 'View My Public Profile'}
-                    </Button>
-                  )}
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => window.open(`/profile/${user.id}`, '_blank')}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    {language === 'pl' ? 'Zobacz Mój Profil Publiczny' : 'View My Public Profile'}
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>

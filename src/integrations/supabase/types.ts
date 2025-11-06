@@ -381,6 +381,54 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_candles_settings: {
+        Row: {
+          created_at: string | null
+          fragrances: Json | null
+          hero_image_url: string | null
+          id: string
+          info_card_text_en: string | null
+          info_card_text_pl: string | null
+          info_card_title_en: string | null
+          info_card_title_pl: string | null
+          is_active: boolean | null
+          quality_items_en: Json | null
+          quality_items_pl: Json | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          fragrances?: Json | null
+          hero_image_url?: string | null
+          id?: string
+          info_card_text_en?: string | null
+          info_card_text_pl?: string | null
+          info_card_title_en?: string | null
+          info_card_title_pl?: string | null
+          is_active?: boolean | null
+          quality_items_en?: Json | null
+          quality_items_pl?: Json | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          fragrances?: Json | null
+          hero_image_url?: string | null
+          id?: string
+          info_card_text_en?: string | null
+          info_card_text_pl?: string | null
+          info_card_title_en?: string | null
+          info_card_title_pl?: string | null
+          is_active?: boolean | null
+          quality_items_en?: Json | null
+          quality_items_pl?: Json | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       data_requests: {
         Row: {
           admin_notes: string | null

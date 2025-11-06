@@ -121,33 +121,42 @@ const CustomCandles = () => {
                     ? 'Nasza usługa personalizacji pozwala stworzyć unikalną świecę dopasowaną do Twoich preferencji:'
                     : 'Our customization service allows you to create a unique candle tailored to your preferences:'}
                 </p>
-                <ul className="space-y-2 list-disc list-inside">
-                  <li>
-                    <strong className="text-foreground">
-                      {language === 'pl' ? 'Wybierz zapach:' : 'Choose Fragrance:'}
-                    </strong>
-                    {' '}
-                    {language === 'pl'
-                      ? 'Z naszej kolekcji lub stwórz własny unikalny aromat'
-                      : 'From our collection or create your own unique scent'}
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5 flex-shrink-0">✓</span>
+                    <div className="flex-1">
+                      <strong className="text-foreground">
+                        {language === 'pl' ? 'Wybierz zapach:' : 'Choose Fragrance:'}
+                      </strong>
+                      {' '}
+                      {language === 'pl'
+                        ? 'Z naszej kolekcji lub stwórz własny unikalny aromat'
+                        : 'From our collection or create your own unique scent'}
+                    </div>
                   </li>
-                  <li>
-                    <strong className="text-foreground">
-                      {language === 'pl' ? 'Personalizowana etykieta:' : 'Custom Label:'}
-                    </strong>
-                    {' '}
-                    {language === 'pl'
-                      ? 'Dodaj imię, dedykację lub specjalną wiadomość'
-                      : 'Add a name, dedication, or special message'}
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5 flex-shrink-0">✓</span>
+                    <div className="flex-1">
+                      <strong className="text-foreground">
+                        {language === 'pl' ? 'Personalizowana etykieta:' : 'Custom Label:'}
+                      </strong>
+                      {' '}
+                      {language === 'pl'
+                        ? 'Dodaj imię, dedykację lub specjalną wiadomość'
+                        : 'Add a name, dedication, or special message'}
+                    </div>
                   </li>
-                  <li>
-                    <strong className="text-foreground">
-                      {language === 'pl' ? 'Prezent idealny:' : 'Perfect Gift:'}
-                    </strong>
-                    {' '}
-                    {language === 'pl'
-                      ? 'Idealna na urodziny, rocznicę lub każdą specjalną okazję'
-                      : 'Perfect for birthdays, anniversaries, or any special occasion'}
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5 flex-shrink-0">✓</span>
+                    <div className="flex-1">
+                      <strong className="text-foreground">
+                        {language === 'pl' ? 'Prezent idealny:' : 'Perfect Gift:'}
+                      </strong>
+                      {' '}
+                      {language === 'pl'
+                        ? 'Idealna na urodziny, rocznicę lub każdą specjalną okazję'
+                        : 'Perfect for birthdays, anniversaries, or any special occasion'}
+                    </div>
                   </li>
                 </ul>
               </CardContent>
@@ -228,7 +237,10 @@ const CustomCandles = () => {
                   {/* Label Text */}
                   <div className="space-y-2">
                     <Label htmlFor="labelText">
-                      {language === 'pl' ? 'Tekst na etykiecie' : 'Label Text'} *
+                      {language === 'pl' ? 'Tekst na etykiecie' : 'Label Text'}
+                      <span className="text-xs text-muted-foreground ml-2">
+                        ({language === 'pl' ? 'Opcjonalne' : 'Optional'})
+                      </span>
                     </Label>
                     <Input
                       id="labelText"
@@ -236,7 +248,6 @@ const CustomCandles = () => {
                       onChange={(e) => setFormData({ ...formData, labelText: e.target.value })}
                       placeholder={language === 'pl' ? 'np. "Z miłością dla Mamy"' : 'e.g., "With Love for Mom"'}
                       maxLength={50}
-                      required
                     />
                     <p className="text-xs text-muted-foreground">
                       {formData.labelText.length}/50 {language === 'pl' ? 'znaków' : 'characters'}

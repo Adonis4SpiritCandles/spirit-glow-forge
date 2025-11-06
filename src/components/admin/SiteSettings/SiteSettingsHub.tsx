@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search, Users, Award, Gift } from "lucide-react";
+import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search, Users, Award, Gift, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FooterSettings from "./FooterSettings/FooterSettingsMain";
 import HomepageSettings from "./HomepageSettings/HomepageSettingsMain";
@@ -9,6 +9,7 @@ import ChatSettings from "./ChatSettings/ChatSettingsMain";
 import SEOSettings from "./SEOSettings/SEOSettingsMain";
 import AdminReferralRewards from "@/components/admin/AdminReferralRewards";
 import AdminEmailManager from "@/components/admin/AdminEmailManager";
+import CustomCandlesSettingsMain from "./CustomCandlesSettings/CustomCandlesSettingsMain";
 
 const SiteSettingsHub = () => {
   const { t, language } = useLanguage();
@@ -91,6 +92,17 @@ const SiteSettingsHub = () => {
       color: "from-orange-500/20 to-red-500/20",
       comingSoon: false,
     },
+    {
+      id: "customize",
+      icon: Sparkles,
+      title: language === 'pl' ? 'Strona Personalizacji' : 'Custom Candles Page',
+      description: language === 'pl'
+        ? 'Zarządzaj treścią strony personalizacji, zapachami i obrazami'
+        : 'Manage customization page content, fragrances, and images',
+      itemsCount: 8,
+      color: "from-pink-500/20 to-rose-500/20",
+      comingSoon: false,
+    },
   ];
 
   if (selectedSection === "footer") {
@@ -137,6 +149,14 @@ const SiteSettingsHub = () => {
     return (
       <div>
         <AdminReferralRewards />
+      </div>
+    );
+  }
+
+  if (selectedSection === "customize") {
+    return (
+      <div>
+        <CustomCandlesSettingsMain onBack={() => setSelectedSection(null)} />
       </div>
     );
   }

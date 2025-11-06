@@ -44,11 +44,15 @@ export const useReviews = (productId?: string) => {
     } else {
       const reviewsWithProfiles = await Promise.all(
         (data || []).map(async (review) => {
-          const { data: profileData } = await supabase
+          const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('first_name, last_name, username, profile_image_url, user_id, public_profile')
             .eq('user_id', review.user_id)
-            .single();
+            .maybeSingle();
+          
+          if (profileError) {
+            console.warn(`Profile not found for user ${review.user_id}:`, profileError);
+          }
           
           return {
             ...review,

@@ -3,8 +3,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Shield, Leaf, Clock, View } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Shield, Leaf, Clock, View, Sparkles, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -520,6 +520,31 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Customization CTA */}
+          <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                {language === 'pl' 
+                  ? 'Chcesz spersonalizować swoją świecę?' 
+                  : 'Want to Personalize Your Candle?'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                {language === 'pl'
+                  ? 'Stwórz unikalną świecę z własnym zapachem i dedykowaną etykietą. Idealna na prezent lub dla siebie!'
+                  : 'Create a unique candle with your own fragrance and personalized label. Perfect as a gift or for yourself!'}
+              </p>
+              <Link to="/custom-candles">
+                <Button className="w-full bg-primary hover:bg-primary/90">
+                  <Heart className="h-4 w-4 mr-2" />
+                  {language === 'pl' ? 'Zaprojektuj swoją świecę' : 'Design Your Candle'}
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
 
           {/* Inspiration Notice */}
           <Card className="bg-muted/30">

@@ -779,70 +779,121 @@ const UserDashboard = () => {
 
                         return (
                           <Card key={order.id} className="hover:shadow-md transition-shadow">
-                            <CardContent className="pt-6">
-                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div className="space-y-2 flex-1">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="font-semibold">
-                                      {t('order')} #{order.order_number || order.id.substring(0, 8)}
-                                    </h3>
-                                    {badges.map((badge, idx) => (
-                                      <Badge key={idx} className={badge.variant}>
-                                        {badge.icon && <span className="mr-1">{badge.icon}</span>}
-                                        {badge.label}
-                                      </Badge>
-                                    ))}
-                                    {(order.carrier_name || order.carrier) && (
-                                      <CarrierBadge carrierName={order.carrier_name || order.carrier || ''} />
-                                    )}
-                                  </div>
+                            <CardContent className="p-6">
+                              {/* Header con Order Number, Data e Badge Status */}
+                              <div className="flex justify-between items-start mb-4">
+                                <div>
+                                  <h3 className="font-semibold text-lg">
+                                    #SPIRIT-{String(order.order_number || '').padStart(5, '0') || order.id.substring(0, 8)}
+                                  </h3>
                                   <p className="text-sm text-muted-foreground">
                                     {new Date(order.created_at).toLocaleDateString()}
                                   </p>
-                                  <div className="text-sm space-y-1">
-                                    <p>
-                                      <span className="text-muted-foreground">{t('products')}: </span>
-                                      <span className="font-medium">{productsPLN} PLN / {productsEUR} EUR</span>
-                                    </p>
-                                    {order.coupon_code && (
-                                      <p className="text-green-600 dark:text-green-400">
-                                        <span className="text-muted-foreground">{t('discount')}: </span>
-                                        <span className="font-medium">
-                                          -{discountPLN.toFixed(2)} PLN / -{discountEUR.toFixed(2)} EUR ({order.coupon_code})
-                                        </span>
-                                      </p>
-                                    )}
-                                    <p>
-                                      <span className="text-muted-foreground">{t('shipping')}: </span>
-                                      <span className="font-medium">{shippingCostPLN} PLN / {shippingCostEUR} EUR</span>
-                                    </p>
-                                    <p className="text-lg font-bold mt-2">
-                                      <span className="text-muted-foreground">{t('total')}: </span>
-                                      {totalPLN} PLN / {totalEUR} EUR
-                                    </p>
+                                </div>
+                                <div className="flex gap-2 flex-wrap justify-end">
+                                  {badges.map((badge, idx) => (
+                                    <Badge key={idx} className={badge.variant}>
+                                      {badge.icon && <span className="mr-1">{badge.icon}</span>}
+                                      {badge.label}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Sezioni tabellari con bordi */}
+                              <div className="space-y-0 border rounded-lg overflow-hidden">
+                                {/* Products */}
+                                <div className="flex justify-between items-center py-3 px-4 border-b bg-muted/20">
+                                  <span className="text-sm text-muted-foreground">{t('products')}:</span>
+                                  <span className="font-semibold text-sm">{productsPLN} PLN / {productsEUR} EUR</span>
+                                </div>
+
+                                {/* Discount (se presente) */}
+                                {order.coupon_code && (
+                                  <div className="flex justify-between items-center py-3 px-4 border-b bg-muted/20">
+                                    <span className="text-sm text-muted-foreground">{t('discount')}:</span>
+                                    <span className="font-semibold text-sm text-green-600 dark:text-green-400">
+                                      -{discountPLN.toFixed(2)} PLN / -{discountEUR.toFixed(2)} EUR ({order.coupon_code})
+                                    </span>
                                   </div>
-                                  {order.tracking_number && (
-                                    <div className="mt-2 p-3 bg-muted/50 rounded-lg">
-                                      <p className="text-xs font-medium text-muted-foreground mb-1">
-                                        {t('trackingNumber')}
-                                      </p>
-                                      <p className="text-sm font-mono">{order.tracking_number}</p>
-                                      {order.tracking_url && (
-                                        <a
-                                          href={order.tracking_url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1"
-                                        >
-                                          {t('trackPackage')} →
-                                        </a>
-                                      )}
-                                    </div>
+                                )}
+
+                                {/* Shipping */}
+                                <div className="flex justify-between items-center py-3 px-4 border-b bg-muted/20">
+                                  <span className="text-sm text-muted-foreground">{t('shipping')}:</span>
+                                  <span className="font-semibold text-sm">{shippingCostPLN} PLN / {shippingCostEUR} EUR</span>
+                                </div>
+
+                                {/* Carrier */}
+                                <div className="flex justify-between items-center py-3 px-4 border-b bg-muted/20">
+                                  <span className="text-sm text-muted-foreground">{t('carrier')}:</span>
+                                  {(order.carrier_name || order.carrier) ? (
+                                    <CarrierBadge carrierName={order.carrier_name || order.carrier || ''} />
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground">N/A</span>
                                   )}
                                 </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
+
+                                {/* Total */}
+                                <div className="flex justify-between items-center py-4 px-4 bg-muted/30">
+                                  <span className="font-bold text-base">{t('total')}:</span>
+                                  <span className="font-bold text-lg text-primary">{totalPLN} PLN / {totalEUR} EUR</span>
+                                </div>
+                              </div>
+
+                              {/* Shipping Information Box */}
+                              {order.tracking_number && (
+                                <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-border/50">
+                                  <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+                                    <Package className="h-4 w-4 text-primary" />
+                                    <span>{t('shippingInformation')}</span>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-3 text-sm mb-2">
+                                    <div>
+                                      <span className="text-muted-foreground">{t('carrier')}:</span>
+                                      <div className="mt-1">
+                                        {(order.carrier_name || order.carrier) ? (
+                                          <CarrierBadge carrierName={order.carrier_name || order.carrier || ''} />
+                                        ) : (
+                                          <Badge variant="outline">N/A</Badge>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <span className="text-muted-foreground">{t('status')}:</span>
+                                      <div className="mt-1">
+                                        {badges.find(b => b.label.includes('Shipped') || b.label.includes('Delivered')) ? (
+                                          <Badge variant="default" className="bg-green-600">
+                                            <Truck className="h-3 w-3 mr-1" />
+                                            {order.shipping_status || 'Shipped'}
+                                          </Badge>
+                                        ) : (
+                                          <Badge variant="outline">{order.shipping_status || 'Pending'}</Badge>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-sm">
+                                    <span className="text-muted-foreground">{t('trackingNumber')}:</span>
+                                    <p className="font-mono text-xs mt-1 break-all">{order.tracking_number}</p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Action Buttons */}
+                              <div className="mt-4 space-y-2">
+                                {order.tracking_url && (
+                                  <Button 
+                                    className="w-full" 
+                                    onClick={() => window.open(order.tracking_url, '_blank')}
+                                  >
+                                    <Truck className="h-4 w-4 mr-2" />
+                                    {t('trackPackage')}
+                                  </Button>
+                                )}
+                                <Button 
+                                  variant="outline" 
+                                  className="w-full"
                                   onClick={() => {
                                     setSelectedOrder(order);
                                     setIsOrderModalOpen(true);

@@ -48,11 +48,18 @@ export const useReviews = (productId?: string) => {
             .from('profiles')
             .select('first_name, last_name, username, profile_image_url, user_id, public_profile')
             .eq('user_id', review.user_id)
-            .maybeSingle();
+            .single();
           
           return {
             ...review,
-            profiles: profileData || undefined
+            profiles: profileData || {
+              first_name: 'Anonymous',
+              last_name: 'User',
+              username: null,
+              profile_image_url: null,
+              user_id: review.user_id,
+              public_profile: false
+            }
           };
         })
       );

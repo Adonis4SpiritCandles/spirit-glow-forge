@@ -988,6 +988,40 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'settingsDesc') return language === 'pl' ? 'Zarządzaj ustawieniami języka witryny i wiadomości e-mail' : 'Manage your site and email language settings';
     if (key === 'emailLanguageUpdated') return language === 'pl' ? 'Język e-mail zaktualizowany' : 'Email language updated';
 
+    // Custom Candles
+    if (key === 'customCandles') return language === 'pl' ? 'Personalizowane Świece' : 'Custom Candles';
+    if (key === 'customize') return language === 'pl' ? 'Personalizacja' : 'Customize';
+    if (key === 'designYourCandle') return language === 'pl' ? 'Zaprojektuj swoją świecę' : 'Design Your Candle';
+    if (key === 'sendRequest') return language === 'pl' ? 'Wyślij zapytanie' : 'Send Request';
+    if (key === 'requestSent') return language === 'pl' ? 'Zapytanie wysłane!' : 'Request Sent!';
+    if (key === 'whatIsCustomization') return language === 'pl' ? 'Czym jest personalizacja?' : 'What is Customization?';
+    if (key === 'qualityGuarantee') return language === 'pl' ? 'Gwarancja Jakości' : 'Quality Guarantee';
+    if (key === 'chooseFrangrance') return language === 'pl' ? 'Wybierz zapach' : 'Choose Fragrance';
+    if (key === 'labelText') return language === 'pl' ? 'Tekst na etykiecie' : 'Label Text';
+    if (key === 'quantity') return language === 'pl' ? 'Ilość' : 'Quantity';
+    if (key === 'additionalNotes') return language === 'pl' ? 'Dodatkowe uwagi' : 'Additional Notes';
+    if (key === 'wantToPersonalize') return language === 'pl' ? 'Chcesz spersonalizować swoją świecę?' : 'Want to Personalize Your Candle?';
+
+    // Orders & Shipping
+    if (key === 'shippingInformation') return language === 'pl' ? 'Informacje o wysyłce' : 'Shipping Information';
+    if (key === 'carrier') return language === 'pl' ? 'Przewoźnik' : 'Carrier';
+    if (key === 'status') return language === 'pl' ? 'Status' : 'Status';
+    if (key === 'trackingNumber') return language === 'pl' ? 'Numer przesyłki' : 'Tracking Number';
+    if (key === 'trackPackage') return language === 'pl' ? 'Śledź przesyłkę' : 'Track Package';
+
+    // Upload Images
+    if (key === 'uploadProfilePicture') return language === 'pl' ? 'Prześlij Zdjęcie Profilowe' : 'Upload Profile Picture';
+    if (key === 'uploadCoverImage') return language === 'pl' ? 'Prześlij Obraz Okładki' : 'Upload Cover Image';
+    if (key === 'adjustYourImage') return language === 'pl' ? 'Dostosuj Swój Obraz' : 'Adjust Your Image';
+    if (key === 'saveImage') return language === 'pl' ? 'Zapisz Obraz' : 'Save Image';
+
+    // Comments & Pagination
+    if (key === 'replyAdded') return language === 'pl' ? 'Odpowiedź dodana' : 'Reply added';
+    if (key === 'commentDeleted') return language === 'pl' ? 'Komentarz usunięty' : 'Comment deleted';
+    if (key === 'page') return language === 'pl' ? 'Strona' : 'Page';
+    if (key === 'previous') return language === 'pl' ? 'Poprzednia' : 'Previous';
+    if (key === 'next') return language === 'pl' ? 'Następna' : 'Next';
+
     // Default fallback
     return key;
   };

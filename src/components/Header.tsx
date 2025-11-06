@@ -54,6 +54,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
     { name: t('home'), href: '/' },
     { name: t('shop'), href: '/shop' },
     { name: t('collections'), href: '/collections' },
+    { name: t('customize'), href: '/custom-candles' },
     { name: t('about'), href: '/about' },
     { name: t('contact'), href: '/contact' },
   ];

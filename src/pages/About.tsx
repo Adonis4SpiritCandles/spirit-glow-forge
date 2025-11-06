@@ -2,6 +2,7 @@ import { Flame, Leaf, Heart, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Link } from "react-router-dom";
 import candleWax from "@/assets/candle-wax.png";
 import spiritLogo from "@/assets/spirit-logo.png";
 import SEOManager from "@/components/SEO/SEOManager";
@@ -42,9 +43,11 @@ const About = () => {
       description: t('feature5Desc')
     },
     {
-      icon: <Heart className="w-6 h-6 text-primary" />,
+      icon: <Award className="w-6 h-6 text-primary" />,
       title: t('feature6Title'),
-      description: t('feature6Desc')
+      description: language === 'pl' 
+        ? 'Stwórz swoją własną spersonalizowaną świecę, z personalizowaną etykietą lub zapachem według własnego wyboru dla siebie lub jako unikalny prezent!' 
+        : 'Create your own personalized candle, with a personalized label, or fragrance of your choice for yourself or as a unique gift!'
     }
   ];
 
@@ -135,6 +138,13 @@ const About = () => {
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
+                  {index === 5 && (
+                    <Link to="/custom-candles">
+                      <Button className="mt-4 w-full">
+                        {language === 'pl' ? 'Dowiedz się więcej' : 'Learn More'}
+                      </Button>
+                    </Link>
+                  )}
                 </CardContent>
               </Card>
             ))}

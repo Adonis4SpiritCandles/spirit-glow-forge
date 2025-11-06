@@ -42,14 +42,13 @@ export const useReviews = (productId?: string) => {
       console.error('Error loading reviews:', error);
       setReviews([]);
     } else {
-      // Load profile data separately for each review
       const reviewsWithProfiles = await Promise.all(
         (data || []).map(async (review) => {
           const { data: profileData } = await supabase
             .from('profiles')
             .select('first_name, last_name, username, profile_image_url, user_id, public_profile')
             .eq('user_id', review.user_id)
-            .single();
+            .maybeSingle();
           
           return {
             ...review,
@@ -59,7 +58,7 @@ export const useReviews = (productId?: string) => {
       );
       
       setReviews(reviewsWithProfiles);
-      if (reviewsWithProfiles && reviewsWithProfiles.length > 0) {
+      if (reviewsWithProfiles.length > 0) {
         const avg = reviewsWithProfiles.reduce((sum, review) => sum + review.rating, 0) / reviewsWithProfiles.length;
         setAverageRating(Math.round(avg * 10) / 10);
       } else {

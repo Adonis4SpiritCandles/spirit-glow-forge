@@ -154,22 +154,14 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        {review.profiles?.user_id && review.profiles?.public_profile ? (
-                          <Link to={`/profile/${review.profiles.user_id}`} className="hover:text-primary transition-colors">
-                            <h4 className="font-semibold">
-                              {review.profiles?.first_name && review.profiles?.last_name
-                                ? `${review.profiles.first_name} ${review.profiles.last_name}`
-                                : review.profiles?.username || t('anonymous')}
-                            </h4>
-                          </Link>
-                        ) : (
-                          <h4 className="font-semibold">
-                            {review.profiles?.first_name && review.profiles?.last_name
-                              ? `${review.profiles.first_name} ${review.profiles.last_name}`
-                              : review.profiles?.username || t('anonymous')}
-                          </h4>
-                        )}
+                        {/* Nome completo - SEMPRE visibile */}
+                        <h4 className="font-semibold">
+                          {review.profiles?.first_name && review.profiles?.last_name
+                            ? `${review.profiles.first_name} ${review.profiles.last_name}`
+                            : review.profiles?.username || 'User'}
+                        </h4>
                         
+                        {/* Username - sotto il nome, con link se profilo pubblico */}
                         {review.profiles?.username && (
                           review.profiles?.user_id && review.profiles?.public_profile ? (
                             <Link to={`/profile/${review.profiles.user_id}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -189,7 +181,8 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                           </span>
                         </div>
                       </div>
-                      {user && review.user_id === user.id && (
+                      {/* Edit/Delete buttons - OWNER O ADMIN */}
+                      {user && (review.user_id === user.id) && (
                         <div className="flex gap-2">
                           <Button
                             variant="ghost"

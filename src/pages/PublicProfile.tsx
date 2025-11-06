@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 
@@ -77,12 +77,14 @@ export default function PublicProfile() {
           commenter:profiles!profile_comments_commenter_id_fkey(
             first_name,
             last_name,
-            profile_image_url
-          ),
-          profile_comment_likes(count)
+            username,
+            profile_image_url,
+            user_id,
+            public_profile
+          )
         `)
         .eq('profile_user_id', userId)
-        .eq('is_visible', true)
+        .is('parent_comment_id', null)
         .order('created_at', { ascending: false });
 
       const commentsWithLikes = await Promise.all(
@@ -99,10 +101,21 @@ export default function PublicProfile() {
             .eq('user_id', user.id)
             .maybeSingle() : { data: null };
 
+          // Load replies
+          const { data: replies } = await supabase
+            .from('profile_comments')
+            .select(`
+              *,
+              commenter:profiles!profile_comments_commenter_id_fkey(*)
+            `)
+            .eq('parent_comment_id', comment.id)
+            .order('created_at', { ascending: true });
+
           return {
             ...comment,
             likesCount: count || 0,
             isLiked: !!isLiked.data,
+            replies: replies || []
           };
         })
       );
@@ -281,6 +294,9 @@ export default function PublicProfile() {
   }
 
   if (!profile) {
+    // Check if the user is the owner
+    const isOwner = user?.id === userId;
+    
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background">
         <Card className="max-w-md w-full">
@@ -288,28 +304,52 @@ export default function PublicProfile() {
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
               <Award className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">
-              {language === 'pl' ? 'Profil Nie Znaleziony' : 'Profile Not Found'}
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              {language === 'pl' 
-                ? 'Ten profil nie istnieje lub nie jest publiczny.' 
-                : 'This profile does not exist or is not public.'}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link to="/">
-                <Button variant="outline">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  {language === 'pl' ? 'Strona Główna' : 'Home'}
-                </Button>
-              </Link>
-              <Link to="/shop">
-                <Button>
-                  <ShoppingBag className="h-4 w-4 mr-2" />
-                  {language === 'pl' ? 'Sklep' : 'Shop'}
-                </Button>
-              </Link>
-            </div>
+            
+            {isOwner ? (
+              // Owner without public profile
+              <>
+                <h2 className="text-2xl font-bold mb-2">
+                  {language === 'pl' ? 'Utwórz Swój Profil' : 'Create Your Profile'}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {language === 'pl' 
+                    ? 'Jeszcze nie skonfigurowałeś swojego publicznego profilu.' 
+                    : "You haven't set up your public profile yet."}
+                </p>
+                <Link to="/dashboard?tab=social">
+                  <Button>
+                    <Settings className="h-4 w-4 mr-2" />
+                    {language === 'pl' ? 'Przejdź do Ustawień' : 'Go to Settings'}
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              // Visitor - profile not available
+              <>
+                <h2 className="text-2xl font-bold mb-2">
+                  {language === 'pl' ? 'Profil Niedostępny' : 'Profile Not Available'}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {language === 'pl' 
+                    ? 'Ten profil nie istnieje lub nie jest publiczny.' 
+                    : 'This profile does not exist or is not public.'}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Link to="/">
+                    <Button variant="outline">
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      {language === 'pl' ? 'Strona Główna' : 'Home'}
+                    </Button>
+                  </Link>
+                  <Link to="/shop">
+                    <Button>
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      {language === 'pl' ? 'Sklep' : 'Shop'}
+                    </Button>
+                  </Link>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -323,26 +363,30 @@ export default function PublicProfile() {
         className="h-80 relative flex items-center justify-center"
         style={
           profile.cover_image_url ? {
-            backgroundImage: `linear-gradient(to right, rgba(217, 119, 6, 0.35), rgba(245, 158, 11, 0.30), rgba(217, 119, 6, 0.35)), url(${profile.cover_image_url})`,
+            // SE c'è cover image custom: SOLO immagine
+            backgroundImage: `url(${profile.cover_image_url})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           } : {
+            // ALTRIMENTI: sfondo gradient
             background: 'linear-gradient(to right, rgba(217, 119, 6, 0.35), rgba(245, 158, 11, 0.30), rgba(217, 119, 6, 0.35))'
           }
         }
       >
-        {/* Logo centrale sempre visibile - più grande */}
-        <div className="absolute inset-0 flex items-center justify-center pt-8 pointer-events-none">
-          <img 
-            src="/assets/spirit-logo-transparent.png" 
-            alt="Spirit Candles" 
-            className="h-48 w-auto opacity-95"
-            style={{ 
-              filter: 'drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))',
-              maxHeight: '50%'
-            }}
-          />
-        </div>
+        {/* Logo centrale - SOLO se NON c'è cover image custom */}
+        {!profile.cover_image_url && (
+          <div className="absolute inset-0 flex items-center justify-center pt-8 pointer-events-none">
+            <img 
+              src="/assets/spirit-logo-transparent.png" 
+              alt="Spirit Candles" 
+              className="h-48 w-auto opacity-95"
+              style={{ 
+                filter: 'drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))',
+                maxHeight: '50%'
+              }}
+            />
+          </div>
+        )}
         
         {/* Back button */}
         <Link to="/" className="absolute top-4 left-4 z-10">

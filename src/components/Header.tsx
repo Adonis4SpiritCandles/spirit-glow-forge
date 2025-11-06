@@ -189,7 +189,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/dashboard?tab=social" className="flex items-center cursor-pointer">
+                        <Link to={`/profile/${user?.id}`} className="flex items-center cursor-pointer">
                           <User className="h-4 w-4 mr-2" />
                           {t('publicProfile')}
                         </Link>
@@ -292,9 +292,9 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/dashboard?tab=profile" className="flex items-center cursor-pointer">
+                        <Link to={`/profile/${user?.id}`} className="flex items-center cursor-pointer">
                           <User className="h-4 w-4 mr-2" />
-                          {t('profile')}
+                          {t('publicProfile')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>

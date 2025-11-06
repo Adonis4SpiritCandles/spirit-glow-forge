@@ -213,6 +213,12 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
     if (key === 'processing') return language === 'pl' ? 'Przetwarzanie...' : 'Processing...';
     if (key === 'pleaseTryAgain') return language === 'pl' ? 'Spróbuj ponownie' : 'Please try again';
+    
+    // Traduzioni aggiunte
+    if (key === 'lastModified') return language === 'pl' ? 'Ostatnia Modyfikacja' : 'Last Modified';
+    if (key === 'websiteLanguage') return language === 'pl' ? 'Język Witryny' : 'Website Language';
+    if (key === 'emailLanguage') return language === 'pl' ? 'Język Emaili' : 'Email Language';
+    if (key === 'publicProfile') return language === 'pl' ? 'Profil Publiczny' : 'Public Profile';
 
     // Admin Dashboard - Additional translations
     if (key === 'loading') return language === 'pl' ? 'Ładowanie...' : 'Loading...';

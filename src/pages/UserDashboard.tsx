@@ -875,34 +875,6 @@ const UserDashboard = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <TabsContent value="settings" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('settings')}</CardTitle>
-                  <CardDescription>
-                    {t('settingsDesc')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="language">{t('language')}</Label>
-                    <Select value={language} onValueChange={updateLanguagePreference}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder={t('selectLanguage')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {languageOptions.map((lang) => (
-                          <SelectItem key={lang.value} value={lang.value}>
-                            {lang.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
           </Tabs>
 
           {selectedOrder && (

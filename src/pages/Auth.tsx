@@ -388,6 +388,18 @@ const Auth = () => {
                   </Select>
                 </div>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="email-language">{language === 'pl' ? 'Język Emaili' : 'Email Language'}</Label>
+                  <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
+                    <SelectTrigger id="email-language" className="bg-background/50 border-border/40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="pl">Polski</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </>
             )}
 

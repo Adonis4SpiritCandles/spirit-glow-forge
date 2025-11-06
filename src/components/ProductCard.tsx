@@ -168,36 +168,36 @@ const ProductCard = ({
 
         {/* Content Section */}
         <div className="p-6 flex flex-col flex-1">
-          <div className="space-y-3 flex flex-col flex-1">
-            <div className="min-h-[5rem]">
-              <h3 className="font-playfair text-lg font-semibold text-foreground line-clamp-1">
-                {name}
-              </h3>
-              {displayTag && (
-                <Badge variant="outline" className="text-xs my-1">
-                  {displayTag}
-                </Badge>
-              )}
-              <p className="text-sm text-muted-foreground italic line-clamp-1">
-                {fragrance}
-              </p>
-            </div>
+          <div className="space-y-2 flex flex-col flex-1">
+            {/* Titolo */}
+            <h3 className="font-playfair text-lg font-semibold text-foreground line-clamp-1">
+              {name}
+            </h3>
 
-            {/* Summary sotto nome/tag/fragrance */}
-            <p className="text-sm text-foreground/80 line-clamp-2 min-h-[2.5rem]">
-              {summary || description}
-            </p>
-            
-            {/* Description completa - solo se diversa da summary */}
-            {description && description !== (summary || description) && summary && (
-              <p className="text-xs text-muted-foreground line-clamp-3">
-                {description}
+            {/* Tag Collection o Category */}
+            {displayTag && (
+              <Badge variant="outline" className="self-start text-xs">
+                {displayTag}
+              </Badge>
+            )}
+
+            {/* Summary - CORSIVO, margini ridotti */}
+            {summary && (
+              <p className="text-sm text-muted-foreground italic leading-snug line-clamp-2 min-h-[2.5rem] -mt-1">
+                {summary}
               </p>
             )}
 
+            {/* Description - GRASSETTO BIANCO, spazio fisso 4 righe */}
+            <div className="flex-1 min-h-[5.5rem]">
+              <p className="text-base font-bold text-foreground leading-relaxed line-clamp-4">
+                {description}
+              </p>
+            </div>
+
             {/* Size Selection */}
             {hasSizes && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {sizes.map((size, index) => (
                   <Button
                     key={index}

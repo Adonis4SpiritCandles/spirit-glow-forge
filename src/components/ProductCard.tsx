@@ -29,7 +29,7 @@ interface ProductCardProps {
   isNew?: boolean;
   isBestseller?: boolean;
   category?: string;
-  collection?: string | null;
+  collections?: Array<{ id: string; name_en: string; name_pl: string; slug: string }>;
   preferredTag?: 'category' | 'collection';
 }
 
@@ -45,7 +45,7 @@ const ProductCard = ({
   isNew, 
   isBestseller,
   category,
-  collection,
+  collections = [],
   preferredTag = 'category'
 }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -57,11 +57,6 @@ const ProductCard = ({
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   
   const isWishlisted = isInWishlist(id);
-  
-  // Determine which tag to display
-  const displayTag = preferredTag === 'collection' && collection 
-    ? collection 
-    : category || collection;
 
   // Safe guards for props shape
   const hasSizes = Array.isArray(sizes) && sizes.length > 0;
@@ -174,12 +169,29 @@ const ProductCard = ({
               {name}
             </h3>
 
-            {/* Tag Collection o Category */}
-            {displayTag && (
-              <Badge variant="outline" className="self-start text-xs">
-                {displayTag}
-              </Badge>
-            )}
+            {/* Multiple Collection Tags o Category */}
+            <div className="flex flex-wrap gap-1.5 min-h-[24px]">
+              {preferredTag === 'collection' && collections.length > 0 ? (
+                <>
+                  {collections.slice(0, 2).map((coll) => (
+                    <Badge key={coll.id} variant="outline" className="text-xs py-0.5 px-2">
+                      {language === 'en' ? coll.name_en : coll.name_pl}
+                    </Badge>
+                  ))}
+                  {collections.length > 2 && (
+                    <Badge variant="outline" className="text-xs py-0.5 px-2">
+                      +{collections.length - 2}
+                    </Badge>
+                  )}
+                </>
+              ) : (
+                category && (
+                  <Badge variant="outline" className="text-xs py-0.5 px-2">
+                    {category}
+                  </Badge>
+                )
+              )}
+            </div>
 
             {/* Summary - CORSIVO, margini ridotti */}
             {summary && (

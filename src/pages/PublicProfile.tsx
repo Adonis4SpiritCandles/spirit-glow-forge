@@ -9,9 +9,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
+import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
 
 export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
@@ -27,11 +28,56 @@ export default function PublicProfile() {
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [userRole, setUserRole] = useState<string>('user');
+  const [commentsPage, setCommentsPage] = useState(1);
+  const COMMENTS_PER_PAGE = 10;
 
   useEffect(() => {
     if (userId) {
       loadProfile();
     }
+  }, [userId, commentsPage]);
+
+  // Load user role
+  useEffect(() => {
+    if (user) {
+      const loadUserRole = async () => {
+        const { data } = await supabase
+          .rpc('has_role', { 
+            _user_id: user.id, 
+            _role: 'admin' 
+          });
+        setUserRole(data === true ? 'admin' : 'user');
+      };
+      loadUserRole();
+    }
+  }, [user]);
+
+  // Real-time comments subscription
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`profile-comments-${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profile_comments',
+          filter: `profile_user_id=eq.${userId}`
+        },
+        () => {
+          loadProfile();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   const loadProfile = async () => {
@@ -69,7 +115,7 @@ export default function PublicProfile() {
 
       setReviews(reviewsData || []);
 
-      // Load comments with likes count
+      // Load comments with likes count and pagination
       const { data: commentsData } = await supabase
         .from('profile_comments')
         .select(`
@@ -85,7 +131,8 @@ export default function PublicProfile() {
         `)
         .eq('profile_user_id', userId)
         .is('parent_comment_id', null)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range((commentsPage - 1) * COMMENTS_PER_PAGE, commentsPage * COMMENTS_PER_PAGE - 1);
 
       const commentsWithLikes = await Promise.all(
         (commentsData || []).map(async (comment) => {
@@ -282,6 +329,86 @@ export default function PublicProfile() {
     }
   };
 
+  const submitReply = async (parentCommentId: string) => {
+    if (!user || !replyText.trim()) return;
+
+    try {
+      const { error } = await supabase
+        .from('profile_comments')
+        .insert({
+          profile_user_id: userId,
+          commenter_id: user.id,
+          comment: replyText.trim(),
+          parent_comment_id: parentCommentId
+        });
+
+      if (error) throw error;
+
+      setReplyText('');
+      setReplyingTo(null);
+      await loadProfile();
+
+      toast({
+        title: language === 'pl' ? 'Sukces' : 'Success',
+        description: language === 'pl' ? 'Odpowiedź dodana' : 'Reply added',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const rateComment = async (commentId: string, rating: number) => {
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('profile_comment_ratings')
+        .upsert({
+          comment_id: commentId,
+          user_id: user.id,
+          rating
+        }, {
+          onConflict: 'comment_id,user_id'
+        });
+
+      await loadProfile();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const deleteComment = async (commentId: string, commenterId: string) => {
+    if (!user || (user.id !== commenterId && userRole !== 'admin')) return;
+
+    try {
+      await supabase
+        .from('profile_comments')
+        .delete()
+        .eq('id', commentId);
+
+      await loadProfile();
+
+      toast({
+        title: language === 'pl' ? 'Sukces' : 'Success',
+        description: language === 'pl' ? 'Komentarz usunięty' : 'Comment deleted',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -422,6 +549,28 @@ export default function PublicProfile() {
                 )}
                 {profile.bio && (
                   <p className="text-sm mb-4">{profile.bio}</p>
+                )}
+                
+                {/* Profile Image Upload - only for owner */}
+                {user?.id === userId && (
+                  <div className="space-y-3 mt-4">
+                    <ProfileImageUpload
+                      userId={user.id}
+                      currentImageUrl={profile.profile_image_url}
+                      imageType="profile"
+                      onUploadComplete={(url) => {
+                        setProfile({ ...profile, profile_image_url: url });
+                      }}
+                    />
+                    <ProfileImageUpload
+                      userId={user.id}
+                      currentImageUrl={profile.cover_image_url}
+                      imageType="cover"
+                      onUploadComplete={(url) => {
+                        setProfile({ ...profile, cover_image_url: url });
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -676,7 +825,7 @@ export default function PublicProfile() {
                 </p>
               ) : (
                 comments.map((comment) => (
-                  <div key={comment.id} className="border rounded-lg p-4">
+                  <Card key={comment.id} className="p-4">
                     <div className="flex gap-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={comment.commenter?.profile_image_url || '/assets/mini-spirit-logo.png'} />
@@ -685,33 +834,214 @@ export default function PublicProfile() {
                           {comment.commenter?.last_name?.[0]}
                         </AvatarFallback>
                       </Avatar>
+
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-sm">
-                            {comment.commenter?.first_name} {comment.commenter?.last_name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {format(new Date(comment.created_at), 'PPp')}
-                          </span>
+                        {/* Header */}
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            {comment.commenter?.public_profile ? (
+                              <Link to={`/profile/${comment.commenter.user_id}`}>
+                                <h4 className="font-semibold text-sm hover:text-primary">
+                                  {comment.commenter?.first_name} {comment.commenter?.last_name}
+                                </h4>
+                              </Link>
+                            ) : (
+                              <h4 className="font-semibold text-sm">
+                                {comment.commenter?.first_name} {comment.commenter?.last_name}
+                              </h4>
+                            )}
+                            {comment.commenter?.username && (
+                              <Link 
+                                to={comment.commenter?.public_profile ? `/profile/${comment.commenter.user_id}` : '#'}
+                                className="text-xs text-muted-foreground hover:text-primary"
+                              >
+                                @{comment.commenter.username}
+                              </Link>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {format(new Date(comment.created_at), 'PPp')}
+                            </p>
+                          </div>
+
+                          {/* Delete button - Admin or Owner */}
+                          {user && (user.id === comment.commenter_id || userRole === 'admin') && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteComment(comment.id, comment.commenter_id)}
+                              className="text-destructive h-8 px-2"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
-                        <p className="text-sm mb-2">{comment.comment}</p>
-                        
-                        {/* Like Button */}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleLikeComment(comment.id)}
-                          className="flex items-center gap-1 h-auto p-1"
-                        >
-                          <Heart className={`h-4 w-4 ${comment.isLiked ? 'fill-red-500 text-red-500' : ''}`} />
-                          <span className="text-xs">{comment.likesCount || 0}</span>
-                        </Button>
+
+                        {/* Comment text */}
+                        <p className="text-sm mb-3">{comment.comment}</p>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-4 flex-wrap">
+                          {/* Like */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleLikeComment(comment.id)}
+                            className="h-8 px-2"
+                          >
+                            <Heart className={`h-4 w-4 mr-1 ${comment.isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                            <span className="text-xs">{comment.likesCount || 0}</span>
+                          </Button>
+
+                          {/* Reply */}
+                          {user && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setReplyingTo(comment.id)}
+                              className="h-8 px-2"
+                            >
+                              <MessageCircle className="h-4 w-4 mr-1" />
+                              <span className="text-xs">
+                                {language === 'pl' ? 'Odpowiedz' : 'Reply'}
+                              </span>
+                            </Button>
+                          )}
+
+                          {/* Rating Stars */}
+                          {user && (
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className={`h-3.5 w-3.5 cursor-pointer transition-colors ${
+                                    star <= (comment.average_rating || 0)
+                                      ? 'fill-yellow-400 text-yellow-400'
+                                      : 'text-muted-foreground hover:text-yellow-400'
+                                  }`}
+                                  onClick={() => rateComment(comment.id, star)}
+                                />
+                              ))}
+                            </div>
+                          )}
+
+                          {comment.rating_count > 0 && (
+                            <span className="text-xs text-muted-foreground">
+                              {comment.average_rating?.toFixed(1)} ({comment.rating_count})
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Reply Form */}
+                        {replyingTo === comment.id && (
+                          <div className="mt-3 ml-6 space-y-2">
+                            <Textarea
+                              placeholder={language === 'pl' ? 'Napisz odpowiedź...' : 'Write a reply...'}
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              rows={2}
+                              className="text-sm"
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => submitReply(comment.id)}
+                                disabled={!replyText.trim()}
+                              >
+                                {language === 'pl' ? 'Wyślij' : 'Send'}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setReplyingTo(null);
+                                  setReplyText('');
+                                }}
+                              >
+                                {language === 'pl' ? 'Anuluj' : 'Cancel'}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Nested Replies */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="ml-6 mt-4 space-y-3 border-l-2 border-muted pl-4">
+                            {comment.replies.map((reply: any) => (
+                              <div key={reply.id} className="flex gap-2">
+                                <Avatar className="h-8 w-8 flex-shrink-0">
+                                  <AvatarImage src={reply.commenter?.profile_image_url} />
+                                  <AvatarFallback>
+                                    {reply.commenter?.first_name?.[0]}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <Link 
+                                        to={reply.commenter?.public_profile ? `/profile/${reply.commenter.user_id}` : '#'}
+                                        className="text-sm font-semibold hover:text-primary"
+                                      >
+                                        {reply.commenter?.first_name} {reply.commenter?.last_name}
+                                      </Link>
+                                      {reply.commenter?.username && (
+                                        <span className="text-xs text-muted-foreground ml-2">
+                                          @{reply.commenter.username}
+                                        </span>
+                                      )}
+                                    </div>
+                                    {user && (user.id === reply.commenter_id || userRole === 'admin') && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => deleteComment(reply.id, reply.commenter_id)}
+                                        className="h-6 w-6 p-0"
+                                      >
+                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mt-0.5">
+                                    {reply.comment}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {format(new Date(reply.created_at), 'PPp')}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 ))
               )}
             </div>
+
+            {/* Pagination */}
+            {comments.length >= COMMENTS_PER_PAGE && (
+              <div className="flex justify-center gap-2 mt-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCommentsPage(p => Math.max(1, p - 1))}
+                  disabled={commentsPage === 1}
+                >
+                  {language === 'pl' ? 'Poprzednia' : 'Previous'}
+                </Button>
+                <span className="flex items-center px-4 text-sm text-muted-foreground">
+                  {language === 'pl' ? 'Strona' : 'Page'} {commentsPage}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCommentsPage(p => p + 1)}
+                  disabled={comments.length < COMMENTS_PER_PAGE}
+                >
+                  {language === 'pl' ? 'Następna' : 'Next'}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -197,6 +197,32 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
     if (key === 'searchPlaceholder') return language === 'pl' ? 'Wyszukaj produkty' : 'Search for products';
 
+    // Multiple Collections
+    if (key === 'multipleAllowed') return language === 'pl' ? 'Wiele dozwolone' : 'Multiple allowed';
+    if (key === 'selectMultipleCollections') return language === 'pl' ? 'Wybierz jedną lub więcej kolekcji dla tego produktu' : 'Select one or more collections for this product';
+    if (key === 'preferredCardTag') return language === 'pl' ? 'Preferowany Tag na Karcie' : 'Preferred Card Tag';
+    if (key === 'preferredCardTagDesc') return language === 'pl' ? 'Wybierz, czy wyświetlać kategorię czy kolekcję na kartach produktów' : 'Choose whether to display category or collection on product cards';
+    if (key === 'showCategory') return language === 'pl' ? 'Pokaż Kategorię' : 'Show Category';
+    if (key === 'showCollection') return language === 'pl' ? 'Pokaż Kolekcję' : 'Show Collection';
+    
+    // Upload Images
+    if (key === 'uploadProfilePicture') return language === 'pl' ? 'Prześlij Zdjęcie Profilowe' : 'Upload Profile Picture';
+    if (key === 'uploadCoverImage') return language === 'pl' ? 'Prześlij Obraz Okładki' : 'Upload Cover Image';
+    if (key === 'adjustYourImage') return language === 'pl' ? 'Dostosuj Swój Obraz' : 'Adjust Your Image';
+    if (key === 'dragToMove') return language === 'pl' ? 'Przeciągnij, aby przesunąć' : 'Drag to move';
+    if (key === 'scrollToZoom') return language === 'pl' ? 'Przewiń lub użyj suwaka, aby powiększyć' : 'Scroll or use slider to zoom';
+    if (key === 'saveImage') return language === 'pl' ? 'Zapisz Obraz' : 'Save Image';
+    
+    // Comments
+    if (key === 'writeAReply') return language === 'pl' ? 'Napisz odpowiedź...' : 'Write a reply...';
+    if (key === 'send') return language === 'pl' ? 'Wyślij' : 'Send';
+    if (key === 'reply') return language === 'pl' ? 'Odpowiedz' : 'Reply';
+    if (key === 'replyAdded') return language === 'pl' ? 'Odpowiedź dodana' : 'Reply added';
+    if (key === 'commentDeleted') return language === 'pl' ? 'Komentarz usunięty' : 'Comment deleted';
+    if (key === 'page') return language === 'pl' ? 'Strona' : 'Page';
+    if (key === 'previous') return language === 'pl' ? 'Poprzednia' : 'Previous';
+    if (key === 'next') return language === 'pl' ? 'Następna' : 'Next';
+
     // Verious Adonis Edit
 
     if (key === 'careInstructions') return language === 'pl' ? 'Obsługa i Instrukcje' : 'Operation and Instructions';

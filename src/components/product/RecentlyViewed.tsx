@@ -55,17 +55,24 @@ const RecentlyViewed = ({ currentProductId }: { currentProductId: string }) => {
         .from('products')
         .select(`
           *,
-          collections(name_en, name_pl)
+          product_collections(
+            collection:collections(
+              id,
+              name_en,
+              name_pl,
+              slug
+            )
+          )
         `)
         .in('id', displayIds)
         .eq('published', true);
       
       if (!error && data) {
-        // Transform to include summary and collection
+        // Transform to include summary and collections array
         const transformed = data.map(p => ({
           ...p,
           summary: language === 'en' ? (p.summary_en || '') : (p.summary_pl || ''),
-          collection: p.collections ? (language === 'en' ? p.collections.name_en : p.collections.name_pl) : null,
+          collections: p.product_collections?.map((pc: any) => pc.collection) || [],
         }));
 
         // Sort by recently viewed order
@@ -105,7 +112,7 @@ const RecentlyViewed = ({ currentProductId }: { currentProductId: string }) => {
                 summary={product.summary}
                 description={language === 'en' ? product.description_en : product.description_pl}
                 category={product.category}
-                collection={product.collection}
+                collections={product.collections}
                 preferredTag={product.preferred_card_tag}
                 price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                 image={product.image_url}

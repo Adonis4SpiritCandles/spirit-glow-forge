@@ -35,29 +35,53 @@ export default function CollectionDetail() {
       if (collError) throw collError;
       setCollection(collectionData);
 
-      // Load products in this collection
+      // Load products in this collection using product_collections junction table
+      const { data: productCollectionsData, error: pcError } = await supabase
+        .from('product_collections')
+        .select('product_id')
+        .eq('collection_id', collectionData.id);
+
+      if (pcError) throw pcError;
+
+      const productIds = productCollectionsData?.map(pc => pc.product_id) || [];
+
+      if (productIds.length === 0) {
+        setProducts([]);
+        return;
+      }
+
       const { data: productsData, error: prodError } = await supabase
         .from('products')
-        .select('*')
-        .eq('collection_id', collectionData.id)
+        .select(`
+          *,
+          product_collections(
+            collection:collections(
+              id,
+              name_en,
+              name_pl,
+              slug
+            )
+          )
+        `)
+        .in('id', productIds)
         .eq('published', true)
         .order('created_at', { ascending: false });
 
       if (prodError) throw prodError;
 
-      // Transform for ProductCard with summary and collection
-      const transformed = productsData.map(p => ({
+      // Transform for ProductCard with summary and collections array
+      const transformed = productsData?.map(p => ({
         id: p.id,
         name: language === 'en' ? p.name_en : p.name_pl,
         summary: language === 'en' ? (p.summary_en || '') : (p.summary_pl || ''),
         description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
         category: p.category,
-        collection: collectionData ? (language === 'en' ? collectionData.name_en : collectionData.name_pl) : null,
+        collections: p.product_collections?.map((pc: any) => pc.collection) || [],
         preferred_card_tag: p.preferred_card_tag,
         price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
         image: p.image_url,
         sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
-      }));
+      })) || [];
 
       setProducts(transformed);
     } catch (error) {

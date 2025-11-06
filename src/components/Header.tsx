@@ -83,12 +83,12 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary hover:scale-105 duration-300"
+                className="text-[13px] lg:text-sm font-medium text-foreground/80 transition-colors hover:text-primary hover:scale-105 duration-300"
               >
                 {item.name}
               </Link>
@@ -113,9 +113,9 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <>
-                  {/* Wishlist Button */}
+                  {/* Wishlist Button - nascosto su tablet */}
                   <Link to="/wishlist">
-                    <Button variant="ghost" size="sm" className="relative">
+                    <Button variant="ghost" size="sm" className="relative hidden lg:flex">
                       <Heart className="h-4 w-4" />
                       {wishlistCount > 0 && (
                         <Badge 
@@ -128,9 +128,9 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Button>
                   </Link>
                   
-                  {/* Dashboard Button - For all users, solo icona su tablet */}
+                  {/* Dashboard Button - nascosto su tablet */}
                   <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="gap-1">
+                    <Button variant="ghost" size="sm" className="gap-1 hidden lg:flex">
                       <LayoutDashboard className="h-4 w-4" />
                       <span className="text-sm hidden xl:inline">{t('dashboard')}</span>
                     </Button>
@@ -183,7 +183,19 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                           <DropdownMenuSeparator />
                         </>
                       )}
-                      <DropdownMenuItem asChild>
+                      <DropdownMenuItem asChild className="lg:hidden">
+                        <Link to="/wishlist" className="flex items-center cursor-pointer">
+                          <Heart className="h-4 w-4 mr-2" />
+                          {t('wishlist')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="lg:hidden">
+                        <Link to="/dashboard" className="flex items-center cursor-pointer">
+                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                          {t('dashboard')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="hidden lg:flex">
                         <Link to="/dashboard" className="flex items-center cursor-pointer">
                           <LayoutDashboard className="h-4 w-4 mr-2" />
                           {t('dashboard')}
@@ -237,14 +249,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="relative"
+              className="relative mr-1"
               onClick={onCartOpen}
             >
               <ShoppingCart className="h-4 w-4" />
               {itemCount > 0 && (
                 <Badge 
                   variant="secondary" 
-                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
+                  className="absolute -top-2 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
                 >
                   {itemCount}
                 </Badge>
@@ -276,7 +288,15 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
-                        <User className="h-5 w-5" />
+                        {profileImageUrl ? (
+                          <img 
+                            src={profileImageUrl} 
+                            alt="Profile" 
+                            className="h-6 w-6 rounded-full object-cover"
+                          />
+                        ) : (
+                          <User className="h-5 w-5" />
+                        )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 bg-background z-[100]">

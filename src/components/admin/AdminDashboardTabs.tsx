@@ -20,10 +20,10 @@ const AdminDashboardTabs = ({ activeTab, setActiveTab }: AdminDashboardTabsProps
     { value: 'warehouse', icon: <Database className="h-4 w-4" />, label: t('warehouse') },
     { value: 'coupons', icon: <Tags className="h-4 w-4" />, label: t('coupons') },
     { value: 'rewards', icon: <Gift className="h-4 w-4" />, label: t('referralsRewards') },
-    { value: 'statistics', icon: <BarChart3 className="h-4 w-4" />, label: t('statistics') },
-    { value: 'export', icon: <FileText className="h-4 w-4" />, label: t('export') },
     { value: 'settings', icon: <Settings className="h-4 w-4" />, label: t('siteSettings') },
     { value: 'social', icon: <Globe className="h-4 w-4" />, label: t('socialMedia') },
+    { value: 'statistics', icon: <BarChart3 className="h-4 w-4" />, label: t('statistics') },
+    { value: 'export', icon: <FileText className="h-4 w-4" />, label: t('export') },
   ];
 
   return (

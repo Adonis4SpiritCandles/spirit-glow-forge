@@ -788,9 +788,9 @@ const UserDashboard = () => {
 
                                 {/* Discount (se presente) */}
                                 {order.coupon_code && (
-                                  <div className="flex justify-between items-center py-3 px-4 border-b bg-muted/20">
+                                  <div className="flex flex-col items-start sm:flex-row sm:justify-between sm:items-center py-3 px-4 border-b bg-muted/20 gap-1">
                                     <span className="text-sm text-muted-foreground">{t('discount')}:</span>
-                                    <span className="font-semibold text-sm sm:text-base text-green-600 dark:text-green-400 whitespace-nowrap ml-auto text-right">
+                                    <span className="font-semibold text-[13px] sm:text-sm text-green-600 dark:text-green-400 whitespace-normal sm:whitespace-nowrap sm:ml-auto sm:text-right">
                                       -{discountPLN.toFixed(2)} PLN / -{discountEUR.toFixed(2)} EUR ({order.coupon_code})
                                     </span>
                                   </div>
@@ -814,7 +814,7 @@ const UserDashboard = () => {
 
                                 {/* Total */}
                                 <div className="flex justify-between items-center py-4 px-4 bg-muted/30">
-                                  <span className="font-bold text-sm sm:text-base">{t('total')}:</span>
+                                  <span className="font-bold text-sm">{t('total')}:</span>
                                   <span className="font-bold text-base sm:text-lg text-primary whitespace-nowrap ml-auto text-right">{totalPLN} PLN / {totalEUR} EUR</span>
                                 </div>
                               </div>
@@ -840,10 +840,15 @@ const UserDashboard = () => {
                                     <div>
                                       <span className="text-muted-foreground">{t('status')}:</span>
                                       <div className="mt-1">
-                                        {order.shipping_status === 'delivered' || order.shipping_status === 'shipped' ? (
+                                        {order.shipping_status === 'delivered' ? (
                                           <Badge className="bg-green-500 text-white rounded-[4px] hover:bg-green-600">
                                             <Truck className="h-3 w-3 mr-1" />
-                                            {order.shipping_status === 'delivered' ? t('delivered') : t('shippedSuccessfully')}
+                                            {t('delivered')}
+                                          </Badge>
+                                        ) : order.tracking_number && (order.carrier || order.carrier_name) ? (
+                                          <Badge className="bg-green-500 text-white rounded-[4px] hover:bg-green-600">
+                                            <Truck className="h-3 w-3 mr-1" />
+                                            {t('shippedSuccessfully')}
                                           </Badge>
                                         ) : (
                                           <Badge variant="outline" className="rounded-[4px]">{order.shipping_status || 'Pending'}</Badge>

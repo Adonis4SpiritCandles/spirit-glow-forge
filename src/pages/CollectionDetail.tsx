@@ -43,14 +43,17 @@ export default function CollectionDetail() {
 
       if (prodError) throw prodError;
 
-      // Transform for ProductCard
+      // Transform for ProductCard with summary and collection
       const transformed = productsData.map(p => ({
         id: p.id,
         name: language === 'en' ? p.name_en : p.name_pl,
-        fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+        summary: language === 'en' ? (p.summary_en || '') : (p.summary_pl || ''),
+        description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+        category: p.category,
+        collection: collectionData ? (language === 'en' ? collectionData.name_en : collectionData.name_pl) : null,
+        preferred_card_tag: p.preferred_card_tag,
         price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
         image: p.image_url,
-        description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
         sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
       }));
 

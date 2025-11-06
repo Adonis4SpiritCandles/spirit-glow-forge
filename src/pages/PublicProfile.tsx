@@ -320,22 +320,27 @@ export default function PublicProfile() {
     <div className="min-h-screen bg-background">
       {/* Cover Image with Logo */}
       <div 
-        className="h-80 bg-gradient-to-r from-amber-900/40 via-amber-800/30 to-amber-900/40 relative flex items-center justify-center"
+        className="h-80 relative flex items-center justify-center"
         style={
           profile.cover_image_url ? {
-            backgroundImage: `linear-gradient(to right, rgba(120, 53, 15, 0.4), rgba(146, 64, 14, 0.3), rgba(120, 53, 15, 0.4)), url(${profile.cover_image_url})`,
+            backgroundImage: `linear-gradient(to right, rgba(217, 119, 6, 0.35), rgba(245, 158, 11, 0.30), rgba(217, 119, 6, 0.35)), url(${profile.cover_image_url})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-          } : {}
+          } : {
+            background: 'linear-gradient(to right, rgba(217, 119, 6, 0.35), rgba(245, 158, 11, 0.30), rgba(217, 119, 6, 0.35))'
+          }
         }
       >
-        {/* Logo centrale sempre visibile */}
-        <div className="absolute inset-0 flex items-start justify-center pt-12 pointer-events-none">
+        {/* Logo centrale sempre visibile - più grande */}
+        <div className="absolute inset-0 flex items-center justify-center pt-8 pointer-events-none">
           <img 
             src="/assets/spirit-logo-transparent.png" 
             alt="Spirit Candles" 
-            className="h-40 w-auto opacity-90"
-            style={{ filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5))' }}
+            className="h-48 w-auto opacity-95"
+            style={{ 
+              filter: 'drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))',
+              maxHeight: '50%'
+            }}
           />
         </div>
         
@@ -349,8 +354,8 @@ export default function PublicProfile() {
       </div>
 
       <div className="container max-w-4xl mx-auto px-4 -mt-16 pb-12 relative z-10">
-        {/* Profile Header */}
-        <Card className="mb-6">
+        {/* Profile Header - più trasparente */}
+        <Card className="mb-6 bg-card/60 backdrop-blur-md border-border/40">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="relative">

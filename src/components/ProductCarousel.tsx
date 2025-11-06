@@ -37,12 +37,23 @@ const ProductCarousel = () => {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          collections(name_en, name_pl)
+        `)
         .eq('published', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProducts(data || []);
+
+      // Transform data to include summary and collection
+      const transformed = data?.map(p => ({
+        ...p,
+        summary: language === 'en' ? (p.summary_en || '') : (p.summary_pl || ''),
+        collection: p.collections ? (language === 'en' ? p.collections.name_en : p.collections.name_pl) : null,
+      })) || [];
+
+      setProducts(transformed);
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {
@@ -92,10 +103,14 @@ const ProductCarousel = () => {
                   <ProductCard
                     id={product.id}
                     name={language === 'en' ? product.name_en : product.name_pl}
-                    fragrance={language === 'en' ? product.description_en : product.description_pl}
+                    fragrance=""
+                    summary={product.summary}
+                    description={language === 'en' ? product.description_en : product.description_pl}
+                    category={product.category}
+                    collection={product.collection}
+                    preferredTag={product.preferred_card_tag}
                     price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                     image={product.image_url}
-                    description={language === 'en' ? product.description_en : product.description_pl}
                     sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: product.price_pln, eur: product.price_eur } }]}
                   />
                 </CarouselItem>
@@ -121,10 +136,14 @@ const ProductCarousel = () => {
                   <ProductCard
                     id={product.id}
                     name={language === 'en' ? product.name_en : product.name_pl}
-                    fragrance={language === 'en' ? product.description_en : product.description_pl}
+                    fragrance=""
+                    summary={product.summary}
+                    description={language === 'en' ? product.description_en : product.description_pl}
+                    category={product.category}
+                    collection={product.collection}
+                    preferredTag={product.preferred_card_tag}
                     price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
                     image={product.image_url}
-                    description={language === 'en' ? product.description_en : product.description_pl}
                     sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: product.price_pln, eur: product.price_eur } }]}
                   />
                 </CarouselItem>

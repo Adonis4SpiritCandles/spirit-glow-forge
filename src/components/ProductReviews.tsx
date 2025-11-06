@@ -154,16 +154,32 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h4 className="font-semibold">
-                          {review.profiles?.first_name && review.profiles?.last_name
-                            ? `${review.profiles.first_name} ${review.profiles.last_name}`
-                            : review.profiles?.username || t('anonymous')}
-                        </h4>
+                        {review.profiles?.user_id && review.profiles?.public_profile ? (
+                          <Link to={`/profile/${review.profiles.user_id}`} className="hover:text-primary transition-colors">
+                            <h4 className="font-semibold">
+                              {review.profiles?.first_name && review.profiles?.last_name
+                                ? `${review.profiles.first_name} ${review.profiles.last_name}`
+                                : review.profiles?.username || t('anonymous')}
+                            </h4>
+                          </Link>
+                        ) : (
+                          <h4 className="font-semibold">
+                            {review.profiles?.first_name && review.profiles?.last_name
+                              ? `${review.profiles.first_name} ${review.profiles.last_name}`
+                              : review.profiles?.username || t('anonymous')}
+                          </h4>
+                        )}
                         
                         {review.profiles?.username && (
-                          <p className="text-sm text-muted-foreground">
-                            @{review.profiles.username}
-                          </p>
+                          review.profiles?.user_id && review.profiles?.public_profile ? (
+                            <Link to={`/profile/${review.profiles.user_id}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                              @{review.profiles.username}
+                            </Link>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">
+                              @{review.profiles.username}
+                            </p>
+                          )
                         )}
                         
                         <div className="flex items-center gap-2 mt-1">

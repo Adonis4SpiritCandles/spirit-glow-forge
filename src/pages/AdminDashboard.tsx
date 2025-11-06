@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -1450,57 +1451,6 @@ const AdminDashboard = () => {
               </SelectContent>
             </Select>
           </div>
-          {/* Tablet/Desktop: wrapped tabs with icons */}
-          <TabsList className="hidden sm:flex flex-wrap justify-start gap-1 px-2 py-1">
-            <TabsTrigger value="products" className="text-xs sm:text-sm flex-shrink-0">
-              <Package className="h-4 w-4 mr-1" />
-              {t('products')}
-            </TabsTrigger>
-            <TabsTrigger value="collections" className="text-xs sm:text-sm flex-shrink-0">
-              <Tags className="h-4 w-4 mr-1" />
-              {language === 'pl' ? 'Kolekcje' : 'Collections'}
-            </TabsTrigger>
-            <TabsTrigger value="orders" className="text-xs sm:text-sm flex-shrink-0">
-              <ShoppingCart className="h-4 w-4 mr-1" />
-              {t('orders')}
-            </TabsTrigger>
-            <TabsTrigger value="trash" className="text-xs sm:text-sm flex-shrink-0">
-              <Trash2 className="h-4 w-4 mr-1" />
-              {t('ordersTrash')}
-            </TabsTrigger>
-            <TabsTrigger value="customers" className="text-xs sm:text-sm flex-shrink-0">
-              <Users className="h-4 w-4 mr-1" />
-              {t('customers')}
-            </TabsTrigger>
-            <TabsTrigger value="warehouse" className="text-xs sm:text-sm flex-shrink-0">
-              <Database className="h-4 w-4 mr-1" />
-              {t('warehouse')}
-            </TabsTrigger>
-            <TabsTrigger value="coupons" className="text-xs sm:text-sm flex-shrink-0">
-              <Tags className="h-4 w-4 mr-1" />
-              {language === 'pl' ? 'Kupony' : 'Coupons'}
-            </TabsTrigger>
-            <TabsTrigger value="referral-rewards" className="text-xs sm:text-sm flex-shrink-0">
-              <Gift className="h-4 w-4 mr-1" />
-              {language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}
-            </TabsTrigger>
-            <TabsTrigger value="social" className="text-xs sm:text-sm flex-shrink-0">
-              <Globe className="h-4 w-4 mr-1" />
-              Social Media
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs sm:text-sm flex-shrink-0">
-              <Settings className="h-4 w-4 mr-1" />
-              {language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}
-            </TabsTrigger>
-            <TabsTrigger value="statistics" className="text-xs sm:text-sm flex-shrink-0">
-              <BarChart3 className="h-4 w-4 mr-1" />
-              {t('statistics')}
-            </TabsTrigger>
-            <TabsTrigger value="export" className="text-xs sm:text-sm flex-shrink-0">
-              <FileText className="h-4 w-4 mr-1" />
-              Export
-            </TabsTrigger>
-          </TabsList>
 
           <TabsContent value="products" className="space-y-4">
             <Card>

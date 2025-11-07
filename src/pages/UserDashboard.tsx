@@ -20,6 +20,7 @@ import { CarrierBadge } from '@/utils/carrierStyles';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import ReferralDashboard from '@/components/gamification/ReferralDashboard';
 import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
+import ShippingStatusLegend from '@/components/dashboard/ShippingStatusLegend';
 
 interface LanguageOption {
   value: string;
@@ -916,6 +917,8 @@ const UserDashboard = () => {
                       })}
                     </div>
                   )}
+                  
+                  <ShippingStatusLegend />
                 </CardContent>
               </Card>
             </TabsContent>

@@ -503,6 +503,17 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'Brak płatności FURGONETKA' : 'FURGONETKA Pay Miss';
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'czekam na ZAKOŃCZENIE' : 'Awaiting for data COMPLETE';
+    if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped Successfully';
+    if (key === 'copy') return language === 'pl' ? 'Kopiuj' : 'Copy';
+    if (key === 'copied') return language === 'pl' ? 'Skopiowano!' : 'Copied!';
+    if (key === 'shippingStatusLegend') return language === 'pl' ? 'Legenda Statusów Przesyłki' : 'Shipping Status Legend';
+    if (key === 'shippingStatusInfo') return language === 'pl' ? 'Zrozum, co oznacza każdy status przesyłki:' : 'Understand what each shipping status means:';
+    if (key === 'statusDelivered') return language === 'pl' ? 'Dostarczono - Twoje zamówienie zostało pomyślnie dostarczone' : 'Delivered - Your order has been successfully delivered';
+    if (key === 'statusInTransit') return language === 'pl' ? 'W Transporcie - Twoja paczka jest w drodze' : 'In Transit - Your package is on its way';
+    if (key === 'statusAwaitingPickup') return language === 'pl' ? 'Oczekuje na Odbiór - Paczka gotowa do odbioru' : 'Awaiting Pickup - Package is ready for collection';
+    if (key === 'statusCollectProblem') return language === 'pl' ? 'Problem z Odbiorem - Problem z odbiorem paczki' : 'Collection Issue - Problem with package collection';
+    if (key === 'statusPending') return language === 'pl' ? 'Oczekujące - Zamówienie jest przygotowywane' : 'Pending - Order is being prepared';
+    if (key === 'statusProcessing') return language === 'pl' ? 'Przetwarzanie - Zamówienie jest przetwarzane' : 'Processing - Order is being processed';
     if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na przesłanie FURKONEKTA' : 'Awaiting FURKONEKTA submission';
     if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment CREATED!';
     if (key === 'shipped') return language === 'pl' ? 'WYSŁANY' : 'SHIPPED';

@@ -286,44 +286,69 @@ export default function PublicProfile() {
   };
 
   const submitComment = async () => {
-    if (!user || !newComment.trim()) return;
+    if (!user) {
+      toast({
+        description: language === 'pl' ? 'Musisz być zalogowany, aby komentować' : 'You must be logged in to comment',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    setSubmitting(true);
+    if (!newComment.trim()) {
+      toast({
+        description: language === 'pl' ? 'Komentarz nie może być pusty' : 'Comment cannot be empty',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      console.log('Submitting comment:', {
+      setSubmitting(true);
+      console.log('[Comment Submit] Attempting to insert comment:', {
         profile_user_id: userId,
         commenter_id: user.id,
-        comment: newComment.trim(),
+        comment: newComment
       });
 
-      const { data, error } = await supabase.from('profile_comments').insert({
-        profile_user_id: userId,
-        commenter_id: user.id,
-        comment: newComment.trim(),
-      }).select();
+      const { data, error } = await supabase
+        .from('profile_comments')
+        .insert({
+          profile_user_id: userId,
+          commenter_id: user.id,
+          comment: newComment
+        })
+        .select();
 
       if (error) {
-        console.error('Comment insert error:', error);
+        console.error('[Comment Submit] Error:', error);
+        
+        // Improved error handling for RLS issues
+        if (error.message.includes('row-level security') || error.message.includes('permission denied')) {
+          toast({
+            description: language === 'pl' 
+              ? 'Brak uprawnień. Odśwież stronę i spróbuj ponownie.' 
+              : 'Permission denied. Please refresh the page and try again.',
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            description: language === 'pl' ? 'Nie udało się dodać komentarza' : 'Failed to add comment',
+            variant: 'destructive',
+          });
+        }
         throw error;
       }
 
-      console.log('Comment inserted successfully:', data);
+      console.log('[Comment Submit] Success:', data);
       setNewComment('');
+      toast({
+        description: language === 'pl' ? 'Komentarz dodany!' : 'Comment added!',
+      });
+      
+      // Reload to get the new comment
       await loadProfile();
-
-      toast({
-        title: language === 'pl' ? 'Sukces' : 'Success',
-        description: language === 'pl' 
-          ? 'Komentarz został dodany' 
-          : 'Comment has been added',
-      });
     } catch (error: any) {
-      console.error('Submit comment error:', error);
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to post comment',
-        variant: 'destructive',
-      });
+      console.error('[Comment Submit] Failed:', error);
     } finally {
       setSubmitting(false);
     }

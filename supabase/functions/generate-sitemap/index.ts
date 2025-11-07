@@ -85,6 +85,9 @@ serve(async (req) => {
     addUrl('/loyalty', '0.6', 'monthly');
     addUrl('/wishlist', '0.5', 'weekly');
 
+    // Custom Candles page
+    addUrl('/custom-candles', '0.7', 'monthly');
+
     // Product pages
     if (products && products.length > 0) {
       products.forEach((product) => {
@@ -93,9 +96,22 @@ serve(async (req) => {
       });
     }
 
+    // Fetch public profiles for sitemap
+    const { data: publicProfiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('user_id, updated_at')
+      .eq('public_profile', true);
+
+    if (!profilesError && publicProfiles && publicProfiles.length > 0) {
+      publicProfiles.forEach((profile) => {
+        const lastmod = profile.updated_at || currentDate;
+        addUrl(`/profile/${profile.user_id}`, '0.6', 'weekly', lastmod);
+      });
+    }
+
     sitemap += '</urlset>';
 
-    console.log(`Sitemap generated successfully with ${products?.length || 0} products`);
+    console.log(`Sitemap generated successfully with ${products?.length || 0} products and ${publicProfiles?.length || 0} public profiles`);
 
     return new Response(sitemap, {
       headers: corsHeaders,

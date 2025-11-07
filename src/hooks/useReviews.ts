@@ -42,32 +42,31 @@ export const useReviews = (productId?: string) => {
       console.error('Error loading reviews:', error);
       setReviews([]);
     } else {
-      // Use the public_profiles_safe view to get profile data (accessible to all users including guests)
-      const reviewsWithProfiles = await Promise.all(
-        (data || []).map(async (review) => {
-          const { data: profileData, error: profileError } = await supabase
-            .from('public_profiles_safe')
-            .select('*')
-            .eq('user_id', review.user_id)
-            .maybeSingle();
-          
-          if (profileError) {
-            console.warn(`Profile not found for user ${review.user_id}:`, profileError);
-          }
-          
-          return {
-            ...review,
-            profiles: profileData || {
-              first_name: 'Anonymous',
-              last_name: 'User',
-              username: null,
-              profile_image_url: null,
-              user_id: review.user_id,
-              public_profile: false
-            }
-          };
-        })
-      );
+      // Batch load public profile data from the public directory (accessible to guests)
+      const userIds = Array.from(new Set((data || []).map((r) => r.user_id)));
+      let directoryMap: Record<string, any> = {};
+      if (userIds.length) {
+        const { data: dirRows } = await supabase
+          .from('public_profile_directory')
+          .select('*')
+          .in('user_id', userIds);
+        (dirRows || []).forEach((row) => {
+          directoryMap[row.user_id] = row;
+        });
+      }
+
+      const reviewsWithProfiles = (data || []).map((review) => ({
+        ...review,
+        profiles:
+          directoryMap[review.user_id] || {
+            first_name: 'Anonymous',
+            last_name: 'User',
+            username: null,
+            profile_image_url: null,
+            user_id: review.user_id,
+            public_profile: false,
+          },
+      }));
       
       setReviews(reviewsWithProfiles);
       if (reviewsWithProfiles.length > 0) {

@@ -1463,6 +1463,39 @@ export type Database = {
           },
         ]
       }
+      public_profile_directory: {
+        Row: {
+          created_at: string
+          first_name: string | null
+          last_name: string | null
+          profile_image_url: string | null
+          public_profile: boolean | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          first_name?: string | null
+          last_name?: string | null
+          profile_image_url?: string | null
+          public_profile?: boolean | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          first_name?: string | null
+          last_name?: string | null
+          profile_image_url?: string | null
+          public_profile?: boolean | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       referral_rewards: {
         Row: {
           created_at: string | null

@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
-import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye, Save, Users, Award, Gift } from 'lucide-react';
+import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye, Save, Users, Award, Gift, AlertCircle, Clock } from 'lucide-react';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import { CarrierBadge } from '@/utils/carrierStyles';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
@@ -231,48 +231,53 @@ const UserDashboard = () => {
   };
 
   const getOrderBadges = (order: Order) => {
-    const badges = [];
-    
+    const badges: { label: string; variant: string; icon: React.ReactNode }[] = [];
+
+    // Paid
     if (order.status !== 'pending') {
-      badges.push({ 
-        label: t('paid') || 'Paid', 
-        variant: 'bg-red-500 text-white',
-        icon: null 
+      badges.push({
+        label: t('paid') || 'Paid',
+        variant: 'bg-accent/10 text-accent border border-accent/20',
+        icon: <CreditCard className="w-3 h-3" />,
       });
     }
-    
-    if (order.status === 'completed') {
-      badges.push({ 
-        label: t('completed') || 'Completed', 
-        variant: 'bg-yellow-500 text-white',
-        icon: null 
-      });
-    }
-    
+
+    // Awaiting Pickup (shipment created but no tracking yet)
     if (order.furgonetka_package_id && !order.tracking_number) {
-      badges.push({ 
-        label: t('shipmentCreated') || 'Shipment Created', 
-        variant: 'bg-cyan-500 text-black font-semibold',
-        icon: <Package className="w-3 h-3" /> 
+      badges.push({
+        label: t('awaitingPickup') || 'Awaiting Pickup',
+        variant: 'bg-primary/10 text-primary border border-primary/20',
+        icon: <Package className="w-3 h-3" />,
       });
     }
-    
+
+    // Shipped
     if (order.tracking_number && (order.carrier_name || order.carrier)) {
-      badges.push({ 
-        label: t('shipped') || 'Shipped', 
-        variant: 'bg-green-500 text-white flex items-center gap-1',
-        icon: <Truck className="w-3 h-3" /> 
+      badges.push({
+        label: t('shipped') || 'Shipped',
+        variant: 'bg-primary/10 text-primary border border-primary/20',
+        icon: <Truck className="w-3 h-3" />,
       });
     }
-    
-    if (order.shipping_status === 'delivered') {
-      badges.push({ 
-        label: t('delivered') || 'Delivered', 
-        variant: 'bg-green-600 text-white',
-        icon: <Package className="w-3 h-3" /> 
+
+    // Completed (map to Pending for user-facing UI)
+    if (order.status === 'completed') {
+      badges.push({
+        label: t('pending') || 'Pending',
+        variant: 'bg-muted text-muted-foreground border border-border',
+        icon: <Clock className="w-3 h-3" />,
       });
     }
-    
+
+    // Issue
+    if (order.shipping_status === 'collect-problem') {
+      badges.push({
+        label: t('issue') || 'Issue',
+        variant: 'bg-destructive/10 text-destructive border border-destructive/20',
+        icon: <AlertCircle className="w-3 h-3" />,
+      });
+    }
+
     return badges;
   };
 

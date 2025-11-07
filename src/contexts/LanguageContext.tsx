@@ -162,6 +162,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'youWillReceiveTracking') return language === 'pl' ? 'Otrzymasz kolejnego e-maila z numerem śledzenia, gdy zamówienie zostanie wysłane' : 'You will receive another email with tracking number when your order is Shipped';
     if (key === 'orderHasBeenShipped') return language === 'pl' ? 'Twoje Zamówienie zostało wysłane!' : 'Your Order has been shipped!';
     if (key === 'trackingNumber') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Number';
+
+    // Shipping Legend & Statuses
+    if (key === 'shippingStatusLegend') return language === 'pl' ? 'Legenda statusu wysyłki' : 'Shipping Status Legend';
+    if (key === 'shippingStatusInfo') return language === 'pl' ? 'Poniżej znajdziesz wyjaśnienia dla statusów Twojego zamówienia.' : 'Below are explanations for your order statuses.';
+    if (key === 'awaitingPickup') return language === 'pl' ? 'Oczekuje na odbiór' : 'Awaiting Pickup';
+    if (key === 'issue') return language === 'pl' ? 'Problem' : 'Issue';
+    if (key === 'statusPaidDesc') return language === 'pl' ? 'Zamówienie opłacone i wkrótce zostanie przetworzone.' : 'Order has been paid and will be processed soon.';
+    if (key === 'statusShippedDesc') return language === 'pl' ? 'Zamówienie zostało wysłane. Możesz śledzić przesyłkę.' : 'The order has been shipped. You can track your parcel.';
+    if (key === 'statusAwaitingPickupDesc') return language === 'pl' ? 'Paczka przygotowana i oczekuje na odbiór przez przewoźnika.' : 'Parcel prepared and awaiting carrier pickup.';
+    if (key === 'statusIssueDesc') return language === 'pl' ? 'Problem z danymi lub zamówieniem – skontaktuj się z nami.' : 'Issue with data or order – please contact support.';
     
     // Admin Dashboard - Additional translations
     if (key === 'exclude') return language === 'pl' ? 'Wykluczyć' : 'Exclude';

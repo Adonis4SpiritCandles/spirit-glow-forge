@@ -84,15 +84,14 @@ export default function PublicProfile() {
     try {
       setLoading(true);
 
-      // Load profile
+      // Load public-safe profile directory (accessible to guests)
       const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
+        .from('public_profile_directory')
         .select('*')
         .eq('user_id', userId)
-        .eq('public_profile', true)
-        .single();
+        .maybeSingle();
 
-      if (profileError || !profileData) {
+      if (profileError || !profileData || profileData.public_profile === false) {
         throw new Error('Profile not found or not public');
       }
 
@@ -115,24 +114,39 @@ export default function PublicProfile() {
 
       setReviews(reviewsData || []);
 
-      // Load comments with likes count and pagination
+      // Load comments (no join to profiles to avoid RLS issues); then hydrate from public directory
       const { data: commentsData } = await supabase
         .from('profile_comments')
-        .select(`
-          *,
-          commenter:profiles!profile_comments_commenter_id_fkey(
-            first_name,
-            last_name,
-            username,
-            profile_image_url,
-            user_id,
-            public_profile
-          )
-        `)
+        .select('*')
         .eq('profile_user_id', userId)
         .is('parent_comment_id', null)
         .order('created_at', { ascending: false })
         .range((commentsPage - 1) * COMMENTS_PER_PAGE, commentsPage * COMMENTS_PER_PAGE - 1);
+
+      // Preload replies for all comments in a single query
+      const commentIds = (commentsData || []).map((c) => c.id);
+      const { data: allReplies } = commentIds.length
+        ? await supabase
+            .from('profile_comments')
+            .select('*')
+            .in('parent_comment_id', commentIds)
+            .order('created_at', { ascending: true })
+        : { data: [] } as any;
+
+      // Collect all user ids (commenters and repliers)
+      const commenterIds = new Set<string>();
+      (commentsData || []).forEach((c) => commenterIds.add(c.commenter_id));
+      (allReplies || []).forEach((r: any) => commenterIds.add(r.commenter_id));
+
+      // Fetch public directory entries in batch
+      const { data: dirRows } = commenterIds.size
+        ? await supabase
+            .from('public_profile_directory')
+            .select('*')
+            .in('user_id', Array.from(commenterIds))
+        : { data: [] } as any;
+      const dirMap: Record<string, any> = {};
+      (dirRows || []).forEach((row: any) => (dirMap[row.user_id] = row));
 
       const commentsWithLikes = await Promise.all(
         (commentsData || []).map(async (comment) => {
@@ -141,28 +155,27 @@ export default function PublicProfile() {
             .select('*', { count: 'exact', head: true })
             .eq('comment_id', comment.id);
 
-          const isLiked = user ? await supabase
-            .from('profile_comment_likes')
-            .select('id')
-            .eq('comment_id', comment.id)
-            .eq('user_id', user.id)
-            .maybeSingle() : { data: null };
+          const isLiked = user
+            ? await supabase
+                .from('profile_comment_likes')
+                .select('id')
+                .eq('comment_id', comment.id)
+                .eq('user_id', user.id)
+                .maybeSingle()
+            : { data: null };
 
-          // Load replies
-          const { data: replies } = await supabase
-            .from('profile_comments')
-            .select(`
-              *,
-              commenter:profiles!profile_comments_commenter_id_fkey(*)
-            `)
-            .eq('parent_comment_id', comment.id)
-            .order('created_at', { ascending: true });
+          const replies = (allReplies || []).filter((r: any) => r.parent_comment_id === comment.id);
+          const repliesWithProfiles = replies.map((r: any) => ({
+            ...r,
+            commenter: dirMap[r.commenter_id] || null,
+          }));
 
           return {
             ...comment,
+            commenter: dirMap[comment.commenter_id] || null,
             likesCount: count || 0,
             isLiked: !!isLiked.data,
-            replies: replies || []
+            replies: repliesWithProfiles,
           };
         })
       );

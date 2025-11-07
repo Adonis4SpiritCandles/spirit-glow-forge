@@ -166,12 +166,30 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // Shipping Legend & Statuses
     if (key === 'shippingStatusLegend') return language === 'pl' ? 'Legenda statusu wysyłki' : 'Shipping Status Legend';
     if (key === 'shippingStatusInfo') return language === 'pl' ? 'Poniżej znajdziesz wyjaśnienia dla statusów Twojego zamówienia.' : 'Below are explanations for your order statuses.';
+    if (key === 'paid') return language === 'pl' ? 'Opłacone' : 'Paid';
+    if (key === 'pending') return language === 'pl' ? 'Oczekujące' : 'Pending';
+    if (key === 'awaitingConfirm') return language === 'pl' ? 'Oczekuje na Potwierdzenie' : 'Awaiting Confirm';
+    if (key === 'complete') return language === 'pl' ? 'Ukończone' : 'Complete';
+    if (key === 'awaitingShipping') return language === 'pl' ? 'Oczekuje na Wysyłkę' : 'Awaiting Shipping';
+    if (key === 'shipped') return language === 'pl' ? 'Wysłane' : 'Shipped';
+    if (key === 'inTransit') return language === 'pl' ? 'W Drodze' : 'In Transit';
     if (key === 'awaitingPickup') return language === 'pl' ? 'Oczekuje na odbiór' : 'Awaiting Pickup';
     if (key === 'issue') return language === 'pl' ? 'Problem' : 'Issue';
-    if (key === 'statusPaidDesc') return language === 'pl' ? 'Zamówienie opłacone i wkrótce zostanie przetworzone.' : 'Order has been paid and will be processed soon.';
-    if (key === 'statusShippedDesc') return language === 'pl' ? 'Zamówienie zostało wysłane. Możesz śledzić przesyłkę.' : 'The order has been shipped. You can track your parcel.';
+    if (key === 'statusPaidDesc') return language === 'pl' ? 'Zamówienie opłacone i oczekuje na potwierdzenie' : 'Order has been paid and awaiting confirmation';
+    if (key === 'statusAwaitingConfirmDesc') return language === 'pl' ? 'Oczekiwanie na akceptację zamówienia przez admina' : 'Waiting for admin to accept the order';
+    if (key === 'statusCompleteDesc') return language === 'pl' ? 'Zamówienie zaakceptowane przez admina, w przygotowaniu' : 'Order accepted by admin, being prepared';
+    if (key === 'statusAwaitingShippingDesc') return language === 'pl' ? 'Paczka gotowa, oczekuje na odbiór przez kuriera' : 'Package ready, waiting for carrier pickup';
+    if (key === 'statusShippedDesc') return language === 'pl' ? 'Paczka została wysłana' : 'Package has been shipped';
+    if (key === 'statusInTransitDesc') return language === 'pl' ? 'Paczka w drodze do Ciebie' : 'Package is on the way to you';
     if (key === 'statusAwaitingPickupDesc') return language === 'pl' ? 'Paczka przygotowana i oczekuje na odbiór przez przewoźnika.' : 'Parcel prepared and awaiting carrier pickup.';
-    if (key === 'statusIssueDesc') return language === 'pl' ? 'Problem z danymi lub zamówieniem – skontaktuj się z nami.' : 'Issue with data or order – please contact support.';
+    if (key === 'statusIssueDesc') return language === 'pl' ? 'Problem z zamówieniem lub danymi - skontaktuj się z obsługą' : 'Problem with order or data - contact support';
+    if (key === 'markAsIssue') return language === 'pl' ? 'Oznacz Problem' : 'Mark Issue';
+    if (key === 'removeIssue') return language === 'pl' ? 'Usuń Problem' : 'Remove Issue';
+    if (key === 'editProfile') return language === 'pl' ? 'Edytuj Profil' : 'Edit Profile';
+    if (key === 'spiritPointsLeaderboard') return language === 'pl' ? 'Ranking Punktów Spirit' : 'Spirit Points Leaderboard';
+    if (key === 'yourPoints') return language === 'pl' ? 'Twoje Punkty' : 'Your Points';
+    if (key === 'nextRewardProgress') return language === 'pl' ? 'Postęp Do Następnej Nagrody' : 'Next Reward Progress';
+    if (key === 'purchasedProducts') return language === 'pl' ? 'Zakupione Produkty' : 'Purchased Products';
     
     // Admin Dashboard - Additional translations
     if (key === 'exclude') return language === 'pl' ? 'Wykluczyć' : 'Exclude';
@@ -232,11 +250,17 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'writeAReply') return language === 'pl' ? 'Napisz odpowiedź...' : 'Write a reply...';
     if (key === 'send') return language === 'pl' ? 'Wyślij' : 'Send';
     if (key === 'reply') return language === 'pl' ? 'Odpowiedz' : 'Reply';
+    if (key === 'replyTo') return language === 'pl' ? 'Odpowiedz' : 'Reply to';
     if (key === 'replyAdded') return language === 'pl' ? 'Odpowiedź dodana' : 'Reply added';
     if (key === 'commentDeleted') return language === 'pl' ? 'Komentarz usunięty' : 'Comment deleted';
     if (key === 'page') return language === 'pl' ? 'Strona' : 'Page';
     if (key === 'previous') return language === 'pl' ? 'Poprzednia' : 'Previous';
     if (key === 'next') return language === 'pl' ? 'Następna' : 'Next';
+    if (key === 'edit') return language === 'pl' ? 'Edytuj' : 'Edit';
+    if (key === 'save') return language === 'pl' ? 'Zapisz' : 'Save';
+    if (key === 'cancel') return language === 'pl' ? 'Anuluj' : 'Cancel';
+    if (key === 'sendGif') return language === 'pl' ? 'Wyślij GIF' : 'Send GIF';
+    if (key === 'searchGifs') return language === 'pl' ? 'Szukaj GIF-ów...' : 'Search GIFs...';
 
     // Verious Adonis Edit
 

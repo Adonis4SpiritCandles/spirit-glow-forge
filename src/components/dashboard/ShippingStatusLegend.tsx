@@ -11,32 +11,56 @@ const ShippingStatusLegend = () => {
       icon: CreditCard,
       label: t('paid'),
       description: t('statusPaidDesc'),
-      textColor: 'text-accent',
-      bgColor: 'bg-accent/10 border border-accent/20',
+      textColor: 'text-red-600',
+      bgColor: 'bg-red-500/10 border border-red-600/20',
+    },
+    {
+      status: 'awaiting-confirm',
+      icon: AlertCircle,
+      label: t('awaitingConfirm'),
+      description: t('statusAwaitingConfirmDesc'),
+      textColor: 'text-yellow-600',
+      bgColor: 'bg-yellow-500/10 border border-yellow-600/20',
+    },
+    {
+      status: 'complete',
+      icon: Package,
+      label: t('complete'),
+      description: t('statusCompleteDesc'),
+      textColor: 'text-green-700',
+      bgColor: 'bg-green-700/10 border border-green-700/20',
+    },
+    {
+      status: 'awaiting-shipping',
+      icon: Package,
+      label: t('awaitingShipping'),
+      description: t('statusAwaitingShippingDesc'),
+      textColor: 'text-sky-400',
+      bgColor: 'bg-sky-400/10 border border-sky-400/20',
     },
     {
       status: 'shipped',
       icon: Truck,
       label: t('shipped'),
       description: t('statusShippedDesc'),
-      textColor: 'text-primary',
-      bgColor: 'bg-primary/10 border border-primary/20',
+      textColor: 'text-blue-600',
+      bgColor: 'bg-blue-600/10 border border-blue-600/20',
     },
     {
-      status: 'awaiting-pickup',
-      icon: Package,
-      label: t('awaitingPickup'),
-      description: t('statusAwaitingPickupDesc'),
-      textColor: 'text-secondary',
-      bgColor: 'bg-secondary/10 border border-secondary/20',
+      status: 'in-transit',
+      icon: Truck,
+      label: t('inTransit'),
+      description: t('statusInTransitDesc'),
+      textColor: 'text-green-400',
+      bgColor: 'bg-green-400/10 border border-green-400/20',
     },
     {
       status: 'issue',
       icon: AlertCircle,
       label: t('issue'),
       description: t('statusIssueDesc'),
-      textColor: 'text-destructive',
-      bgColor: 'bg-destructive/10 border border-destructive/20',
+      textColor: 'text-red-600',
+      bgColor: 'bg-red-500/10 border border-red-600/20',
     },
   ];
 
@@ -52,7 +76,7 @@ const ShippingStatusLegend = () => {
         </p>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {statuses.map((status) => {
             const Icon = status.icon;
             return (

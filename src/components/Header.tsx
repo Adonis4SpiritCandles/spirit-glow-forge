@@ -19,6 +19,8 @@ import goldShieldIcon from '@/assets/gold-shield-admin-mini.png';
 import iconLogoCandle from '@/assets/icon-logo-candle-transparent.png';
 import goldShieldMiniIcon from '@/assets/gold-shield-admin-mini-2.png';
 
+import NotificationBell from '@/components/NotificationBell';
+
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);

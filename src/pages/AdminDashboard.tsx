@@ -1868,9 +1868,41 @@ const AdminDashboard = () => {
                                   onCheckedChange={() => toggleOrderSelection(order.id)}
                                 />
                               </TableCell>
-                              {/* Order Number */}
+                              {/* Order Number with Issue Button Below */}
                               <TableCell className="font-semibold text-sm">
-                                SPIRIT-{String(order.order_number).padStart(5, '0')}
+                                <div className="space-y-1">
+                                  <div>SPIRIT-{String(order.order_number).padStart(5, '0')}</div>
+                                  {/* Issue Toggle Button */}
+                                  <Button
+                                    variant={order.has_issue ? 'destructive' : 'outline'}
+                                    size="sm"
+                                    className="h-6 text-[9px] px-2 w-full max-w-[120px]"
+                                    onClick={async () => {
+                                      try {
+                                        const { error } = await supabase
+                                          .from('orders')
+                                          .update({ has_issue: !order.has_issue })
+                                          .eq('id', order.id);
+
+                                        if (error) throw error;
+
+                                        toast({
+                                          title: t('success'),
+                                          description: order.has_issue ? t('issueRemoved') : t('issueMarked'),
+                                        });
+                                        loadDashboardData();
+                                      } catch (error: any) {
+                                        toast({
+                                          title: t('error'),
+                                          description: error.message,
+                                          variant: 'destructive',
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    {order.has_issue ? t('removeIssue') : t('markAsIssue')}
+                                  </Button>
+                                </div>
                               </TableCell>
 
                             {/* Order ID with Tooltip */}
@@ -1948,51 +1980,19 @@ const AdminDashboard = () => {
 
                             {/* Status */}
                             <TableCell>
-                              <div className="space-y-1">
-                                <Badge 
-                                  variant={
-                                    order.status === 'completed' ? 'default' :
-                                    order.status === 'paid' ? 'secondary' :
-                                    order.status === 'pending' ? 'outline' : 'destructive'
-                                  }
-                                  className={`text-[9px] px-1.5 py-0.5 h-auto ${
-                                    order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
-                                    order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
-                                  }`}
-                                >
-                                  {order.status === 'completed' ? t('complete') : order.status}
-                                </Badge>
-                                {/* Issue Toggle Button */}
-                                <Button
-                                  variant={order.has_issue ? 'destructive' : 'outline'}
-                                  size="sm"
-                                  className="h-6 text-[9px] px-2 w-full"
-                                  onClick={async () => {
-                                    try {
-                                      const { error } = await supabase
-                                        .from('orders')
-                                        .update({ has_issue: !order.has_issue })
-                                        .eq('id', order.id);
-
-                                      if (error) throw error;
-
-                                      toast({
-                                        title: t('success'),
-                                        description: order.has_issue ? t('issueRemoved') : t('issueMarked'),
-                                      });
-                                      loadDashboardData();
-                                    } catch (error: any) {
-                                      toast({
-                                        title: t('error'),
-                                        description: error.message,
-                                        variant: 'destructive',
-                                      });
-                                    }
-                                  }}
-                                >
-                                  {order.has_issue ? t('removeIssue') : t('markAsIssue')}
-                                </Button>
-                              </div>
+                              <Badge 
+                                variant={
+                                  order.status === 'completed' ? 'default' :
+                                  order.status === 'paid' ? 'secondary' :
+                                  order.status === 'pending' ? 'outline' : 'destructive'
+                                }
+                                className={`text-[9px] px-1.5 py-0.5 h-auto ${
+                                  order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
+                                  order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
+                                }`}
+                              >
+                                {order.status === 'completed' ? t('complete') : order.status}
+                              </Badge>
                             </TableCell>
 
                             {/* Shipping Status */}

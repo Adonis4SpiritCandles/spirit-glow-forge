@@ -282,6 +282,19 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'doneButton') return language === 'pl' ? 'Zrobione' : 'Done';
     if (key === 'syncing') return language === 'pl' ? 'Synchronizacja' : 'Syncing';
     if (key === 'syncTriggered') return language === 'pl' ? 'Synchronizacja uruchomiona' : 'Sync triggered';
+    if (key === 'statusPaidDesc') return language === 'pl' ? 'Zamówienie opłacone, wkrótce zostanie przetworzone' : 'Order has been paid and will be processed soon';
+    if (key === 'statusShippedDesc') return language === 'pl' ? 'Zamówienie wysłane, możesz je śledzić' : 'Order has been shipped, you can track it';
+    if (key === 'statusAwaitingPickupDesc') return language === 'pl' ? 'Paczka gotowa i czeka na odbiór przez przewoźnika' : 'Package is ready and waiting for carrier pickup';
+    if (key === 'statusIssueDesc') return language === 'pl' ? 'Problem z zamówieniem lub danymi, skontaktuj się z obsługą' : 'Problem with order or data, contact support';
+    if (key === 'paid') return language === 'pl' ? 'Opłacone' : 'Paid';
+    if (key === 'pending') return language === 'pl' ? 'Oczekujące' : 'Pending';
+    if (key === 'editComment') return language === 'pl' ? 'Edytuj' : 'Edit';
+    if (key === 'saveEdit') return language === 'pl' ? 'Zapisz' : 'Save';
+    if (key === 'cancelEdit') return language === 'pl' ? 'Anuluj' : 'Cancel';
+    if (key === 'replyToReply') return language === 'pl' ? 'Odpowiedz' : 'Reply';
+    if (key === 'markAsIssue') return language === 'pl' ? 'Oznacz jako problem' : 'Mark as Issue';
+    if (key === 'removeIssue') return language === 'pl' ? 'Usuń problem' : 'Remove Issue';
+    if (key === 'orderHasIssues') return language === 'pl' ? 'Oznacz zamówienie jako problematyczne' : 'Mark order as having issues';
 
     // User Dashboard
     if (key === 'userDashboard') return language === 'pl' ? 'Panel' : 'Dashboard';

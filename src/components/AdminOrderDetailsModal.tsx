@@ -32,6 +32,7 @@ interface Order {
   furgonetka_package_id?: string;
   shipping_address?: any;
   service_id?: number;
+  has_issue?: boolean;
   profiles?: {
     first_name?: string;
     last_name?: string;
@@ -184,8 +185,32 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
               </div>
               <div>
                 <span className="text-muted-foreground">Status:</span>
-                <div className="mt-1">
+                <div className="mt-1 space-y-1">
                   <Badge variant="default">{order.status}</Badge>
+                  {isAdmin && (
+                    <Button
+                      variant={order.has_issue ? 'destructive' : 'outline'}
+                      size="sm"
+                      className="h-6 text-xs w-full"
+                      onClick={async () => {
+                        try {
+                          const { error } = await supabase
+                            .from('orders')
+                            .update({ has_issue: !order.has_issue })
+                            .eq('id', order.id);
+
+                          if (error) throw error;
+
+                          toast.success(order.has_issue ? 'Issue removed' : 'Marked as issue');
+                          onTrackingUpdated?.();
+                        } catch (error: any) {
+                          toast.error(error.message);
+                        }
+                      }}
+                    >
+                      {order.has_issue ? t('removeIssue') : t('markAsIssue')}
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

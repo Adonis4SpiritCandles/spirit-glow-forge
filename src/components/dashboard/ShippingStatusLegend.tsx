@@ -27,8 +27,8 @@ const ShippingStatusLegend = () => {
       icon: Package,
       label: t('awaitingPickup'),
       description: t('statusAwaitingPickupDesc'),
-      textColor: 'text-primary',
-      bgColor: 'bg-primary/10 border border-primary/20',
+      textColor: 'text-secondary',
+      bgColor: 'bg-secondary/10 border border-secondary/20',
     },
     {
       status: 'issue',
@@ -52,22 +52,22 @@ const ShippingStatusLegend = () => {
         </p>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
           {statuses.map((status) => {
             const Icon = status.icon;
             return (
               <div
                 key={status.status}
-                className={`flex items-start gap-3 p-3 rounded-lg ${status.bgColor}`}
+                className={`flex items-start gap-3 p-4 rounded-lg transition-all hover:shadow-md ${status.bgColor}`}
               >
-                <div className="p-2 rounded-full bg-background/60 border border-border/50">
-                  <Icon className={`h-4 w-4 ${status.textColor}`} />
+                <div className="p-2.5 rounded-full bg-background/80 border border-border/50 shadow-sm">
+                  <Icon className={`h-5 w-5 ${status.textColor}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${status.textColor} break-words`}>
+                  <p className={`text-sm font-semibold ${status.textColor} break-words mb-1`}>
                     {status.label}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">{status.description}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{status.description}</p>
                 </div>
               </div>
             );

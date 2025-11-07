@@ -75,6 +75,7 @@ interface Order {
   shipping_status?: string;
   shipping_label_url?: string;
   furgonetka_package_id?: string;
+  has_issue?: boolean;
   profiles?: {
     first_name?: string;
     last_name?: string;
@@ -233,50 +234,54 @@ const UserDashboard = () => {
   const getOrderBadges = (order: Order) => {
     const badges: { label: string; variant: string; icon: React.ReactNode }[] = [];
 
-    // Paid
-    if (order.status !== 'pending') {
+    // Priority order: Issue > Shipped > Awaiting Pickup > Paid > Pending
+    
+    // Issue badge (manually set by admin) - highest priority
+    if (order.has_issue) {
       badges.push({
-        label: t('paid') || 'Paid',
-        variant: 'bg-accent/10 text-accent border border-accent/20',
-        icon: <CreditCard className="w-3 h-3" />,
+        label: t('issue') || 'Issue',
+        variant: 'bg-destructive/10 text-destructive border border-destructive/20',
+        icon: <AlertCircle className="w-3 h-3" />,
       });
+      return badges; // Show only Issue if it exists
     }
 
-    // Awaiting Pickup (shipment created but no tracking yet)
-    if (order.furgonetka_package_id && !order.tracking_number) {
-      badges.push({
-        label: t('awaitingPickup') || 'Awaiting Pickup',
-        variant: 'bg-primary/10 text-primary border border-primary/20',
-        icon: <Package className="w-3 h-3" />,
-      });
-    }
-
-    // Shipped
+    // Shipped (has tracking number)
     if (order.tracking_number && (order.carrier_name || order.carrier)) {
       badges.push({
         label: t('shipped') || 'Shipped',
         variant: 'bg-primary/10 text-primary border border-primary/20',
         icon: <Truck className="w-3 h-3" />,
       });
+      return badges;
     }
 
-    // Completed (map to Pending for user-facing UI)
-    if (order.status === 'completed') {
+    // Awaiting Pickup (package created but not shipped, or order completed by admin)
+    if (order.furgonetka_package_id || order.status === 'completed') {
       badges.push({
-        label: t('pending') || 'Pending',
-        variant: 'bg-muted text-muted-foreground border border-border',
-        icon: <Clock className="w-3 h-3" />,
+        label: t('awaitingPickup') || 'Awaiting Pickup',
+        variant: 'bg-secondary/10 text-secondary-foreground border border-secondary/20',
+        icon: <Package className="w-3 h-3" />,
       });
+      return badges;
     }
 
-    // Issue
-    if (order.shipping_status === 'collect-problem') {
+    // Paid (order paid but not yet processed)
+    if (order.status !== 'pending') {
       badges.push({
-        label: t('issue') || 'Issue',
-        variant: 'bg-destructive/10 text-destructive border border-destructive/20',
-        icon: <AlertCircle className="w-3 h-3" />,
+        label: t('paid') || 'Paid',
+        variant: 'bg-accent/10 text-accent border border-accent/20',
+        icon: <CreditCard className="w-3 h-3" />,
       });
+      return badges;
     }
+
+    // Pending (not paid yet)
+    badges.push({
+      label: t('pending') || 'Pending',
+      variant: 'bg-muted text-muted-foreground border border-border',
+      icon: <Clock className="w-3 h-3" />,
+    });
 
     return badges;
   };

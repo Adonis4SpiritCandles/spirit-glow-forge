@@ -1050,6 +1050,7 @@ export type Database = {
           estimated_delivery_date: string | null
           exclude_from_stats: boolean | null
           furgonetka_package_id: string | null
+          has_issue: boolean | null
           id: string
           order_number: number | null
           service_id: number | null
@@ -1080,6 +1081,7 @@ export type Database = {
           estimated_delivery_date?: string | null
           exclude_from_stats?: boolean | null
           furgonetka_package_id?: string | null
+          has_issue?: boolean | null
           id?: string
           order_number?: number | null
           service_id?: number | null
@@ -1110,6 +1112,7 @@ export type Database = {
           estimated_delivery_date?: string | null
           exclude_from_stats?: boolean | null
           furgonetka_package_id?: string | null
+          has_issue?: boolean | null
           id?: string
           order_number?: number | null
           service_id?: number | null

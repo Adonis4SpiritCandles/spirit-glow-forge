@@ -96,21 +96,21 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 md:gap-1 lg:gap-4">
             <Button 
               variant="ghost" 
               size="sm" 
               className="hidden md:flex"
               onClick={() => setIsSearchOpen(true)}
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-3.5 w-3.5 md:h-4 md:w-4" />
             </Button>
             
             {/* Language Toggle */}
             <LanguageToggle />
             
             {/* Auth Buttons */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-1 md:gap-1 lg:gap-2">
               {user ? (
                 <>
                   {/* Wishlist Button - nascosto su tablet */}
@@ -136,13 +136,13 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Button>
                   </Link>
                   
-                  {/* Admin Button - Outside dropdown, between dashboard and user menu */}
+                  {/* Admin Button - nascosto su md (tablet), visibile su lg+ */}
                   {userProfile?.role === 'admin' && (
-                    <Link to="/admin">
+                    <Link to="/admin" className="hidden lg:block">
                       <Button variant="ghost" size="sm" className="relative">
                         <img src={goldShieldIcon} alt="Admin" className="h-4 w-4" />
                         {unseenCount > 0 && (
-                          <Badge 
+                          <Badge
                             variant="secondary" 
                             className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs animate-pulse"
                           >
@@ -156,7 +156,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                   {/* User Dropdown Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-1 relative">
+                     <Button variant="ghost" size="sm" className="gap-1 relative min-w-[36px] min-h-[36px] md:min-w-[32px] md:min-h-[32px]">
                         {profileImageUrl ? (
                           <div className="relative">
                             <img 
@@ -195,6 +195,23 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                           {t('dashboard')}
                         </Link>
                       </DropdownMenuItem>
+                      {/* Admin menu item - visibile su md-lg quando il bottone admin è nascosto */}
+                      {userProfile?.role === 'admin' && (
+                        <DropdownMenuItem asChild className="lg:hidden">
+                          <Link to="/admin" className="flex items-center cursor-pointer">
+                            <img src={goldShieldIcon} alt="Admin" className="h-4 w-4 mr-2" />
+                            {t('adminPanel')}
+                            {unseenCount > 0 && (
+                              <Badge 
+                                variant="secondary" 
+                                className="ml-auto h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs"
+                              >
+                                {unseenCount}
+                              </Badge>
+                            )}
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem asChild className="hidden lg:flex">
                         <Link to="/dashboard" className="flex items-center cursor-pointer">
                           <LayoutDashboard className="h-4 w-4 mr-2" />
@@ -256,7 +273,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               {itemCount > 0 && (
                 <Badge 
                   variant="secondary" 
-                  className="absolute -top-2 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
+                  className="absolute -top-2 right-0 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
                 >
                   {itemCount}
                 </Badge>

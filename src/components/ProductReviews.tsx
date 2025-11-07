@@ -171,11 +171,22 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        {/* Nome completo - SEMPRE visibile per TUTTI (loggati e ospiti) */}
+                        {/* Nome completo - SEMPRE visibile e cliccabile per TUTTI (loggati e ospiti) */}
                         <h4 className="font-semibold">
-                          {review.profiles?.first_name && review.profiles?.last_name
-                            ? `${review.profiles.first_name} ${review.profiles.last_name}`
-                            : 'Anonymous User'}
+                          {review.profiles?.first_name && review.profiles?.last_name ? (
+                            review.profiles?.user_id && review.profiles?.public_profile ? (
+                              <Link 
+                                to={`/profile/${review.profiles.user_id}`} 
+                                className="hover:text-primary transition-colors"
+                              >
+                                {review.profiles.first_name} {review.profiles.last_name}
+                              </Link>
+                            ) : (
+                              `${review.profiles.first_name} ${review.profiles.last_name}`
+                            )
+                          ) : (
+                            'Anonymous User'
+                          )}
                         </h4>
                         
                         {/* Username - SOLO per utenti LOGGATI con link se profilo pubblico */}

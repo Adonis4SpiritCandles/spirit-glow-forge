@@ -314,6 +314,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'checkoutError') return language === 'pl' ? 'Błąd podczas tworzenia sesji zakupu. Spróbuj ponownie.' : 'Error creating checkout session. Please try again.';
     if (key === 'discount') return language === 'pl' ? 'Zniżka' : 'Discount';
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';
+    if (key === 'copy') return language === 'pl' ? 'Kopiuj' : 'Copy';
+    if (key === 'copied') return language === 'pl' ? 'Skopiowano!' : 'Copied!';
+    if (key === 'shippingLegendTitle') return language === 'pl' ? 'Legenda Statusów Wysyłki' : 'Shipping Status Legend';
+    if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano Pomyślnie' : 'Shipped Successfully';
+    if (key === 'inTransit') return language === 'pl' ? 'W Tranzycie' : 'In Transit';
+    if (key === 'awaitingPickup') return language === 'pl' ? 'Oczekuje na Odbiór' : 'Awaiting Pickup';
+    if (key === 'collectProblem') return language === 'pl' ? 'Problem z Odbiorem' : 'Collection Problem';
+    if (key === 'legendDescription') return language === 'pl' 
+      ? 'Poniżej znajdują się możliwe statusy wysyłki dla Twoich zamówień i ich znaczenia.' 
+      : 'Below are the possible shipping statuses for your orders and their meanings.';
     
     // SpiritPoints Loyalty System
     if (key === 'spiritPoints') return 'SpiritPoints';

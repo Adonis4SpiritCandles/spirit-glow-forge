@@ -42,11 +42,12 @@ export const useReviews = (productId?: string) => {
       console.error('Error loading reviews:', error);
       setReviews([]);
     } else {
+      // Use the public_profiles_safe view to get profile data (accessible to all users including guests)
       const reviewsWithProfiles = await Promise.all(
         (data || []).map(async (review) => {
           const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('first_name, last_name, username, profile_image_url, user_id, public_profile')
+            .from('public_profiles_safe')
+            .select('*')
             .eq('user_id', review.user_id)
             .maybeSingle();
           

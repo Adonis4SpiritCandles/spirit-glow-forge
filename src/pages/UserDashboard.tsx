@@ -858,18 +858,31 @@ const UserDashboard = () => {
                                   </div>
                                   <div className="text-sm">
                                     <span className="text-muted-foreground">{t('trackingNumber')}:</span>
-                                    {order.tracking_url ? (
-                                      <a 
-                                        href={order.tracking_url} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="inline-block mt-1 font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors"
+                                    <div className="flex items-center gap-2 mt-1">
+                                      {order.tracking_url ? (
+                                        <a 
+                                          href={order.tracking_url} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors"
+                                        >
+                                          {order.tracking_number}
+                                        </a>
+                                      ) : (
+                                        <p className="font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded">{order.tracking_number}</p>
+                                      )}
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(order.tracking_number || '');
+                                          toast({ title: t('copied') });
+                                        }}
+                                        className="h-8 w-8 p-0"
                                       >
-                                        {order.tracking_number}
-                                      </a>
-                                    ) : (
-                                      <p className="font-mono text-sm md:text-base font-bold bg-muted px-2 py-1 rounded mt-1 inline-block">{order.tracking_number}</p>
-                                    )}
+                                        <Package className="h-4 w-4" />
+                                      </Button>
+                                    </div>
                                   </div>
                                 </div>
                               )}

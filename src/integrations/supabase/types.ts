@@ -142,6 +142,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "chat_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       collections: {
@@ -867,6 +874,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "loyalty_points_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       newsletter_settings: {
@@ -1297,6 +1311,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "profile_comment_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       profile_comments: {
@@ -1433,6 +1454,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "profiles_referral_source_id_fkey"
+            columns: ["referral_source_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       referral_rewards: {
@@ -1505,10 +1533,24 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "referrals_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "referrals_referrer_id_fkey"
             columns: ["referrer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
             referencedColumns: ["user_id"]
           },
         ]
@@ -1632,6 +1674,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "shared_wishlists_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       social_posts: {
@@ -1751,6 +1800,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       user_roles: {
@@ -1817,7 +1873,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles_safe: {
+        Row: {
+          first_name: string | null
+          last_name: string | null
+          profile_image_url: string | null
+          public_profile: boolean | null
+          user_id: string | null
+          username: string | null
+        }
+        Insert: {
+          first_name?: string | null
+          last_name?: string | null
+          profile_image_url?: string | null
+          public_profile?: boolean | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          first_name?: string | null
+          last_name?: string | null
+          profile_image_url?: string | null
+          public_profile?: boolean | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       complete_referral: {

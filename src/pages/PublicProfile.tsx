@@ -9,11 +9,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift } from 'lucide-react';
 import { format } from 'date-fns';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
 import EmojiPicker from 'emoji-picker-react';
+import GifPicker from '@/components/profile/GifPicker';
+import { Progress } from '@/components/ui/progress';
 
 interface CommentType {
   id: string;
@@ -49,6 +51,8 @@ export default function PublicProfile() {
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentText, setEditCommentText] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState<string | null>(null);
+  const [showGifPicker, setShowGifPicker] = useState<string | null>(null);
+  const [spiritPoints, setSpiritPoints] = useState(0);
   const COMMENTS_PER_PAGE = 10;
 
   useEffect(() => {
@@ -74,47 +78,124 @@ export default function PublicProfile() {
     }
   }, [user]);
 
-  // Real-time subscription for comments (without full page reload)
+  // Real-time subscription for comments with proper replies handling
   useEffect(() => {
     if (!userId) return;
 
     const channel = supabase
-      .channel(`profile_comments_${userId}`)
+      .channel(`profile_comments_realtime_${userId}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'profile_comments',
           filter: `profile_user_id=eq.${userId}`,
         },
         async (payload) => {
-          if (payload.eventType === 'INSERT') {
-            // Load the new comment with profile data
-            const newComment: any = payload.new;
-            const { data: commenterProfile } = await supabase
-              .from('public_profile_directory')
-              .select('*')
-              .eq('user_id', newComment.commenter_id)
-              .single();
-            
-            newComment.commenter_profile = commenterProfile;
-            newComment.replies = [];
-            
+          const newComment: any = payload.new;
+          
+          // Load commenter profile
+          const { data: commenterProfile } = await supabase
+            .from('public_profile_directory')
+            .select('*')
+            .eq('user_id', newComment.commenter_id)
+            .single();
+          
+          newComment.commenter_profile = commenterProfile || {
+            profile_image_url: '/assets/mini-spirit-logo.png',
+            first_name: 'User',
+            last_name: '',
+          };
+          newComment.replies = [];
+          newComment.like_count = 0;
+          newComment.average_rating = 0;
+          newComment.rating_count = 0;
+          
+          if (!newComment.parent_comment_id) {
+            // Main comment
             setComments(prev => [newComment, ...prev]);
-          } else if (payload.eventType === 'UPDATE') {
-            setComments(prev => prev.map(c => 
-              c.id === payload.new.id ? { ...c, ...payload.new } : c
-            ));
-          } else if (payload.eventType === 'DELETE') {
-            setComments(prev => prev.filter(c => c.id !== payload.old.id));
+          } else {
+            // Reply - add to parent's replies
+            setComments(prev => prev.map(c => {
+              if (c.id === newComment.parent_comment_id) {
+                return {
+                  ...c,
+                  replies: [...(c.replies || []), newComment]
+                };
+              }
+              return c;
+            }));
           }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profile_comments',
+        },
+        (payload) => {
+          const updatedComment: any = payload.new;
+          setComments(prev => prev.map(c => {
+            if (c.id === updatedComment.id) {
+              return { ...c, comment: updatedComment.comment, updated_at: updatedComment.updated_at };
+            }
+            if (c.replies) {
+              return {
+                ...c,
+                replies: c.replies.map(r => 
+                  r.id === updatedComment.id 
+                    ? { ...r, comment: updatedComment.comment, updated_at: updatedComment.updated_at }
+                    : r
+                )
+              };
+            }
+            return c;
+          }));
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'profile_comments',
+        },
+        (payload) => {
+          const deletedId = payload.old.id;
+          setComments(prev => prev.filter(c => {
+            if (c.id === deletedId) return false;
+            if (c.replies) {
+              c.replies = c.replies.filter(r => r.id !== deletedId);
+            }
+            return true;
+          }));
+        }
+      )
+      .subscribe();
+
+    // Real-time for likes
+    const likesChannel = supabase
+      .channel(`comment_likes_${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profile_comment_likes',
+        },
+        () => {
+          // Reload comment counts
+          loadProfile();
         }
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(likesChannel);
     };
   }, [userId]);
 
@@ -151,6 +232,15 @@ export default function PublicProfile() {
       } else {
         setProfile(profileData);
       }
+
+      // Load spirit points
+      const { data: loyaltyData } = await supabase
+        .from('loyalty_points')
+        .select('lifetime_points')
+        .eq('user_id', userId)
+        .single();
+      
+      setSpiritPoints(loyaltyData?.lifetime_points || 0);
 
       // Load comments with profiles
       const { data: commentsData } = await supabase
@@ -201,14 +291,22 @@ export default function PublicProfile() {
 
             (comment as any).replies = repliesData.map((r: any) => ({
               ...r,
-              commenter_profile: replyProfileMap.get(r.commenter_id),
+              commenter_profile: replyProfileMap.get(r.commenter_id) || {
+                profile_image_url: '/assets/mini-spirit-logo.png',
+                first_name: 'User',
+                last_name: '',
+              },
               like_count: r.profile_comment_likes?.[0]?.count || 0,
               average_rating: r.average_rating || 0,
               rating_count: r.rating_count || 0,
             }));
           }
 
-          (comment as any).commenter_profile = profileMap.get(comment.commenter_id);
+          (comment as any).commenter_profile = profileMap.get(comment.commenter_id) || {
+            profile_image_url: '/assets/mini-spirit-logo.png',
+            first_name: 'User',
+            last_name: '',
+          };
           (comment as any).like_count = comment.profile_comment_likes?.[0]?.count || 0;
         }
 
@@ -493,6 +591,15 @@ export default function PublicProfile() {
     setShowEmojiPicker(null);
   };
 
+  const onGifSelect = (gifUrl: string, inputFor: 'comment' | 'reply') => {
+    if (inputFor === 'comment') {
+      setNewComment(prev => prev + `\n![gif](${gifUrl})`);
+    } else if (inputFor === 'reply') {
+      setReplyText(prev => prev + `\n![gif](${gifUrl})`);
+    }
+    setShowGifPicker(null);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -529,7 +636,15 @@ export default function PublicProfile() {
   return (
     <div className="min-h-screen bg-background">
       {/* Cover Image */}
-      <div className="relative h-64 bg-gradient-to-r from-primary/20 to-secondary/20">
+      <div 
+        className="relative h-64 bg-gradient-to-r from-primary/20 to-secondary/20"
+        style={{
+          backgroundImage: !profile.cover_image_url ? 'url(/assets/spirit-logo-transparent.png)' : undefined,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }}
+      >
         {profile.cover_image_url && (
           <img
             src={profile.cover_image_url}
@@ -537,11 +652,14 @@ export default function PublicProfile() {
             className="w-full h-full object-cover"
           />
         )}
-        {isOwnProfile && (
-          <div className="absolute top-4 right-4">
-            <Button size="sm" variant="secondary">
-              {t('editCover')}
-            </Button>
+        {isOwnProfile && !profile.cover_image_url && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+            <ProfileImageUpload
+              userId={userId!}
+              currentImageUrl={profile.cover_image_url}
+              onUploadComplete={() => loadProfile()}
+              imageType="cover"
+            />
           </div>
         )}
       </div>
@@ -550,12 +668,12 @@ export default function PublicProfile() {
         <div className="flex items-start gap-8 -mt-20 mb-8">
           <div className="relative">
             <Avatar className="h-32 w-32 border-4 border-background shadow-xl">
-              <AvatarImage src={profile.profile_image_url} />
+              <AvatarImage src={profile.profile_image_url || '/assets/mini-spirit-logo.png'} />
               <AvatarFallback className="text-4xl">
                 {profile.first_name?.[0]}{profile.last_name?.[0]}
               </AvatarFallback>
             </Avatar>
-            {isOwnProfile && (
+            {isOwnProfile && !profile.profile_image_url && (
               <ProfileImageUpload
                 userId={userId!}
                 currentImageUrl={profile.profile_image_url}
@@ -685,20 +803,43 @@ export default function PublicProfile() {
                           className="min-h-[80px] resize-none"
                         />
                         <div className="flex items-center justify-between">
-                          <div className="relative">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setShowEmojiPicker(showEmojiPicker === 'comment' ? null : 'comment')}
-                            >
-                              <Smile className="h-4 w-4" />
-                            </Button>
-                            {showEmojiPicker === 'comment' && (
-                              <div className="absolute z-50 top-full mt-2">
-                                <EmojiPicker onEmojiClick={(emojiData) => onEmojiClick(emojiData, 'comment')} />
-                              </div>
-                            )}
+                          <div className="flex items-center gap-2">
+                            <div className="relative">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setShowEmojiPicker(showEmojiPicker === 'comment' ? null : 'comment');
+                                  setShowGifPicker(null);
+                                }}
+                              >
+                                <Smile className="h-4 w-4" />
+                              </Button>
+                              {showEmojiPicker === 'comment' && (
+                                <div className="absolute z-50 top-full mt-2">
+                                  <EmojiPicker onEmojiClick={(emojiData) => onEmojiClick(emojiData, 'comment')} />
+                                </div>
+                              )}
+                            </div>
+                            <div className="relative">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setShowGifPicker(showGifPicker === 'comment' ? null : 'comment');
+                                  setShowEmojiPicker(null);
+                                }}
+                              >
+                                <ImageIcon className="h-4 w-4" />
+                              </Button>
+                              {showGifPicker === 'comment' && (
+                                <div className="absolute z-50 top-full mt-2">
+                                  <GifPicker onSelectGif={(gifUrl) => onGifSelect(gifUrl, 'comment')} />
+                                </div>
+                              )}
+                            </div>
                           </div>
                           <Button onClick={submitComment} disabled={submitting || !newComment.trim()}>
                             <Send className="h-4 w-4 mr-2" />
@@ -713,14 +854,14 @@ export default function PublicProfile() {
                 {/* Comments List */}
                 <div className="space-y-6">
                   {comments.map((comment) => (
-                    <div key={comment.id} className="space-y-4 p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all">
+                    <div key={comment.id} className="space-y-4 p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all animate-fade-in">
                       <div className="flex items-start gap-3">
                         <Link to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}>
                           <Avatar className="h-10 w-10">
-                            <AvatarImage src={comment.commenter_profile?.profile_image_url} />
+                            <AvatarImage src={comment.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
                             <AvatarFallback>
-                              {comment.commenter_profile?.first_name?.[0]}
-                              {comment.commenter_profile?.last_name?.[0]}
+                              {comment.commenter_profile?.first_name?.[0] || 'U'}
+                              {comment.commenter_profile?.last_name?.[0] || ''}
                             </AvatarFallback>
                           </Avatar>
                         </Link>
@@ -844,20 +985,43 @@ export default function PublicProfile() {
                                 className="min-h-[60px]"
                               />
                               <div className="flex items-center justify-between">
-                                <div className="relative">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setShowEmojiPicker(showEmojiPicker === 'reply' ? null : 'reply')}
-                                  >
-                                    <Smile className="h-4 w-4" />
-                                  </Button>
-                                  {showEmojiPicker === 'reply' && (
-                                    <div className="absolute z-50 top-full mt-2">
-                                      <EmojiPicker onEmojiClick={(emojiData) => onEmojiClick(emojiData, 'reply')} />
-                                    </div>
-                                  )}
+                                <div className="flex items-center gap-2">
+                                  <div className="relative">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        setShowEmojiPicker(showEmojiPicker === 'reply' ? null : 'reply');
+                                        setShowGifPicker(null);
+                                      }}
+                                    >
+                                      <Smile className="h-4 w-4" />
+                                    </Button>
+                                    {showEmojiPicker === 'reply' && (
+                                      <div className="absolute z-50 top-full mt-2">
+                                        <EmojiPicker onEmojiClick={(emojiData) => onEmojiClick(emojiData, 'reply')} />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="relative">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        setShowGifPicker(showGifPicker === 'reply' ? null : 'reply');
+                                        setShowEmojiPicker(null);
+                                      }}
+                                    >
+                                      <ImageIcon className="h-4 w-4" />
+                                    </Button>
+                                    {showGifPicker === 'reply' && (
+                                      <div className="absolute z-50 top-full mt-2">
+                                        <GifPicker onSelectGif={(gifUrl) => onGifSelect(gifUrl, 'reply')} />
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => submitReply(comment.id)} disabled={submitting || !replyText.trim()}>
@@ -879,14 +1043,14 @@ export default function PublicProfile() {
                           {comment.replies && comment.replies.length > 0 && (
                             <div className="mt-4 ml-8 space-y-3 border-l-2 border-primary/20 pl-4">
                               {comment.replies.map((reply: any) => (
-                                <div key={reply.id} className="space-y-2">
+                                <div key={reply.id} className="space-y-2 p-3 bg-gradient-to-r from-accent/5 to-transparent rounded-lg animate-fade-in">
                                   <div className="flex items-start gap-3">
                                     <Link to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}>
                                       <Avatar className="h-8 w-8">
-                                        <AvatarImage src={reply.commenter_profile?.profile_image_url} />
+                                        <AvatarImage src={reply.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
                                         <AvatarFallback>
-                                          {reply.commenter_profile?.first_name?.[0]}
-                                          {reply.commenter_profile?.last_name?.[0]}
+                                          {reply.commenter_profile?.first_name?.[0] || 'U'}
+                                          {reply.commenter_profile?.last_name?.[0] || ''}
                                         </AvatarFallback>
                                       </Avatar>
                                     </Link>
@@ -911,17 +1075,58 @@ export default function PublicProfile() {
                                             • {format(new Date(reply.created_at), 'PPp')}
                                           </span>
                                         </div>
-                                        {user && user.id === reply.commenter_id && (
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => deleteComment(reply.id)}
-                                          >
-                                            <Trash2 className="h-3 w-3" />
-                                          </Button>
-                                        )}
+                                        <div className="flex items-center gap-2">
+                                          {user && user.id === reply.commenter_id && (
+                                            <>
+                                              <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                  setEditingCommentId(reply.id);
+                                                  setEditCommentText(reply.comment);
+                                                }}
+                                              >
+                                                <Pencil className="h-3 w-3" />
+                                              </Button>
+                                              <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => deleteComment(reply.id)}
+                                              >
+                                                <Trash2 className="h-3 w-3" />
+                                              </Button>
+                                            </>
+                                          )}
+                                        </div>
                                       </div>
-                                      <p className="text-sm mt-1">{reply.comment}</p>
+                                      
+                                      {editingCommentId === reply.id ? (
+                                        <div className="space-y-2 mt-2">
+                                          <Textarea
+                                            value={editCommentText}
+                                            onChange={(e) => setEditCommentText(e.target.value)}
+                                            className="min-h-[50px]"
+                                          />
+                                          <div className="flex items-center gap-2">
+                                            <Button size="sm" onClick={() => handleEditComment(reply.id)}>
+                                              {t('saveEdit')}
+                                            </Button>
+                                            <Button 
+                                              size="sm" 
+                                              variant="outline" 
+                                              onClick={() => {
+                                                setEditingCommentId(null);
+                                                setEditCommentText('');
+                                              }}
+                                            >
+                                              {t('cancelEdit')}
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm mt-1">{reply.comment}</p>
+                                      )}
+                                      
                                       <div className="flex items-center gap-4 text-sm mt-2">
                                         <Button
                                           variant="ghost"
@@ -940,6 +1145,22 @@ export default function PublicProfile() {
                                           <MessageSquare className="h-3 w-3 mr-1" />
                                           {t('replyToReply')}
                                         </Button>
+                                        <div className="flex items-center gap-1">
+                                          {Array.from({ length: 5 }).map((_, i) => (
+                                            <Star
+                                              key={i}
+                                              className={`h-3 w-3 cursor-pointer transition-colors ${
+                                                i < Math.round(reply.average_rating || 0)
+                                                  ? 'fill-yellow-400 text-yellow-400'
+                                                  : 'text-gray-300 hover:text-yellow-400'
+                                              }`}
+                                              onClick={() => user && rateComment(reply.id, i + 1)}
+                                            />
+                                          ))}
+                                          <span className="text-xs text-muted-foreground ml-1">
+                                            ({reply.rating_count || 0})
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -962,73 +1183,35 @@ export default function PublicProfile() {
               </CardContent>
             </Card>
 
-            {/* Purchased Products */}
-            {purchasedProducts.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <h2 className="text-2xl font-semibold flex items-center gap-2">
-                    <ShoppingBag className="h-6 w-6 text-primary" />
-                    {t('purchasedProducts')}
-                  </h2>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {purchasedProducts.map((product: any) => (
-                      <Link
-                        key={product.id}
-                        to={`/product/${product.id}`}
-                        className="group"
-                      >
-                        <img
-                          src={product.image_url}
-                          alt={product.name_en}
-                          className="w-full aspect-square object-cover rounded-lg group-hover:scale-105 transition-transform"
-                        />
-                        <p className="text-sm font-medium mt-2 truncate group-hover:text-primary transition-colors">
-                          {language === 'en' ? product.name_en : product.name_pl}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Wishlist */}
-            {wishlistProducts.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <h2 className="text-2xl font-semibold flex items-center gap-2">
-                    <Heart className="h-6 w-6 text-primary" />
-                    {t('wishlist')}
-                  </h2>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {wishlistProducts.map((product: any) => (
-                      <Link
-                        key={product.id}
-                        to={`/product/${product.id}`}
-                        className="group"
-                      >
-                        <img
-                          src={product.image_url}
-                          alt={product.name_en}
-                          className="w-full aspect-square object-cover rounded-lg group-hover:scale-105 transition-transform"
-                        />
-                        <p className="text-sm font-medium mt-2 truncate group-hover:text-primary transition-colors">
-                          {language === 'en' ? product.name_en : product.name_pl}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Spirit Points Display */}
+            {isOwnProfile && (
+              <Card className="bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20">
+                <CardHeader>
+                  <h3 className="text-xl font-semibold flex items-center gap-2">
+                    <Gift className="h-5 w-5 text-primary" />
+                    {t('yourPoints')}
+                  </h3>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-4xl font-bold text-primary">{spiritPoints}</p>
+                    <p className="text-sm text-muted-foreground">{t('spiritPoints')}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{t('nextRewardProgress')}</span>
+                      <span className="font-medium">{Math.min(100, (spiritPoints % 100))}%</span>
+                    </div>
+                    <Progress value={Math.min(100, (spiritPoints % 100))} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* SpiritPoints Leaderboard */}
             <Card>
               <CardHeader>
@@ -1083,6 +1266,82 @@ export default function PublicProfile() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Purchased Products */}
+            {purchasedProducts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h3 className="text-xl font-semibold flex items-center gap-2">
+                    <ShoppingBag className="h-5 w-5 text-primary" />
+                    {t('purchasedProducts')}
+                  </h3>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-3">
+                    {purchasedProducts.slice(0, 4).map((product: any) => (
+                      <Link
+                        key={product.id}
+                        to={`/product/${product.id}`}
+                        className="group"
+                      >
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                          <div className="aspect-square">
+                            <img
+                              src={product.image_url}
+                              alt={product.name_en}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          </div>
+                          <CardContent className="p-2">
+                            <p className="text-xs font-medium text-center truncate group-hover:text-primary transition-colors">
+                              {language === 'en' ? product.name_en : product.name_pl}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Wishlist */}
+            {wishlistProducts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h3 className="text-xl font-semibold flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-primary" />
+                    {t('wishlist')}
+                  </h3>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-3">
+                    {wishlistProducts.slice(0, 4).map((product: any) => (
+                      <Link
+                        key={product.id}
+                        to={`/product/${product.id}`}
+                        className="group"
+                      >
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                          <div className="aspect-square">
+                            <img
+                              src={product.image_url}
+                              alt={product.name_en}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          </div>
+                          <CardContent className="p-2">
+                            <p className="text-xs font-medium text-center truncate group-hover:text-primary transition-colors">
+                              {language === 'en' ? product.name_en : product.name_pl}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

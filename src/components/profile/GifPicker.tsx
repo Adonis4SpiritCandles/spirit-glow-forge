@@ -8,7 +8,7 @@ interface GifPickerProps {
   onSelectGif: (gifUrl: string) => void;
 }
 
-const TENOR_API_KEY = 'AIzaSyAKx0JGZHmHVCjLMM9r92EhPGzU6xHFYks'; // Free public key
+const TENOR_API_KEY = 'AIzaSyBEgwZZGV_rH9n6pEVFgl2Nv1KK-GNtD2Y';
 const TENOR_CLIENT_KEY = 'spirit_candles';
 
 export default function GifPicker({ onSelectGif }: GifPickerProps) {

@@ -319,6 +319,12 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'markAsIssue') return language === 'pl' ? 'Oznacz jako problem' : 'Mark as Issue';
     if (key === 'removeIssue') return language === 'pl' ? 'Usuń problem' : 'Remove Issue';
     if (key === 'orderHasIssues') return language === 'pl' ? 'Oznacz zamówienie jako problematyczne' : 'Mark order as having issues';
+    if (key === 'editProfile') return language === 'pl' ? 'Edytuj Profil' : 'Edit Profile';
+    if (key === 'editCover') return language === 'pl' ? 'Edytuj Okładkę' : 'Edit Cover';
+    if (key === 'spiritPointsLeaderboard') return language === 'pl' ? 'Ranking Punktów Spirit' : 'Spirit Points Leaderboard';
+    if (key === 'yourPoints') return language === 'pl' ? 'Twoje Punkty' : 'Your Points';
+    if (key === 'nextRewardProgress') return language === 'pl' ? 'Postęp Do Następnej Nagrody' : 'Next Reward Progress';
+    if (key === 'searchGifs') return language === 'pl' ? 'Szukaj GIF-ów' : 'Search GIFs';
 
     // User Dashboard
     if (key === 'userDashboard') return language === 'pl' ? 'Panel' : 'Dashboard';

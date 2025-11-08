@@ -528,6 +528,23 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'promoteToAdmin') return language === 'pl' ? 'Awansuj na Admina' : 'Promote to Admin';
     if (key === 'demoteToUser') return language === 'pl' ? 'Obniż do Użytkownika' : 'Demote to User';
     if (key === 'product') return language === 'pl' ? 'Produkt' : 'Product';
+    
+    // New translations for full implementation
+    if (key === 'spiritProfile') return language === 'pl' ? 'Profil Spirit' : 'Spirit Profile';
+    if (key === 'uploadCover') return language === 'pl' ? 'Prześlij Okładkę' : 'Upload Cover';
+    if (key === 'markIssue') return language === 'pl' ? 'Oznacz Problem' : 'Mark Issue';
+    if (key === 'removeIssue') return language === 'pl' ? 'Usuń Problem' : 'Remove Issue';
+    if (key === 'issueDetected') return language === 'pl' ? 'Problem z zamówieniem, danymi lub wysyłką' : 'Problem with order, data or shipping';
+    if (key === 'issueMarked') return language === 'pl' ? 'Problem oznaczony pomyślnie' : 'Issue marked successfully';
+    if (key === 'issueRemoved') return language === 'pl' ? 'Problem usunięty pomyślnie' : 'Issue removed successfully';
+    if (key === 'issue') return language === 'pl' ? 'Problem' : 'Issue';
+    if (key === 'faq') return language === 'pl' ? 'FAQ' : 'FAQ';
+    if (key === 'chatResponses') return language === 'pl' ? 'Odpowiedzi Czatu' : 'Chat Responses';
+    if (key === 'keywords') return language === 'pl' ? 'Słowa Kluczowe' : 'Keywords';
+    if (key === 'addNewResponse') return language === 'pl' ? 'Dodaj Nową Odpowiedź' : 'Add New Response';
+    if (key === 'responseUpdated') return language === 'pl' ? 'Odpowiedź zaktualizowana' : 'Response updated';
+    if (key === 'searchGifs') return language === 'pl' ? 'Szukaj GIF-ów...' : 'Search GIFs...';
+    if (key === 'markAsIssue') return language === 'pl' ? 'Oznacz jako Problem' : 'Mark as Issue';
     if (key === 'published') return language === 'pl' ? 'Opublikowany' : 'Published';
     if (key === 'editProductDetails') return language === 'pl' ? 'Edytuj szczegóły' : 'Edit Details';
     if (key === 'viewProductPage') return language === 'pl' ? 'Zobacz stronę' : 'View Page';

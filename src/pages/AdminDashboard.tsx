@@ -1868,13 +1868,42 @@ const AdminDashboard = () => {
                                   onCheckedChange={() => toggleOrderSelection(order.id)}
                                 />
                               </TableCell>
-                              <TableCell className="max-w-[120px]">
+                              
+                              {/* Order # Column - RESTORED */}
+                              <TableCell className="font-mono text-sm max-w-[130px]">
+                                <span className="truncate block">
+                                  #SPIRIT-{String(order.order_number || '00000').padStart(5, '0')}
+                                </span>
+                              </TableCell>
+                              
+                              {/* Order ID Column with Mark Issue button */}
+                              <TableCell className="max-w-[140px]">
                                 <div className="space-y-1">
-                                  {/* Issue Toggle Button - Moved to Order ID */}
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1 cursor-pointer group">
+                                        <span className="font-mono text-xs truncate">
+                                          {order.id.slice(0, 8)}...
+                                        </span>
+                                        <Copy 
+                                          className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" 
+                                          onClick={() => {
+                                            navigator.clipboard.writeText(order.id);
+                                            toast({ title: t('orderIdCopied') });
+                                          }}
+                                        />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="font-mono text-xs">{order.id}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  
+                                  {/* Issue Toggle Button below Order ID */}
                                   <Button
                                     variant={order.has_issue ? 'destructive' : 'outline'}
                                     size="sm"
-                                    className="h-6 text-[9px] px-2 w-full max-w-[110px]"
+                                    className="h-6 text-[9px] px-1.5 w-full"
                                     onClick={async () => {
                                       try {
                                         const { error } = await supabase
@@ -1900,36 +1929,6 @@ const AdminDashboard = () => {
                                   >
                                     {order.has_issue ? t('removeIssue') : t('markIssue')}
                                   </Button>
-                                  
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div className="flex items-center gap-1 cursor-pointer group">
-                                        <span className="font-mono text-sm hidden md:inline">
-                                          {order.id.slice(0, 8)}...
-                                        </span>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          className="h-6 px-2 md:hidden"
-                                          onClick={() => {
-                                            navigator.clipboard.writeText(order.id);
-                                            toast({ title: t('orderIdCopied') });
-                                          }}
-                                        >
-                                          {t('viewOrderId')}
-                                        </Button>
-                                        <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" 
-                                          onClick={() => {
-                                            navigator.clipboard.writeText(order.id);
-                                            toast({ title: t('orderIdCopied') });
-                                          }}
-                                        />
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p className="font-mono text-xs">{order.id}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
                                 </div>
                               </TableCell>
 
@@ -2098,7 +2097,7 @@ const AdminDashboard = () => {
 
                           {/* Order Info */}
                           <div className="flex justify-between items-start">
-                            <div>
+                            <div className="flex-1">
                               <div className="font-semibold text-sm">
                                 SPIRIT-{String(order.order_number).padStart(5, '0')}
                               </div>
@@ -2106,19 +2105,52 @@ const AdminDashboard = () => {
                                 {new Date(order.created_at).toLocaleDateString()}
                               </div>
                             </div>
-                            <Badge 
-                              variant={
-                                order.status === 'completed' ? 'default' :
-                                order.status === 'paid' ? 'secondary' :
-                                order.status === 'pending' ? 'outline' : 'destructive'
-                              }
-                              className={
-                                order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
-                                order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
-                              }
-                            >
-                              {order.status === 'completed' ? t('complete') : order.status}
-                            </Badge>
+                            <div className="flex flex-col items-end gap-2">
+                              {/* Mark Issue Button for Mobile */}
+                              <Button
+                                variant={order.has_issue ? 'destructive' : 'outline'}
+                                size="sm"
+                                className="h-7 text-[10px] px-2"
+                                onClick={async () => {
+                                  try {
+                                    const { error } = await supabase
+                                      .from('orders')
+                                      .update({ has_issue: !order.has_issue })
+                                      .eq('id', order.id);
+
+                                    if (error) throw error;
+
+                                    toast({
+                                      title: t('success'),
+                                      description: order.has_issue ? t('issueRemoved') : t('issueMarked'),
+                                    });
+                                    loadDashboardData();
+                                  } catch (error: any) {
+                                    toast({
+                                      title: t('error'),
+                                      description: error.message,
+                                      variant: 'destructive',
+                                    });
+                                  }
+                                }}
+                              >
+                                {order.has_issue ? t('removeIssue') : t('markIssue')}
+                              </Button>
+                              
+                              <Badge 
+                                variant={
+                                  order.status === 'completed' ? 'default' :
+                                  order.status === 'paid' ? 'secondary' :
+                                  order.status === 'pending' ? 'outline' : 'destructive'
+                                }
+                                className={
+                                  order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
+                                  order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
+                                }
+                              >
+                                {order.status === 'completed' ? t('complete') : order.status}
+                              </Badge>
+                            </div>
                           </div>
 
                           {/* Customer */}

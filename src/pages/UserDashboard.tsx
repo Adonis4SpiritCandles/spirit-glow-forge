@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
-import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye, Save, Users, Award, Gift, AlertCircle, Clock, CheckCircle, TrendingUp } from 'lucide-react';
+import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye, Save, Users, Award, Gift, AlertCircle, Clock, CheckCircle, TrendingUp, Globe } from 'lucide-react';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
 import { CarrierBadge } from '@/utils/carrierStyles';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
@@ -88,7 +88,7 @@ const UserDashboard = () => {
   const { t, language } = useLanguage();
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam || 'settings');
+  const [activeTab, setActiveTab] = useState(tabParam || 'orders'); // Changed default to 'orders'
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -350,22 +350,16 @@ const UserDashboard = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="settings">
+                  <SelectItem value="orders">
                     <div className="flex items-center gap-2">
-                      <Settings className="h-4 w-4" />
-                      <span>{t('settings')}</span>
+                      <ShoppingBag className="h-4 w-4" />
+                      <span>{t('orders')}</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="social">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      <span>{language === 'pl' ? 'Profil' : 'Profile'}</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="orders">
-                    <div className="flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4" />
-                      <span>{t('orders')}</span>
+                      <span>{t('spiritProfile')}</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="billing">
@@ -386,23 +380,31 @@ const UserDashboard = () => {
                       <span>{t('referrals') || 'Referrals'}</span>
                     </div>
                   </SelectItem>
+                  <SelectItem value="settings">
+                    <div className="flex items-center gap-2">
+                      <Settings className="h-4 w-4" />
+                      <span>{t('settings')}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="language">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      <span>{t('language')}</span>
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
-            {/* Tablet/Desktop: visible tabs */}
-            <TabsList className="hidden sm:grid sm:grid-cols-3 md:grid-cols-6 w-full gap-1 mb-6">
-              <TabsTrigger value="settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('settings')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="social" className="flex items-center gap-2">
-                <Users className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{language === 'pl' ? 'Profil' : 'Profile'}</span>
-              </TabsTrigger>
+            {/* Tablet/Desktop: visible tabs - REORDERED */}
+            <TabsList className="hidden sm:grid sm:grid-cols-7 w-full gap-1 mb-6">
               <TabsTrigger value="orders" className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm">{t('orders')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="social" className="flex items-center gap-2">
+                <Users className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('spiritProfile')}</span>
               </TabsTrigger>
               <TabsTrigger value="billing" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4 flex-shrink-0" />
@@ -415,6 +417,14 @@ const UserDashboard = () => {
               <TabsTrigger value="referrals" className="flex items-center gap-2">
                 <Gift className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm">{t('referrals') || 'Referrals'}</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('settings')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="language" className="flex items-center gap-2">
+                <Globe className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">{t('language')}</span>
               </TabsTrigger>
             </TabsList>
 

@@ -99,6 +99,11 @@ const Footer = () => {
                   {t('aboutUs')}
                 </Link>
               </li>
+              <li>
+                <Link to="/faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('faq')}
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -233,13 +238,10 @@ const Footer = () => {
             </p>
           </div>
           
-          {/* Disclaimers */}
-          <div className="text-xs text-muted-foreground text-center">
-            <p className="mb-2">
-              <strong>{t('inspirationNotice')}:</strong>
-              {t('inspirationNoticeText')}
-            </p>
-            <p className="mb-2">
+          {/* Disclaimers - FIXED duplicate */}
+          <div className="text-xs text-muted-foreground text-center space-y-2">
+            <p>
+              <strong>{t('inspirationNotice')}:</strong><br />
               {t('inspirationNoticeText')}
             </p>
             <p>

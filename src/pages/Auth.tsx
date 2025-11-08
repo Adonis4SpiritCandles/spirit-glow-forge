@@ -257,7 +257,11 @@ const Auth = () => {
             <img 
               src={spiritLogo} 
               alt="Spirit Logo" 
-              className="h-32 w-32 object-contain filter brightness-0 invert candle-glow"
+              className="h-40 w-40 md:h-48 md:w-48 object-contain filter brightness-0 invert"
+              style={{
+                filter: 'brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))',
+                animation: 'glow-soft 4s ease-in-out infinite'
+              }}
             />
           </div>
           <CardTitle className="font-playfair text-2xl text-foreground">

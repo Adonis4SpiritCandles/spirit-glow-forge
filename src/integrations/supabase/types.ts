@@ -151,6 +151,48 @@ export type Database = {
           },
         ]
       }
+      chat_responses: {
+        Row: {
+          category: string
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          response_en: string
+          response_pl: string
+          trigger_keywords_en: string[] | null
+          trigger_keywords_pl: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          response_en: string
+          response_pl: string
+          trigger_keywords_en?: string[] | null
+          trigger_keywords_pl?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          response_en?: string
+          response_pl?: string
+          trigger_keywords_en?: string[] | null
+          trigger_keywords_pl?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       collections: {
         Row: {
           created_at: string | null

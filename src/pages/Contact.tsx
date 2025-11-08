@@ -115,6 +115,22 @@ const Contact = () => {
 
       if (error) throw error;
 
+      // Handle newsletter subscription if consented
+      if (newsletterConsent) {
+        try {
+          await supabase.functions.invoke('newsletter-subscribe', {
+            body: {
+              email: formData.email,
+              name: formData.name,
+              language: language,
+              source: 'contact_form'
+            }
+          });
+        } catch (newsletterError) {
+          console.error('Newsletter subscription error:', newsletterError);
+        }
+      }
+
       toast({
         title: t('messageSentSuccessfully'),
         description: newsletterConsent 

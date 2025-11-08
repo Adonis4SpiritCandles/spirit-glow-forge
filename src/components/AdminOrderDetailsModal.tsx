@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { RefreshCw, Check, Clock, Truck, Package, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, Check, Clock, Truck, Package, CheckCircle2, AlertCircle } from 'lucide-react';
 import { CarrierBadge } from '@/utils/carrierStyles';
 import { useState } from 'react';
 
@@ -51,6 +51,7 @@ interface AdminOrderDetailsModalProps {
 
 export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrackingUpdated, isAdmin = true }: AdminOrderDetailsModalProps) {
   const { t } = useLanguage();
+  const { language } = useLanguage();
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSyncTracking = async () => {
@@ -172,12 +173,12 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
             <h3 className="font-semibold mb-3">{t('orderInformation')}</h3>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <span className="text-muted-foreground">Order ID:</span>
-                <p className="font-mono text-xs mt-1">{order.id}</p>
-              </div>
-              <div>
                 <span className="text-muted-foreground">Order Number:</span>
                 <p className="font-semibold mt-1">SPIRIT-{String(order.order_number).padStart(5, '0')}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Order ID:</span>
+                <p className="font-mono text-xs mt-1">{order.id.slice(0, 8)}...</p>
               </div>
               <div>
                 <span className="text-muted-foreground">Date:</span>
@@ -185,35 +186,35 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
               </div>
               <div>
                 <span className="text-muted-foreground">Status:</span>
-                <div className="mt-1 space-y-1">
-                  <Badge variant="default">{order.status}</Badge>
-                  {isAdmin && (
-                    <Button
-                      variant={order.has_issue ? 'destructive' : 'outline'}
-                      size="sm"
-                      className="h-6 text-xs w-full"
-                      onClick={async () => {
-                        try {
-                          const { error } = await supabase
-                            .from('orders')
-                            .update({ has_issue: !order.has_issue })
-                            .eq('id', order.id);
-
-                          if (error) throw error;
-
-                          toast.success(order.has_issue ? 'Issue removed' : 'Marked as issue');
-                          onTrackingUpdated?.();
-                        } catch (error: any) {
-                          toast.error(error.message);
-                        }
-                      }}
-                    >
-                      {order.has_issue ? t('removeIssue') : t('markAsIssue')}
-                    </Button>
-                  )}
-                </div>
+                <Badge variant="default" className="mt-1">{order.status}</Badge>
               </div>
             </div>
+            
+            {/* Mark Issue button - Below Date/Status, only for admin */}
+            {isAdmin && (
+              <Button
+                variant={order.has_issue ? 'destructive' : 'outline'}
+                size="sm"
+                className="w-fit text-xs px-3 py-1 mt-4"
+                onClick={async () => {
+                  try {
+                    const { error } = await supabase
+                      .from('orders')
+                      .update({ has_issue: !order.has_issue })
+                      .eq('id', order.id);
+
+                    if (error) throw error;
+
+                    toast.success(order.has_issue ? t('issueRemoved') : t('issueMarked'));
+                    onTrackingUpdated?.();
+                  } catch (error: any) {
+                    toast.error(error.message);
+                  }
+                }}
+              >
+                {order.has_issue ? t('removeIssue') : t('markIssue')}
+              </Button>
+            )}
           </div>
 
           <Separator />
@@ -221,25 +222,45 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
           {/* Order Timeline */}
           <div>
             <h3 className="font-semibold mb-4">{t('orderTimeline')}</h3>
-            <div className="space-y-3 relative">
+            
+            {/* Issue Badge - only if has_issue */}
+            {order.has_issue && (
+              <div className="flex items-center gap-2 mb-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg">
+                <div className="h-10 w-10 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <Badge variant="destructive" className="mb-1">
+                    {t('issueDetected')}
+                  </Badge>
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {language === 'pl' 
+                      ? 'Skontaktuj się z supportem lub sprawdź szczegóły zamówienia' 
+                      : 'Contact support or check order details'}
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <div className={`space-y-3 relative ${order.has_issue ? 'opacity-75' : ''}`}>
               {timelineSteps.map((step, index) => {
                 const Icon = step.icon;
+                const isCompleted = order.has_issue ? false : step.completed;
+                const lineColor = order.has_issue ? 'bg-red-300' : (isCompleted ? 'bg-green-200' : 'bg-gray-200');
+                const iconBg = order.has_issue 
+                  ? 'bg-red-100 text-red-600' 
+                  : (isCompleted ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400');
+                
                 return (
                   <div key={index} className="flex items-start gap-4 relative">
-                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 ${
-                      step.completed 
-                        ? 'bg-green-100 text-green-600' 
-                        : 'bg-gray-100 text-gray-400'
-                    }`}>
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 ${iconBg}`}>
                       <Icon className="w-5 h-5" />
                     </div>
                     {index < timelineSteps.length - 1 && (
-                      <div className={`absolute left-[1.25rem] top-10 w-0.5 h-8 ${
-                        step.completed ? 'bg-green-200' : 'bg-gray-200'
-                      }`} />
+                      <div className={`absolute left-[1.25rem] top-10 w-0.5 h-8 ${lineColor}`} />
                     )}
                     <div className="flex-1 pt-2">
-                      <p className={`font-medium ${step.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      <p className={`font-medium ${isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>
                         {step.label}
                       </p>
                       {step.timestamp && (

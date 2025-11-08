@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { Sparkles, Palette, Tag, Heart, Send } from 'lucide-react';
 import SEOManager from '@/components/SEO/SEOManager';
 import candleWax from '@/assets/candle-wax.png';
@@ -40,13 +41,51 @@ const CustomCandles = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // TODO: Inviare richiesta al database o email
-    toast({
-      title: language === 'pl' ? 'Zapytanie wysłane!' : 'Request Sent!',
-      description: language === 'pl' 
-        ? 'Skontaktujemy się z Tobą wkrótce z szczegółami.' 
-        : 'We will contact you soon with details.',
-    });
+    if (!user) {
+      toast({
+        title: language === 'pl' ? 'Wymagane logowanie' : 'Login Required',
+        description: language === 'pl' 
+          ? 'Musisz być zalogowany, aby wysłać zapytanie.' 
+          : 'You must be logged in to send a request.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.functions.invoke('send-custom-request', {
+        body: { ...formData, language }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: language === 'pl' ? 'Zapytanie wysłane!' : 'Request Sent!',
+        description: language === 'pl' 
+          ? 'Skontaktujemy się z Tobą w ciągu 24-72 godzin z ofertą.' 
+          : 'We will contact you within 24-72 hours with a quote.',
+      });
+      
+      // Reset form
+      setFormData({
+        fragrance: '',
+        customFragrance: '',
+        labelText: '',
+        message: '',
+        quantity: 1,
+        email: user?.email || '',
+        name: user ? `${user.user_metadata?.first_name || ''} ${user.user_metadata?.last_name || ''}`.trim() : ''
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: language === 'pl' ? 'Błąd' : 'Error',
+        description: language === 'pl' 
+          ? 'Nie udało się wysłać zapytania. Spróbuj ponownie.' 
+          : 'Failed to send request. Please try again.',
+        variant: 'destructive'
+      });
+    }
   };
 
   return (
@@ -324,8 +363,8 @@ const CustomCandles = () => {
 
                   <p className="text-xs text-muted-foreground text-center">
                     {language === 'pl'
-                      ? 'Skontaktujemy się z Tobą w ciągu 24 godzin z ofertą i szczegółami płatności.'
-                      : 'We will contact you within 24 hours with a quote and payment details.'}
+                      ? 'Skontaktujemy się z Tobą w ciągu 24-72 godzin z ofertą i szczegółami płatności.'
+                      : 'We will contact you within 24-72 hours with a quote and payment details.'}
                   </p>
                 </form>
               </CardContent>

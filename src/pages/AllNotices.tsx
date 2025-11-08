@@ -76,8 +76,8 @@ const AllNotices = () => {
       descEn: 'Form to exercise GDPR rights.',
       descPl: 'Formularz do skorzystania z praw RODO.',
       link: '/data-request',
-      pdfEn: '/documents/data-request-en.pdf',
-      pdfPl: '/documents/wniosek-o-dane-pl.pdf',
+      pdfEn: null,
+      pdfPl: null,
       icon: FileText,
     },
     {
@@ -128,14 +128,16 @@ const AllNotices = () => {
                       >
                         {language === 'en' ? 'View online' : 'Zobacz online'}
                       </Link>
-                      <a 
-                        href={pdf}
-                        download
-                        className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
-                      >
-                        <Download className="h-3 w-3" />
-                        {language === 'en' ? 'Download PDF' : 'Pobierz PDF'}
-                      </a>
+                      {pdf && (
+                        <a 
+                          href={pdf}
+                          download
+                          className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
+                        >
+                          <Download className="h-3 w-3" />
+                          {language === 'en' ? 'Download PDF' : 'Pobierz PDF'}
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>

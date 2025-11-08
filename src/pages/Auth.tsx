@@ -109,6 +109,23 @@ const Auth = () => {
         } else {
           // Send welcome email with WELCOME10 coupon
           const hasReferral = !!(referralCode || getReferralId());
+          
+          // Handle newsletter subscription if consented
+          if (newsletterConsent) {
+            try {
+              await supabase.functions.invoke('newsletter-subscribe', {
+                body: {
+                  email: emailOrUsername,
+                  name: `${firstName} ${lastName}`,
+                  language: preferredLanguage,
+                  source: 'registration'
+                }
+              });
+            } catch (newsletterError) {
+              console.error('Newsletter subscription error:', newsletterError);
+            }
+          }
+          
           try {
             await supabase.functions.invoke('send-registration-welcome', {
               body: {

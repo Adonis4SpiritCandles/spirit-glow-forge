@@ -12,23 +12,31 @@ const TENOR_API_KEY = 'AIzaSyBEgwZZGV_rH9n6pEVFgl2Nv1KK-GNtD2Y';
 const TENOR_CLIENT_KEY = 'spirit_candles';
 
 export default function GifPicker({ onSelectGif }: GifPickerProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [gifs, setGifs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const searchGifs = async (query: string) => {
     if (!query.trim()) return;
     
     setLoading(true);
+    setError(null);
     try {
       const response = await fetch(
         `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20`
       );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch GIFs');
+      }
+      
       const data = await response.json();
       setGifs(data.results || []);
     } catch (error) {
       console.error('Error fetching GIFs:', error);
+      setError(language === 'pl' ? 'Nie udało się załadować GIF-ów' : 'Failed to load GIFs');
     } finally {
       setLoading(false);
     }
@@ -53,6 +61,10 @@ export default function GifPicker({ onSelectGif }: GifPickerProps) {
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Image className="h-4 w-4" />}
         </Button>
       </form>
+
+      {error && (
+        <p className="text-sm text-red-500">{error}</p>
+      )}
 
       {gifs.length > 0 && (
         <div className="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto rounded-lg border p-2">

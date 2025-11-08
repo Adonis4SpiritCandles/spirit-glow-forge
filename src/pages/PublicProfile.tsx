@@ -1255,40 +1255,18 @@ export default function PublicProfile() {
                                         <p className="text-sm mt-1">{reply.comment}</p>
                                       )}
                                       
-                                      <div className="flex items-center gap-4 text-sm mt-2">
+                                      {/* Reply Actions - NO rating, NO nested reply */}
+                                      <div className="flex items-center gap-2 text-sm mt-2">
                                         <Button
                                           variant="ghost"
                                           size="sm"
                                           onClick={() => handleLikeComment(reply.id, !!reply.user_liked)}
-                                          className="gap-1"
+                                          className="gap-1 h-7 px-2"
                                         >
                                           <Heart className={`h-3 w-3 ${reply.user_liked ? 'fill-red-500 text-red-500' : ''}`} />
                                           {reply.like_count || 0}
                                         </Button>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => setReplyingTo(replyingTo === reply.id ? null : reply.id)}
-                                        >
-                                          <MessageSquare className="h-3 w-3 mr-1" />
-                                          {t('replyToReply')}
-                                        </Button>
-                                        <div className="flex items-center gap-1">
-                                          {Array.from({ length: 5 }).map((_, i) => (
-                                            <Star
-                                              key={i}
-                                              className={`h-3 w-3 cursor-pointer transition-colors ${
-                                                i < Math.round(reply.average_rating || 0)
-                                                  ? 'fill-yellow-400 text-yellow-400'
-                                                  : 'text-gray-300 hover:text-yellow-400'
-                                              }`}
-                                              onClick={() => user && rateComment(reply.id, i + 1)}
-                                            />
-                                          ))}
-                                          <span className="text-xs text-muted-foreground ml-1">
-                                            ({reply.rating_count || 0})
-                                          </span>
-                                        </div>
+                                        {/* NO Reply button for replies - NO rating stars */}
                                       </div>
                                     </div>
                                   </div>

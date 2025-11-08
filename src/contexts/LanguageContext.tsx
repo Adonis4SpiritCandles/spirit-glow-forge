@@ -537,6 +537,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'issueDetected') return language === 'pl' ? 'Problem z zamówieniem, danymi lub wysyłką' : 'Problem with order, data or shipping';
     if (key === 'issueMarked') return language === 'pl' ? 'Problem oznaczony pomyślnie' : 'Issue marked successfully';
     if (key === 'issueRemoved') return language === 'pl' ? 'Problem usunięty pomyślnie' : 'Issue removed successfully';
+    if (key === 'language') return language === 'pl' ? 'Język' : 'Language';
+    if (key === 'languageSettings') return language === 'pl' ? 'Ustawienia Językowe' : 'Language Settings';
     if (key === 'issue') return language === 'pl' ? 'Problem' : 'Issue';
     if (key === 'faq') return language === 'pl' ? 'FAQ' : 'FAQ';
     if (key === 'chatResponses') return language === 'pl' ? 'Odpowiedzi Czatu' : 'Chat Responses';

@@ -428,7 +428,74 @@ const UserDashboard = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* Settings Tab - Merged User Data content */}
+            {/* Language Tab - NEW */}
+            <TabsContent value="language" className="mt-6 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('languageSettings')}</CardTitle>
+                  <CardDescription>
+                    {language === 'pl' ? 'Zarządzaj ustawieniami językowymi' : 'Manage your language settings'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Website Language */}
+                  <div className="space-y-2">
+                    <Label htmlFor="site-language">{t('preferredLanguage')}</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('preferredLanguageDesc')}
+                    </p>
+                    <Select 
+                      value={profile?.preferred_language || 'en'}
+                      onValueChange={updateLanguagePreference}
+                    >
+                      <SelectTrigger id="site-language">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="pl">Polski</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Email Language */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email-language">{t('emailLanguage')}</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('emailLanguageDesc')}
+                    </p>
+                    <Select 
+                      value={profile?.email_language || 'en'}
+                      onValueChange={async (value) => {
+                        if (!user) return;
+                        const { error } = await supabase
+                          .from('profiles')
+                          .update({ email_language: value })
+                          .eq('user_id', user.id);
+                        
+                        if (!error) {
+                          setProfile({ ...profile!, email_language: value });
+                          toast({
+                            title: t('success'),
+                            description: t('emailLanguageUpdated'),
+                          });
+                        }
+                      }}
+                    >
+                      <SelectTrigger id="email-language">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="pl">Polski</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Settings Tab - WITHOUT Language Preferences */}
             <TabsContent value="settings" className="mt-6 space-y-6">
               {/* Profile Image Section */}
               <Card>
@@ -560,71 +627,6 @@ const UserDashboard = () => {
                       <Button onClick={() => setIsEditing(true)}>{t('editProfile')}</Button>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-
-              {/* Language Preferences */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('languagePreferences') || (language === 'pl' ? 'Preferencje Językowe' : 'Language Preferences')}</CardTitle>
-                  <CardDescription>
-                    {language === 'pl' ? 'Zarządzaj ustawieniami językowymi' : 'Manage your language settings'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Website Language */}
-                  <div className="space-y-2">
-                    <Label htmlFor="site-language">{t('preferredLanguage')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('preferredLanguageDesc')}
-                    </p>
-                    <Select 
-                      value={profile?.preferred_language || 'en'}
-                      onValueChange={updateLanguagePreference}
-                    >
-                      <SelectTrigger id="site-language">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="pl">Polski</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Email Language */}
-                  <div className="space-y-2">
-                    <Label htmlFor="email-language">{t('emailLanguage')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('emailLanguageDesc')}
-                    </p>
-                    <Select 
-                      value={profile?.email_language || 'en'}
-                      onValueChange={async (value) => {
-                        if (!user) return;
-                        const { error } = await supabase
-                          .from('profiles')
-                          .update({ email_language: value })
-                          .eq('user_id', user.id);
-                        
-                        if (!error) {
-                          setProfile({ ...profile!, email_language: value });
-                          toast({
-                            title: t('success'),
-                            description: t('emailLanguageUpdated'),
-                          });
-                        }
-                      }}
-                    >
-                      <SelectTrigger id="email-language">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="pl">Polski</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

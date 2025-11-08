@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Image, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GifPickerProps {
   onSelectGif: (gifUrl: string) => void;
 }
 
-const TENOR_API_KEY = 'AIzaSyBEgwZZGV_rH9n6pEVFgl2Nv1KK-GNtD2Y';
 const TENOR_CLIENT_KEY = 'spirit_candles';
 
 export default function GifPicker({ onSelectGif }: GifPickerProps) {
@@ -17,15 +17,32 @@ export default function GifPicker({ onSelectGif }: GifPickerProps) {
   const [gifs, setGifs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tenorApiKey, setTenorApiKey] = useState<string>('');
+
+  // Load Tenor API key from Supabase secrets
+  useEffect(() => {
+    const loadApiKey = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-tenor-key');
+        if (error) throw error;
+        if (data?.key) {
+          setTenorApiKey(data.key);
+        }
+      } catch (err) {
+        console.error('Error loading Tenor API key:', err);
+      }
+    };
+    loadApiKey();
+  }, []);
 
   const searchGifs = async (query: string) => {
-    if (!query.trim()) return;
+    if (!query.trim() || !tenorApiKey) return;
     
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20`
+        `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${tenorApiKey}&client_key=${TENOR_CLIENT_KEY}&limit=20`
       );
       
       if (!response.ok) {

@@ -60,5 +60,8 @@ verify_jwt = false
 [functions.send-status-update]
 verify_jwt = false
 
+[functions.send-custom-request]
+verify_jwt = false
+
 [functions.generate-sitemap]
 verify_jwt = false

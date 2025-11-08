@@ -357,6 +357,20 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     
     // Chat translations
     if (key === 'endConversation') return language === 'pl' ? 'Zakończ rozmowę i zamknij czat' : 'End conversation and close chat';
+    if (key === 'chatResponses') return language === 'pl' ? 'Odpowiedzi Czatu' : 'Chat Responses';
+    if (key === 'chatResponsesDescription') return language === 'pl' ? 'Zarządzaj automatycznymi odpowiedziami bota i słowami kluczowymi' : 'Manage automated chat bot responses and keywords';
+    if (key === 'addNewResponse') return language === 'pl' ? 'Dodaj Nową Odpowiedź' : 'Add New Response';
+    if (key === 'editResponse') return language === 'pl' ? 'Edytuj Odpowiedź' : 'Edit Response';
+    if (key === 'savedResponses') return language === 'pl' ? 'Zapisane Odpowiedzi' : 'Saved Responses';
+    if (key === 'keywords') return language === 'pl' ? 'Słowa kluczowe' : 'Keywords';
+    if (key === 'category') return language === 'pl' ? 'Kategoria' : 'Category';
+    if (key === 'active') return language === 'pl' ? 'Aktywna' : 'Active';
+    if (key === 'response') return language === 'pl' ? 'Odpowiedź' : 'Response';
+    if (key === 'fillAllFields') return language === 'pl' ? 'Wypełnij wszystkie pola' : 'Fill all fields';
+    if (key === 'responseUpdated') return language === 'pl' ? 'Odpowiedź zaktualizowana' : 'Response updated';
+    if (key === 'responseAdded') return language === 'pl' ? 'Odpowiedź dodana' : 'Response added';
+    if (key === 'responseDeleted') return language === 'pl' ? 'Odpowiedź usunięta' : 'Response deleted';
+    if (key === 'statusChanged') return language === 'pl' ? 'Status zmieniony' : 'Status changed';
     
     // Coupon and checkout translations
     if (key === 'haveCoupon') return language === 'pl' ? 'Masz kupon?' : 'Have a coupon?';

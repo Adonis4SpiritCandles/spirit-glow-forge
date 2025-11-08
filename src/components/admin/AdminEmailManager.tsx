@@ -19,13 +19,128 @@ export default function AdminEmailManager() {
 
   const loadTemplates = async () => {
     try {
-      const { data, error } = await supabase
-        .from('email_templates')
-        .select('*')
-        .order('template_key');
+      // Hardcoded templates since table doesn't exist yet
+      const hardcodedTemplates = [
+        {
+          id: '1',
+          template_key: 'order_confirmation',
+          name_en: 'Order Confirmation',
+          name_pl: 'Potwierdzenie Zamówienia',
+          description_en: 'Sent when a customer places an order',
+          description_pl: 'Wysyłane gdy klient składa zamówienie',
+          subject_en: 'Order Confirmation - Spirit Candles',
+          subject_pl: 'Potwierdzenie Zamówienia - Spirit Candles',
+          edge_function_name: 'send-order-confirmation',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '2',
+          template_key: 'order_accepted',
+          name_en: 'Order Accepted',
+          name_pl: 'Zamówienie Zaakceptowane',
+          description_en: 'Sent when order is accepted by admin',
+          description_pl: 'Wysyłane gdy zamówienie zostanie zaakceptowane',
+          subject_en: 'Your Order Has Been Accepted',
+          subject_pl: 'Twoje Zamówienie Zostało Zaakceptowane',
+          edge_function_name: 'send-order-accepted',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '3',
+          template_key: 'tracking_available',
+          name_en: 'Tracking Available',
+          name_pl: 'Śledzenie Dostępne',
+          description_en: 'Sent when tracking number is available',
+          description_pl: 'Wysyłane gdy numer śledzenia jest dostępny',
+          subject_en: 'Your Order is On Its Way!',
+          subject_pl: 'Twoje Zamówienie Jest W Drodze!',
+          edge_function_name: 'send-tracking-available',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '4',
+          template_key: 'delivery_confirmation',
+          name_en: 'Delivery Confirmation',
+          name_pl: 'Potwierdzenie Dostawy',
+          description_en: 'Sent when order is delivered',
+          description_pl: 'Wysyłane gdy zamówienie zostanie dostarczone',
+          subject_en: 'Your Order Has Been Delivered',
+          subject_pl: 'Twoje Zamówienie Zostało Dostarczone',
+          edge_function_name: 'send-delivery-confirmation',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '5',
+          template_key: 'custom_request',
+          name_en: 'Custom Candle Request',
+          name_pl: 'Prośba o Niestandardową Świecę',
+          description_en: 'Sent when customer submits custom candle request',
+          description_pl: 'Wysyłane gdy klient składa prośbę o niestandardową świecę',
+          subject_en: 'Custom Candle Request Received',
+          subject_pl: 'Otrzymano Prośbę o Niestandardową Świecę',
+          edge_function_name: 'send-custom-request',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '6',
+          template_key: 'contact_form',
+          name_en: 'Contact Form Submission',
+          name_pl: 'Przesłanie Formularza Kontaktowego',
+          description_en: 'Sent when customer submits contact form',
+          description_pl: 'Wysyłane gdy klient wysyła formularz kontaktowy',
+          subject_en: 'We Received Your Message',
+          subject_pl: 'Otrzymaliśmy Twoją Wiadomość',
+          edge_function_name: 'contact-form',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '7',
+          template_key: 'newsletter_welcome',
+          name_en: 'Newsletter Welcome',
+          name_pl: 'Powitanie Newsletter',
+          description_en: 'Sent when user subscribes to newsletter',
+          description_pl: 'Wysyłane gdy użytkownik zapisuje się do newslettera',
+          subject_en: 'Welcome to Spirit Candles Newsletter',
+          subject_pl: 'Witamy w Newsletterze Spirit Candles',
+          edge_function_name: 'send-welcome-newsletter',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '8',
+          template_key: 'registration_welcome',
+          name_en: 'Registration Welcome',
+          name_pl: 'Powitanie Po Rejestracji',
+          description_en: 'Sent when new user registers account',
+          description_pl: 'Wysyłane gdy nowy użytkownik rejestruje konto',
+          subject_en: 'Welcome to Spirit Candles!',
+          subject_pl: 'Witamy w Spirit Candles!',
+          edge_function_name: 'send-registration-welcome',
+          is_active: true,
+          last_sent_at: null,
+        },
+        {
+          id: '9',
+          template_key: 'referral_emails',
+          name_en: 'Referral Program Emails',
+          name_pl: 'E-maile Programu Poleceń',
+          description_en: 'Sent for referral program notifications',
+          description_pl: 'Wysyłane dla powiadomień programu poleceń',
+          subject_en: 'Referral Reward Unlocked!',
+          subject_pl: 'Nagroda za Polecenie Odblokowana!',
+          edge_function_name: 'send-referral-emails',
+          is_active: true,
+          last_sent_at: null,
+        },
+      ];
 
-      if (error) throw error;
-      setTemplates(data || []);
+      setTemplates(hardcodedTemplates);
     } catch (error: any) {
       console.error('Error loading templates:', error);
       toast({
@@ -39,28 +154,17 @@ export default function AdminEmailManager() {
   };
 
   const toggleTemplate = async (id: string, currentState: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('email_templates')
-        .update({ is_active: !currentState })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      await loadTemplates();
-      toast({
-        title: language === 'pl' ? 'Zaktualizowano' : 'Updated',
-        description: language === 'pl' 
-          ? 'Status szablonu email zmieniony' 
-          : 'Email template status changed',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    }
+    // Since we're using hardcoded data, just update local state
+    setTemplates(prev => 
+      prev.map(t => t.id === id ? { ...t, is_active: !currentState } : t)
+    );
+    
+    toast({
+      title: language === 'pl' ? 'Zaktualizowano' : 'Updated',
+      description: language === 'pl' 
+        ? 'Status szablonu email zmieniony (tylko w sesji)' 
+        : 'Email template status changed (session only)',
+    });
   };
 
   const openEdgeFunction = (functionName: string) => {

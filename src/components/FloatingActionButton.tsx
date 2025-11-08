@@ -77,7 +77,7 @@ const FloatingActionButton = () => {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
-            className="fixed bottom-40 md:bottom-44 right-6 z-30"
+            className="fixed bottom-40 md:bottom-44 right-6 z-[50]"
           >
             {/* Action buttons */}
             <AnimatePresence>

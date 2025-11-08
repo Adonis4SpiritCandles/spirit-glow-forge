@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift, X } from 'lucide-react';
 import { format } from 'date-fns';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
@@ -816,9 +816,9 @@ export default function PublicProfile() {
                   <div className="space-y-3 p-4 bg-accent/5 rounded-lg border">
                     <div className="flex items-start gap-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                        <AvatarImage src={user?.user_metadata?.profile_image_url || '/assets/mini-spirit-logo.png'} />
                         <AvatarFallback>
-                          {profile?.first_name?.[0] || user.email?.[0].toUpperCase()}
+                          {user?.user_metadata?.first_name?.[0] || user.email?.[0].toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 space-y-2">

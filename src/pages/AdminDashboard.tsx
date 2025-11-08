@@ -1868,15 +1868,13 @@ const AdminDashboard = () => {
                                   onCheckedChange={() => toggleOrderSelection(order.id)}
                                 />
                               </TableCell>
-                              {/* Order Number with Issue Button Below */}
-                              <TableCell className="font-semibold text-sm">
+                              <TableCell className="max-w-[120px]">
                                 <div className="space-y-1">
-                                  <div>SPIRIT-{String(order.order_number).padStart(5, '0')}</div>
-                                  {/* Issue Toggle Button */}
+                                  {/* Issue Toggle Button - Moved to Order ID */}
                                   <Button
                                     variant={order.has_issue ? 'destructive' : 'outline'}
                                     size="sm"
-                                    className="h-6 text-[9px] px-2 w-full max-w-[120px]"
+                                    className="h-6 text-[9px] px-2 w-full max-w-[110px]"
                                     onClick={async () => {
                                       try {
                                         const { error } = await supabase
@@ -1900,43 +1898,40 @@ const AdminDashboard = () => {
                                       }
                                     }}
                                   >
-                                    {order.has_issue ? t('removeIssue') : t('markAsIssue')}
+                                    {order.has_issue ? t('removeIssue') : t('markIssue')}
                                   </Button>
+                                  
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1 cursor-pointer group">
+                                        <span className="font-mono text-sm hidden md:inline">
+                                          {order.id.slice(0, 8)}...
+                                        </span>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="h-6 px-2 md:hidden"
+                                          onClick={() => {
+                                            navigator.clipboard.writeText(order.id);
+                                            toast({ title: t('orderIdCopied') });
+                                          }}
+                                        >
+                                          {t('viewOrderId')}
+                                        </Button>
+                                        <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" 
+                                          onClick={() => {
+                                            navigator.clipboard.writeText(order.id);
+                                            toast({ title: t('orderIdCopied') });
+                                          }}
+                                        />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="font-mono text-xs">{order.id}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
                                 </div>
                               </TableCell>
-
-                            {/* Order ID with Tooltip */}
-                            <TableCell>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex items-center gap-1 cursor-pointer group">
-                                    <span className="font-mono text-sm hidden md:inline">
-                                      {order.id.slice(0, 8)}...
-                                    </span>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 px-2 md:hidden"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(order.id);
-                                        toast({ title: t('orderIdCopied') });
-                                      }}
-                                    >
-                                      {t('viewOrderId')}
-                                    </Button>
-                                    <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" 
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(order.id);
-                                        toast({ title: t('orderIdCopied') });
-                                      }}
-                                    />
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="font-mono text-xs">{order.id}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TableCell>
 
                             {/* Customer with Shipping Info */}
                             <TableCell className="max-w-[250px]">

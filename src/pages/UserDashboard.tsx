@@ -795,9 +795,9 @@ const UserDashboard = () => {
                               {/* Header con Order Number, Data e Badge Status */}
                               <div className="flex justify-between items-start mb-4">
                                 <div>
-                                  <h3 className="font-semibold text-lg">
-                                    #SPIRIT-{String(order.order_number || '').padStart(5, '0') || order.id.substring(0, 8)}
-                                  </h3>
+                                   <h3 className="font-semibold text-sm md:text-lg truncate max-w-[200px]">
+                                     #SPIRIT-{String(order.order_number || '').padStart(5, '0') || order.id.substring(0, 8)}
+                                   </h3>
                                   <p className="text-sm text-muted-foreground">
                                     {new Date(order.created_at).toLocaleDateString()}
                                   </p>
@@ -812,8 +812,8 @@ const UserDashboard = () => {
                                 </div>
                               </div>
 
-                              {/* Sezioni tabellari con bordi */}
-                              <div className="space-y-0 border rounded-lg overflow-hidden">
+                               {/* Sezioni tabellari con bordi */}
+                              <div className="space-y-0 border rounded-lg overflow-hidden bg-black/80">
                                 {/* Products */}
                                 <div className="flex justify-between items-center py-3 px-4 border-b bg-muted/20">
                                   <span className="text-sm text-muted-foreground">{t('products')}:</span>

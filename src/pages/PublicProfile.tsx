@@ -637,7 +637,7 @@ export default function PublicProfile() {
     <div className="min-h-screen bg-background">
       {/* Cover Image */}
       <div 
-        className="relative h-64 bg-gradient-to-r from-primary/20 to-secondary/20"
+        className="relative h-48 md:h-64 bg-gradient-to-r from-primary/20 to-secondary/20"
         style={{
           backgroundImage: !profile.cover_image_url ? 'url(/assets/spirit-logo-transparent.png)' : undefined,
           backgroundSize: 'contain',
@@ -652,24 +652,41 @@ export default function PublicProfile() {
             className="w-full h-full object-cover"
           />
         )}
-        {isOwnProfile && !profile.cover_image_url && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-            <ProfileImageUpload
-              userId={userId!}
-              currentImageUrl={profile.cover_image_url}
-              onUploadComplete={() => loadProfile()}
-              imageType="cover"
-            />
+        {isOwnProfile && (
+          <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2">
+            <Button size="sm" variant="secondary" className="text-xs md:text-sm" asChild>
+              <label className="cursor-pointer">
+                {t('uploadCover')}
+                <ProfileImageUpload
+                  userId={userId!}
+                  currentImageUrl={profile.cover_image_url}
+                  onUploadComplete={() => loadProfile()}
+                  imageType="cover"
+                />
+              </label>
+            </Button>
           </div>
         )}
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex items-start gap-8 -mt-20 mb-8">
+      <div className="container mx-auto px-4 py-4 md:py-8 max-w-6xl">
+        {/* Edit Profile Button - Mobile Only (Top Left) */}
+        {isOwnProfile && (
+          <div className="md:hidden mb-3">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/dashboard?tab=social">
+                <Settings className="mr-2 h-3 w-3" />
+                <span className="text-xs">{t('editProfile')}</span>
+              </Link>
+            </Button>
+          </div>
+        )}
+
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8 -mt-12 md:-mt-20 mb-6 md:mb-8">
           <div className="relative">
-            <Avatar className="h-32 w-32 border-4 border-background shadow-xl">
+            <Avatar className="h-20 w-20 md:h-32 md:w-32 border-4 border-background shadow-xl">
               <AvatarImage src={profile.profile_image_url || '/assets/mini-spirit-logo.png'} />
-              <AvatarFallback className="text-4xl">
+              <AvatarFallback className="text-2xl md:text-4xl">
                 {profile.first_name?.[0]}{profile.last_name?.[0]}
               </AvatarFallback>
             </Avatar>
@@ -683,18 +700,20 @@ export default function PublicProfile() {
             )}
           </div>
 
-          <div className="flex-1 mt-20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">
+          <div className="flex-1 mt-0 md:mt-20 text-center md:text-left w-full">
+            <div className="flex flex-col md:flex-row items-center md:items-center md:justify-between gap-2">
+              <div className="flex flex-col items-center md:items-start">
+                <h1 className="text-xl md:text-3xl font-bold truncate max-w-[280px] md:max-w-none">
                   {profile.first_name} {profile.last_name}
                 </h1>
                 {profile.username && (
-                  <p className="text-muted-foreground">@{profile.username}</p>
+                  <p className="text-xs md:text-base text-muted-foreground truncate max-w-[280px] md:max-w-none">
+                    @{profile.username}
+                  </p>
                 )}
               </div>
               {isOwnProfile && (
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="hidden md:flex">
                   <Link to="/dashboard?tab=social">
                     <Settings className="mr-2 h-4 w-4" />
                     {t('editProfile')}
@@ -710,17 +729,24 @@ export default function PublicProfile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            {/* Badges Section */}
+            {/* Mini Badges Section - Compact */}
             {isOwnProfile && (
-              <Card>
-                <CardHeader>
-                  <h2 className="text-2xl font-semibold flex items-center gap-2">
-                    <Award className="h-6 w-6 text-primary" />
-                    {t('badges')}
-                  </h2>
+              <Card className="bg-accent/5">
+                <CardHeader className="pb-3">
+                  <h3 className="text-sm font-semibold text-muted-foreground">{t('badges')}</h3>
                 </CardHeader>
                 <CardContent>
-                  <BadgeShowcase />
+                  <div className="flex flex-wrap gap-2">
+                    {/* Placeholder for mini badges - will be populated from BadgeShowcase logic */}
+                    <Badge variant="outline" className="px-2 py-1 text-xs flex items-center gap-1">
+                      <Award className="h-3 w-3 text-yellow-500" />
+                      <span>First Order</span>
+                    </Badge>
+                    <Badge variant="outline" className="px-2 py-1 text-xs flex items-center gap-1">
+                      <TrendingUp className="h-3 w-3 text-green-500" />
+                      <span>Rising Star</span>
+                    </Badge>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -790,9 +816,9 @@ export default function PublicProfile() {
                   <div className="space-y-3 p-4 bg-accent/5 rounded-lg border">
                     <div className="flex items-start gap-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={user.user_metadata?.avatar_url} />
+                        <AvatarImage src={profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
                         <AvatarFallback>
-                          {user.email?.[0].toUpperCase()}
+                          {profile?.first_name?.[0] || user.email?.[0].toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 space-y-2">
@@ -817,7 +843,7 @@ export default function PublicProfile() {
                                 <Smile className="h-4 w-4" />
                               </Button>
                               {showEmojiPicker === 'comment' && (
-                                <div className="absolute z-50 top-full mt-2">
+                                 <div className="absolute z-50 top-full mt-2">
                                   <EmojiPicker onEmojiClick={(emojiData) => onEmojiClick(emojiData, 'comment')} />
                                 </div>
                               )}
@@ -832,7 +858,7 @@ export default function PublicProfile() {
                                   setShowEmojiPicker(null);
                                 }}
                               >
-                                <ImageIcon className="h-4 w-4" />
+                                <Gift className="h-4 w-4" />
                               </Button>
                               {showGifPicker === 'comment' && (
                                 <div className="absolute z-50 top-full mt-2">
@@ -854,44 +880,45 @@ export default function PublicProfile() {
                 {/* Comments List */}
                 <div className="space-y-6">
                   {comments.map((comment) => (
-                    <div key={comment.id} className="space-y-4 p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all animate-fade-in">
-                      <div className="flex items-start gap-3">
+                    <div key={comment.id} className="space-y-4 p-3 md:p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all animate-fade-in">
+                      <div className="flex items-start gap-2 md:gap-3">
                         <Link to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}>
-                          <Avatar className="h-10 w-10">
+                          <Avatar className="h-8 w-8 md:h-10 md:w-10">
                             <AvatarImage src={comment.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
-                            <AvatarFallback>
+                            <AvatarFallback className="text-xs md:text-sm">
                               {comment.commenter_profile?.first_name?.[0] || 'U'}
                               {comment.commenter_profile?.last_name?.[0] || ''}
                             </AvatarFallback>
                           </Avatar>
                         </Link>
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
                               <Link 
                                 to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
-                                className="font-semibold hover:text-primary transition-colors"
+                                className="font-semibold text-sm md:text-base hover:text-primary transition-colors truncate block"
                               >
                                 {comment.commenter_profile?.first_name} {comment.commenter_profile?.last_name}
                               </Link>
                               {comment.commenter_profile?.username && (
                                 <Link 
                                   to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
-                                  className="text-sm text-muted-foreground ml-2 hover:text-primary transition-colors"
+                                  className="text-xs md:text-sm text-muted-foreground hover:text-primary transition-colors truncate block"
                                 >
                                   @{comment.commenter_profile?.username}
                                 </Link>
                               )}
-                              <span className="text-xs text-muted-foreground ml-2">
-                                • {format(new Date(comment.created_at), 'PPp')}
+                              <span className="text-[10px] md:text-xs text-muted-foreground block">
+                                {format(new Date(comment.created_at), 'PPp')}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 flex-shrink-0">
                               {user && user.id === comment.commenter_id && (
                                 <>
                                   <Button
                                     variant="ghost"
                                     size="sm"
+                                    className="h-7 w-7 p-0 md:h-8 md:w-8"
                                     onClick={() => {
                                       setEditingCommentId(comment.id);
                                       setEditCommentText(comment.comment);

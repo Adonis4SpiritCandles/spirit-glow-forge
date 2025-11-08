@@ -317,14 +317,19 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'cancelEdit') return language === 'pl' ? 'Anuluj' : 'Cancel';
     if (key === 'replyToReply') return language === 'pl' ? 'Odpowiedz' : 'Reply';
     if (key === 'markAsIssue') return language === 'pl' ? 'Oznacz jako problem' : 'Mark as Issue';
-    if (key === 'removeIssue') return language === 'pl' ? 'Usuń problem' : 'Remove Issue';
+    if (key === 'markIssue') return language === 'pl' ? 'Oznacz' : 'Mark Issue';
+    if (key === 'removeIssue') return language === 'pl' ? 'Usuń' : 'Remove';
     if (key === 'orderHasIssues') return language === 'pl' ? 'Oznacz zamówienie jako problematyczne' : 'Mark order as having issues';
     if (key === 'editProfile') return language === 'pl' ? 'Edytuj Profil' : 'Edit Profile';
     if (key === 'editCover') return language === 'pl' ? 'Edytuj Okładkę' : 'Edit Cover';
+    if (key === 'uploadCover') return language === 'pl' ? 'Prześlij Okładkę' : 'Upload Cover';
     if (key === 'spiritPointsLeaderboard') return language === 'pl' ? 'Ranking Punktów Spirit' : 'Spirit Points Leaderboard';
     if (key === 'yourPoints') return language === 'pl' ? 'Twoje Punkty' : 'Your Points';
     if (key === 'nextRewardProgress') return language === 'pl' ? 'Postęp Do Następnej Nagrody' : 'Next Reward Progress';
     if (key === 'searchGifs') return language === 'pl' ? 'Szukaj GIF-ów' : 'Search GIFs';
+    if (key === 'comments') return language === 'pl' ? 'Komentarze' : 'Comments';
+    if (key === 'frequentlyAskedQuestions') return language === 'pl' ? 'Najczęściej Zadawane Pytania' : 'Frequently Asked Questions';
+    if (key === 'gamificationSocial') return language === 'pl' ? 'Gamifikacja i Social' : 'Gamification & Social';
 
     // User Dashboard
     if (key === 'userDashboard') return language === 'pl' ? 'Panel' : 'Dashboard';

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Package, Truck, RotateCcw, Flame, User, HelpCircle } from "lucide-react";
+import { Search, Package, Truck, RotateCcw, Flame, User, HelpCircle, Award } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -172,6 +172,42 @@ const FAQ = () => {
           answer: language === 'pl'
             ? 'Tak! Zapisz się do naszego newslettera, aby otrzymywać aktualizacje o nowych zapachach, ekskluzywnych ofertach i promocjach. Możesz zarządzać swoimi preferencjami komunikacyjnymi w ustawieniach konta.'
             : 'Yes! Subscribe to our newsletter to receive updates about new fragrances, exclusive offers, and promotions. You can manage your communication preferences in your account settings.'
+        }
+      ]
+    },
+    {
+      icon: <Award className="w-5 h-5 text-primary" />,
+      title: language === 'pl' ? 'Gamifikacja i Social' : 'Gamification & Social',
+      faqs: [
+        {
+          question: language === 'pl' ? 'Czym są Punkty Spirit i jak je zdobywać?' : 'What are Spirit Points and how do I earn them?',
+          answer: language === 'pl'
+            ? 'Punkty Spirit to nasz system nagród. Zdobywaj je poprzez zakupy, wystawianie opinii, polecanie znajomych i wiele więcej. Punkty można wymieniać na kupony rabatowe i ekskluzywne nagrody.'
+            : 'Spirit Points are our reward system. Earn them through purchases, writing reviews, referring friends, and more. Points can be redeemed for discount coupons and exclusive rewards.'
+        },
+        {
+          question: language === 'pl' ? 'Jak działają odznaki (badges)?' : 'How do badges work?',
+          answer: language === 'pl'
+            ? 'Zdobywaj odznaki za różne osiągnięcia: pierwsze zamówienie, polecenie znajomego, wystawienie opinii, zgromadzenie punktów. Sprawdź swoje odznaki w panelu użytkownika w zakładce "Nagrody".'
+            : 'Earn badges for various achievements: first order, referring friends, writing reviews, accumulating points. Check your badges in your user dashboard under the "Rewards" tab.'
+        },
+        {
+          question: language === 'pl' ? 'Co to jest Program Poleceń?' : 'What is the Referral Program?',
+          answer: language === 'pl'
+            ? 'Poleć znajomych i otrzymaj 10% rabat na ich pierwsze zamówienie. Znajomi również dostają 10% zniżki! Twój unikalny kod polecający znajdziesz w panelu użytkownika w zakładce "Polecenia".'
+            : 'Refer friends and get a 10% discount on their first order. Friends also get 10% off! Find your unique referral code in your user dashboard under the "Referrals" tab.'
+        },
+        {
+          question: language === 'pl' ? 'Czy mogę mieć publiczny profil?' : 'Can I have a public profile?',
+          answer: language === 'pl'
+            ? 'Tak! Możesz utworzyć publiczny profil z biografią, zdjęciem profilowym, zdjęciem okładki i pokazać swoje opinie oraz zakupione produkty. Włącz profil publiczny w ustawieniach konta.'
+            : 'Yes! You can create a public profile with a bio, profile picture, cover image, and showcase your reviews and purchased products. Enable your public profile in your account settings.'
+        },
+        {
+          question: language === 'pl' ? 'Jak działają powiadomienia?' : 'How do notifications work?',
+          answer: language === 'pl'
+            ? 'Otrzymasz powiadomienia e-mail o statusie zamówienia, dostępności śledzenia przesyłki, nowych promocjach i nagrodach programu lojalnościowego. Możesz zarządzać preferencjami powiadomień w ustawieniach konta.'
+            : 'You\'ll receive email notifications about order status, tracking availability, new promotions, and loyalty rewards. You can manage notification preferences in your account settings.'
         }
       ]
     }

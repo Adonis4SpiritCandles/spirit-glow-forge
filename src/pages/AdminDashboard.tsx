@@ -2077,8 +2077,6 @@ const AdminDashboard = () => {
                     </Table>
                   </TooltipProvider>
                 </div>
-              </ScrollArea>
-            </div>
 
             {/* Mobile Card-Based View */}
             <div className="md:hidden space-y-4">

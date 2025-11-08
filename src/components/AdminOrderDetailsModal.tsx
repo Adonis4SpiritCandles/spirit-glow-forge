@@ -185,8 +185,10 @@ export default function AdminOrderDetailsModal({ order, isOpen, onClose, onTrack
                 <p className="mt-1">{new Date(order.created_at).toLocaleString()}</p>
               </div>
               <div>
-                <span className="text-muted-foreground">Status:</span>
-                <Badge variant="default" className="mt-1">{order.status}</Badge>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">Status:</span>
+                  <Badge variant="default">{order.status}</Badge>
+                </div>
               </div>
             </div>
             

@@ -852,6 +852,74 @@ export default function PublicProfile() {
               </Card>
             )}
 
+            {/* Purchased Products Carousel */}
+            {purchasedProducts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold flex items-center gap-2">
+                    <ShoppingBag className="h-6 w-6 text-primary" />
+                    {t('purchasedProducts')} ({purchasedProducts.length})
+                  </h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {purchasedProducts.map((product: any) => (
+                      <Link
+                        key={product.id}
+                        to={`/product/${product.id}`}
+                        className="group cursor-pointer"
+                      >
+                        <div className="aspect-square relative overflow-hidden rounded-lg border">
+                          <img
+                            src={product.image_url}
+                            alt={product.name_en}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                        <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                          {language === 'en' ? product.name_en : product.name_pl}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Wishlist Products Carousel */}
+            {wishlistProducts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold flex items-center gap-2">
+                    <Heart className="h-6 w-6 text-primary" />
+                    {t('wishlist')} ({wishlistProducts.length})
+                  </h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {wishlistProducts.map((product: any) => (
+                      <Link
+                        key={product.id}
+                        to={`/product/${product.id}`}
+                        className="group cursor-pointer"
+                      >
+                        <div className="aspect-square relative overflow-hidden rounded-lg border">
+                          <img
+                            src={product.image_url}
+                            alt={product.name_en}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                        <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                          {language === 'en' ? product.name_en : product.name_pl}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Reviews Section */}
             {reviews.length > 0 && (
               <Card>

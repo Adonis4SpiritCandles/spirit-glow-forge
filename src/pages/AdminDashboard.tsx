@@ -1834,20 +1834,22 @@ const AdminDashboard = () => {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="w-12">
-                              <Checkbox
-                                checked={selectedOrders.length === orders.length && orders.length > 0}
-                                onCheckedChange={handleSelectAll}
-                              />
-                            </TableHead>
-                            <TableHead className="text-xs">Order #</TableHead>
+                            <TableHead className="text-[11px] w-[110px]">Order #</TableHead>
                             <TableHead className="text-xs">Order ID</TableHead>
                             <TableHead className="text-xs min-w-[200px] max-w-[250px]">{t('customer')}</TableHead>
                             <TableHead className="text-xs">{t('total')}</TableHead>
                             <TableHead className="text-xs">{t('status')}</TableHead>
                             <TableHead className="text-xs min-w-[180px]">{t('shipping')}</TableHead>
                             <TableHead className="text-xs">{t('created')}</TableHead>
-                            <TableHead className="text-xs min-w-[140px]">{t('actions')}</TableHead>
+                            <TableHead className="text-xs min-w-[140px]">
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  checked={selectedOrders.length === orders.length && orders.length > 0}
+                                  onCheckedChange={handleSelectAll}
+                                />
+                                <span>{t('actions')}</span>
+                              </div>
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                       <TableBody>
@@ -1862,15 +1864,8 @@ const AdminDashboard = () => {
 
                           return (
                             <TableRow key={order.id}>
-                              <TableCell>
-                                <Checkbox
-                                  checked={selectedOrders.includes(order.id)}
-                                  onCheckedChange={() => toggleOrderSelection(order.id)}
-                                />
-                              </TableCell>
-                              
-                              {/* Order # Column - RESTORED */}
-                              <TableCell className="font-mono text-sm max-w-[130px]">
+                              {/* Order # Column */}
+                              <TableCell className="font-mono text-[11px] w-[110px]">
                                 <span className="truncate block">
                                   #SPIRIT-{String(order.order_number || '00000').padStart(5, '0')}
                                 </span>
@@ -1974,19 +1969,22 @@ const AdminDashboard = () => {
 
                             {/* Status */}
                             <TableCell>
-                              <Badge 
-                                variant={
-                                  order.status === 'completed' ? 'default' :
-                                  order.status === 'paid' ? 'secondary' :
-                                  order.status === 'pending' ? 'outline' : 'destructive'
-                                }
-                                className={`text-[9px] px-1.5 py-0.5 h-auto ${
-                                  order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
-                                  order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
-                                }`}
-                              >
-                                {order.status === 'completed' ? t('complete') : order.status}
-                              </Badge>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground whitespace-nowrap">Status:</span>
+                                <Badge 
+                                  variant={
+                                    order.status === 'completed' ? 'default' :
+                                    order.status === 'paid' ? 'secondary' :
+                                    order.status === 'pending' ? 'outline' : 'destructive'
+                                  }
+                                  className={`text-[9px] px-1.5 py-0.5 h-auto ${
+                                    order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
+                                    order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
+                                  }`}
+                                >
+                                  {order.status === 'completed' ? t('complete') : order.status}
+                                </Badge>
+                              </div>
                             </TableCell>
 
                             {/* Shipping Status */}
@@ -2002,66 +2000,73 @@ const AdminDashboard = () => {
                               {new Date(order.created_at).toLocaleDateString()}
                             </TableCell>
 
-                             {/* Actions - Organized in Grid */}
+                             {/* Actions with Checkbox */}
                             <TableCell>
-                              <div className="flex flex-col gap-1 w-fit">
-                                {/* Row 1 */}
-                                <div className="flex gap-1">
-                                   <Button
-                                     size="sm"
-                                     variant="ghost"
-                                     className="h-7 text-[10px] px-2"
-                                     onClick={() => {
-                                       setSelectedOrder(order);
-                                       setIsOrderDetailsOpen(true);
-                                       markOrderAsSeen(order.id);
-                                     }}
-                                   >
-                                     <Eye className="h-3 w-3" />
-                                   </Button>
-                                   <Button
-                                     size="sm"
-                                     variant="outline"
-                                     className="h-7 text-[9px] px-1.5"
-                                     onClick={() => updateOrderStatus(order.id, 'completed')}
-                                     disabled={order.status === 'completed'}
-                                   >
-                                     {t('complete')}
-                                   </Button>
-                                </div>
-                                
-                                {/* Row 2 */}
-                                <div className="flex gap-1">
-                                  {order.shipping_label_url || order.furgonetka_package_id ? (
+                              <div className="flex items-start gap-2">
+                                <Checkbox
+                                  checked={selectedOrders.includes(order.id)}
+                                  onCheckedChange={() => toggleOrderSelection(order.id)}
+                                  className="mt-1"
+                                />
+                                <div className="flex flex-col gap-1 w-fit">
+                                  {/* Row 1 */}
+                                  <div className="flex gap-1">
+                                     <Button
+                                       size="sm"
+                                       variant="ghost"
+                                       className="h-7 text-[10px] px-2"
+                                       onClick={() => {
+                                         setSelectedOrder(order);
+                                         setIsOrderDetailsOpen(true);
+                                         markOrderAsSeen(order.id);
+                                       }}
+                                     >
+                                       <Eye className="h-3 w-3" />
+                                     </Button>
+                                     <Button
+                                       size="sm"
+                                       variant="outline"
+                                       className="h-7 text-[9px] px-1.5"
+                                       onClick={() => updateOrderStatus(order.id, 'completed')}
+                                       disabled={order.status === 'completed'}
+                                     >
+                                       {t('complete')}
+                                     </Button>
+                                  </div>
+                                  
+                                  {/* Row 2 */}
+                                  <div className="flex gap-1">
+                                    {order.shipping_label_url || order.furgonetka_package_id ? (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 text-[10px] px-1.5 flex items-center gap-1 bg-white hover:bg-gray-100 text-black border-gray-300"
+                                        disabled
+                                      >
+                                        <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4" />
+                                        <span>{t('doneButton')}</span>
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        size="sm"
+                                        variant="default"
+                                        className="h-7 text-[9px] px-1 whitespace-nowrap flex items-center gap-0.5 bg-white hover:bg-gray-100 text-black"
+                                        onClick={() => openShipmentModal(order)}
+                                        disabled={order.status !== 'completed'}
+                                      >
+                                        <span className="order-1">{t('sendTo')}</span>
+                                        <img src={furgonetkaIco} alt="Furgonetka" className="h-3.5 w-3.5 order-2" />
+                                      </Button>
+                                    )}
                                     <Button
                                       size="sm"
-                                      variant="outline"
-                                      className="h-7 text-[10px] px-1.5 flex items-center gap-1 bg-white hover:bg-gray-100 text-black border-gray-300"
-                                      disabled
+                                      variant="destructive"
+                                      className="h-7 text-[10px] px-2"
+                                      onClick={() => handleDeleteOrder(order)}
                                     >
-                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4" />
-                                      <span>{t('doneButton')}</span>
+                                      <Trash2 className="h-3 w-3" />
                                     </Button>
-                                  ) : (
-                                    <Button
-                                      size="sm"
-                                      variant="default"
-                                      className="h-7 text-[9px] px-1 whitespace-nowrap flex items-center gap-0.5 bg-white hover:bg-gray-100 text-black"
-                                      onClick={() => openShipmentModal(order)}
-                                      disabled={order.status !== 'completed'}
-                                    >
-                                      <span className="order-1">{t('sendTo')}</span>
-                                      <img src={furgonetkaIco} alt="Furgonetka" className="h-3.5 w-3.5 order-2" />
-                                    </Button>
-                                  )}
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="h-7 text-[10px] px-2"
-                                    onClick={() => handleDeleteOrder(order)}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
+                                  </div>
                                 </div>
                               </div>
                             </TableCell>

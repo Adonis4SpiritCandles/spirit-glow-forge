@@ -176,19 +176,119 @@ export default function PublicProfile() {
       )
       .subscribe();
 
-    // Real-time for likes
+    // Real-time for likes - optimized to update only counts
     const likesChannel = supabase
       .channel(`comment_likes_${userId}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'profile_comment_likes',
         },
-        () => {
-          // Reload comment counts
-          loadProfile();
+        async (payload) => {
+          const { comment_id } = payload.new as any;
+          // Update like count for this comment
+          const { data: likeData } = await supabase
+            .from('profile_comment_likes')
+            .select('id')
+            .eq('comment_id', comment_id);
+          
+          setComments(prev => prev.map(c => {
+            if (c.id === comment_id) {
+              return { ...c, like_count: (likeData?.length || 0), user_liked: true };
+            }
+            if (c.replies) {
+              return {
+                ...c,
+                replies: c.replies.map(r => 
+                  r.id === comment_id 
+                    ? { ...r, like_count: (likeData?.length || 0), user_liked: true }
+                    : r
+                )
+              };
+            }
+            return c;
+          }));
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'profile_comment_likes',
+        },
+        async (payload) => {
+          const { comment_id } = payload.old as any;
+          // Update like count for this comment
+          const { data: likeData } = await supabase
+            .from('profile_comment_likes')
+            .select('id')
+            .eq('comment_id', comment_id);
+          
+          setComments(prev => prev.map(c => {
+            if (c.id === comment_id) {
+              return { ...c, like_count: (likeData?.length || 0), user_liked: false };
+            }
+            if (c.replies) {
+              return {
+                ...c,
+                replies: c.replies.map(r => 
+                  r.id === comment_id 
+                    ? { ...r, like_count: (likeData?.length || 0), user_liked: false }
+                    : r
+                )
+              };
+            }
+            return c;
+          }));
+        }
+      )
+      .subscribe();
+
+    // Real-time for ratings
+    const ratingsChannel = supabase
+      .channel(`comment_ratings_${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profile_comment_ratings',
+        },
+        async (payload) => {
+          const ratingData = payload.new || payload.old;
+          if (!ratingData) return;
+          
+          const { comment_id } = ratingData as any;
+          
+          // Recalculate ratings for this comment
+          const { data: ratings } = await supabase
+            .from('profile_comment_ratings')
+            .select('rating')
+            .eq('comment_id', comment_id);
+          
+          if (ratings && ratings.length > 0) {
+            const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
+            
+            setComments(prev => prev.map(c => {
+              if (c.id === comment_id) {
+                return { ...c, average_rating: avgRating, rating_count: ratings.length };
+              }
+              if (c.replies) {
+                return {
+                  ...c,
+                  replies: c.replies.map(r => 
+                    r.id === comment_id 
+                      ? { ...r, average_rating: avgRating, rating_count: ratings.length }
+                      : r
+                  )
+                };
+              }
+              return c;
+            }));
+          }
         }
       )
       .subscribe();
@@ -196,6 +296,7 @@ export default function PublicProfile() {
     return () => {
       supabase.removeChannel(channel);
       supabase.removeChannel(likesChannel);
+      supabase.removeChannel(ratingsChannel);
     };
   }, [userId]);
 
@@ -1041,7 +1142,7 @@ export default function PublicProfile() {
                                         setShowEmojiPicker(null);
                                       }}
                                     >
-                                      <ImageIcon className="h-4 w-4" />
+                                      <Gift className="h-4 w-4" />
                                     </Button>
                                     {showGifPicker === 'reply' && (
                                       <div className="absolute z-50 top-full mt-2">

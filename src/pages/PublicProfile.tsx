@@ -1134,30 +1134,31 @@ export default function PublicProfile() {
                             <p className="text-sm">{comment.comment}</p>
                           )}
 
-                          {/* Comment Actions */}
-                          <div className="flex items-center gap-4 text-sm">
+                          {/* Comment Actions - mobile optimized */}
+                          <div className="flex items-center gap-2 md:gap-4 text-sm md:ml-0 ml-12">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleLikeComment(comment.id, !!comment.user_liked)}
-                              className="gap-1"
+                              className="gap-1 h-7 md:h-9 px-2"
                             >
-                              <Heart className={`h-4 w-4 ${comment.user_liked ? 'fill-red-500 text-red-500' : ''}`} />
-                              {comment.like_count || 0}
+                              <Heart className={`h-3 w-3 md:h-4 md:w-4 ${comment.user_liked ? 'fill-red-500 text-red-500' : ''}`} />
+                              <span className="text-xs md:text-sm">{comment.like_count || 0}</span>
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                              className="h-7 md:h-9 px-2"
                             >
-                              <MessageSquare className="h-4 w-4 mr-1" />
-                              {t('reply')}
+                              <MessageSquare className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+                              <span className="text-xs md:text-sm">{t('reply')}</span>
                             </Button>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-0.5 md:gap-1">
                               {Array.from({ length: 5 }).map((_, i) => (
                                 <Star
                                   key={i}
-                                  className={`h-4 w-4 cursor-pointer transition-colors ${
+                                  className={`h-3 w-3 md:h-4 md:w-4 cursor-pointer transition-colors ${
                                     i < Math.round(comment.average_rating || 0)
                                       ? 'fill-yellow-400 text-yellow-400'
                                       : 'text-gray-300 hover:text-yellow-400'
@@ -1165,7 +1166,7 @@ export default function PublicProfile() {
                                   onClick={() => user && rateComment(comment.id, i + 1)}
                                 />
                               ))}
-                              <span className="text-xs text-muted-foreground ml-1">
+                              <span className="text-[10px] md:text-xs text-muted-foreground ml-0.5 md:ml-1">
                                 ({comment.rating_count || 0})
                               </span>
                             </div>
@@ -1237,62 +1238,39 @@ export default function PublicProfile() {
 
                           {/* Nested Replies */}
                           {comment.replies && comment.replies.length > 0 && (
-                            <div className="mt-4 ml-8 space-y-3 border-l-2 border-primary/20 pl-4">
+                            <div className="mt-4 md:ml-8 ml-12 space-y-3 border-l-2 border-primary/20 pl-3 md:pl-4">
                               {comment.replies.map((reply: any) => (
-                                <div key={reply.id} className="space-y-2 p-3 bg-gradient-to-r from-accent/5 to-transparent rounded-lg animate-fade-in">
-                                  <div className="flex items-start gap-3">
+                                <div key={reply.id} className="space-y-2 p-2 md:p-3 bg-gradient-to-r from-accent/5 to-transparent rounded-lg animate-fade-in">
+                                  <div className="flex items-start gap-2 md:gap-3">
                                     <Link to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}>
-                                      <Avatar className="h-8 w-8">
+                                      <Avatar className="h-7 w-7 md:h-8 md:w-8 flex-shrink-0">
                                         <AvatarImage src={reply.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
-                                        <AvatarFallback>
+                                        <AvatarFallback className="text-xs">
                                           {reply.commenter_profile?.first_name?.[0] || 'U'}
                                           {reply.commenter_profile?.last_name?.[0] || ''}
                                         </AvatarFallback>
                                       </Avatar>
                                     </Link>
-                                    <div className="flex-1">
-                                      <div className="flex items-center justify-between">
-                                        <div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
+                                        <div className="min-w-0">
                                           <Link 
                                             to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                            className="font-semibold text-sm hover:text-primary transition-colors"
+                                            className="font-semibold text-xs md:text-sm hover:text-primary transition-colors truncate block"
                                           >
                                             {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
                                           </Link>
                                           {reply.commenter_profile?.username && (
                                             <Link 
                                               to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                              className="text-xs text-muted-foreground ml-2 hover:text-primary transition-colors"
+                                              className="text-[10px] md:text-xs text-muted-foreground hover:text-primary transition-colors truncate block"
                                             >
                                               @{reply.commenter_profile?.username}
                                             </Link>
                                           )}
-                                          <span className="text-xs text-muted-foreground ml-2">
-                                            • {format(new Date(reply.created_at), 'PPp')}
+                                          <span className="text-[9px] md:text-xs text-muted-foreground block">
+                                            {format(new Date(reply.created_at), 'PPp')}
                                           </span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          {user && user.id === reply.commenter_id && (
-                                            <>
-                                              <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => {
-                                                  setEditingCommentId(reply.id);
-                                                  setEditCommentText(reply.comment);
-                                                }}
-                                              >
-                                                <Pencil className="h-3 w-3" />
-                                              </Button>
-                                              <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => deleteComment(reply.id)}
-                                              >
-                                                <Trash2 className="h-3 w-3" />
-                                              </Button>
-                                            </>
-                                          )}
                                         </div>
                                       </div>
                                       
@@ -1301,10 +1279,10 @@ export default function PublicProfile() {
                                           <Textarea
                                             value={editCommentText}
                                             onChange={(e) => setEditCommentText(e.target.value)}
-                                            className="min-h-[50px]"
+                                            className="min-h-[50px] text-sm"
                                           />
                                           <div className="flex items-center gap-2">
-                                            <Button size="sm" onClick={() => handleEditComment(reply.id)}>
+                                            <Button size="sm" onClick={() => handleEditComment(reply.id)} className="h-7 text-xs">
                                               {t('saveEdit')}
                                             </Button>
                                             <Button 
@@ -1314,27 +1292,50 @@ export default function PublicProfile() {
                                                 setEditingCommentId(null);
                                                 setEditCommentText('');
                                               }}
+                                              className="h-7 text-xs"
                                             >
                                               {t('cancelEdit')}
                                             </Button>
                                           </div>
                                         </div>
                                       ) : (
-                                        <p className="text-sm mt-1">{reply.comment}</p>
+                                        <p className="text-xs md:text-sm mt-1 break-words">{reply.comment}</p>
                                       )}
                                       
-                                      {/* Reply Actions - NO rating, NO nested reply */}
-                                      <div className="flex items-center gap-2 text-sm mt-2">
+                                      {/* Reply Actions - only like + edit/delete buttons */}
+                                      <div className="flex items-center gap-2 mt-2">
                                         <Button
                                           variant="ghost"
                                           size="sm"
                                           onClick={() => handleLikeComment(reply.id, !!reply.user_liked)}
-                                          className="gap-1 h-7 px-2"
+                                          className="gap-1 h-6 md:h-7 px-1.5 md:px-2"
                                         >
                                           <Heart className={`h-3 w-3 ${reply.user_liked ? 'fill-red-500 text-red-500' : ''}`} />
-                                          {reply.like_count || 0}
+                                          <span className="text-xs">{reply.like_count || 0}</span>
                                         </Button>
-                                        {/* NO Reply button for replies - NO rating stars */}
+                                        {user && user.id === reply.commenter_id && (
+                                          <div className="flex items-center gap-1">
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => {
+                                                setEditingCommentId(reply.id);
+                                                setEditCommentText(reply.comment);
+                                              }}
+                                              className="h-6 w-6 p-0"
+                                            >
+                                              <Pencil className="h-3 w-3" />
+                                            </Button>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => deleteComment(reply.id)}
+                                              className="h-6 w-6 p-0"
+                                            >
+                                              <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

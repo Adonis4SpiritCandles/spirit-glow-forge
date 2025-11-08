@@ -1969,8 +1969,8 @@ const AdminDashboard = () => {
 
                             {/* Status */}
                             <TableCell>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-muted-foreground whitespace-nowrap">Status:</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs text-muted-foreground whitespace-nowrap mr-1">Status:</span>
                                 <Badge 
                                   variant={
                                     order.status === 'completed' ? 'default' :
@@ -2000,17 +2000,17 @@ const AdminDashboard = () => {
                               {new Date(order.created_at).toLocaleDateString()}
                             </TableCell>
 
-                             {/* Actions with Checkbox */}
+                              {/* Actions with Checkbox */}
                             <TableCell>
-                              <div className="flex items-start gap-2">
+                              <div className="flex flex-col items-center gap-2">
                                 <Checkbox
                                   checked={selectedOrders.includes(order.id)}
                                   onCheckedChange={() => toggleOrderSelection(order.id)}
-                                  className="mt-1"
+                                  className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                 />
-                                <div className="flex flex-col gap-1 w-fit">
+                                <div className="flex flex-col gap-1 w-full">
                                   {/* Row 1 */}
-                                  <div className="flex gap-1">
+                                  <div className="flex gap-1 justify-center">
                                      <Button
                                        size="sm"
                                        variant="ghost"
@@ -2035,7 +2035,7 @@ const AdminDashboard = () => {
                                   </div>
                                   
                                   {/* Row 2 */}
-                                  <div className="flex gap-1">
+                                  <div className="flex gap-1 justify-center">
                                     {order.shipping_label_url || order.furgonetka_package_id ? (
                                       <Button
                                         size="sm"
@@ -2073,13 +2073,15 @@ const AdminDashboard = () => {
                           </TableRow>
                         );
                       })}
-                    </TableBody>
-                  </Table>
-                </TooltipProvider>
+                      </TableBody>
+                    </Table>
+                  </TooltipProvider>
                 </div>
+              </ScrollArea>
+            </div>
 
-                {/* Mobile Card-Based View */}
-                <div className="md:hidden space-y-4">
+            {/* Mobile Card-Based View */}
+            <div className="md:hidden space-y-4">
                   {orders.map((order) => {
                     const shippingStatus = getShippingStatusDisplay(order);
                     const totalPLN = order.total_pln;

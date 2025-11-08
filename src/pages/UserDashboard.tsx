@@ -404,7 +404,7 @@ const UserDashboard = () => {
               </TabsTrigger>
               <TabsTrigger value="social" className="flex items-center gap-2">
                 <Users className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('spiritProfile')}</span>
+                <span className="text-sm">{t('profile')}</span>
               </TabsTrigger>
               <TabsTrigger value="billing" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4 flex-shrink-0" />

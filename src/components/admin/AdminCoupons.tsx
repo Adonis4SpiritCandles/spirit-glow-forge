@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { Plus, Trash2, Edit2, Tag } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import AdminCouponActivity from './AdminCouponActivity';
 
 interface Coupon {
   id: string;
@@ -34,6 +35,7 @@ const AdminCoupons = () => {
   const [loading, setLoading] = useState(true);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'management' | 'activity'>('management');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -249,17 +251,47 @@ const AdminCoupons = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">
+      {/* Tab Navigation */}
+      <div className="flex items-center justify-between border-b">
+        <div className="flex gap-4">
+          <button
+            onClick={() => setActiveTab('management')}
+            className={`pb-3 px-1 border-b-2 transition-colors ${
+              activeTab === 'management'
+                ? 'border-primary text-primary font-semibold'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
             {language === 'pl' ? 'Zarządzanie Kuponami' : 'Coupon Management'}
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            {language === 'pl' 
-              ? 'Twórz i zarządzaj kodami rabatowymi' 
-              : 'Create and manage discount codes'}
-          </p>
+          </button>
+          <button
+            onClick={() => setActiveTab('activity')}
+            className={`pb-3 px-1 border-b-2 transition-colors ${
+              activeTab === 'activity'
+                ? 'border-primary text-primary font-semibold'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {language === 'pl' ? 'Aktywność Kuponów' : 'Coupon Activity'}
+          </button>
         </div>
+      </div>
+
+      {activeTab === 'activity' ? (
+        <AdminCouponActivity />
+      ) : (
+        <>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">
+                {language === 'pl' ? 'Zarządzanie Kuponami' : 'Coupon Management'}
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                {language === 'pl' 
+                  ? 'Twórz i zarządzaj kodami rabatowymi' 
+                  : 'Create and manage discount codes'}
+              </p>
+            </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
           if (!open) resetForm();
@@ -495,10 +527,6 @@ const AdminCoupons = () => {
                     </div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground">{language === 'pl' ? 'Ważny Do' : 'Valid To'}</div>
-                    <div className="font-semibold">
-                      {coupon.valid_to ? new Date(coupon.valid_to).toLocaleDateString() : '-'}
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -506,6 +534,8 @@ const AdminCoupons = () => {
           ))
         )}
       </div>
+        </>
+      )}
     </div>
   );
 };

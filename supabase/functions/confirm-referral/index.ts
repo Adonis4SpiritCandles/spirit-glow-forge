@@ -137,6 +137,18 @@ serve(async (req) => {
       console.error('Error executing complete_referral:', rpcError);
     } else {
       console.log('Complete referral function executed - 200 points awarded to referrer');
+      
+      // Log points history for referrer
+      await supabaseAdmin
+        .from('loyalty_points_history')
+        .insert({
+          user_id: referrer_id,
+          points_change: 200,
+          reason: `Referred ${refereeName} (${refereeEmail})`,
+          action_type: 'earn',
+          reference_type: 'referral',
+          reference_id: referee_id
+        });
     }
 
     // Step 5: Update referee's profile with referral_source_id
@@ -177,6 +189,18 @@ serve(async (req) => {
     }
 
     console.log('Welcome points (100) awarded to referee');
+    
+    // Log points history for referee
+    await supabaseAdmin
+      .from('loyalty_points_history')
+      .insert({
+        user_id: referee_id,
+        points_change: 100,
+        reason: 'Welcome bonus - registered via referral',
+        action_type: 'bonus',
+        reference_type: 'referral',
+        reference_id: referrer_id
+      });
 
     // Step 7: Assign badges
     await supabaseAdmin

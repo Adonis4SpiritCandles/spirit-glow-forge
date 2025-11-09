@@ -925,6 +925,39 @@ export type Database = {
           },
         ]
       }
+      loyalty_points_history: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          id: string
+          points_change: number
+          reason: string
+          reference_id: string | null
+          reference_type: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          id?: string
+          points_change: number
+          reason: string
+          reference_id?: string | null
+          reference_type?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          id?: string
+          points_change?: number
+          reason?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       newsletter_settings: {
         Row: {
           discount_percentage: number
@@ -1412,6 +1445,27 @@ export type Database = {
           },
         ]
       }
+      profile_follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
       profile_notifications: {
         Row: {
           actor_id: string
@@ -1551,6 +1605,7 @@ export type Database = {
       }
       public_profile_directory: {
         Row: {
+          cover_image_url: string | null
           created_at: string
           first_name: string | null
           last_name: string | null
@@ -1561,6 +1616,7 @@ export type Database = {
           username: string | null
         }
         Insert: {
+          cover_image_url?: string | null
           created_at?: string
           first_name?: string | null
           last_name?: string | null
@@ -1571,6 +1627,7 @@ export type Database = {
           username?: string | null
         }
         Update: {
+          cover_image_url?: string | null
           created_at?: string
           first_name?: string | null
           last_name?: string | null

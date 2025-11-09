@@ -29,7 +29,7 @@ import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
 import AdminSocialMedia from '@/components/admin/AdminSocialMedia';
 import AdminCoupons from '@/components/admin/AdminCoupons';
 import AdminCollections from '@/components/admin/AdminCollections';
-import AdminReferralRewards from '@/components/admin/AdminReferralRewards';
+import AdminReferralRewardsEnhanced from '@/components/admin/AdminReferralRewardsEnhanced';
 import SiteSettingsHub from '@/components/admin/SiteSettings/SiteSettingsHub';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
@@ -2654,10 +2654,6 @@ const AdminDashboard = () => {
 
           <TabsContent value="coupons" className="space-y-4">
             <AdminCoupons />
-          </TabsContent>
-
-          <TabsContent value="rewards" className="space-y-4">
-            <AdminReferralRewards />
           </TabsContent>
 
           <TabsContent value="export" className="space-y-4">

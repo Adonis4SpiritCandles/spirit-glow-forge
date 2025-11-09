@@ -126,10 +126,18 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'exportOrdersCsv') return language === 'pl' ? 'Eksportuj zamówienia jako CSV' : 'Export Orders as CSV';
     if (key === 'warehouse') return language === 'pl' ? 'Magazyn' : 'Warehouse';
     if (key === 'coupons') return language === 'pl' ? 'Kupony' : 'Coupons';
+    if (key === 'couponActivity') return language === 'pl' ? 'Aktywność Kuponów' : 'Coupon Activity';
+    if (key === 'couponManagement') return language === 'pl' ? 'Zarządzanie Kuponami' : 'Coupon Management';
+    if (key === 'redemptions') return language === 'pl' ? 'Realizacje' : 'Redemptions';
+    if (key === 'amountSaved') return language === 'pl' ? 'Zaoszczędzona Kwota' : 'Amount Saved';
     if (key === 'export') return language === 'pl' ? 'Eksport' : 'Export';
+    if (key === 'spiritToolsAndSite') return language === 'pl' ? 'Narzędzia Spirit i Strona' : 'Spirit Tools & Site';
+    if (key === 'spiritToolsAndSiteDesc') return language === 'pl' ? 'Uzyskaj dostęp do narzędzi Spirit Candles i konfiguracji strony z jednego miejsca' : 'Access Spirit Candles tools and site configuration from one place';
+    if (key === 'spiritTools') return language === 'pl' ? 'Narzędzia Spirit' : 'Spirit Tools';
     if (key === 'siteSettings') return language === 'pl' ? 'Ustawienia Strony' : 'Site Settings';
     if (key === 'socialMedia') return language === 'pl' ? 'Media Społecznościowe' : 'Social Media';
     if (key === 'referralsRewards') return language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards';
+    if (key === 'headerSettings') return language === 'pl' ? 'Ustawienia Nagłówka' : 'Header Settings';
     if (key === 'monthlyOrders') return language === 'pl' ? 'Miesięczne zamówienia' : 'Monthly Orders';
     if (key === 'salesByCategory') return language === 'pl' ? 'Sprzedaż według kategorii' : 'Sales by Category';
     if (key === 'monthlyRevenue') return language === 'pl' ? 'Miesięczny przychód' : 'Monthly Revenue';
@@ -188,8 +196,22 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'editProfile') return language === 'pl' ? 'Edytuj Profil' : 'Edit Profile';
     if (key === 'spiritPointsLeaderboard') return language === 'pl' ? 'Ranking Punktów Spirit' : 'Spirit Points Leaderboard';
     if (key === 'yourPoints') return language === 'pl' ? 'Twoje Punkty' : 'Your Points';
+    if (key === 'yourPointsAndRanking') return language === 'pl' ? 'Twoje Punkty i Ranking' : 'Your Points & Ranking';
     if (key === 'nextRewardProgress') return language === 'pl' ? 'Postęp Do Następnej Nagrody' : 'Next Reward Progress';
     if (key === 'purchasedProducts') return language === 'pl' ? 'Zakupione Produkty' : 'Purchased Products';
+    if (key === 'spiritPost') return language === 'pl' ? 'Spirit Post' : 'Spirit Post';
+    if (key === 'spiritPosts') return language === 'pl' ? 'Spirit Posty' : 'Spirit Posts';
+    if (key === 'follow') return language === 'pl' ? 'Obserwuj' : 'Follow';
+    if (key === 'unfollow') return language === 'pl' ? 'Przestań obserwować' : 'Unfollow';
+    if (key === 'followers') return language === 'pl' ? 'Obserwujący' : 'Followers';
+    if (key === 'following') return language === 'pl' ? 'Obserwowani' : 'Following';
+    if (key === 'pointsHistory') return language === 'pl' ? 'Historia Punktów' : 'Points History';
+    if (key === 'action') return language === 'pl' ? 'Akcja' : 'Action';
+    if (key === 'reason') return language === 'pl' ? 'Powód' : 'Reason';
+    if (key === 'points') return language === 'pl' ? 'Punkty' : 'Points';
+    if (key === 'balance') return language === 'pl' ? 'Saldo' : 'Balance';
+    if (key === 'uploadCover') return language === 'pl' ? 'Dodaj Okładkę' : 'Upload Cover';
+    if (key === 'changeCover') return language === 'pl' ? 'Zmień Okładkę' : 'Change Cover';
     
     // Admin Dashboard - Additional translations
     if (key === 'exclude') return language === 'pl' ? 'Wykluczyć' : 'Exclude';

@@ -648,6 +648,23 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'czekam na ZAKOŃCZENIE' : 'Awaiting for data COMPLETE';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped Successfully';
+    
+    // Coupon Activity & Points History
+    if (key === 'couponActivity') return language === 'pl' ? 'Aktywność Kuponów' : 'Coupon Activity';
+    if (key === 'redemptions') return language === 'pl' ? 'Realizacje' : 'Redemptions';
+    if (key === 'amountSaved') return language === 'pl' ? 'Zaoszczędzona Kwota' : 'Amount Saved';
+    if (key === 'pointsHistory') return language === 'pl' ? 'Historia Punktów' : 'Points History';
+    if (key === 'earned') return language === 'pl' ? 'Zdobyte' : 'Earned';
+    if (key === 'spent') return language === 'pl' ? 'Wydane' : 'Spent';
+    if (key === 'bonuses') return language === 'pl' ? 'Bonusy' : 'Bonuses';
+    if (key === 'action') return language === 'pl' ? 'Akcja' : 'Action';
+    if (key === 'reason') return language === 'pl' ? 'Powód' : 'Reason';
+    
+    // Follow System
+    if (key === 'follow') return language === 'pl' ? 'Obserwuj' : 'Follow';
+    if (key === 'unfollow') return language === 'pl' ? 'Przestań obserwować' : 'Unfollow';
+    if (key === 'followers') return language === 'pl' ? 'Obserwujący' : 'Followers';
+    if (key === 'following') return language === 'pl' ? 'Obserwowani' : 'Following';
     if (key === 'copy') return language === 'pl' ? 'Kopiuj' : 'Copy';
     if (key === 'copied') return language === 'pl' ? 'Skopiowano!' : 'Copied!';
     if (key === 'shippingStatusLegend') return language === 'pl' ? 'Legenda Statusów Przesyłki' : 'Shipping Status Legend';

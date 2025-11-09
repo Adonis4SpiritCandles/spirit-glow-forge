@@ -830,29 +830,10 @@ export default function PublicProfile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            {/* Mini Badges Section - Compact */}
-            {isOwnProfile && (
-              <Card className="bg-accent/5">
-                <CardHeader className="pb-3">
-                  <h3 className="text-sm font-semibold text-muted-foreground">{t('badges')}</h3>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {/* Placeholder for mini badges - will be populated from BadgeShowcase logic */}
-                    <Badge variant="outline" className="px-2 py-1 text-xs flex items-center gap-1">
-                      <Award className="h-3 w-3 text-yellow-500" />
-                      <span>First Order</span>
-                    </Badge>
-                    <Badge variant="outline" className="px-2 py-1 text-xs flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3 text-green-500" />
-                      <span>Rising Star</span>
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {/* Badges Section - Visible to All */}
+            <BadgeShowcase userId={userId || ''} />
 
-            {/* Purchased Products Carousel */}
+            {/* Purchased Products Carousel - Visible to All */}
             {purchasedProducts.length > 0 && (
               <Card>
                 <CardHeader>
@@ -886,7 +867,7 @@ export default function PublicProfile() {
               </Card>
             )}
 
-            {/* Wishlist Products Carousel */}
+            {/* Wishlist Products Carousel - Visible to All */}
             {wishlistProducts.length > 0 && (
               <Card>
                 <CardHeader>
@@ -920,7 +901,7 @@ export default function PublicProfile() {
               </Card>
             )}
 
-            {/* Reviews Section */}
+            {/* Reviews Section - Visible to All */}
             {reviews.length > 0 && (
               <Card>
                 <CardHeader>
@@ -971,12 +952,12 @@ export default function PublicProfile() {
               </Card>
             )}
 
-            {/* Comments Section */}
+            {/* Spirit Post Section - Visible to All */}
             <Card>
               <CardHeader>
                 <h2 className="text-2xl font-semibold flex items-center gap-2">
                   <MessageCircle className="h-6 w-6 text-primary" />
-                  {t('comments')}
+                  {t('spiritPosts')}
                 </h2>
               </CardHeader>
               <CardContent className="space-y-6">

@@ -8,7 +8,11 @@ import { toast } from '@/hooks/use-toast';
 import { Mail, Check, X, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 
-export default function AdminEmailManager() {
+interface AdminEmailManagerProps {
+  onBack?: () => void;
+}
+
+export default function AdminEmailManager({ onBack }: AdminEmailManagerProps = {}) {
   const { t, language } = useLanguage();
   const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

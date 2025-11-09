@@ -1,235 +1,277 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Settings, FileText, Mail, MessageSquare, Home, Palette, Search, Users, Award, Gift, Sparkles } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import FooterSettings from "./FooterSettings/FooterSettingsMain";
-import HomepageSettings from "./HomepageSettings/HomepageSettingsMain";
-import ChatSettings from "./ChatSettings/ChatSettingsMain";
-import SEOSettings from "./SEOSettings/SEOSettingsMain";
-import AdminReferralRewards from "@/components/admin/AdminReferralRewards";
-import AdminEmailManager from "@/components/admin/AdminEmailManager";
-import CustomCandlesSettingsMain from "./CustomCandlesSettings/CustomCandlesSettingsMain";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { 
+  MessageSquare, 
+  Mail, 
+  ChevronRight, 
+  Settings, 
+  Home, 
+  Search,
+  FileText,
+  Sparkles,
+  Gift,
+  PenTool,
+  Menu
+} from 'lucide-react';
 
-const SiteSettingsHub = () => {
-  const { t, language } = useLanguage();
+// Import sub-settings components
+import FooterSettings from './FooterSettings/FooterSettingsMain';
+import ChatSettings from './ChatSettings/ChatSettingsMain';
+import HomepageSettings from './HomepageSettings/HomepageSettingsMain';
+import SEOSettings from './SEOSettings/SEOSettingsMain';
+import HeaderSettings from './HeaderSettings/HeaderSettingsMain';
+import AdminEmailManager from '../AdminEmailManager';
+import AdminReferralRewardsEnhanced from '../AdminReferralRewardsEnhanced';
+import CustomCandlesSettingsMain from './CustomCandlesSettings/CustomCandlesSettingsMain';
+
+export default function SiteSettingsHub() {
+  const { language, t } = useLanguage();
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
-  const sections = [
+  // Spirit Tools sections
+  const spiritToolsSections = [
     {
-      id: "footer",
-      icon: Settings,
-      title: language === 'pl' ? 'Ustawienia Stopki' : 'Footer Settings',
-      description: language === 'pl' 
-        ? 'Zarządzaj ikonami społecznościowymi, informacjami kontaktowymi i dokumentami prawnymi' 
-        : 'Manage social icons, contact information, and legal documents',
-      itemsCount: 12,
-      color: "from-blue-500/20 to-cyan-500/20",
+      id: 'referrals',
+      icon: <Gift className="h-6 w-6" />,
+      title: t('referralSystemRewards'),
+      description: language === 'pl'
+        ? 'Zarządzaj systemem poleceń i nagrodami'
+        : 'Manage referral system and rewards',
+      itemCount: 5,
+      color: 'text-yellow-500'
     },
     {
-      id: "email",
-      icon: Mail,
-      title: language === 'pl' ? 'Zarządzanie Email' : 'Email Management',
+      id: 'chat',
+      icon: <MessageSquare className="h-6 w-6" />,
+      title: t('liveChatSettings'),
       description: language === 'pl'
-        ? 'Zarządzaj szablonami email, aktywuj/dezaktywuj powiadomienia'
-        : 'Manage email templates, activate/deactivate notifications',
-      itemsCount: 12,
-      color: "from-red-500/20 to-orange-500/20",
-      comingSoon: false,
+        ? 'Personalizuj wiadomości czatu i odpowiedzi bota'
+        : 'Customize chat messages and bot responses',
+      itemCount: 3,
+      color: 'text-purple-500'
     },
     {
-      id: "referrals",
-      icon: Gift,
-      title: language === 'pl' ? 'System Poleceń & Nagrody' : 'Referral System & Rewards',
+      id: 'email',
+      icon: <Mail className="h-6 w-6" />,
+      title: t('emailManagement'),
       description: language === 'pl'
-        ? 'Konfiguruj program poleceń, nagrody za odznaki i SpiritPoints'
-        : 'Configure referral program, badge rewards, and SpiritPoints',
-      itemsCount: 8,
-      color: "from-green-500/20 to-teal-500/20",
-      comingSoon: false,
+        ? 'Konfiguruj szablony emaili i powiadomienia'
+        : 'Configure email templates and notifications',
+      itemCount: 8,
+      color: 'text-green-500'
     },
     {
-      id: "chat",
-      icon: MessageSquare,
-      title: language === 'pl' ? 'Ustawienia Live Chat' : 'Live Chat Settings',
+      id: 'seo',
+      icon: <Search className="h-6 w-6" />,
+      title: t('seoSettings'),
       description: language === 'pl'
-        ? 'Zarządzaj automatycznymi odpowiedziami bota czatu'
-        : 'Manage automatic chat bot responses',
-      itemsCount: 7,
-      color: "from-indigo-500/20 to-purple-500/20",
-      comingSoon: false,
-    },
-    {
-      id: "header",
-      icon: Palette,
-      title: language === 'pl' ? 'Ustawienia Nagłówka' : 'Header Settings',
-      description: language === 'pl'
-        ? 'Dostosuj logo, nawigację i wygląd nagłówka'
-        : 'Customize logo, navigation, and header appearance',
-      itemsCount: 6,
-      color: "from-purple-500/20 to-pink-500/20",
-      comingSoon: true,
-    },
-    {
-      id: "homepage",
-      icon: Home,
-      title: language === 'pl' ? 'Ustawienia Strony Głównej' : 'Homepage Settings',
-      description: language === 'pl'
-        ? 'Edytuj sekcję hero, cechy produktów i testimoniale'
-        : 'Edit hero section, product features, and testimonials',
-      itemsCount: 8,
-      color: "from-green-500/20 to-emerald-500/20",
-      comingSoon: false,
-    },
-    {
-      id: "seo",
-      icon: Search,
-      title: language === 'pl' ? 'Ustawienia SEO' : 'SEO Settings',
-      description: language === 'pl'
-        ? 'Zarządzaj meta tagami, tytułami i opisami dla wszystkich stron'
-        : 'Manage meta tags, titles, and descriptions for all pages',
-      itemsCount: 6,
-      color: "from-orange-500/20 to-red-500/20",
-      comingSoon: false,
-    },
-    {
-      id: "customize",
-      icon: Sparkles,
-      title: language === 'pl' ? 'Strona Personalizacji' : 'Custom Candles Page',
-      description: language === 'pl'
-        ? 'Zarządzaj treścią strony personalizacji, zapachami i obrazami'
-        : 'Manage customization page content, fragrances, and images',
-      itemsCount: 8,
-      color: "from-pink-500/20 to-rose-500/20",
-      comingSoon: false,
+        ? 'Optymalizuj meta tagi, opisy i ustawienia SEO'
+        : 'Optimize meta tags, descriptions, and SEO settings',
+      itemCount: 6,
+      color: 'text-pink-500'
     },
   ];
 
-  if (selectedSection === "footer") {
-    return (
-      <div>
-        <FooterSettings onBack={() => setSelectedSection(null)} />
-      </div>
-    );
+  // Site Settings sections
+  const siteSettingsSections = [
+    {
+      id: 'header',
+      icon: <Menu className="h-6 w-6" />,
+      title: t('headerSettings'),
+      description: language === 'pl'
+        ? 'Dostosuj logo, nawigację i ikony nagłówka'
+        : 'Customize header logo, navigation and icons',
+      itemCount: 4,
+      color: 'text-cyan-500',
+      comingSoon: true
+    },
+    {
+      id: 'homepage',
+      icon: <Home className="h-6 w-6" />,
+      title: t('homepageSettings'),
+      description: language === 'pl'
+        ? 'Dostosuj sekcję hero, funkcje, opinie i newsletter'
+        : 'Customize hero section, features, testimonials, and newsletter',
+      itemCount: 5,
+      color: 'text-orange-500'
+    },
+    {
+      id: 'custom_candles',
+      icon: <PenTool className="h-6 w-6" />,
+      title: t('customCandlesPage'),
+      description: language === 'pl'
+        ? 'Dostosuj stronę Custom Candles'
+        : 'Customize Custom Candles page',
+      itemCount: 2,
+      color: 'text-indigo-500'
+    },
+    {
+      id: 'footer',
+      icon: <FileText className="h-6 w-6" />,
+      title: t('footerSettings'),
+      description: language === 'pl' 
+        ? 'Zarządzaj treściami stopki, linkami do dokumentów prawnych i ikonami social media'
+        : 'Manage footer content, legal document links, and social media icons',
+      itemCount: 4,
+      color: 'text-blue-500'
+    },
+  ];
+
+  // Conditional rendering for each setting section
+  if (selectedSection === 'footer') {
+    return <FooterSettings onBack={() => setSelectedSection(null)} />;
   }
 
-  if (selectedSection === "chat") {
-    return (
-      <div>
-        <ChatSettings onBack={() => setSelectedSection(null)} />
-      </div>
-    );
+  if (selectedSection === 'header') {
+    return <HeaderSettings onBack={() => setSelectedSection(null)} />;
   }
 
-  if (selectedSection === "homepage") {
-    return (
-      <div>
-        <HomepageSettings onBack={() => setSelectedSection(null)} />
-      </div>
-    );
+  if (selectedSection === 'chat') {
+    return <ChatSettings onBack={() => setSelectedSection(null)} />;
   }
 
-  if (selectedSection === "seo") {
-    return (
-      <div>
-        <SEOSettings onBack={() => setSelectedSection(null)} />
-      </div>
-    );
+  if (selectedSection === 'homepage') {
+    return <HomepageSettings onBack={() => setSelectedSection(null)} />;
   }
 
-  if (selectedSection === "email") {
-    return (
-      <div>
-        <AdminEmailManager />
-      </div>
-    );
+  if (selectedSection === 'seo') {
+    return <SEOSettings onBack={() => setSelectedSection(null)} />;
   }
 
-  if (selectedSection === "referrals") {
-    return (
-      <div>
-        <AdminReferralRewards />
-      </div>
-    );
+  if (selectedSection === 'email') {
+    return <AdminEmailManager onBack={() => setSelectedSection(null)} />;
   }
 
-  if (selectedSection === "customize") {
-    return (
-      <div>
-        <CustomCandlesSettingsMain onBack={() => setSelectedSection(null)} />
-      </div>
-    );
+  if (selectedSection === 'referrals') {
+    return <AdminReferralRewardsEnhanced onBack={() => setSelectedSection(null)} />;
   }
 
+  if (selectedSection === 'custom_candles') {
+    return <CustomCandlesSettingsMain onBack={() => setSelectedSection(null)} />;
+  }
+
+  // Main hub view with two sections
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl md:text-4xl font-playfair font-bold text-foreground mb-4">
-          {language === 'pl' ? 'Ustawienia Strony' : 'Site Settings'}
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          {language === 'pl'
-            ? 'Zarządzaj każdym aspektem swojej strony z jednego miejsca'
-            : 'Manage every aspect of your site from one place'}
+      <div>
+        <h2 className="text-3xl font-bold mb-2">{t('spiritToolsAndSite')}</h2>
+        <p className="text-muted-foreground">
+          {language === 'pl' 
+            ? 'Zarządzaj narzędziami Spirit Candles i ustawieniami strony z jednego miejsca'
+            : 'Manage Spirit Candles tools and site settings from one place'}
         </p>
       </div>
 
-      {/* Settings Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sections.map((section) => {
-          const IconComponent = section.icon;
-          return (
-            <Card
+      {/* Spirit Tools Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-6 w-6 text-primary" />
+          <h3 className="text-2xl font-bold">{t('spiritTools')}</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {language === 'pl'
+            ? 'Narzędzia do zarządzania systemami Spirit Candles, gamifikacją i komunikacją'
+            : 'Tools to manage Spirit Candles systems, gamification and communication'}
+        </p>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {spiritToolsSections.map((section) => (
+            <Card 
               key={section.id}
-              className={`group cursor-pointer border-2 transition-all duration-300 hover:shadow-luxury hover:border-primary/40 bg-gradient-to-br ${section.color} ${
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+              onClick={() => setSelectedSection(section.id)}
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={section.color}>
+                    {section.icon}
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <CardTitle className="text-lg">{section.title}</CardTitle>
+                <CardDescription className="text-sm">{section.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Settings className="h-3.5 w-3.5" />
+                  <span>
+                    {section.itemCount} {language === 'pl' ? 'ustawień' : 'settings'}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Site Settings Section */}
+      <div className="space-y-4 pt-4 border-t">
+        <div className="flex items-center gap-2">
+          <Settings className="h-6 w-6 text-primary" />
+          <h3 className="text-2xl font-bold">{t('siteSettings')}</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {language === 'pl'
+            ? 'Dostosuj wygląd i zawartość strony, nagłówek, stopkę i więcej'
+            : 'Customize site appearance and content, header, footer and more'}
+        </p>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {siteSettingsSections.map((section) => (
+            <Card 
+              key={section.id}
+              className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
                 section.comingSoon ? 'opacity-60' : ''
               }`}
               onClick={() => !section.comingSoon && setSelectedSection(section.id)}
             >
-              <CardContent className="p-8 text-center space-y-4">
-                <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
-                  <IconComponent className="w-10 h-10 text-primary group-hover:scale-110 transition-transform duration-300" />
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-playfair font-bold mb-2 text-foreground group-hover:text-primary transition-colors">
-                    {section.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {section.description}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-center gap-2">
-                  <Badge variant="secondary" className="text-xs">
-                    {section.itemsCount} {language === 'pl' ? 'elementów' : 'items'}
-                  </Badge>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={section.color}>
+                    {section.icon}
+                  </div>
                   {section.comingSoon && (
-                    <Badge className="text-xs bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                    <span className="text-xs font-medium bg-muted px-2 py-1 rounded">
                       {language === 'pl' ? 'Wkrótce' : 'Coming Soon'}
-                    </Badge>
+                    </span>
                   )}
+                  {!section.comingSoon && (
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </div>
+                <CardTitle className="text-lg">{section.title}</CardTitle>
+                <CardDescription className="text-sm">{section.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Settings className="h-3.5 w-3.5" />
+                  <span>
+                    {section.itemCount} {language === 'pl' ? 'ustawień' : 'settings'}
+                  </span>
                 </div>
               </CardContent>
             </Card>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
       {/* Info Card */}
       <Card className="bg-primary/5 border-primary/20">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <MessageSquare className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-            <div>
-              <h4 className="font-semibold text-foreground mb-2">
-                {language === 'pl' ? 'Wskazówka' : 'Tip'}
-              </h4>
+        <CardContent className="pt-6">
+          <div className="flex gap-4">
+            <Sparkles className="h-6 w-6 text-primary flex-shrink-0" />
+            <div className="space-y-1">
+              <p className="font-medium text-sm">
+                {language === 'pl' 
+                  ? 'Wskazówka: Zmiany w ustawieniach są natychmiastowe'
+                  : 'Tip: Changes to settings are immediate'}
+              </p>
               <p className="text-sm text-muted-foreground">
                 {language === 'pl'
-                  ? 'Zmiany wprowadzone w tych ustawieniach będą natychmiast widoczne na stronie. Zawsze możesz wrócić i edytować je w dowolnym momencie.'
-                  : 'Changes made in these settings will be immediately visible on the site. You can always come back and edit them at any time.'}
+                  ? 'Wszystkie zmiany są zapisywane automatycznie i będą widoczne dla użytkowników od razu.'
+                  : 'All changes are saved automatically and will be visible to users immediately.'}
               </p>
             </div>
           </div>
@@ -237,6 +279,4 @@ const SiteSettingsHub = () => {
       </Card>
     </div>
   );
-};
-
-export default SiteSettingsHub;
+}

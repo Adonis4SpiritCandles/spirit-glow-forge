@@ -570,6 +570,17 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'promoteToAdmin') return language === 'pl' ? 'Awansuj na Admina' : 'Promote to Admin';
     if (key === 'demoteToUser') return language === 'pl' ? 'Obniż do Użytkownika' : 'Demote to User';
     if (key === 'product') return language === 'pl' ? 'Produkt' : 'Product';
+    if (key === 'spiritPoints') return language === 'pl' ? 'Punkty Spirit' : 'Spirit Points';
+    if (key === 'spiritPost') return language === 'pl' ? 'Spirit Post' : 'Spirit Post';
+    if (key === 'spiritPosts') return language === 'pl' ? 'Spirit Posty' : 'Spirit Posts';
+    if (key === 'topSpirits') return language === 'pl' ? 'Najlepsi Spirits' : 'Top Spirits';
+    if (key === 'spiritToolsAndSite') return language === 'pl' ? 'Narzędzia Spirit i Strona' : 'Spirit Tools & Site';
+    if (key === 'spiritTools') return language === 'pl' ? 'Narzędzia Spirit' : 'Spirit Tools';
+    if (key === 'referralSystemRewards') return language === 'pl' ? 'System Poleceń i Nagrody' : 'Referral System & Rewards';
+    if (key === 'liveChatSettings') return language === 'pl' ? 'Ustawienia Live Chat' : 'Live Chat Settings';
+    if (key === 'headerSettings') return language === 'pl' ? 'Ustawienia Nagłówka' : 'Header Settings';
+    if (key === 'yourPoints') return language === 'pl' ? 'Twoje Punkty' : 'Your Points';
+    if (key === 'yourRank') return language === 'pl' ? 'Twoja Pozycja' : 'Your Rank';
     
     // New translations for full implementation
     if (key === 'spiritProfile') return language === 'pl' ? 'Profil Spirit' : 'Spirit Profile';

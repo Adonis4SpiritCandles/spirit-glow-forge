@@ -34,7 +34,11 @@ interface BadgeReward {
   is_active: boolean;
 }
 
-export default function AdminReferralRewardsEnhanced() {
+interface AdminReferralRewardsEnhancedProps {
+  onBack?: () => void;
+}
+
+export default function AdminReferralRewardsEnhanced({ onBack }: AdminReferralRewardsEnhancedProps = {}) {
   const { language } = useLanguage();
   const [referralRewards, setReferralRewards] = useState<ReferralReward[]>([]);
   const [badgeRewards, setBadgeRewards] = useState<BadgeReward[]>([]);

@@ -15,10 +15,16 @@ interface BadgeConfig {
   color: string;
 }
 
-const BadgeShowcase = () => {
+interface BadgeShowcaseProps {
+  userId?: string;
+}
+
+const BadgeShowcase = ({ userId: propUserId }: BadgeShowcaseProps = {}) => {
   const [earnedBadges, setEarnedBadges] = useState<string[]>([]);
   const { user } = useAuth();
   const { language } = useLanguage();
+  
+  const userId = propUserId || user?.id;
 
   const allBadges: BadgeConfig[] = [
     {
@@ -73,25 +79,25 @@ const BadgeShowcase = () => {
   ];
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       loadBadges();
     }
-  }, [user]);
+  }, [userId]);
 
   const loadBadges = async () => {
-    if (!user) return;
+    if (!userId) return;
 
     const { data, error } = await supabase
       .from('user_badges')
       .select('badge_id')
-      .eq('user_id', user.id);
+      .eq('user_id', userId);
 
     if (!error && data) {
       setEarnedBadges(data.map(b => b.badge_id));
     }
   };
 
-  if (!user) return null;
+  if (!userId) return null;
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">

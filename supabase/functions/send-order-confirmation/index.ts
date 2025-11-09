@@ -73,6 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
     }: OrderConfirmationRequest = await req.json();
 
     console.log(`Sending order confirmation email to ${userEmail} in ${preferredLanguage}`);
+    const coupon_code = couponCode; // back-compat for older template references
 
     const isPolish = preferredLanguage === 'pl';
     const orderRef = `SPIRIT-${String(orderNumber).padStart(5, '0')}`;
@@ -114,7 +115,8 @@ const handler = async (req: Request): Promise<Response> => {
       : `Order Confirmation ${orderRef}`;
 
     const emailResponse = await resend.emails.send({
-      from: "Spirit Candles <team@spirit-candle.com>",
+      from: "Spirit Candles <onboarding@resend.dev>",
+      reply_to: "m5moffice@proton.me",
       to: [userEmail],
       subject: subject,
       html: `

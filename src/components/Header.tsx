@@ -132,7 +132,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* CENTER: Logo */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={logoUrl}
+              src={spiritLogoTransparent}
               alt="SPIRIT CANDLES" 
               className={`${logoHeight} w-auto animate-glow-pulse`}
             />
@@ -163,36 +163,74 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to={`/profile/${user.id}`} className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      {language === 'pl' ? 'Profil' : 'Profile'}
-                    </Link>
-                  </DropdownMenuItem>
+                  
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard" className="flex items-center gap-2">
                       <LayoutDashboard className="h-4 w-4" />
                       {t('dashboard')}
                     </Link>
                   </DropdownMenuItem>
+                  
+                  {userProfile?.role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center gap-2">
+                        <img src={goldShieldMiniIcon} alt="Admin" className="h-4 w-4" />
+                        {t('admin')}
+                        {unseenCount > 0 && <Badge className="ml-auto bg-red-500 text-white">{unseenCount}</Badge>}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
                   <DropdownMenuItem asChild>
-                    <Link to="/wishlist" className="flex items-center gap-2">
-                      <Heart className="h-4 w-4" />
-                      {t('wishlist')}
-                      {wishlistCount > 0 && <Badge className="ml-auto">{wishlistCount}</Badge>}
+                    <Link to="/dashboard?tab=orders" className="flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      {t('myOrders')}
                     </Link>
                   </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to={`/profile/${user.id}`} className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {t('spiritProfile')}
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard?tab=settings" className="flex items-center gap-2">
+                      <SettingsIcon className="h-4 w-4" />
+                      {t('settings')}
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/shop" className="flex items-center gap-2">
+                      <ShoppingBag className="h-4 w-4" />
+                      {t('shop')}
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  {showSearch && (
+                    <DropdownMenuItem asChild>
+                      <button onClick={() => setIsSearchOpen(true)} className="flex items-center gap-2 w-full">
+                        <Search className="h-4 w-4" />
+                        {t('search')}
+                      </button>
+                    </DropdownMenuItem>
+                  )}
+                  
                   <DropdownMenuSeparator />
+                  
                   <DropdownMenuItem onClick={handleSignOut} className="text-destructive flex items-center gap-2">
                     <LogOut className="h-4 w-4" />
-                    {t('signOut')}
+                    {t('logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" asChild className="flex items-center gap-1">
                 <Link to="/auth">
                   <User className="h-5 w-5" />
+                  <span className="text-xs">{t('login')}</span>
                 </Link>
               </Button>
             )}
@@ -414,14 +452,6 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                 </Button>
               </Link>
             )}
-            
-            {user && (
-              <Link to="/dashboard">
-                <Button variant="ghost" size="sm">
-                  <LayoutDashboard className="h-5 w-5" />
-                </Button>
-              </Link>
-            )}
 
             {user && <NotificationBell />}
 
@@ -447,28 +477,75 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to={`/profile/${user.id}`} className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      {language === 'pl' ? 'Profil' : 'Profile'}
-                    </Link>
-                  </DropdownMenuItem>
+                  
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard" className="flex items-center gap-2">
                       <LayoutDashboard className="h-4 w-4" />
                       {t('dashboard')}
                     </Link>
                   </DropdownMenuItem>
+                  
+                  {userProfile?.role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center gap-2">
+                        <img src={goldShieldMiniIcon} alt="Admin" className="h-4 w-4" />
+                        {t('admin')}
+                        {unseenCount > 0 && <Badge className="ml-auto bg-red-500 text-white">{unseenCount}</Badge>}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard?tab=orders" className="flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      {t('myOrders')}
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to={`/profile/${user.id}`} className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {t('spiritProfile')}
+                    </Link>
+                  </DropdownMenuItem>
+                  
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard?tab=settings" className="flex items-center gap-2">
                       <SettingsIcon className="h-4 w-4" />
                       {t('settings')}
                     </Link>
                   </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/shop" className="flex items-center gap-2">
+                      <ShoppingBag className="h-4 w-4" />
+                      {t('shop')}
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  {showWishlist && (
+                    <DropdownMenuItem className="md:flex lg:hidden" asChild>
+                      <Link to="/wishlist" className="flex items-center gap-2">
+                        <Heart className="h-4 w-4" />
+                        {t('wishlist')}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {showSearch && (
+                    <DropdownMenuItem className="md:flex lg:hidden" asChild>
+                      <button onClick={() => setIsSearchOpen(true)} className="flex items-center gap-2 w-full">
+                        <Search className="h-4 w-4" />
+                        {t('search')}
+                      </button>
+                    </DropdownMenuItem>
+                  )}
+                  
                   <DropdownMenuSeparator />
+                  
                   <DropdownMenuItem onClick={handleSignOut} className="text-destructive flex items-center gap-2">
                     <LogOut className="h-4 w-4" />
-                    {t('signOut')}
+                    {t('logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -476,7 +553,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               <Link to="/auth">
                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
                   <User className="h-5 w-5" />
-                  <span className="hidden lg:inline text-xs">{t('login')}</span>
+                  <span className="hidden md:inline text-sm">{t('login')}</span>
                 </Button>
               </Link>
             )}

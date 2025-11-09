@@ -1051,7 +1051,7 @@ export default function PublicProfile() {
         <div className="lg:hidden space-y-8">
           {/* 1. Badges */}
           <div className="order-1">
-            <BadgeShowcase userId={userId || ''} />
+            <BadgeShowcase userId={userId || ''} variant="mini" />
           </div>
 
           {/* 2. Spirit Points Leaderboard (placeholder - da implementare con Your Points) */}
@@ -1273,136 +1273,7 @@ export default function PublicProfile() {
         <div className="hidden lg:grid lg:grid-cols-3 gap-8">
           {/* COLONNA SINISTRA (2/3) */}
           <div className="lg:col-span-2 space-y-8">
-            {/* 1. Spirit Points Leaderboard */}
-            <Card>
-              <CardHeader>
-                <h2 className="text-2xl font-semibold flex items-center gap-2">
-                  <Trophy className="h-6 w-6 text-primary" />
-                  {t('spiritPointsLeaderboard')}
-                </h2>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  {language === 'pl' ? 'Leaderboard wkrótce dostępny' : 'Leaderboard coming soon'}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* 2. Purchased Products Carousel */}
-            {purchasedProducts.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <h2 className="text-2xl font-semibold flex items-center gap-2">
-                    <ShoppingBag className="h-6 w-6 text-primary" />
-                    {t('purchasedProducts')} ({purchasedProducts.length})
-                  </h2>
-                </CardHeader>
-                <CardContent>
-                  {purchasedProducts.length > 2 ? (
-                    <Carousel opts={{ align: "start", loop: true }} className="w-full">
-                      <CarouselContent>
-                        {purchasedProducts.map((product: any) => (
-                          <CarouselItem key={product.id} className="basis-1/3">
-                            <Link to={`/product/${product.id}`} className="group cursor-pointer block">
-                              <div className="aspect-square relative overflow-hidden rounded-lg border">
-                                <img
-                                  src={product.image_url}
-                                  alt={product.name_en}
-                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                />
-                              </div>
-                              <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
-                                {language === 'en' ? product.name_en : product.name_pl}
-                              </p>
-                            </Link>
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      <CarouselPrevious />
-                      <CarouselNext />
-                    </Carousel>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {purchasedProducts.map((product: any) => (
-                        <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer">
-                          <div className="aspect-square relative overflow-hidden rounded-lg border">
-                            <img
-                              src={product.image_url}
-                              alt={product.name_en}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            />
-                          </div>
-                          <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
-                            {language === 'en' ? product.name_en : product.name_pl}
-                          </p>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* 3. Wishlist Products Carousel */}
-            {wishlistProducts.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <h2 className="text-2xl font-semibold flex items-center gap-2">
-                    <Heart className="h-6 w-6 text-primary" />
-                    {t('wishlist')} ({wishlistProducts.length})
-                  </h2>
-                </CardHeader>
-                <CardContent>
-                  {wishlistProducts.length > 2 ? (
-                    <Carousel opts={{ align: "start", loop: true }} className="w-full">
-                      <CarouselContent>
-                        {wishlistProducts.map((product: any) => (
-                          <CarouselItem key={product.id} className="basis-1/3">
-                            <Link to={`/product/${product.id}`} className="group cursor-pointer block">
-                              <div className="aspect-square relative overflow-hidden rounded-lg border">
-                                <img
-                                  src={product.image_url}
-                                  alt={product.name_en}
-                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                />
-                              </div>
-                              <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
-                                {language === 'en' ? product.name_en : product.name_pl}
-                              </p>
-                            </Link>
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      <CarouselPrevious />
-                      <CarouselNext />
-                    </Carousel>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {wishlistProducts.map((product: any) => (
-                        <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer">
-                          <div className="aspect-square relative overflow-hidden rounded-lg border">
-                            <img
-                              src={product.image_url}
-                              alt={product.name_en}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            />
-                          </div>
-                          <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
-                            {language === 'en' ? product.name_en : product.name_pl}
-                          </p>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* COLONNA DESTRA (1/3) */}
-          <div className="lg:col-span-1 space-y-8">
-            {/* 1. Your Badges */}
-            <BadgeShowcase userId={userId || ''} />
+            <BadgeShowcase userId={userId || ''} variant="mini" />
 
             {/* 2. Spirit Posts - da spostare qui */}
             {/* Placeholder per mantenere struttura */}

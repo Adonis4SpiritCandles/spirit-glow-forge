@@ -185,16 +185,24 @@ export default function SiteSettingsHub() {
               key={section.id}
               className="cursor-pointer transition-all hover:shadow-xl hover:scale-[1.03] border-0 overflow-hidden group relative"
               onClick={() => setSelectedSection(section.id)}
-              style={{
-                background: section.id === 'referrals' 
-                  ? 'linear-gradient(135deg, hsl(43, 96%, 56%) 0%, hsl(32, 95%, 50%) 100%)'
-                  : section.id === 'chat'
-                  ? 'linear-gradient(135deg, hsl(271, 91%, 65%) 0%, hsl(261, 90%, 59%) 100%)'
-                  : section.id === 'email'
-                  ? 'linear-gradient(135deg, hsl(158, 64%, 52%) 0%, hsl(160, 84%, 39%) 100%)'
-                  : 'linear-gradient(135deg, hsl(330, 81%, 60%) 0%, hsl(336, 84%, 55%) 100%)'
-              }}
             >
+              {/* Background gradient */}
+              <div 
+                className="absolute inset-0 opacity-90"
+                style={{
+                  background: section.id === 'referrals' 
+                    ? 'linear-gradient(135deg, hsl(43, 96%, 56%) 0%, hsl(32, 95%, 50%) 100%)'
+                    : section.id === 'chat'
+                    ? 'linear-gradient(135deg, hsl(271, 91%, 65%) 0%, hsl(261, 90%, 59%) 100%)'
+                    : section.id === 'email'
+                    ? 'linear-gradient(135deg, hsl(158, 64%, 52%) 0%, hsl(160, 84%, 39%) 100%)'
+                    : 'linear-gradient(135deg, hsl(330, 81%, 60%) 0%, hsl(336, 84%, 55%) 100%)'
+                }}
+              />
+              
+              {/* Dark overlay */}
+              <div className="absolute inset-0 bg-black/20 md:bg-black/30" />
+              
               <CardHeader className="relative z-10">
                 <div className="flex items-center justify-between mb-3">
                   <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl text-white">
@@ -240,16 +248,24 @@ export default function SiteSettingsHub() {
                 section.comingSoon ? 'opacity-60' : ''
               }`}
               onClick={() => !section.comingSoon && setSelectedSection(section.id)}
-              style={{
-                background: section.id === 'header' 
-                  ? 'linear-gradient(135deg, hsl(187, 92%, 45%) 0%, hsl(190, 95%, 39%) 100%)'
-                  : section.id === 'homepage'
-                  ? 'linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(17, 88%, 52%) 100%)'
-                  : section.id === 'custom_candles'
-                  ? 'linear-gradient(135deg, hsl(238, 83%, 66%) 0%, hsl(243, 80%, 62%) 100%)'
-                  : 'linear-gradient(135deg, hsl(214, 95%, 58%) 0%, hsl(221, 83%, 53%) 100%)'
-              }}
             >
+              {/* Background gradient */}
+              <div 
+                className="absolute inset-0 opacity-90"
+                style={{
+                  background: section.id === 'header' 
+                    ? 'linear-gradient(135deg, hsl(187, 92%, 45%) 0%, hsl(190, 95%, 39%) 100%)'
+                    : section.id === 'homepage'
+                    ? 'linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(17, 88%, 52%) 100%)'
+                    : section.id === 'custom_candles'
+                    ? 'linear-gradient(135deg, hsl(238, 83%, 66%) 0%, hsl(243, 80%, 62%) 100%)'
+                    : 'linear-gradient(135deg, hsl(214, 95%, 58%) 0%, hsl(221, 83%, 53%) 100%)'
+                }}
+              />
+              
+              {/* Dark overlay */}
+              <div className="absolute inset-0 bg-black/20 md:bg-black/30" />
+              
               <CardHeader className="relative z-10">
                 <div className="flex items-center justify-between mb-3">
                   <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl text-white">

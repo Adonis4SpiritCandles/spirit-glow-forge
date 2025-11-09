@@ -367,6 +367,9 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'orders') return language === 'pl' ? 'Zamówienia' : 'Orders';
     if (key === 'payments') return language === 'pl' ? 'Płatności' : 'Payments';
     if (key === 'settings') return language === 'pl' ? 'Ustawienia' : 'Settings';
+    if (key === 'spiritPointsLeaderboard') return language === 'pl' ? 'Ranking Punktów Spirit' : 'Spirit Points Leaderboard';
+    if (key === 'yourPosition') return language === 'pl' ? 'Twoja Pozycja' : 'Your Position';
+    if (key === 'yourPoints') return language === 'pl' ? 'Twoje Punkty' : 'Your Points';
     if (key === 'accountSettings') return language === 'pl' ? 'Ustawienia konta' : 'Account Settings';
     
     // Wishlist translations

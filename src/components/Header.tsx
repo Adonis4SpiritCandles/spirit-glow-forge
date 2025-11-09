@@ -71,7 +71,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
         {/* Mobile Layout */}
         <div className="flex md:hidden h-16 items-center justify-between relative">
           {/* Left: Cart, Admin (if admin), Profile */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <Button 
               variant="ghost" 
               size="sm" 
@@ -171,7 +171,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           </Link>
 
           {/* Right: Language, Burger */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <LanguageToggle />
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>

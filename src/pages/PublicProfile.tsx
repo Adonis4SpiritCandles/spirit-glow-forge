@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift, X } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift, X, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
@@ -53,13 +54,21 @@ export default function PublicProfile() {
   const [showEmojiPicker, setShowEmojiPicker] = useState<string | null>(null);
   const [showGifPicker, setShowGifPicker] = useState<string | null>(null);
   const [spiritPoints, setSpiritPoints] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
+  const [followersList, setFollowersList] = useState<any[]>([]);
+  const [followingList, setFollowingList] = useState<any[]>([]);
   const COMMENTS_PER_PAGE = 10;
 
   useEffect(() => {
     if (userId) {
       loadProfile();
+      loadFollowData();
     }
-  }, [userId, commentsPage]);
+  }, [userId, commentsPage, user?.id]);
 
   // Load user role
   useEffect(() => {
@@ -485,6 +494,157 @@ export default function PublicProfile() {
     }
   };
 
+  const loadFollowData = async () => {
+    if (!userId) return;
+
+    // Check if current user follows this profile
+    if (user?.id && user.id !== userId) {
+      const { data: followData } = await supabase
+        .from('profile_follows')
+        .select('*')
+        .eq('follower_id', user.id)
+        .eq('following_id', userId)
+        .maybeSingle();
+      
+      setIsFollowing(!!followData);
+    }
+
+    // Get followers count
+    const { count: followersCount } = await supabase
+      .from('profile_follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('following_id', userId);
+    
+    setFollowersCount(followersCount || 0);
+
+    // Get following count
+    const { count: followingCount } = await supabase
+      .from('profile_follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('follower_id', userId);
+    
+    setFollowingCount(followingCount || 0);
+  };
+
+  const handleFollowToggle = async () => {
+    if (!user?.id || !userId) {
+      toast({
+        title: t('error'),
+        description: t('pleaseLogin'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (user.id === userId) {
+      toast({
+        title: t('error'),
+        description: language === 'pl' ? 'Nie możesz obserwować siebie' : 'You cannot follow yourself',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (isFollowing) {
+      // Unfollow
+      const { error } = await supabase
+        .from('profile_follows')
+        .delete()
+        .eq('follower_id', user.id)
+        .eq('following_id', userId);
+
+      if (error) {
+        toast({
+          title: t('error'),
+          description: t('error'),
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setIsFollowing(false);
+      setFollowersCount(prev => prev - 1);
+      toast({
+        title: t('success'),
+        description: language === 'pl' ? 'Przestałeś obserwować' : 'Unfollowed successfully',
+      });
+    } else {
+      // Follow
+      const { error } = await supabase
+        .from('profile_follows')
+        .insert({
+          follower_id: user.id,
+          following_id: userId
+        });
+
+      if (error) {
+        toast({
+          title: t('error'),
+          description: t('error'),
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setIsFollowing(true);
+      setFollowersCount(prev => prev + 1);
+      toast({
+        title: t('success'),
+        description: language === 'pl' ? 'Obserwujesz teraz tego użytkownika' : 'Following successfully',
+      });
+    }
+  };
+
+  const loadFollowersList = async () => {
+    if (!userId) return;
+
+    const { data, error } = await supabase
+      .from('profile_follows')
+      .select(`
+        follower_id,
+        profiles!profile_follows_follower_id_fkey (
+          user_id,
+          username,
+          first_name,
+          last_name,
+          profile_image_url
+        )
+      `)
+      .eq('following_id', userId);
+
+    if (error) {
+      console.error('Error loading followers:', error);
+      return;
+    }
+
+    setFollowersList(data?.map(f => f.profiles).filter(Boolean) || []);
+  };
+
+  const loadFollowingList = async () => {
+    if (!userId) return;
+
+    const { data, error } = await supabase
+      .from('profile_follows')
+      .select(`
+        following_id,
+        profiles!profile_follows_following_id_fkey (
+          user_id,
+          username,
+          first_name,
+          last_name,
+          profile_image_url
+        )
+      `)
+      .eq('follower_id', userId);
+
+    if (error) {
+      console.error('Error loading following:', error);
+      return;
+    }
+
+    setFollowingList(data?.map(f => f.profiles).filter(Boolean) || []);
+  };
+
   const submitComment = async () => {
     if (!user) {
       toast({
@@ -822,6 +982,48 @@ export default function PublicProfile() {
                 </Button>
               )}
             </div>
+            
+            {/* Follow Stats & Button */}
+            <div className="flex items-center gap-4 justify-center md:justify-start mt-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  loadFollowersList();
+                  setShowFollowersModal(true);
+                }}
+                className="flex flex-col items-center gap-0.5 h-auto py-1.5 px-3"
+              >
+                <span className="text-base md:text-lg font-bold">{followersCount}</span>
+                <span className="text-xs text-muted-foreground">{t('followers')}</span>
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  loadFollowingList();
+                  setShowFollowingModal(true);
+                }}
+                className="flex flex-col items-center gap-0.5 h-auto py-1.5 px-3"
+              >
+                <span className="text-base md:text-lg font-bold">{followingCount}</span>
+                <span className="text-xs text-muted-foreground">{t('following')}</span>
+              </Button>
+              
+              {!isOwnProfile && user?.id && (
+                <Button
+                  onClick={handleFollowToggle}
+                  variant={isFollowing ? "outline" : "default"}
+                  size="sm"
+                  className="ml-2"
+                >
+                  <Users className="w-3.5 h-3.5 mr-1.5" />
+                  {isFollowing ? t('unfollow') : t('follow')}
+                </Button>
+              )}
+            </div>
+            
             {profile.bio && (
               <p className="mt-4 text-muted-foreground">{profile.bio}</p>
             )}
@@ -1501,6 +1703,90 @@ export default function PublicProfile() {
           </div>
         </div>
       </div>
+
+      {/* Followers Modal */}
+      <Dialog open={showFollowersModal} onOpenChange={setShowFollowersModal}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('followers')} ({followersCount})</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {followersList.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                {language === 'pl' ? 'Brak obserwujących' : 'No followers yet'}
+              </p>
+            ) : (
+              followersList.map((follower: any) => (
+                <div key={follower.user_id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={follower.profile_image_url} />
+                    <AvatarFallback>
+                      {follower.first_name?.[0]}{follower.last_name?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-medium">
+                      {follower.first_name} {follower.last_name}
+                    </p>
+                    {follower.username && (
+                      <p className="text-sm text-muted-foreground">@{follower.username}</p>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => window.location.href = `/profile/${follower.user_id}`}
+                  >
+                    {t('viewProfile')}
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Following Modal */}
+      <Dialog open={showFollowingModal} onOpenChange={setShowFollowingModal}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('following')} ({followingCount})</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {followingList.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                {language === 'pl' ? 'Nie obserwujesz nikogo' : 'Not following anyone yet'}
+              </p>
+            ) : (
+              followingList.map((following: any) => (
+                <div key={following.user_id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={following.profile_image_url} />
+                    <AvatarFallback>
+                      {following.first_name?.[0]}{following.last_name?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-medium">
+                      {following.first_name} {following.last_name}
+                    </p>
+                    {following.username && (
+                      <p className="text-sm text-muted-foreground">@{following.username}</p>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => window.location.href = `/profile/${following.user_id}`}
+                  >
+                    {t('viewProfile')}
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

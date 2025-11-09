@@ -101,6 +101,31 @@ serve(async (req) => {
         });
     }
 
+    // Send milestone email notifications
+    const milestones = [3, 5, 10];
+    if (milestones.includes(referralCount)) {
+      console.log(`Milestone reached: ${referralCount} referrals`);
+      
+      // Find the reward for this milestone
+      const milestoneReward = rewards?.find(r => r.referrals_count === referralCount);
+      
+      if (milestoneReward) {
+        try {
+          await supabaseClient.functions.invoke('send-referral-milestone', {
+            body: {
+              referrerId,
+              milestone: referralCount,
+              rewardType: milestoneReward.reward_type,
+              rewardValue: milestoneReward.reward_value
+            }
+          });
+          console.log(`Milestone email sent for ${referralCount} referrals`);
+        } catch (emailError) {
+          console.error('Error sending milestone email:', emailError);
+        }
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 

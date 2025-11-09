@@ -697,6 +697,54 @@ export type Database = {
         }
         Relationships: []
       }
+      header_settings: {
+        Row: {
+          created_at: string
+          id: string
+          logo_height: string
+          logo_url: string
+          navigation_items: Json
+          show_cart: boolean
+          show_language_toggle: boolean
+          show_search: boolean
+          show_wishlist: boolean
+          sticky_header: boolean
+          transparent_on_scroll: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_height?: string
+          logo_url?: string
+          navigation_items?: Json
+          show_cart?: boolean
+          show_language_toggle?: boolean
+          show_search?: boolean
+          show_wishlist?: boolean
+          sticky_header?: boolean
+          transparent_on_scroll?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_height?: string
+          logo_url?: string
+          navigation_items?: Json
+          show_cart?: boolean
+          show_language_toggle?: boolean
+          show_search?: boolean
+          show_wishlist?: boolean
+          sticky_header?: boolean
+          transparent_on_scroll?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       homepage_features: {
         Row: {
           created_at: string | null

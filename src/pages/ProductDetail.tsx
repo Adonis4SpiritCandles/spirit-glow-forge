@@ -225,7 +225,7 @@ const ProductDetail = () => {
   ]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <SEOManager
         title={product.name}
         description={truncateDescription(product.summary || product.description || product.fragrance)}

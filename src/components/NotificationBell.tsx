@@ -16,16 +16,19 @@ import { format } from 'date-fns';
 
 interface Notification {
   id: string;
-  type: 'comment' | 'reply' | 'like' | 'rating';
-  profile_user_id: string;
-  comment_id: string;
+  type: 'comment' | 'reply' | 'like' | 'rating' | 'follow' | 'referral_used' | 'points_gained' | 'badge_earned' | 'order_update';
+  profile_user_id?: string;
+  comment_id?: string;
+  reference_id?: string;
   actor_id: string;
   read: boolean;
   created_at: string;
+  metadata?: any;
   actor_profile?: {
     first_name: string;
     last_name: string;
     username: string;
+    user_id: string;
     profile_image_url: string;
   };
 }
@@ -43,7 +46,7 @@ export default function NotificationBell() {
 
     loadNotifications();
 
-    // Real-time subscription for new notifications
+    // Real-time subscription for new notifications with toast
     const channel = supabase
       .channel(`notifications_${user.id}`)
       .on(
@@ -54,8 +57,19 @@ export default function NotificationBell() {
           table: 'profile_notifications',
           filter: `user_id=eq.${user.id}`,
         },
-        () => {
+        (payload) => {
           loadNotifications();
+          
+          // Show animated toast for new notification
+          const newNotif = payload.new as any;
+          toast({
+            title: language === 'pl' ? '🔔 Nowe powiadomienie' : '🔔 New Notification',
+            description: getNotificationText({ 
+              ...newNotif, 
+              actor_profile: { username: language === 'pl' ? 'Ktoś' : 'Someone' } 
+            } as Notification),
+            className: 'bg-primary/10 border-primary/30 animate-in slide-in-from-top-5',
+          });
         }
       )
       .subscribe();
@@ -63,7 +77,7 @@ export default function NotificationBell() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, language]);
 
   const loadNotifications = async () => {
     if (!user) return;
@@ -87,7 +101,7 @@ export default function NotificationBell() {
 
       const notificationsWithProfiles = data.map((n) => ({
         ...n,
-        type: n.type as 'comment' | 'reply' | 'like' | 'rating',
+        type: n.type as any,
         actor_profile: profileMap.get(n.actor_id),
       }));
 
@@ -162,27 +176,42 @@ export default function NotificationBell() {
   };
 
   const handleNotificationClick = async (notification: Notification) => {
-    // Verify profile exists before navigation
-    const { data: profileExists } = await supabase
-      .from('public_profile_directory')
-      .select('user_id')
-      .eq('user_id', notification.profile_user_id)
-      .single();
-
-    if (!profileExists) {
-      toast({
-        title: language === 'pl' ? 'Błąd' : 'Error',
-        description: language === 'pl'
-          ? 'Profil nie został znaleziony'
-          : 'Profile not found',
-        variant: 'destructive',
-      });
-      await markAsRead(notification.id);
-      return;
-    }
-
     await markAsRead(notification.id);
-    navigate(`/profile/${notification.profile_user_id}`);
+    
+    if (notification.type === 'comment' || notification.type === 'reply') {
+      navigate(`/profile/${notification.profile_user_id}`);
+    } else if (notification.type === 'like' || notification.type === 'rating') {
+      // For like/rating, we need to find the profile owner via the comment
+      try {
+        const { data: comment } = await supabase
+          .from('profile_comments')
+          .select('profile_user_id')
+          .eq('id', notification.reference_id || notification.comment_id)
+          .single();
+        
+        if (comment?.profile_user_id) {
+          navigate(`/profile/${comment.profile_user_id}`);
+        } else {
+          toast({
+            title: language === 'pl' ? 'Błąd' : 'Error',
+            description: language === 'pl' ? 'Nie można znaleźć profilu' : 'Profile not found',
+            variant: 'destructive'
+          });
+        }
+      } catch (error) {
+        console.error('Error finding profile:', error);
+        toast({
+          title: language === 'pl' ? 'Błąd' : 'Error',
+          description: language === 'pl' ? 'Wystąpił błąd' : 'An error occurred',
+          variant: 'destructive'
+        });
+      }
+    } else if (notification.type === 'follow') {
+      navigate(`/profile/${notification.actor_profile?.user_id}`);
+    } else if (notification.type === 'referral_used' || notification.type === 'points_gained' || notification.type === 'badge_earned' || notification.type === 'order_update') {
+      navigate('/dashboard');
+    }
+    
     setOpen(false);
   };
 
@@ -190,7 +219,8 @@ export default function NotificationBell() {
     const actor = notification.actor_profile;
     const name = actor?.first_name
       ? `${actor.first_name} ${actor.last_name || ''}`
-      : actor?.username || 'Someone';
+      : actor?.username || (language === 'pl' ? 'Ktoś' : 'Someone');
+    const metadata = notification.metadata as any;
 
     switch (notification.type) {
       case 'comment':
@@ -209,6 +239,33 @@ export default function NotificationBell() {
         return language === 'pl'
           ? `${name} ocenił Twój komentarz`
           : `${name} rated your comment`;
+      case 'follow':
+        return language === 'pl'
+          ? `${name} zaczął Cię obserwować`
+          : `${name} started following you`;
+      case 'referral_used':
+        return language === 'pl'
+          ? `${name} użył Twojego kodu polecającego`
+          : `${name} used your referral code`;
+      case 'points_gained':
+        const points = metadata?.points || 0;
+        return language === 'pl'
+          ? `Zdobyłeś ${points} punktów: ${metadata?.reason || ''}`
+          : `You earned ${points} points: ${metadata?.reason || ''}`;
+      case 'badge_earned':
+        return language === 'pl'
+          ? `Zdobyłeś nową odznakę!`
+          : `You earned a new badge!`;
+      case 'order_update':
+        const status = metadata?.status;
+        const statusText = status === 'paid' ? (language === 'pl' ? 'Opłacone' : 'Paid')
+          : status === 'shipped' ? (language === 'pl' ? 'Wysłane' : 'Shipped')
+          : status === 'completed' ? (language === 'pl' ? 'Dostarczone' : 'Delivered')
+          : status === 'cancelled' ? (language === 'pl' ? 'Anulowane' : 'Cancelled')
+          : status;
+        return language === 'pl'
+          ? `Zamówienie #${metadata?.order_number || ''}: ${statusText}`
+          : `Order #${metadata?.order_number || ''}: ${statusText}`;
       default:
         return language === 'pl' ? 'Nowe powiadomienie' : 'New notification';
     }

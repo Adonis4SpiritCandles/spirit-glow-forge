@@ -17,9 +17,10 @@ interface BadgeConfig {
 
 interface BadgeShowcaseProps {
   userId?: string;
+  variant?: 'default' | 'mini';
 }
 
-const BadgeShowcase = ({ userId: propUserId }: BadgeShowcaseProps = {}) => {
+const BadgeShowcase = ({ userId: propUserId, variant = 'default' }: BadgeShowcaseProps = {}) => {
   const [earnedBadges, setEarnedBadges] = useState<string[]>([]);
   const { user } = useAuth();
   const { language } = useLanguage();
@@ -99,6 +100,64 @@ const BadgeShowcase = ({ userId: propUserId }: BadgeShowcaseProps = {}) => {
 
   if (!userId) return null;
 
+  // Mini variant - show only earned badges as compact chips
+  if (variant === 'mini') {
+    const earned = allBadges.filter(badge => earnedBadges.includes(badge.id));
+    
+    if (earned.length === 0) {
+      return (
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Trophy className="w-4 h-4 text-primary" />
+              {language === 'pl' ? 'Odznaki' : 'Badges'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground text-center">
+              {language === 'pl' ? 'Brak zdobytych odznak' : 'No badges earned yet'}
+            </p>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return (
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Trophy className="w-4 h-4 text-primary" />
+            {language === 'pl' ? 'Odznaki' : 'Badges'}
+            <Badge variant="secondary" className="ml-auto text-xs">
+              {earned.length}
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
+            {earned.map((badge) => (
+              <motion.div
+                key={badge.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                className={`relative p-2 rounded-lg bg-gradient-to-br ${badge.color} border-2 border-primary/30 shadow-sm`}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <badge.icon className="w-4 h-4 text-white" />
+                  <span className="text-[10px] font-medium text-white text-center leading-tight">
+                    {badge.name[language]}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Default variant - show all badges
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
       <CardHeader>

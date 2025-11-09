@@ -87,11 +87,28 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   return (
     <header className={`${stickyHeader ? 'sticky' : 'relative'} top-0 z-50 w-full border-b border-border/40 ${transparentOnScroll ? 'bg-background/80' : 'bg-background/95'} mystical-blur`}>
       <div className="container mx-auto px-4 lg:px-8">
-        {/* Mobile Layout - TASK 2 COMPLETO */}
+        {/* Mobile Layout - TASK 2: Cart → Admin → EN/PL || Logo || Bell → Profile → Burger */}
         <div className="flex md:hidden h-16 items-center justify-between relative">
-          {/* LEFT SECTION: Language, Admin Icon, Burger Menu */}
+          {/* LEFT SECTION: Cart, Admin (if admin), Language Toggle */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            {showLanguageToggle && <LanguageToggle />}
+            {showCart && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative" 
+                onClick={onCartOpen}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <Badge 
+                    variant="secondary" 
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
+                  >
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
             
             {user && userProfile?.role === 'admin' && (
               <Link to="/admin">
@@ -109,164 +126,26 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               </Link>
             )}
             
-            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <SheetHeader>
-                  <SheetTitle className="flex justify-center mb-6">
-                    <img 
-                      src={spiritLogoTransparent} 
-                      alt="SPIRIT CANDLES" 
-                      className="h-20 w-auto animate-glow-pulse"
-                    />
-                  </SheetTitle>
-                  <SheetDescription className="sr-only">Menu Navigation</SheetDescription>
-                </SheetHeader>
-                <nav className="flex flex-col space-y-4 mt-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className="text-lg font-medium text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-accent"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                  
-                  {/* LINEA DIVISORIA */}
-                  <div className="border-t border-border my-2" />
-                  
-                  {/* NUOVE VOCI SIDEBAR - TASK 4A */}
-                  {showSearch && (
-                    <Button 
-                      variant="ghost" 
-                      className="justify-start px-4"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        setIsSearchOpen(true);
-                      }}
-                    >
-                      <Search className="h-5 w-5 mr-2" />
-                      {t('search')}
-                    </Button>
-                  )}
-                  
-                  {showCart && (
-                    <Button 
-                      variant="ghost" 
-                      className="justify-start px-4 relative" 
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        onCartOpen?.();
-                      }}
-                    >
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      {t('cart')}
-                      {itemCount > 0 && <Badge className="ml-auto">{itemCount}</Badge>}
-                    </Button>
-                  )}
-                  
-                  {user && showWishlist && (
-                    <Button 
-                      variant="ghost" 
-                      className="justify-start px-4 relative" 
-                      asChild
-                    >
-                      <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
-                        <Heart className="h-5 w-5 mr-2" />
-                        {t('wishlist')}
-                        {wishlistCount > 0 && <Badge className="ml-auto">{wishlistCount}</Badge>}
-                      </Link>
-                    </Button>
-                  )}
-                  
-                  {user && (
-                    <Button 
-                      variant="ghost" 
-                      className="justify-start px-4" 
-                      asChild
-                    >
-                      <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                        <LayoutDashboard className="h-5 w-5 mr-2" />
-                        {t('dashboard')}
-                      </Link>
-                    </Button>
-                  )}
-                  
-                  {user && userProfile?.role === 'admin' && (
-                    <Button 
-                      variant="ghost" 
-                      className="justify-start px-4 relative" 
-                      asChild
-                    >
-                      <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
-                        <img src={goldShieldMiniIcon} alt="Admin" className="h-5 w-5 mr-2" />
-                        {t('admin')}
-                        {unseenCount > 0 && <Badge className="ml-auto bg-red-500">{unseenCount}</Badge>}
-                      </Link>
-                    </Button>
-                  )}
-                  
-                  {user ? (
-                    <Button 
-                      variant="ghost" 
-                      className="justify-start px-4 text-destructive" 
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        handleSignOut();
-                      }}
-                    >
-                      <LogOut className="h-5 w-5 mr-2" />
-                      {t('logout')}
-                    </Button>
-                  ) : (
-                    <Button 
-                      variant="ghost" 
-                      className="justify-start px-4" 
-                      asChild
-                    >
-                      <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                        <User className="h-5 w-5 mr-2" />
-                        {t('login')}
-                      </Link>
-                    </Button>
-                  )}
-                  
-                  {/* Language Selector */}
-                  <div className="px-4 pt-4 border-t border-border">
-                    <LanguageToggle />
-                  </div>
-                </nav>
-              </SheetContent>
-            </Sheet>
+            {showLanguageToggle && <LanguageToggle />}
           </div>
-
+          
           {/* CENTER: Logo */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={logoUrl} 
+              src={logoUrl}
               alt="SPIRIT CANDLES" 
-              className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700`}
-              style={{
-                filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
-                animation: 'glow-soft 4s ease-in-out infinite'
-              }}
+              className={`${logoHeight} w-auto animate-glow-pulse`}
             />
           </Link>
-
-          {/* RIGHT SECTION: Notification Bell, Profile/Image Icon, Cart */}
+          
+          {/* RIGHT SECTION: Bell, Profile, Burger Menu */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {user && <NotificationBell />}
             
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="min-w-[36px] min-h-[36px]">
+                  <Button variant="ghost" size="sm" className="relative">
                     {profileImageUrl ? (
                       <img 
                         src={profileImageUrl} 
@@ -278,65 +157,330 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex flex-col space-y-1 p-2">
+                    <p className="text-sm font-medium">{userProfile?.first_name || 'User'}</p>
+                    <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center cursor-pointer">
-                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                    <Link to={`/profile/${user.id}`} className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {language === 'pl' ? 'Profil' : 'Profile'}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4" />
                       {t('dashboard')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard?tab=orders" className="flex items-center cursor-pointer">
-                      <Package className="h-4 w-4 mr-2" />
-                      {t('myOrders')}
+                    <Link to="/wishlist" className="flex items-center gap-2">
+                      <Heart className="h-4 w-4" />
+                      {t('wishlist')}
+                      {wishlistCount > 0 && <Badge className="ml-auto">{wishlistCount}</Badge>}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive flex items-center gap-2">
+                    <LogOut className="h-4 w-4" />
+                    {t('signOut')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+            )}
+            
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto h-full overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+                <SheetHeader>
+                  <SheetTitle className="flex justify-center mb-6">
+                    <img 
+                      src={spiritLogoTransparent} 
+                      alt="SPIRIT CANDLES" 
+                      className="h-20 w-auto animate-glow-pulse"
+                    />
+                  </SheetTitle>
+                  <SheetDescription className="sr-only">Menu Navigation</SheetDescription>
+                </SheetHeader>
+                <nav className="flex flex-col space-y-2 mt-8">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="text-base font-normal text-foreground hover:text-primary transition-colors px-4 py-2.5 rounded-lg hover:bg-accent"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                  
+                  {/* LINEA DIVISORIA */}
+                  <div className="border-t border-border my-3" />
+                  
+                  {/* VOCI UTILITY - TASK 4: BOX STYLE */}
+                  {showSearch && (
+                    <div 
+                      className={`flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 cursor-pointer font-normal text-[15px]`}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsSearchOpen(true);
+                      }}
+                    >
+                      <Search className="h-5 w-5" />
+                      {t('search')}
+                    </div>
+                  )}
+                  
+                  {showCart && (
+                    <div 
+                      className={`flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 cursor-pointer font-normal text-[15px] relative ${itemCount > 0 ? 'animate-pulse' : ''}`}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onCartOpen?.();
+                      }}
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      {t('cart')}
+                      {itemCount > 0 && <Badge className="ml-auto">{itemCount}</Badge>}
+                    </div>
+                  )}
+                  
+                  {user && showWishlist && (
+                    <Link 
+                      to="/wishlist" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px] ${wishlistCount > 0 ? 'animate-pulse' : ''}`}
+                    >
+                      <Heart className="h-5 w-5" />
+                      {t('wishlist')}
+                      {wishlistCount > 0 && <Badge className="ml-auto">{wishlistCount}</Badge>}
+                    </Link>
+                  )}
+                  
+                  {user && (
+                    <Link 
+                      to="/dashboard" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px]"
+                    >
+                      <LayoutDashboard className="h-5 w-5" />
+                      {t('dashboard')}
+                    </Link>
+                  )}
+                  
+                  {user && userProfile?.role === 'admin' && (
+                    <Link 
+                      to="/admin" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px] relative ${unseenCount > 0 ? 'animate-pulse' : ''}`}
+                    >
+                      <img src={goldShieldMiniIcon} alt="Admin" className="h-5 w-5" />
+                      {t('admin')}
+                      {unseenCount > 0 && <Badge className="ml-auto bg-red-500">{unseenCount}</Badge>}
+                    </Link>
+                  )}
+                  
+                  {user ? (
+                    <div 
+                      className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-background/60 px-4 py-3 hover:bg-destructive/10 transition hover:border-destructive/50 cursor-pointer font-normal text-[15px] text-destructive"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleSignOut();
+                      }}
+                    >
+                      <LogOut className="h-5 w-5" />
+                      {t('logout')}
+                    </div>
+                  ) : (
+                    <Link 
+                      to="/auth" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px]"
+                    >
+                      <User className="h-5 w-5" />
+                      {t('login')}
+                    </Link>
+                  )}
+                  
+                  {/* Language Selector - CENTRATO SENZA LINEA */}
+                  {showLanguageToggle && (
+                    <div className="flex justify-center pt-4">
+                      <LanguageToggle />
+                    </div>
+                  )}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+
+        {/* Tablet/Desktop Layout - TASK 1: Spaziatura + icona Dashboard User */}
+        <div className="hidden md:flex h-16 items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center ml-3 md:ml-4">
+            <Link to="/" className="md:mr-4 lg:mr-6">
+              <img 
+                src={logoUrl} 
+                alt="SPIRIT CANDLES" 
+                className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700`}
+                style={{
+                  filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
+                  animation: 'glow-soft 4s ease-in-out infinite'
+                }}
+              />
+            </Link>
+          </div>
+
+          {/* Tablet Navigation (768px-1024px) - TASK 1: Spazio aumentato */}
+          <nav className="hidden md:flex lg:hidden items-center space-x-2.5 pl-2 max-w-[55%] mr-auto">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-xs font-medium text-foreground/80 transition-colors hover:text-primary hover:scale-105 duration-300 truncate"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop Navigation (1024px+) */}
+          <nav className="hidden lg:flex items-center space-x-6 lg:space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-[13px] lg:text-sm font-medium text-foreground/80 transition-colors hover:text-primary hover:scale-105 duration-300"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right Actions - TASK 1: Aggiunta icona Dashboard User */}
+          <div className="flex items-center gap-0.5">
+            {showLanguageToggle && <LanguageToggle />}
+            
+            {showSearch && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsSearchOpen(true)}
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
+
+            {user && showWishlist && (
+              <Link to="/wishlist">
+                <Button variant="ghost" size="sm" className="relative">
+                  <Heart className="h-5 w-5" />
+                  {wishlistCount > 0 && (
+                    <Badge 
+                      variant="secondary" 
+                      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
+                    >
+                      {wishlistCount}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            )}
+
+            {user && userProfile?.role === 'admin' && (
+              <Link to="/admin">
+                <Button variant="ghost" size="sm" className="relative">
+                  <img src={goldShieldIcon} alt="Admin" className="h-4 w-4" />
+                  {unseenCount > 0 && (
+                    <Badge 
+                      variant="secondary" 
+                      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs animate-pulse"
+                    >
+                      {unseenCount}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            )}
+            
+            {user && (
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm">
+                  <LayoutDashboard className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
+
+            {user && <NotificationBell />}
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    {profileImageUrl ? (
+                      <img 
+                        src={profileImageUrl} 
+                        alt="Profile" 
+                        className="h-6 w-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-5 w-5" />
+                    )}
+                    <ChevronDown className="h-3 w-3 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex flex-col space-y-1 p-2">
+                    <p className="text-sm font-medium">{userProfile?.first_name || 'User'}</p>
+                    <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to={`/profile/${user.id}`} className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {language === 'pl' ? 'Profil' : 'Profile'}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`/profile/${user?.id}`} className="flex items-center cursor-pointer">
-                      <User className="h-4 w-4 mr-2" />
-                      {t('spiritProfile')}
+                    <Link to="/dashboard" className="flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4" />
+                      {t('dashboard')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard?tab=settings" className="flex items-center cursor-pointer">
-                      <SettingsIcon className="h-4 w-4 mr-2" />
+                    <Link to="/dashboard?tab=settings" className="flex items-center gap-2">
+                      <SettingsIcon className="h-4 w-4" />
                       {t('settings')}
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/shop" className="flex items-center cursor-pointer">
-                      <ShoppingBag className="h-4 w-4 mr-2" />
-                      {t('shop')}
-                    </Link>
-                  </DropdownMenuItem>
-                  {showSearch && (
-                    <DropdownMenuItem asChild>
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-start px-2 h-auto py-2"
-                        onClick={() => setIsSearchOpen(true)}
-                      >
-                        <Search className="h-4 w-4 mr-2" />
-                        {t('search')}
-                      </Button>
-                    </DropdownMenuItem>
-                  )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {t('logout')}
+                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive flex items-center gap-2">
+                    <LogOut className="h-4 w-4" />
+                    {t('signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Link to="/auth">
-                <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
                   <User className="h-5 w-5" />
-                  <span className="text-xs">{t('login')}</span>
+                  <span className="hidden lg:inline text-xs">{t('login')}</span>
                 </Button>
               </Link>
             )}
-            
+
             {showCart && (
               <Button 
                 variant="ghost" 
@@ -357,204 +501,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             )}
           </div>
         </div>
-
-        {/* Tablet/Desktop Layout - TASK 1 COMPLETO */}
-        <div className="hidden md:flex h-16 items-center justify-between">
-          {/* Logo con margine sinistra */}
-          <div className="flex items-center ml-3 md:ml-4">
-            <Link to="/" className="md:mr-2 lg:mr-6">
-              <img 
-                src={logoUrl} 
-                alt="SPIRIT CANDLES" 
-                className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700`}
-                style={{
-                  filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
-                  animation: 'glow-soft 4s ease-in-out infinite'
-                }}
-              />
-            </Link>
-          </div>
-
-          {/* Tablet Navigation (768px-1024px) - COMPATTO */}
-          <nav className="hidden md:flex lg:hidden items-center space-x-1.5 mr-auto">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className="text-xs font-medium text-foreground/80 transition-colors hover:text-primary hover:scale-105 duration-300"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Desktop Navigation (1024px+) */}
-          <nav className="hidden lg:flex items-center space-x-6 lg:space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className="text-[13px] lg:text-sm font-medium text-foreground/80 transition-colors hover:text-primary hover:scale-105 duration-300"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Right Actions - ULTRA COMPATTI */}
-          <div className="flex items-center gap-0.5">
-            {/* Language Toggle - ridotto */}
-            {showLanguageToggle && <LanguageToggle />}
-            
-            {/* Search Button - SOLO DESKTOP (lg+) */}
-            {showSearch && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="hidden lg:flex"
-                onClick={() => setIsSearchOpen(true)}
-              >
-                <Search className="h-3.5 w-3.5" />
-              </Button>
-            )}
-            
-            {/* Admin Button - Always visible if admin */}
-            {user && userProfile?.role === 'admin' && (
-              <Link to="/admin">
-                <Button variant="ghost" size="sm" className="relative">
-                  <img src={goldShieldIcon} alt="Admin" className="h-3.5 w-3.5" />
-                  {unseenCount > 0 && (
-                    <Badge
-                      variant="secondary" 
-                      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs animate-pulse"
-                    >
-                      {unseenCount}
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
-            )}
-            
-            {/* Notification Bell */}
-            {user && <NotificationBell />}
-            
-            {/* User Dropdown Menu - TASK 4B */}
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-1 relative min-w-[32px] min-h-[32px]">
-                    {profileImageUrl ? (
-                      <div className="relative">
-                        <img 
-                          src={profileImageUrl} 
-                          alt="Profile" 
-                          className="h-6 w-6 rounded-full object-cover"
-                        />
-                        <ChevronDown className="h-3 w-3 absolute -bottom-1 -right-1 bg-background rounded-full" />
-                      </div>
-                    ) : (
-                      <>
-                        <User className="h-3.5 w-3.5" />
-                        <ChevronDown className="h-3 w-3" />
-                      </>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  {profileImageUrl && userProfile?.first_name && (
-                    <>
-                      <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
-                        {userProfile.first_name}
-                      </div>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  {/* Search in dropdown - SOLO TABLET */}
-                  {showSearch && (
-                    <DropdownMenuItem asChild className="md:flex lg:hidden">
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-start px-2 h-auto py-2"
-                        onClick={() => setIsSearchOpen(true)}
-                      >
-                        <Search className="h-4 w-4 mr-2" />
-                        {t('search')}
-                      </Button>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center cursor-pointer">
-                      <LayoutDashboard className="h-4 w-4 mr-2" />
-                      {t('dashboard')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard?tab=orders" className="flex items-center cursor-pointer">
-                      <Package className="h-4 w-4 mr-2" />
-                      {t('myOrders')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={`/profile/${user?.id}`} className="flex items-center cursor-pointer">
-                      <User className="h-4 w-4 mr-2" />
-                      {t('spiritProfile')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard?tab=settings" className="flex items-center cursor-pointer">
-                      <SettingsIcon className="h-4 w-4 mr-2" />
-                      {t('settings')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/shop" className="flex items-center cursor-pointer">
-                      <ShoppingBag className="h-4 w-4 mr-2" />
-                      {t('shop')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleSignOut}
-                    className="cursor-pointer text-destructive focus:text-destructive"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {t('logout')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link to="/auth">
-                <Button variant="ghost" size="sm">
-                  <User className="h-3.5 w-3.5 mr-1" />
-                  <span className="hidden lg:inline">{t('login')}</span>
-                </Button>
-              </Link>
-            )}
-
-            {showCart && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="relative"
-                onClick={onCartOpen}
-              >
-                <ShoppingCart className="h-3.5 w-3.5" />
-                {itemCount > 0 && (
-                  <Badge 
-                    variant="secondary" 
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
-                  >
-                    {itemCount}
-                  </Badge>
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
       </div>
-      
-      {/* Search Modal */}
-      {showSearch && <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
+
+      {isSearchOpen && (
+        <SearchModal 
+          isOpen={isSearchOpen} 
+          onClose={() => setIsSearchOpen(false)} 
+        />
+      )}
     </header>
   );
 };

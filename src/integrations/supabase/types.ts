@@ -2139,6 +2139,16 @@ export type Database = {
         Args: { referee_user_id: string; referrer_user_id: string }
         Returns: undefined
       }
+      create_notification: {
+        Args: {
+          p_actor_id: string
+          p_metadata?: Json
+          p_reference_id?: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       find_user_by_username_or_email: {
         Args: { identifier: string }
         Returns: {

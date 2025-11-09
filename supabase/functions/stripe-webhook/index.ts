@@ -171,6 +171,48 @@ serve(async (req) => {
 
       console.log(`Created ${orderItems.length} order items`);
 
+      // Record coupon redemption if coupon was used
+      if (couponCode && discountPLN > 0) {
+        try {
+          // Fetch coupon ID and current count
+          const { data: coupon } = await supabaseClient
+            .from('coupons')
+            .select('id, redemptions_count')
+            .eq('code', couponCode.toUpperCase())
+            .single();
+
+          if (coupon) {
+            // Insert redemption record (idempotent with unique constraint)
+            await supabaseClient
+              .from('coupon_redemptions')
+              .insert({
+                user_id: userId,
+                coupon_id: coupon.id,
+                order_id: order.id,
+                amount_saved_pln: discountPLN,
+                amount_saved_eur: discountEUR,
+                redeemed_at: new Date().toISOString()
+              })
+              .then(({ error }) => {
+                if (error && !error.message.includes('duplicate')) {
+                  console.error('Error inserting coupon redemption:', error);
+                }
+              });
+
+            // Increment redemption count
+            await supabaseClient
+              .from('coupons')
+              .update({ redemptions_count: (coupon.redemptions_count || 0) + 1 })
+              .eq('id', coupon.id);
+
+            console.log(`Coupon redemption recorded for ${couponCode}`);
+          }
+        } catch (couponError) {
+          console.error('Error recording coupon redemption:', couponError);
+          // Don't fail order creation if coupon tracking fails
+        }
+      }
+
       // Decrease stock quantities for purchased products
       for (const item of cartItems as any[]) {
         const current = Number(item.product?.stock_quantity ?? 0);

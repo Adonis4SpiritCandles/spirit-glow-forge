@@ -398,7 +398,27 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       : 'Below are the possible shipping statuses for your orders and their meanings.';
     
     // SpiritPoints Loyalty System
-    if (key === 'spiritPoints') return 'SpiritPoints';
+    if (key === 'spiritPoints') return language === 'pl' ? 'SpiritPoints' : 'SpiritPoints';
+    if (key === 'loyaltyPoints') return language === 'pl' ? 'Punkty Lojalnościowe' : 'Loyalty Points';
+    if (key === 'currentTier') return language === 'pl' ? 'Aktualny Poziom' : 'Current Tier';
+    if (key === 'pointsToNextTier') return language === 'pl' ? 'Punkty do następnego poziomu' : 'Points to next tier';
+    if (key === 'lifetimePoints') return language === 'pl' ? 'Całkowite Punkty' : 'Lifetime Points';
+    if (key === 'redeemRewards') return language === 'pl' ? 'Wymień Nagrody' : 'Redeem Rewards';
+    if (key === 'earnedBadges') return language === 'pl' ? 'Zdobyte Odznaki' : 'Earned Badges';
+    if (key === 'availableBadges') return language === 'pl' ? 'Dostępne Odznaki' : 'Available Badges';
+    if (key === 'badgesProgress') return language === 'pl' ? 'Postęp Odznak' : 'Badges Progress';
+    
+    // Badge translations
+    if (key === 'first_order') return language === 'pl' ? 'Pierwsze Zamówienie' : 'First Order';
+    if (key === 'first_order_desc') return language === 'pl' ? 'Zdobądź 50 dodatkowych punktów przy pierwszym zamówieniu' : 'Earn 50 bonus points on your first order';
+    if (key === 'loyal_customer') return language === 'pl' ? 'Lojalny Klient' : 'Loyal Customer';
+    if (key === 'loyal_customer_desc') return language === 'pl' ? 'Odbierz kupon LOYAL15 (15% zniżki) za 5+ zamówień' : 'Unlock LOYAL15 coupon (15% off) for 5+ orders';
+    if (key === 'super_reviewer') return language === 'pl' ? 'Super Recenzent' : 'Super Reviewer';
+    if (key === 'super_reviewer_desc') return language === 'pl' ? 'Zdobądź 100 dodatkowych punktów za 10+ recenzji' : 'Earn 100 bonus points for 10+ reviews';
+    if (key === 'referral_inviter') return language === 'pl' ? 'Polecający' : 'Referral Inviter';
+    if (key === 'referral_inviter_desc') return language === 'pl' ? 'Zaproś znajomych i zdobywaj nagrody' : 'Invite friends and earn rewards';
+    if (key === 'welcome') return language === 'pl' ? 'Witaj' : 'Welcome';
+    if (key === 'welcome_desc') return language === 'pl' ? 'Witamy w rodzinie Spirit Candles!' : 'Welcome to the Spirit Candles family!';
     if (key === 'earnSpiritPoints') return language === 'pl' ? 'Zdobądź SpiritPoints' : 'Earn SpiritPoints';
     if (key === 'yourSpiritPoints') return language === 'pl' ? 'Twoje SpiritPoints' : 'Your SpiritPoints';
     if (key === 'bonusSpiritPoints') return language === 'pl' ? 'Bonusowe SpiritPoints' : 'Bonus SpiritPoints';

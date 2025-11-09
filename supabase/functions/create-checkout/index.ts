@@ -115,26 +115,51 @@ serve(async (req) => {
 
         if (coupon && !couponError) {
           const now = new Date();
-          const isValid = 
+          let isValid = 
             (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
             (!coupon.valid_to || new Date(coupon.valid_to) >= now) &&
             (!coupon.max_redemptions || coupon.redemptions_count < coupon.max_redemptions);
+
+          // Additional validation for referral-only coupons (e.g., REFERRAL10)
+          if (isValid && coupon.referral_only) {
+            console.log(`Checking referral_only status for coupon ${code}`);
+            const { data: profile } = await supabaseClient
+              .from('profiles')
+              .select('referral_source_id')
+              .eq('user_id', user.id)
+              .single();
+            
+            if (!profile || !profile.referral_source_id) {
+              console.log(`User ${user.id} not eligible for referral-only coupon ${code}`);
+              isValid = false;
+            }
+          }
+
+          // Check per-user limit
+          if (isValid && coupon.per_user_limit) {
+            const { data: userRedemptions, error: redemptionError } = await supabaseClient
+              .from('coupon_redemptions')
+              .select('id')
+              .eq('user_id', user.id)
+              .eq('coupon_id', coupon.id);
+
+            if (!redemptionError && userRedemptions && userRedemptions.length >= coupon.per_user_limit) {
+              console.log(`User ${user.id} exceeded per_user_limit for coupon ${code}`);
+              isValid = false;
+            }
+          }
 
           if (isValid) {
             validCoupons.push(coupon);
             const productsSubtotalGrosze = cartItems.reduce((sum: number, item: any) => 
               sum + Math.round(item.product.price_pln * 100 * item.quantity), 0);
             
+            // Prefer percent_off over amount_off
             if (coupon.percent_off) {
               discountAmount += Math.round(productsSubtotalGrosze * coupon.percent_off / 100);
             } else if (coupon.amount_off_pln) {
               discountAmount += Math.round(coupon.amount_off_pln * 100);
             }
-
-            await supabaseClient
-              .from('coupons')
-              .update({ redemptions_count: coupon.redemptions_count + 1 })
-              .eq('id', coupon.id);
           }
         }
       }

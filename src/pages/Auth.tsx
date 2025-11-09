@@ -38,11 +38,12 @@ const Auth = () => {
   const { t, language } = useLanguage();
   const { getReferralId, clearReferral } = useReferral();
 
-  // Precompile referral code if available
+  // Precompile referral code if available and set to Sign Up mode
   useEffect(() => {
     const refId = getReferralId();
     if (refId) {
       setReferralCode(refId);
+      setIsLogin(false); // Open Sign Up tab when referral is present
     }
   }, [getReferralId]);
 
@@ -99,6 +100,61 @@ const Auth = () => {
           return;
         }
         
+        // Validate referral code if provided
+        let validatedReferralId: string | null = null;
+        const referralInput = referralCode || getReferralId();
+        
+        if (referralInput) {
+          // Check if it's a short code (8 chars) or UUID
+          if (referralInput.match(/^[A-Za-z0-9]{8}$/)) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('user_id')
+              .eq('referral_short_code', referralInput.toUpperCase())
+              .single();
+            
+            if (!profileData) {
+              toast({
+                title: t('error') || "Error",
+                description: language === 'pl' 
+                  ? 'Nieprawidłowy kod polecający. Sprawdź kod i spróbuj ponownie.'
+                  : 'Invalid referral code. Please check the code and try again.',
+                variant: "destructive",
+              });
+              return;
+            }
+            validatedReferralId = profileData.user_id;
+          } else if (referralInput.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('user_id')
+              .eq('user_id', referralInput)
+              .single();
+            
+            if (!profileData) {
+              toast({
+                title: t('error') || "Error",
+                description: language === 'pl'
+                  ? 'Nieprawidłowy link polecający. Sprawdź link i spróbuj ponownie.'
+                  : 'Invalid referral link. Please check the link and try again.',
+                variant: "destructive",
+              });
+              return;
+            }
+            validatedReferralId = referralInput;
+          } else if (referralInput.trim() !== '') {
+            // Invalid format
+            toast({
+              title: t('error') || "Error",
+              description: language === 'pl'
+                ? 'Nieprawidłowy format kodu polecającego.'
+                : 'Invalid referral code format.',
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+        
         const { error } = await signUp(emailOrUsername, password, firstName, lastName, username, preferredLanguage);
         if (error) {
           toast({
@@ -141,103 +197,23 @@ const Auth = () => {
             console.error('Failed to send welcome email:', emailErr);
           }
 
-          // Handle referral if present (from localStorage or manually entered)
-          let referralId = referralCode || getReferralId();
-          
-          // If it's a short code (8 chars), convert to UUID
-          if (referralId && referralId.length === 8) {
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('user_id')
-              .eq('referral_short_code', referralId.toUpperCase())
-              .single();
-            
-            if (profileData) {
-              referralId = profileData.user_id;
-            } else {
-              referralId = null; // Invalid short code
-            }
-          }
-          
-          if (referralId) {
+          // Handle referral if validated
+          if (validatedReferralId) {
             setTimeout(async () => {
               try {
-                // Insert referral record
                 const { data: userData } = await supabase.auth.getUser();
                 if (userData.user) {
-                  await supabase.from('referrals').insert({
-                    referrer_id: referralId,
-                    referee_email: emailOrUsername,
-                    referee_id: userData.user.id,
-                    status: 'completed'
-                  });
-
-                  // Award points to referrer
-                  const { data: referrerPoints } = await supabase
-                    .from('loyalty_points')
-                    .select('*')
-                    .eq('user_id', referralId)
-                    .single();
-
-                  if (referrerPoints) {
-                    await supabase
-                      .from('loyalty_points')
-                      .update({
-                        points: (referrerPoints.points || 0) + 200,
-                        lifetime_points: (referrerPoints.lifetime_points || 0) + 200
-                      })
-                      .eq('user_id', referralId);
-                  } else {
-                    await supabase.from('loyalty_points').insert({
-                      user_id: referralId,
-                      points: 200,
-                      lifetime_points: 200
-                    });
-                  }
-
-                  // Award welcome points to new user
-                  await supabase.from('loyalty_points').insert({
-                    user_id: userData.user.id,
-                    points: 100,
-                    lifetime_points: 100
-                  });
-
-                  // Award badges
-                  await supabase.from('user_badges').insert([
-                    { user_id: referralId, badge_id: 'referral_inviter' },
-                    { user_id: userData.user.id, badge_id: 'welcome' }
-                  ]);
-
-                  // Send referral emails
-                  try {
-                    const { data: referrerProfile } = await supabase
-                      .from('profiles')
-                      .select('email, first_name, preferred_language')
-                      .eq('user_id', referralId)
-                      .single();
-
-                    if (referrerProfile) {
-                      await supabase.functions.invoke('send-referral-emails', {
-                        body: {
-                          referrerEmail: referrerProfile.email,
-                          referrerName: referrerProfile.first_name || 'Friend',
-                          refereeName: `${firstName} ${lastName}`,
-                          refereeEmail: emailOrUsername,
-                          language: referrerProfile.preferred_language || 'en'
-                        }
-                      });
-                      console.log('Referral emails sent successfully');
-
-                      // Process referral rewards for referrer
-                      await supabase.functions.invoke('process-referral-rewards', {
-                        body: { referrerId: referralId }
-                      });
-                      console.log('Referral rewards processed');
+                  // Call centralized confirm-referral edge function
+                  await supabase.functions.invoke('confirm-referral', {
+                    body: {
+                      referee_id: userData.user.id,
+                      referral_code_or_id: validatedReferralId,
+                      preferredLanguage,
+                      refereeEmail: emailOrUsername,
+                      refereeName: `${firstName} ${lastName}`
                     }
-                  } catch (emailErr) {
-                    console.error('Failed to send referral emails:', emailErr);
-                  }
-
+                  });
+                  console.log('Referral confirmed via edge function');
                   clearReferral();
                 }
               } catch (err) {

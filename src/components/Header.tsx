@@ -10,15 +10,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCartContext } from '@/contexts/CartContext';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
+import { useHeaderSettings } from '@/hooks/useHeaderSettings';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageToggle from '@/components/LanguageToggle';
 import SearchModal from '@/components/SearchModal';
-import spiritLogo from '@/assets/spirit-logo.png';
 import spiritLogoTransparent from '@/assets/spirit-logo-transparent.png';
 import goldShieldIcon from '@/assets/gold-shield-admin-mini.png';
 import iconLogoCandle from '@/assets/icon-logo-candle-transparent.png';
 import goldShieldMiniIcon from '@/assets/gold-shield-admin-mini-2.png';
-
 import NotificationBell from '@/components/NotificationBell';
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
@@ -29,6 +28,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const { itemCount } = useCartContext();
   const { wishlistCount } = useWishlist();
   const { unseenCount, isAdmin } = useAdminNotifications();
+  const { settings: headerSettings, loading: headerLoading } = useHeaderSettings();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
@@ -52,7 +52,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
     loadUserProfile();
   }, [user]);
 
-  const navItems = [
+  // Build navigation items from database or fallback to defaults
+  const navItems = headerSettings?.navigation_items
+    ?.filter(item => item.is_active)
+    .sort((a, b) => a.order - b.order)
+    .map(item => ({
+      name: language === 'pl' ? item.label_pl : item.label_en,
+      href: item.url
+    })) || [
     { name: t('home'), href: '/' },
     { name: t('shop'), href: '/shop' },
     { name: t('collections'), href: '/collections' },
@@ -61,33 +68,47 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
     { name: t('contact'), href: '/contact' },
   ];
 
+  // Get logo settings
+  const logoUrl = headerSettings?.logo_url || iconLogoCandle;
+  const logoHeight = headerSettings?.logo_height || 'h-8';
+  
+  // Feature flags from settings
+  const showSearch = headerSettings?.show_search ?? true;
+  const showWishlist = headerSettings?.show_wishlist ?? true;
+  const showCart = headerSettings?.show_cart ?? true;
+  const showLanguageToggle = headerSettings?.show_language_toggle ?? true;
+  const stickyHeader = headerSettings?.sticky_header ?? true;
+  const transparentOnScroll = headerSettings?.transparent_on_scroll ?? false;
+
   const handleSignOut = async () => {
     await signOut();
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 mystical-blur">
+    <header className={`${stickyHeader ? 'sticky' : 'relative'} top-0 z-50 w-full border-b border-border/40 ${transparentOnScroll ? 'bg-background/80' : 'bg-background/95'} mystical-blur`}>
       <div className="container mx-auto px-4 lg:px-8">
         {/* Mobile Layout */}
         <div className="flex md:hidden h-16 items-center justify-between relative">
           {/* Left: Cart, Admin (if admin), Profile */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="relative"
-              onClick={onCartOpen}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {itemCount > 0 && (
-                <Badge 
-                  variant="secondary" 
-                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
-                >
-                  {itemCount}
-                </Badge>
-              )}
-            </Button>
+            {showCart && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative"
+                onClick={onCartOpen}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <Badge 
+                    variant="secondary" 
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
+                  >
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
             
             {user && userProfile?.role === 'admin' && (
               <Link to="/admin">
@@ -160,9 +181,9 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* Center: Logo */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={iconLogoCandle} 
+              src={logoUrl} 
               alt="SPIRIT CANDLES" 
-              className="h-8 w-auto hover:scale-105 transition-all duration-700"
+              className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700`}
               style={{
                 filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
                 animation: 'glow-soft 4s ease-in-out infinite'
@@ -172,7 +193,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
 
           {/* Right: Language, Burger */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <LanguageToggle />
+            {showLanguageToggle && <LanguageToggle />}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm">
@@ -201,17 +222,19 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                       {item.name}
                     </Link>
                   ))}
-                  <Button 
-                    variant="ghost" 
-                    className="justify-start px-4"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      setIsSearchOpen(true);
-                    }}
-                  >
-                    <Search className="h-5 w-5 mr-2" />
-                    {t('search')}
-                  </Button>
+                  {showSearch && (
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start px-4"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsSearchOpen(true);
+                      }}
+                    >
+                      <Search className="h-5 w-5 mr-2" />
+                      {t('search')}
+                    </Button>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>
@@ -224,9 +247,9 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           <div className="flex items-center">
             <Link to="/" className="md:mr-4 lg:mr-6">
               <img 
-                src={iconLogoCandle} 
+                src={logoUrl} 
                 alt="SPIRIT CANDLES" 
-                className="h-9 w-auto hover:scale-105 transition-all duration-700"
+                className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700`}
                 style={{
                   filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
                   animation: 'glow-soft 4s ease-in-out infinite'
@@ -264,7 +287,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* Right Actions */}
           <div className="flex items-center gap-1 md:gap-1 lg:gap-3">
             {/* Language Toggle */}
-            <LanguageToggle />
+            {showLanguageToggle && <LanguageToggle />}
             
             {/* Notification Bell - Tablet/Desktop */}
             {user && <NotificationBell />}
@@ -317,16 +340,18 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                       <DropdownMenuSeparator />
                     </>
                   )}
-                  <DropdownMenuItem asChild className="md:flex lg:hidden">
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start px-2 h-auto py-2"
-                      onClick={() => setIsSearchOpen(true)}
-                    >
-                      <Search className="h-4 w-4 mr-2" />
-                      {t('search')}
-                    </Button>
-                  </DropdownMenuItem>
+                  {showSearch && (
+                    <DropdownMenuItem asChild className="md:flex lg:hidden">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start px-2 h-auto py-2"
+                        onClick={() => setIsSearchOpen(true)}
+                      >
+                        <Search className="h-4 w-4 mr-2" />
+                        {t('search')}
+                      </Button>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard" className="flex items-center cursor-pointer">
                       <LayoutDashboard className="h-4 w-4 mr-2" />
@@ -376,28 +401,30 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               </Link>
             )}
 
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="relative"
-              onClick={onCartOpen}
-            >
-              <ShoppingCart className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              {itemCount > 0 && (
-                <Badge 
-                  variant="secondary" 
-                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
-                >
-                  {itemCount}
-                </Badge>
-              )}
-            </Button>
+            {showCart && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative"
+                onClick={onCartOpen}
+              >
+                <ShoppingCart className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                {itemCount > 0 && (
+                  <Badge 
+                    variant="secondary" 
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs"
+                  >
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
       
       {/* Search Modal */}
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {showSearch && <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
     </header>
   );
 };

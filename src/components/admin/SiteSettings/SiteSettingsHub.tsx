@@ -85,7 +85,7 @@ export default function SiteSettingsHub() {
         : 'Customize header logo, navigation and icons',
       itemCount: 4,
       color: 'text-cyan-500',
-      comingSoon: true
+      comingSoon: false
     },
     {
       id: 'homepage',
@@ -95,7 +95,8 @@ export default function SiteSettingsHub() {
         ? 'Dostosuj sekcję hero, funkcje, opinie i newsletter'
         : 'Customize hero section, features, testimonials, and newsletter',
       itemCount: 5,
-      color: 'text-orange-500'
+      color: 'text-orange-500',
+      comingSoon: false
     },
     {
       id: 'custom_candles',
@@ -105,7 +106,8 @@ export default function SiteSettingsHub() {
         ? 'Dostosuj stronę Custom Candles'
         : 'Customize Custom Candles page',
       itemCount: 2,
-      color: 'text-indigo-500'
+      color: 'text-indigo-500',
+      comingSoon: false
     },
     {
       id: 'footer',
@@ -115,7 +117,8 @@ export default function SiteSettingsHub() {
         ? 'Zarządzaj treściami stopki, linkami do dokumentów prawnych i ikonami social media'
         : 'Manage footer content, legal document links, and social media icons',
       itemCount: 4,
-      color: 'text-blue-500'
+      color: 'text-blue-500',
+      comingSoon: false
     },
   ];
 

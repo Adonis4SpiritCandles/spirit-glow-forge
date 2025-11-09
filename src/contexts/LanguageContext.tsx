@@ -49,6 +49,12 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'wishlist') return language === 'pl' ? 'Lista życzeń' : 'Wishlist';
     if (key === 'myOrders') return language === 'pl' ? 'Moje zamówienia' : 'My Orders';
     if (key === 'admin') return language === 'pl' ? 'Panel Administracyjny' : 'Admin Dashboard';
+    if (key === 'spiritProfile') return language === 'pl' ? 'Profil Spirit' : 'Spirit Profile';
+    if (key === 'emailManagement') return language === 'pl' ? 'Zarządzanie Emailami' : 'Email Management';
+    if (key === 'seoSettings') return language === 'pl' ? 'Ustawienia SEO' : 'SEO Settings';
+    if (key === 'homepageSettings') return language === 'pl' ? 'Ustawienia Strony Głównej' : 'Homepage Settings';
+    if (key === 'customCandlesPage') return language === 'pl' ? 'Strona Własnych Świec' : 'Custom Candles Page';
+    if (key === 'footerSettings') return language === 'pl' ? 'Ustawienia Stopki' : 'Footer Settings';
 
     // Hero Section
     if (key === 'rebornYourNature') return language === 'pl' ? 'Reborn Your Nature' : 'Reborn Your Nature';

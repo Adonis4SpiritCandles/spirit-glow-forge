@@ -700,9 +700,12 @@ export type Database = {
       header_settings: {
         Row: {
           created_at: string
+          desktop_config: Json | null
           id: string
+          logo_animation: Json | null
           logo_height: string
           logo_url: string
+          mobile_config: Json | null
           navigation_items: Json
           show_cart: boolean
           show_language_toggle: boolean
@@ -715,9 +718,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          desktop_config?: Json | null
           id?: string
+          logo_animation?: Json | null
           logo_height?: string
           logo_url?: string
+          mobile_config?: Json | null
           navigation_items?: Json
           show_cart?: boolean
           show_language_toggle?: boolean
@@ -730,9 +736,12 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          desktop_config?: Json | null
           id?: string
+          logo_animation?: Json | null
           logo_height?: string
           logo_url?: string
+          mobile_config?: Json | null
           navigation_items?: Json
           show_cart?: boolean
           show_language_toggle?: boolean

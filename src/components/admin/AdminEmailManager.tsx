@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Check, X, ExternalLink } from 'lucide-react';
+import { Mail, Check, X, ExternalLink, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface AdminEmailManagerProps {
@@ -185,15 +186,23 @@ export default function AdminEmailManager({ onBack }: AdminEmailManagerProps = {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-2xl font-bold">
-          {language === 'pl' ? 'Zarządzanie Email' : 'Email Management'}
-        </h3>
-        <p className="text-muted-foreground">
-          {language === 'pl' 
-            ? 'Zarządzaj szablonami email i monitoruj wysyłanie'
-            : 'Manage email templates and monitor delivery'}
-        </p>
+      {/* Header with Back Button */}
+      <div className="flex items-center gap-4">
+        {onBack && (
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        <div>
+          <h3 className="text-2xl font-bold">
+            {language === 'pl' ? 'Zarządzanie Email' : 'Email Management'}
+          </h3>
+          <p className="text-muted-foreground">
+            {language === 'pl' 
+              ? 'Zarządzaj szablonami email i monitoruj wysyłanie'
+              : 'Manage email templates and monitor delivery'}
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-4">

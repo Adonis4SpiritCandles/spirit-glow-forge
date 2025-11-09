@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gift, Award, Users, Settings, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Gift, Award, Users, Settings, Plus, Pencil, Trash2, ArrowLeft } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface ReferralReward {
@@ -248,15 +248,23 @@ export default function AdminReferralRewardsEnhanced({ onBack }: AdminReferralRe
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
-          {language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}
-        </h2>
-        <p className="text-muted-foreground">
-          {language === 'pl' 
-            ? 'Zarządzaj systemem poleceń i nagrodami za odznaki'
-            : 'Manage referral system and badge rewards'}
-        </p>
+      {/* Header with Back Button */}
+      <div className="flex items-center gap-4">
+        {onBack && (
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            {language === 'pl' ? 'Polecenia i Nagrody' : 'Referrals & Rewards'}
+          </h2>
+          <p className="text-muted-foreground">
+            {language === 'pl' 
+              ? 'Zarządzaj systemem poleceń i nagrodami za odznaki'
+              : 'Manage referral system and badge rewards'}
+          </p>
+        </div>
       </div>
 
       <Tabs defaultValue="referrals" className="space-y-4">

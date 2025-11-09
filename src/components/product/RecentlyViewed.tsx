@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import ProductCard from "@/components/ProductCard";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 const RECENTLY_VIEWED_KEY = 'spirit_recently_viewed';
 const MAX_RECENT_PRODUCTS = 10;
@@ -96,30 +100,44 @@ const RecentlyViewed = ({ currentProductId }: { currentProductId: string }) => {
           {language === 'pl' ? 'Ostatnio Oglądane' : 'Recently Viewed'}
         </h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+        <Swiper
+          modules={[Navigation, Autoplay]}
+          spaceBetween={16}
+          slidesPerView={2}
+          navigation
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          breakpoints={{
+            640: { slidesPerView: 3, spaceBetween: 20 },
+            768: { slidesPerView: 4, spaceBetween: 24 },
+            1024: { slidesPerView: 5, spaceBetween: 24 },
+            1280: { slidesPerView: 6, spaceBetween: 24 }
+          }}
+          className="recently-viewed-swiper"
+        >
           {products.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-            >
-              <ProductCard
-                id={product.id}
-                name={language === 'en' ? product.name_en : product.name_pl}
-                fragrance=""
-                summary={product.summary}
-                description={language === 'en' ? product.description_en : product.description_pl}
-                category={product.category}
-                collections={product.collections}
-                preferredTag={product.preferred_card_tag}
-                price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
-                image={product.image_url}
-                sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: Number(product.price_pln), eur: Number(product.price_eur) } }]}
-              />
-            </motion.div>
+            <SwiperSlide key={product.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <ProductCard
+                  id={product.id}
+                  name={language === 'en' ? product.name_en : product.name_pl}
+                  fragrance=""
+                  summary={product.summary}
+                  description={language === 'en' ? product.description_en : product.description_pl}
+                  category={product.category}
+                  collections={product.collections}
+                  preferredTag={product.preferred_card_tag}
+                  price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
+                  image={product.image_url}
+                  sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: Number(product.price_pln), eur: Number(product.price_eur) } }]}
+                />
+              </motion.div>
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
       </div>
     </section>
   );

@@ -913,7 +913,7 @@ export default function PublicProfile() {
             className="w-full h-full object-cover"
           />
         )}
-        {isOwnProfile && (
+        {isOwnProfile && !profile.cover_image_url && (
           <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2">
             <Button size="sm" variant="secondary" className="text-xs md:text-sm" asChild>
               <label className="cursor-pointer">
@@ -951,7 +951,7 @@ export default function PublicProfile() {
                 {profile.first_name?.[0]}{profile.last_name?.[0]}
               </AvatarFallback>
             </Avatar>
-            {isOwnProfile && (
+            {isOwnProfile && !profile.profile_image_url && (
               <ProfileImageUpload
                 userId={userId!}
                 currentImageUrl={profile.profile_image_url}
@@ -984,39 +984,55 @@ export default function PublicProfile() {
             </div>
             
             {/* Follow Stats & Button */}
-            <div className="flex items-center gap-4 justify-center md:justify-start mt-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => {
-                  loadFollowersList();
-                  setShowFollowersModal(true);
-                }}
-                className="flex flex-col items-center gap-0.5 h-auto py-1.5 px-3"
-              >
-                <span className="text-base md:text-lg font-bold">{followersCount}</span>
-                <span className="text-xs text-muted-foreground">{t('followers')}</span>
-              </Button>
+            <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 justify-center md:justify-start mt-4">
+              <div className="flex items-center gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => {
+                    loadFollowersList();
+                    setShowFollowersModal(true);
+                  }}
+                  className="flex flex-col items-center gap-0.5 h-auto py-1.5 px-3"
+                >
+                  <span className="text-base md:text-lg font-bold">{followersCount}</span>
+                  <span className="text-xs text-muted-foreground">{t('followers')}</span>
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => {
+                    loadFollowingList();
+                    setShowFollowingModal(true);
+                  }}
+                  className="flex flex-col items-center gap-0.5 h-auto py-1.5 px-3"
+                >
+                  <span className="text-base md:text-lg font-bold">{followingCount}</span>
+                  <span className="text-xs text-muted-foreground">{t('following')}</span>
+                </Button>
+              </div>
               
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => {
-                  loadFollowingList();
-                  setShowFollowingModal(true);
-                }}
-                className="flex flex-col items-center gap-0.5 h-auto py-1.5 px-3"
-              >
-                <span className="text-base md:text-lg font-bold">{followingCount}</span>
-                <span className="text-xs text-muted-foreground">{t('following')}</span>
-              </Button>
-              
+              {/* Follow button sotto contatori - solo mobile */}
               {!isOwnProfile && user?.id && (
                 <Button
                   onClick={handleFollowToggle}
                   variant={isFollowing ? "outline" : "default"}
                   size="sm"
-                  className="ml-2"
+                  className="md:hidden w-full max-w-[200px]"
+                >
+                  <Users className="w-3.5 h-3.5 mr-1.5" />
+                  {isFollowing ? t('unfollow') : t('follow')}
+                </Button>
+              )}
+              
+              {/* Follow button a destra - solo desktop */}
+              {!isOwnProfile && user?.id && (
+                <Button
+                  onClick={handleFollowToggle}
+                  variant={isFollowing ? "outline" : "default"}
+                  size="sm"
+                  className="hidden md:inline-flex ml-auto"
                 >
                   <Users className="w-3.5 h-3.5 mr-1.5" />
                   {isFollowing ? t('unfollow') : t('follow')}

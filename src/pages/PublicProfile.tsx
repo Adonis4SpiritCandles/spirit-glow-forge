@@ -10,13 +10,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift, X, Users } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift, X, Users, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
 import EmojiPicker from 'emoji-picker-react';
 import GifPicker from '@/components/profile/GifPicker';
 import { Progress } from '@/components/ui/progress';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 interface CommentType {
   id: string;
@@ -1046,12 +1047,248 @@ export default function PublicProfile() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            {/* Badges Section - Visible to All */}
+        {/* MOBILE: Riordino completo */}
+        <div className="lg:hidden space-y-8">
+          {/* 1. Badges */}
+          <div className="order-1">
             <BadgeShowcase userId={userId || ''} />
+          </div>
 
-            {/* Purchased Products Carousel - Visible to All */}
+          {/* 2. Spirit Points Leaderboard (placeholder - da implementare con Your Points) */}
+          <div className="order-2">
+            <Card>
+              <CardHeader>
+                <h2 className="text-2xl font-semibold flex items-center gap-2">
+                  <Trophy className="h-6 w-6 text-primary" />
+                  {t('spiritPointsLeaderboard')}
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  {language === 'pl' ? 'Leaderboard wkrótce dostępny' : 'Leaderboard coming soon'}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 3. Spirit Posts */}
+          <div className="order-3">
+            <Card>
+              <CardHeader>
+                <h2 className="text-2xl font-semibold flex items-center gap-2">
+                  <MessageCircle className="h-6 w-6 text-primary" />
+                  {t('spiritPosts')}
+                </h2>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {user && (
+                  <div className="space-y-3 p-4 bg-accent/5 rounded-lg border">
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user?.user_metadata?.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                        <AvatarFallback>
+                          {user?.user_metadata?.first_name?.[0] || user.email?.[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-2">
+                        <Textarea
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          placeholder={t('writeComment')}
+                          className="min-h-[80px] resize-none"
+                        />
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="relative">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setShowEmojiPicker(showEmojiPicker === 'comment' ? null : 'comment');
+                                  setShowGifPicker(null);
+                                }}
+                              >
+                                <Smile className="h-4 w-4" />
+                              </Button>
+                              {showEmojiPicker === 'comment' && (
+                                 <div className="absolute z-50 top-full mt-2">
+                                  <EmojiPicker onEmojiClick={(emojiData) => onEmojiClick(emojiData, 'comment')} />
+                                </div>
+                              )}
+                            </div>
+                            <div className="relative">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setShowGifPicker(showGifPicker === 'comment' ? null : 'comment');
+                                  setShowEmojiPicker(null);
+                                }}
+                              >
+                                <Gift className="h-4 w-4" />
+                              </Button>
+                              {showGifPicker === 'comment' && (
+                                <div className="absolute z-50 top-full mt-2">
+                                  <GifPicker onSelectGif={(gifUrl) => onGifSelect(gifUrl, 'comment')} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <Button onClick={submitComment} disabled={submitting || !newComment.trim()}>
+                            <Send className="h-4 w-4 mr-2" />
+                            {t('post')}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 4. Reviews */}
+          {reviews.length > 0 && (
+            <div className="order-4">{/* Reviews content */}</div>
+          )}
+
+          {/* 5. Purchased Products */}
+          {purchasedProducts.length > 0 && (
+            <div className="order-5">
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold flex items-center gap-2">
+                    <ShoppingBag className="h-6 w-6 text-primary" />
+                    {t('purchasedProducts')} ({purchasedProducts.length})
+                  </h2>
+                </CardHeader>
+                <CardContent>
+                  {purchasedProducts.length > 2 ? (
+                    <Carousel opts={{ align: "start", loop: true }} className="w-full">
+                      <CarouselContent>
+                        {purchasedProducts.map((product: any) => (
+                          <CarouselItem key={product.id} className="basis-1/2">
+                            <Link to={`/product/${product.id}`} className="group cursor-pointer block">
+                              <div className="aspect-square relative overflow-hidden rounded-lg border">
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name_en}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                />
+                              </div>
+                              <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                                {language === 'en' ? product.name_en : product.name_pl}
+                              </p>
+                            </Link>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="-left-2" />
+                      <CarouselNext className="-right-2" />
+                    </Carousel>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      {purchasedProducts.map((product: any) => (
+                        <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer">
+                          <div className="aspect-square relative overflow-hidden rounded-lg border">
+                            <img
+                              src={product.image_url}
+                              alt={product.name_en}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                          <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                            {language === 'en' ? product.name_en : product.name_pl}
+                          </p>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* 6. Wishlist */}
+          {wishlistProducts.length > 0 && (
+            <div className="order-6">
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold flex items-center gap-2">
+                    <Heart className="h-6 w-6 text-primary" />
+                    {t('wishlist')} ({wishlistProducts.length})
+                  </h2>
+                </CardHeader>
+                <CardContent>
+                  {wishlistProducts.length > 2 ? (
+                    <Carousel opts={{ align: "start", loop: true }} className="w-full">
+                      <CarouselContent>
+                        {wishlistProducts.map((product: any) => (
+                          <CarouselItem key={product.id} className="basis-1/2">
+                            <Link to={`/product/${product.id}`} className="group cursor-pointer block">
+                              <div className="aspect-square relative overflow-hidden rounded-lg border">
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name_en}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                />
+                              </div>
+                              <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                                {language === 'en' ? product.name_en : product.name_pl}
+                              </p>
+                            </Link>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="-left-2" />
+                      <CarouselNext className="-right-2" />
+                    </Carousel>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      {wishlistProducts.map((product: any) => (
+                        <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer">
+                          <div className="aspect-square relative overflow-hidden rounded-lg border">
+                            <img
+                              src={product.image_url}
+                              alt={product.name_en}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                          <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                            {language === 'en' ? product.name_en : product.name_pl}
+                          </p>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {/* DESKTOP/TABLET: Grid con nuova struttura */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-8">
+          {/* COLONNA SINISTRA (2/3) */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* 1. Spirit Points Leaderboard */}
+            <Card>
+              <CardHeader>
+                <h2 className="text-2xl font-semibold flex items-center gap-2">
+                  <Trophy className="h-6 w-6 text-primary" />
+                  {t('spiritPointsLeaderboard')}
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  {language === 'pl' ? 'Leaderboard wkrótce dostępny' : 'Leaderboard coming soon'}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* 2. Purchased Products Carousel */}
             {purchasedProducts.length > 0 && (
               <Card>
                 <CardHeader>
@@ -1061,31 +1298,52 @@ export default function PublicProfile() {
                   </h2>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {purchasedProducts.map((product: any) => (
-                      <Link
-                        key={product.id}
-                        to={`/product/${product.id}`}
-                        className="group cursor-pointer"
-                      >
-                        <div className="aspect-square relative overflow-hidden rounded-lg border">
-                          <img
-                            src={product.image_url}
-                            alt={product.name_en}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                        </div>
-                        <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
-                          {language === 'en' ? product.name_en : product.name_pl}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
+                  {purchasedProducts.length > 2 ? (
+                    <Carousel opts={{ align: "start", loop: true }} className="w-full">
+                      <CarouselContent>
+                        {purchasedProducts.map((product: any) => (
+                          <CarouselItem key={product.id} className="basis-1/3">
+                            <Link to={`/product/${product.id}`} className="group cursor-pointer block">
+                              <div className="aspect-square relative overflow-hidden rounded-lg border">
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name_en}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                />
+                              </div>
+                              <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                                {language === 'en' ? product.name_en : product.name_pl}
+                              </p>
+                            </Link>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {purchasedProducts.map((product: any) => (
+                        <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer">
+                          <div className="aspect-square relative overflow-hidden rounded-lg border">
+                            <img
+                              src={product.image_url}
+                              alt={product.name_en}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                          <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                            {language === 'en' ? product.name_en : product.name_pl}
+                          </p>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
 
-            {/* Wishlist Products Carousel - Visible to All */}
+            {/* 3. Wishlist Products Carousel */}
             {wishlistProducts.length > 0 && (
               <Card>
                 <CardHeader>
@@ -1095,31 +1353,61 @@ export default function PublicProfile() {
                   </h2>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {wishlistProducts.map((product: any) => (
-                      <Link
-                        key={product.id}
-                        to={`/product/${product.id}`}
-                        className="group cursor-pointer"
-                      >
-                        <div className="aspect-square relative overflow-hidden rounded-lg border">
-                          <img
-                            src={product.image_url}
-                            alt={product.name_en}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                        </div>
-                        <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
-                          {language === 'en' ? product.name_en : product.name_pl}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
+                  {wishlistProducts.length > 2 ? (
+                    <Carousel opts={{ align: "start", loop: true }} className="w-full">
+                      <CarouselContent>
+                        {wishlistProducts.map((product: any) => (
+                          <CarouselItem key={product.id} className="basis-1/3">
+                            <Link to={`/product/${product.id}`} className="group cursor-pointer block">
+                              <div className="aspect-square relative overflow-hidden rounded-lg border">
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name_en}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                />
+                              </div>
+                              <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                                {language === 'en' ? product.name_en : product.name_pl}
+                              </p>
+                            </Link>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {wishlistProducts.map((product: any) => (
+                        <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer">
+                          <div className="aspect-square relative overflow-hidden rounded-lg border">
+                            <img
+                              src={product.image_url}
+                              alt={product.name_en}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                          <p className="text-xs mt-2 text-center truncate group-hover:text-primary transition-colors">
+                            {language === 'en' ? product.name_en : product.name_pl}
+                          </p>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
+          </div>
 
-            {/* Reviews Section - Visible to All */}
+          {/* COLONNA DESTRA (1/3) */}
+          <div className="lg:col-span-1 space-y-8">
+            {/* 1. Your Badges */}
+            <BadgeShowcase userId={userId || ''} />
+
+            {/* 2. Spirit Posts - da spostare qui */}
+            {/* Placeholder per mantenere struttura */}
+
+            {/* 3. Reviews */}
             {reviews.length > 0 && (
               <Card>
                 <CardHeader>

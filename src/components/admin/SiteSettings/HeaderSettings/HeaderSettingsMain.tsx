@@ -24,6 +24,35 @@ interface NavigationItem {
   is_active: boolean;
 }
 
+interface LogoAnimation {
+  enabled: boolean;
+  speed: string;
+  glow_intensity: string;
+  hover_scale: string;
+}
+
+interface DesktopConfig {
+  show_admin_icon: boolean;
+  show_notification_bell: boolean;
+  icon_sizes: {
+    admin: string;
+    notification: string;
+    profile: string;
+    cart: string;
+  };
+}
+
+interface MobileConfig {
+  show_admin_icon: boolean;
+  show_notification_bell: boolean;
+  icon_sizes: {
+    admin: string;
+    notification: string;
+    profile: string;
+    cart: string;
+  };
+}
+
 interface HeaderSettings {
   id: string;
   logo_url: string;
@@ -35,6 +64,9 @@ interface HeaderSettings {
   sticky_header: boolean;
   transparent_on_scroll: boolean;
   navigation_items: NavigationItem[];
+  logo_animation?: LogoAnimation;
+  desktop_config?: DesktopConfig;
+  mobile_config?: MobileConfig;
 }
 
 function SortableNavItem({ item, index, onUpdate, onDelete }: { item: NavigationItem; index: number; onUpdate: (index: number, field: keyof NavigationItem, value: any) => void; onDelete: (index: number) => void }) {
@@ -102,10 +134,36 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
 
       if (error) throw error;
       
-      // Parse navigation_items from JSONB
+      // Parse navigation_items and configs from JSONB with defaults
       const parsedData = {
         ...data,
-        navigation_items: (data.navigation_items as any) || []
+        navigation_items: (data.navigation_items as any) || [],
+        logo_animation: (data.logo_animation as any) || {
+          enabled: true,
+          speed: '4s',
+          glow_intensity: '0.4',
+          hover_scale: '1.05'
+        },
+        desktop_config: (data.desktop_config as any) || {
+          show_admin_icon: true,
+          show_notification_bell: true,
+          icon_sizes: {
+            admin: 'h-4 w-4',
+            notification: 'h-5 w-5',
+            profile: 'h-6 w-6',
+            cart: 'h-5 w-5'
+          }
+        },
+        mobile_config: (data.mobile_config as any) || {
+          show_admin_icon: true,
+          show_notification_bell: true,
+          icon_sizes: {
+            admin: 'h-5 w-5',
+            notification: 'h-5 w-5',
+            profile: 'h-6 w-6',
+            cart: 'h-5 w-5'
+          }
+        }
       };
       
       setSettings(parsedData as HeaderSettings);
@@ -140,6 +198,9 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
           sticky_header: settings.sticky_header,
           transparent_on_scroll: settings.transparent_on_scroll,
           navigation_items: settings.navigation_items as any,
+          logo_animation: settings.logo_animation as any,
+          desktop_config: settings.desktop_config as any,
+          mobile_config: settings.mobile_config as any,
           updated_at: new Date().toISOString()
         })
         .eq('id', settings.id);
@@ -345,6 +406,207 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
               checked={settings.show_language_toggle}
               onCheckedChange={(checked) => setSettings({ ...settings, show_language_toggle: checked })}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Logo Animation */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{language === 'pl' ? 'Animacja Logo' : 'Logo Animation'}</CardTitle>
+          <CardDescription>
+            {language === 'pl' 
+              ? 'Kontroluj efekty animacji i świecenia logo' 
+              : 'Control logo animation and glow effects'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>{language === 'pl' ? 'Włącz animację' : 'Enable Animation'}</Label>
+            <Switch 
+              checked={settings.logo_animation?.enabled ?? true}
+              onCheckedChange={(checked) => setSettings({ 
+                ...settings, 
+                logo_animation: { ...settings.logo_animation!, enabled: checked }
+              })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{language === 'pl' ? 'Prędkość animacji (sekundy)' : 'Animation Speed (seconds)'}</Label>
+            <Input 
+              type="number"
+              value={parseFloat(settings.logo_animation?.speed || '4')}
+              onChange={(e) => setSettings({ 
+                ...settings, 
+                logo_animation: { ...settings.logo_animation!, speed: e.target.value + 's' }
+              })}
+              placeholder="4"
+              step="0.5"
+              min="1"
+              max="10"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{language === 'pl' ? 'Intensywność świecenia (0-1)' : 'Glow Intensity (0-1)'}</Label>
+            <Input 
+              type="number"
+              value={parseFloat(settings.logo_animation?.glow_intensity || '0.4')}
+              onChange={(e) => setSettings({ 
+                ...settings, 
+                logo_animation: { ...settings.logo_animation!, glow_intensity: e.target.value }
+              })}
+              placeholder="0.4"
+              step="0.1"
+              min="0"
+              max="1"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{language === 'pl' ? 'Powiększenie przy najechaniu' : 'Hover Scale'}</Label>
+            <Input 
+              type="number"
+              value={parseFloat(settings.logo_animation?.hover_scale || '1.05')}
+              onChange={(e) => setSettings({ 
+                ...settings, 
+                logo_animation: { ...settings.logo_animation!, hover_scale: e.target.value }
+              })}
+              placeholder="1.05"
+              step="0.05"
+              min="1"
+              max="1.5"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Desktop Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{language === 'pl' ? 'Konfiguracja Desktop (1024px+)' : 'Desktop Configuration (1024px+)'}</CardTitle>
+          <CardDescription>
+            {language === 'pl' 
+              ? 'Dostosuj wygląd nagłówka dla ekranów desktopowych' 
+              : 'Customize header layout for desktop screens'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>{language === 'pl' ? 'Pokaż ikonę admina' : 'Show Admin Icon'}</Label>
+            <Switch 
+              checked={settings.desktop_config?.show_admin_icon ?? true}
+              onCheckedChange={(checked) => setSettings({ 
+                ...settings, 
+                desktop_config: { ...settings.desktop_config!, show_admin_icon: checked }
+              })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>{language === 'pl' ? 'Pokaż dzwonek powiadomień' : 'Show Notification Bell'}</Label>
+            <Switch 
+              checked={settings.desktop_config?.show_notification_bell ?? true}
+              onCheckedChange={(checked) => setSettings({ 
+                ...settings, 
+                desktop_config: { ...settings.desktop_config!, show_notification_bell: checked }
+              })}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-xs">{language === 'pl' ? 'Rozmiar ikony admina' : 'Admin Icon Size'}</Label>
+              <Input 
+                value={settings.desktop_config?.icon_sizes?.admin || 'h-4 w-4'}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  desktop_config: { 
+                    ...settings.desktop_config!, 
+                    icon_sizes: { ...settings.desktop_config!.icon_sizes, admin: e.target.value }
+                  }
+                })}
+                placeholder="h-4 w-4"
+                className="text-xs"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">{language === 'pl' ? 'Rozmiar dzwonka' : 'Bell Icon Size'}</Label>
+              <Input 
+                value={settings.desktop_config?.icon_sizes?.notification || 'h-5 w-5'}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  desktop_config: { 
+                    ...settings.desktop_config!, 
+                    icon_sizes: { ...settings.desktop_config!.icon_sizes, notification: e.target.value }
+                  }
+                })}
+                placeholder="h-5 w-5"
+                className="text-xs"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Mobile Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{language === 'pl' ? 'Konfiguracja Mobile (< 768px)' : 'Mobile Configuration (< 768px)'}</CardTitle>
+          <CardDescription>
+            {language === 'pl' 
+              ? 'Dostosuj wygląd nagłówka dla urządzeń mobilnych' 
+              : 'Customize header layout for mobile devices'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>{language === 'pl' ? 'Pokaż ikonę admina' : 'Show Admin Icon'}</Label>
+            <Switch 
+              checked={settings.mobile_config?.show_admin_icon ?? true}
+              onCheckedChange={(checked) => setSettings({ 
+                ...settings, 
+                mobile_config: { ...settings.mobile_config!, show_admin_icon: checked }
+              })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>{language === 'pl' ? 'Pokaż dzwonek powiadomień' : 'Show Notification Bell'}</Label>
+            <Switch 
+              checked={settings.mobile_config?.show_notification_bell ?? true}
+              onCheckedChange={(checked) => setSettings({ 
+                ...settings, 
+                mobile_config: { ...settings.mobile_config!, show_notification_bell: checked }
+              })}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-xs">{language === 'pl' ? 'Rozmiar ikony admina' : 'Admin Icon Size'}</Label>
+              <Input 
+                value={settings.mobile_config?.icon_sizes?.admin || 'h-5 w-5'}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  mobile_config: { 
+                    ...settings.mobile_config!, 
+                    icon_sizes: { ...settings.mobile_config!.icon_sizes, admin: e.target.value }
+                  }
+                })}
+                placeholder="h-5 w-5"
+                className="text-xs"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">{language === 'pl' ? 'Rozmiar dzwonka' : 'Bell Icon Size'}</Label>
+              <Input 
+                value={settings.mobile_config?.icon_sizes?.notification || 'h-5 w-5'}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  mobile_config: { 
+                    ...settings.mobile_config!, 
+                    icon_sizes: { ...settings.mobile_config!.icon_sizes, notification: e.target.value }
+                  }
+                })}
+                placeholder="h-5 w-5"
+                className="text-xs"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>

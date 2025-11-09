@@ -183,21 +183,32 @@ export default function SiteSettingsHub() {
           {spiritToolsSections.map((section) => (
             <Card 
               key={section.id}
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+              className="cursor-pointer transition-all hover:shadow-xl hover:scale-[1.03] border-0 overflow-hidden group relative"
               onClick={() => setSelectedSection(section.id)}
+              style={{
+                background: section.id === 'referrals' 
+                  ? 'linear-gradient(135deg, hsl(43, 96%, 56%) 0%, hsl(32, 95%, 50%) 100%)'
+                  : section.id === 'chat'
+                  ? 'linear-gradient(135deg, hsl(271, 91%, 65%) 0%, hsl(261, 90%, 59%) 100%)'
+                  : section.id === 'email'
+                  ? 'linear-gradient(135deg, hsl(158, 64%, 52%) 0%, hsl(160, 84%, 39%) 100%)'
+                  : 'linear-gradient(135deg, hsl(330, 81%, 60%) 0%, hsl(336, 84%, 55%) 100%)'
+              }}
             >
-              <CardHeader>
-                <div className="flex items-center justify-between mb-2">
-                  <div className={section.color}>
+              <CardHeader className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl text-white">
                     {section.icon}
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  <ChevronRight className="h-6 w-6 text-white/80 group-hover:translate-x-1 transition-transform" />
                 </div>
-                <CardTitle className="text-lg">{section.title}</CardTitle>
-                <CardDescription className="text-sm">{section.description}</CardDescription>
+                <CardTitle className="text-xl text-white">{section.title}</CardTitle>
+                <CardDescription className="text-white/90 text-sm leading-relaxed">
+                  {section.description}
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CardContent className="relative z-10">
+                <div className="flex items-center gap-2 text-xs text-white/80 bg-white/10 rounded-lg px-3 py-2 w-fit">
                   <Settings className="h-3.5 w-3.5" />
                   <span>
                     {section.itemCount} {language === 'pl' ? 'ustawień' : 'settings'}
@@ -225,30 +236,41 @@ export default function SiteSettingsHub() {
           {siteSettingsSections.map((section) => (
             <Card 
               key={section.id}
-              className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
+              className={`cursor-pointer transition-all hover:shadow-xl hover:scale-[1.03] border-0 overflow-hidden group relative ${
                 section.comingSoon ? 'opacity-60' : ''
               }`}
               onClick={() => !section.comingSoon && setSelectedSection(section.id)}
+              style={{
+                background: section.id === 'header' 
+                  ? 'linear-gradient(135deg, hsl(187, 92%, 45%) 0%, hsl(190, 95%, 39%) 100%)'
+                  : section.id === 'homepage'
+                  ? 'linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(17, 88%, 52%) 100%)'
+                  : section.id === 'custom_candles'
+                  ? 'linear-gradient(135deg, hsl(238, 83%, 66%) 0%, hsl(243, 80%, 62%) 100%)'
+                  : 'linear-gradient(135deg, hsl(214, 95%, 58%) 0%, hsl(221, 83%, 53%) 100%)'
+              }}
             >
-              <CardHeader>
-                <div className="flex items-center justify-between mb-2">
-                  <div className={section.color}>
+              <CardHeader className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl text-white">
                     {section.icon}
                   </div>
                   {section.comingSoon && (
-                    <span className="text-xs font-medium bg-muted px-2 py-1 rounded">
+                    <span className="text-xs font-medium bg-white/20 text-white px-2 py-1 rounded">
                       {language === 'pl' ? 'Wkrótce' : 'Coming Soon'}
                     </span>
                   )}
                   {!section.comingSoon && (
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    <ChevronRight className="h-6 w-6 text-white/80 group-hover:translate-x-1 transition-transform" />
                   )}
                 </div>
-                <CardTitle className="text-lg">{section.title}</CardTitle>
-                <CardDescription className="text-sm">{section.description}</CardDescription>
+                <CardTitle className="text-xl text-white">{section.title}</CardTitle>
+                <CardDescription className="text-white/90 text-sm leading-relaxed">
+                  {section.description}
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CardContent className="relative z-10">
+                <div className="flex items-center gap-2 text-xs text-white/80 bg-white/10 rounded-lg px-3 py-2 w-fit">
                   <Settings className="h-3.5 w-3.5" />
                   <span>
                     {section.itemCount} {language === 'pl' ? 'ustawień' : 'settings'}

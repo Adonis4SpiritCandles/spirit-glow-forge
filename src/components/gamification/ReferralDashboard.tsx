@@ -16,6 +16,7 @@ const ReferralDashboard = () => {
   const [copiedRecently, setCopiedRecently] = useState(false);
   const [copiedCodeRecently, setCopiedCodeRecently] = useState(false);
   const [referrals, setReferrals] = useState<any[]>([]);
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const { user } = useAuth();
   const { language } = useLanguage();
 
@@ -24,8 +25,27 @@ const ReferralDashboard = () => {
       generateReferralLink();
       loadReferrals();
       loadShortCode();
+      loadLoyaltyPoints();
     }
   }, [user]);
+
+  const loadLoyaltyPoints = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('loyalty_points')
+        .select('points')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!error && data) {
+        setLoyaltyPoints(data.points || 0);
+      }
+    } catch (error) {
+      console.error('Error loading loyalty points:', error);
+    }
+  };
 
   const loadShortCode = async () => {
     if (!user) return;
@@ -73,6 +93,7 @@ const ReferralDashboard = () => {
       .from('referrals')
       .select('*')
       .eq('referrer_id', user.id)
+      .eq('status', 'completed')
       .order('created_at', { ascending: false });
 
     if (!error && data) {
@@ -87,8 +108,14 @@ const ReferralDashboard = () => {
     setTimeout(() => setCopiedRecently(false), 2000);
   };
 
-  const completedReferrals = referrals.filter(r => r.status === 'completed').length;
-  const progressToNextReward = (completedReferrals % 3) / 3 * 100;
+  const completedReferrals = referrals.length;
+  const earnedPoints = completedReferrals * 200;
+  
+  // Calculate progress for various thresholds
+  const nextThreshold = completedReferrals < 3 ? 3 : completedReferrals < 5 ? 5 : completedReferrals < 10 ? 10 : null;
+  const progressToNextReward = nextThreshold 
+    ? (completedReferrals / nextThreshold) * 100 
+    : 100;
 
   if (!user) return null;
 
@@ -111,9 +138,12 @@ const ReferralDashboard = () => {
           </div>
           <div className="p-4 bg-accent/10 rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">
-              {language === 'pl' ? 'SpiritPoints Zdobyte' : 'SpiritPoints Earned'}
+              {language === 'pl' ? 'Twoje SpiritPoints' : 'Your SpiritPoints'}
             </p>
-            <p className="text-3xl font-bold text-accent">{completedReferrals * 200}</p>
+            <p className="text-3xl font-bold text-accent">{loyaltyPoints.toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {language === 'pl' ? `+${earnedPoints} z poleceń` : `+${earnedPoints} from referrals`}
+            </p>
           </div>
         </div>
 
@@ -124,15 +154,40 @@ const ReferralDashboard = () => {
               {language === 'pl' ? 'Do Następnej Nagrody' : 'Next Reward Progress'}
             </p>
             <span className="text-sm text-muted-foreground">
-              {completedReferrals % 3} / 3
+              {nextThreshold ? `${completedReferrals} / ${nextThreshold}` : language === 'pl' ? 'Wszystkie odblokowane!' : 'All unlocked!'}
             </span>
           </div>
           <Progress value={progressToNextReward} className="h-2" />
-          <p className="text-xs text-muted-foreground mt-2">
-            {language === 'pl'
-              ? 'Poleć 3 znajomych, aby zdobyć specjalną nagrodę!'
-              : 'Refer 3 friends to earn a special reward!'}
-          </p>
+          <div className="mt-3 space-y-1">
+            {completedReferrals < 3 && (
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl'
+                  ? '🎯 3 polecenia: Zdobądź odznakę Referral Master'
+                  : '🎯 3 referrals: Earn Referral Master badge'}
+              </p>
+            )}
+            {completedReferrals < 5 && (
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl'
+                  ? '🎁 5 poleceń: +500 bonusowych punktów'
+                  : '🎁 5 referrals: +500 bonus points'}
+              </p>
+            )}
+            {completedReferrals < 10 && (
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl'
+                  ? '💎 10 poleceń: Kupon VIP10 (15% zniżki)'
+                  : '💎 10 referrals: VIP10 coupon (15% off)'}
+              </p>
+            )}
+            {completedReferrals >= 10 && (
+              <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                {language === 'pl'
+                  ? '✨ Gratulacje! Odblokowałeś wszystkie nagrody polecające!'
+                  : '✨ Congratulations! You\'ve unlocked all referral rewards!'}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Short Referral Code */}

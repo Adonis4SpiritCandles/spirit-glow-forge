@@ -171,7 +171,7 @@ const AdminDashboard = () => {
   const [isBulkOperating, setIsBulkOperating] = useState(false);
 
   // Tabs state (controlled for mobile select) - expanded to include all tabs
-  const [activeTab, setActiveTab] = useState<'products' | 'collections' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'coupons' | 'rewards' | 'statistics' | 'export' | 'settings' | 'social'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'collections' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'coupons' | 'rewards' | 'statistics' | 'export' | 'settings' | 'social'>('orders');
   
   // Wrapper function to handle setActiveTab with type safety
   const handleTabChange = (tab: string) => {

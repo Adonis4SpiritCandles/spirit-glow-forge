@@ -26,6 +26,9 @@ interface OrderConfirmationRequest {
   subtotalEUR: number;
   shippingCostPLN: number;
   shippingCostEUR: number;
+  discountPLN?: number;
+  discountEUR?: number;
+  couponCode?: string;
   totalPLN: number;
   totalEUR: number;
   carrierName?: string;
@@ -60,6 +63,9 @@ const handler = async (req: Request): Promise<Response> => {
       subtotalEUR,
       shippingCostPLN,
       shippingCostEUR,
+      discountPLN = 0,
+      discountEUR = 0,
+      couponCode,
       totalPLN,
       totalEUR,
       carrierName,
@@ -193,7 +199,7 @@ const handler = async (req: Request): Promise<Response> => {
                   </tr>
                   <tr>
                     <td colspan="2" style="padding: 12px; text-align: right; font-weight: 600;">
-                      ${isPolish ? 'Zniżka' : 'Discount'}${coupon_code ? ` (${coupon_code})` : ''}:
+                      ${isPolish ? 'Zniżka' : 'Discount'}${couponCode ? ` (${couponCode})` : ''}:
                     </td>
                     <td style="padding: 12px; text-align: right; color: ${discountPLN > 0 ? '#16a34a' : '#6b7280'};">
                       ${discountPLN > 0 ? `-${Number(discountPLN).toFixed(2)} PLN / -${Number(discountEUR).toFixed(2)} EUR` : (isPolish ? 'Brak' : 'None')}

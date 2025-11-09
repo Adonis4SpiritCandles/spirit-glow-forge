@@ -84,27 +84,27 @@ const Cart = () => {
       <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Button asChild variant="ghost" size="sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            <Button asChild variant="ghost" size="sm" className="w-fit">
               <Link to="/shop">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 {t('continueShopping')}
               </Link>
             </Button>
             <div>
-              <h1 className="font-playfair text-3xl font-bold text-foreground">
+              <h1 className="font-playfair text-2xl md:text-3xl font-bold text-foreground">
                 {t('shoppingCart')}
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm md:text-base text-muted-foreground">
                 {itemCount} {t('items')} in your cart
               </p>
             </div>
           </div>
           
           {cartItems.length > 0 && (
-            <Button variant="outline" onClick={clearCart}>
-              {t('clearCart')}
+            <Button variant="outline" onClick={clearCart} size="sm">
+              {language === 'pl' ? 'Wyczyść koszyk' : 'Clear Cart'}
             </Button>
           )}
         </div>
@@ -227,7 +227,9 @@ const Cart = () => {
                   
                   <div className="flex justify-between text-sm">
                     <span>{t('shipping')}</span>
-                    <span className="text-success">{t('freeShipping')}</span>
+                    <span className="text-muted-foreground italic">
+                      {language === 'pl' ? 'Obliczone przy kasie' : 'Calculated at checkout'}
+                    </span>
                   </div>
                 </div>
 

@@ -791,7 +791,7 @@ export default function PublicProfile() {
                 {profile.first_name?.[0]}{profile.last_name?.[0]}
               </AvatarFallback>
             </Avatar>
-            {isOwnProfile && !profile.profile_image_url && (
+            {isOwnProfile && (
               <ProfileImageUpload
                 userId={userId!}
                 currentImageUrl={profile.profile_image_url}

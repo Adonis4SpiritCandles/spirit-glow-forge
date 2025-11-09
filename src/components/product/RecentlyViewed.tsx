@@ -96,14 +96,13 @@ const RecentlyViewed = ({ currentProductId }: { currentProductId: string }) => {
           {language === 'pl' ? 'Ostatnio Oglądane' : 'Recently Viewed'}
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4">
           {products.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="h-full"
             >
               <ProductCard
                 id={product.id}

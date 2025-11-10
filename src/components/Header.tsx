@@ -133,12 +133,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* CENTER: Logo */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src="/assets/icon-logo-candle-transparent.png"
+              src={logoUrl || "/assets/spirit-logo-transparent.png"}
               alt="SPIRIT CANDLES" 
               className="h-10 w-auto animate-glow-pulse"
               style={{ 
-                background: 'transparent',
-                mixBlendMode: 'normal'
+                background: 'transparent !important',
+                backgroundColor: 'transparent !important',
+                mixBlendMode: 'normal',
+                filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.4))'
               }}
             />
           </Link>

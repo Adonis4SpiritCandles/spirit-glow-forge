@@ -75,6 +75,19 @@ export default function PublicProfile() {
     
     setLoadingLeaderboard(true);
     try {
+      // Verifica se la tabella loyalty_points_history esiste e ha dati
+      const { count } = await supabase
+        .from('loyalty_points_history')
+        .select('*', { count: 'exact', head: true });
+      
+      if (count === 0) {
+        console.log('Leaderboard: no data yet, showing empty state');
+        setLeaderboardData([]);
+        setUserRank(null);
+        setLoadingLeaderboard(false);
+        return; // Exit silently - no error toast
+      }
+      
       let query = supabase
         .from('loyalty_points_history')
         .select(`
@@ -103,9 +116,11 @@ export default function PublicProfile() {
       const { data, error } = await query;
       
       if (error) {
-        console.error('Leaderboard error:', error);
-        sonnerToast.error(language === 'pl' ? 'Błąd ładowania leaderboard' : 'Failed to load leaderboard');
-        return;
+        console.error('Leaderboard error (non-critical):', error);
+        // Set empty leaderboard instead of showing error
+        setLeaderboardData([]);
+        setUserRank(null);
+        return; // No toast for non-critical errors
       }
       
       // Aggregate by user_id
@@ -129,18 +144,26 @@ export default function PublicProfile() {
           ...data.user,
           total_points: data.total
         }))
+        .filter(u => u.total_points > 0) // Only show users with positive points
         .sort((a, b) => b.total_points - a.total_points)
         .slice(0, 10);  // Top 10
       
       setLeaderboardData(leaderboard);
       
-      // Find current user position
-      const position = leaderboard.findIndex(u => u.user_id === userId);
+      // Find current user position (in full leaderboard, not just top 10)
+      const allLeaderboard = Array.from(userPointsMap.entries())
+        .map(([id, data]) => ({ user_id: id, total_points: data.total }))
+        .filter(u => u.total_points > 0)
+        .sort((a, b) => b.total_points - a.total_points);
+      
+      const position = allLeaderboard.findIndex(u => u.user_id === userId);
       setUserRank(position >= 0 ? position + 1 : null);
       
     } catch (error) {
-      console.error('Error loading leaderboard:', error);
-      sonnerToast.error(language === 'pl' ? 'Błąd ładowania rankingu' : 'Error loading leaderboard');
+      console.error('Error loading leaderboard (non-critical):', error);
+      // Set empty state, don't show error toast
+      setLeaderboardData([]);
+      setUserRank(null);
     } finally {
       setLoadingLeaderboard(false);
     }
@@ -1798,7 +1821,19 @@ export default function PublicProfile() {
                       </Link>
                     ))}
                   </div>
-                ) : (<p className="text-sm text-muted-foreground text-center py-4">{language === 'pl' ? 'Nessun dato' : 'No data'}</p>)}
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Trophy className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                    <p className="text-lg font-medium mb-2">
+                      {language === 'pl' ? 'Nessun dato disponibile' : 'No data available yet'}
+                    </p>
+                    <p className="text-sm">
+                      {language === 'pl' 
+                        ? 'Inizia a guadagnare Spirit Points per apparire nella classifica!' 
+                        : 'Start earning Spirit Points to appear on the leaderboard!'}
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

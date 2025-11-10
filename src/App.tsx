@@ -69,13 +69,61 @@ const RouteChangeHandler = () => {
   return isLoading ? <LoadingSpinner /> : null;
 };
 
-const App = () => {
+const AppContent = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { settings: generalSettings } = useGeneralSettings();
   
   useRealtimeNotifications();
   useAdminRealtimeNotifications();
 
+  return (
+    <div className="min-h-screen bg-background">
+      <RouteChangeHandler />
+      <Header onCartOpen={() => setIsCartOpen(true)} />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/collections" element={<Collections />} />
+        <Route path="/collections/:slug" element={<CollectionDetail />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/scent-quiz" element={<ScentQuiz />} />
+        <Route path="/loyalty" element={<LoyaltyProgram />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/cookie-policy" element={<CookiePolicy />} />
+        <Route path="/terms-of-sale" element={<TermsOfSale />} />
+        <Route path="/shipping-returns" element={<ShippingReturns />} />
+        <Route path="/legal-notice" element={<LegalNotice />} />
+        <Route path="/data-request" element={<DataRequest />} />
+        <Route path="/accessibility" element={<Accessibility />} />
+        <Route path="/all-notices" element={<AllNotices />} />
+        <Route path="/privacy-registration" element={<PrivacyRegistration />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/custom-candles" element={<CustomCandles />} />
+        <Route path="/ar/:productId" element={<ARViewer />} />
+        <Route path="/profile/:userId" element={<PublicProfile />} />
+        <Route path="/wishlist/shared/:token" element={<SharedWishlist />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer />
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CookieBanner />
+      {generalSettings.show_live_chat && <LiveChatWidget />}
+      {generalSettings.show_floating_plus && <FloatingActionButton />}
+    </div>
+  );
+};
+
+const App = () => {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
@@ -84,54 +132,11 @@ const App = () => {
             <TooltipProvider>
               <Toaster />
               <Sonner />
-            <div className="min-h-screen bg-background">
-              <RouteChangeHandler />
-              <Header onCartOpen={() => setIsCartOpen(true)} />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/collections" element={<Collections />} />
-                <Route path="/collections/:slug" element={<CollectionDetail />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/payment-success" element={<PaymentSuccess />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/dashboard" element={<UserDashboard />} />
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/scent-quiz" element={<ScentQuiz />} />
-                  <Route path="/loyalty" element={<LoyaltyProgram />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/cookie-policy" element={<CookiePolicy />} />
-                  <Route path="/terms-of-sale" element={<TermsOfSale />} />
-                  <Route path="/shipping-returns" element={<ShippingReturns />} />
-                  <Route path="/legal-notice" element={<LegalNotice />} />
-                  <Route path="/data-request" element={<DataRequest />} />
-                  <Route path="/accessibility" element={<Accessibility />} />
-                  <Route path="/all-notices" element={<AllNotices />} />
-                  <Route path="/privacy-registration" element={<PrivacyRegistration />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/custom-candles" element={<CustomCandles />} />
-                  <Route path="/ar/:productId" element={<ARViewer />} />
-                  <Route path="/profile/:userId" element={<PublicProfile />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="/wishlist/shared/:token" element={<SharedWishlist />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              <Footer />
-              <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-              <CookieBanner />
-              {generalSettings.show_live_chat && <LiveChatWidget />}
-              {generalSettings.show_floating_plus && <FloatingActionButton />}
-            </div>
-          </TooltipProvider>
-        </CartProvider>
-      </LanguageProvider>
-    </QueryClientProvider>
+              <AppContent />
+            </TooltipProvider>
+          </CartProvider>
+        </LanguageProvider>
+      </QueryClientProvider>
     </HelmetProvider>
   );
 };

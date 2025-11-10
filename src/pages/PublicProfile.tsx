@@ -69,95 +69,39 @@ export default function PublicProfile() {
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   const COMMENTS_PER_PAGE = 10;
 
-  // Load Leaderboard Function
+  // Load Leaderboard Function using secure RPC
   const loadLeaderboard = async () => {
     if (!userId) return;
     
     setLoadingLeaderboard(true);
     try {
-      // Verifica se la tabella loyalty_points_history esiste e ha dati
-      const { count } = await supabase
-        .from('loyalty_points_history')
-        .select('*', { count: 'exact', head: true });
-      
-      if (count === 0) {
-        console.log('Leaderboard: no data yet, showing empty state');
-        setLeaderboardData([]);
-        setUserRank(null);
-        setLoadingLeaderboard(false);
-        return; // Exit silently - no error toast
-      }
-      
-      let query = supabase
-        .from('loyalty_points_history')
-        .select(`
-          user_id,
-          points_change,
-          created_at,
-          profiles:user_id (
-            first_name,
-            last_name,
-            username,
-            profile_image_url
-          )
-        `);
-      
-      // Filter by period
-      if (leaderboardPeriod === 'week') {
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        query = query.gte('created_at', weekAgo.toISOString());
-      } else if (leaderboardPeriod === 'month') {
-        const monthAgo = new Date();
-        monthAgo.setMonth(monthAgo.getMonth() - 1);
-        query = query.gte('created_at', monthAgo.toISOString());
-      }
-      
-      const { data, error } = await query;
-      
-      if (error) {
-        console.error('Leaderboard error (non-critical):', error);
-        // Set empty leaderboard instead of showing error
-        setLeaderboardData([]);
-        setUserRank(null);
-        return; // No toast for non-critical errors
-      }
-      
-      // Aggregate by user_id
-      const userPointsMap = new Map<string, { user: any, total: number }>();
-      
-      data?.forEach((entry: any) => {
-        const entryUserId = entry.user_id;
-        if (!userPointsMap.has(entryUserId)) {
-          userPointsMap.set(entryUserId, {
-            user: entry.profiles,
-            total: 0
-          });
-        }
-        userPointsMap.get(entryUserId)!.total += entry.points_change;
+      // Use secure RPC function for leaderboard
+      const { data, error } = await supabase.rpc('get_spirit_leaderboard' as any, {
+        period: leaderboardPeriod,
+        limit_count: 10
       });
+
+      if (error) {
+        console.error('Leaderboard RPC error (non-critical):', error);
+        setLeaderboardData([]);
+        setUserRank(null);
+        return;
+      }
+
+      setLeaderboardData((data as any[]) || []);
       
-      // Convert to array and sort
-      const leaderboard = Array.from(userPointsMap.entries())
-        .map(([id, data]) => ({
-          user_id: id,
-          ...data.user,
-          total_points: data.total
-        }))
-        .filter(u => u.total_points > 0) // Only show users with positive points
-        .sort((a, b) => b.total_points - a.total_points)
-        .slice(0, 10);  // Top 10
+      // Calculate user rank if they're in the leaderboard
+      const userPosition = (data as any[])?.findIndex((entry: any) => entry.user_id === userId);
+      setUserRank(userPosition !== undefined && userPosition >= 0 ? userPosition + 1 : null);
       
-      setLeaderboardData(leaderboard);
-      
-      // Find current user position (in full leaderboard, not just top 10)
-      const allLeaderboard = Array.from(userPointsMap.entries())
-        .map(([id, data]) => ({ user_id: id, total_points: data.total }))
-        .filter(u => u.total_points > 0)
-        .sort((a, b) => b.total_points - a.total_points);
-      
-      const position = allLeaderboard.findIndex(u => u.user_id === userId);
-      setUserRank(position >= 0 ? position + 1 : null);
+    } catch (error) {
+      console.error('Error loading leaderboard (non-critical):', error);
+      setLeaderboardData([]);
+      setUserRank(null);
+    } finally {
+      setLoadingLeaderboard(false);
+    }
+  };
       
     } catch (error) {
       console.error('Error loading leaderboard (non-critical):', error);

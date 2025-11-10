@@ -68,8 +68,8 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
     { name: t('contact'), href: '/contact' },
   ];
 
-  // Get logo settings
-  const logoUrl = headerSettings?.logo_url || iconLogoCandle;
+  // Get logo settings with transparent fallback
+  const logoUrl = headerSettings?.logo_url || spiritLogoTransparent;
   const logoHeight = headerSettings?.logo_height || 'h-8';
   const logoTransparentBg = headerSettings?.logo_transparent_bg ?? true;
   
@@ -133,14 +133,15 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* CENTER: Logo */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={logoUrl || "/assets/spirit-logo-transparent.png"}
+              src={logoUrl}
               alt="SPIRIT CANDLES" 
               className="h-10 w-auto animate-glow-pulse"
               style={{ 
                 background: 'transparent !important',
                 backgroundColor: 'transparent !important',
                 mixBlendMode: 'normal',
-                filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.4))'
+                filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.4))',
+                display: 'block'
               }}
             />
           </Link>

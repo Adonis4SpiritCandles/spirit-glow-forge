@@ -65,7 +65,70 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'featuredCollectionDescription') return language === 'pl' ? 'Odkryj naszą wyselekcjonowaną kolekcję luksusowych świec sojowych' : 'Discover our handpicked selection of premium soy candles';
     if (key === 'exploreFullCollection') return language === 'pl' ? 'Zobacz Pełną Kolekcję' : 'Explore Full Collection';
 
-    // Footer
+    // analytics: { en: 'Analytics', pl: 'Analytics' }
+    if (key === 'analytics') return language === 'pl' ? 'Analityka' : 'Analytics';
+    if (key === 'referrals') return language === 'pl' ? 'Program Poleceń' : 'Referrals';
+    if (key === 'advancedExport') return language === 'pl' ? 'Eksport zaawansowany' : 'Advanced Export';
+    if (key === 'dateRange') return language === 'pl' ? 'Zakres dat' : 'Date Range';
+    if (key === 'metrics') return language === 'pl' ? 'Metryki' : 'Metrics';
+    if (key === 'download') return language === 'pl' ? 'Pobierz' : 'Download';
+    if (key === 'formatCSV') return language === 'pl' ? 'Format CSV' : 'CSV Format';
+    if (key === 'formatXLSX') return language === 'pl' ? 'Format XLSX' : 'XLSX Format';
+    if (key === 'formatJSON') return language === 'pl' ? 'Format JSON' : 'JSON Format';
+    
+    // Notifications
+    if (key === 'notifications') return language === 'pl' ? 'Powiadomienia' : 'Notifications';
+    if (key === 'markAllAsRead') return language === 'pl' ? 'Oznacz wszystkie jako przeczytane' : 'Mark All as Read';
+    if (key === 'noNotificationsYet') return language === 'pl' ? 'Brak powiadomień' : 'No notifications yet';
+    if (key === 'deleteAll') return language === 'pl' ? 'Usuń wszystkie' : 'Delete All';
+    
+    // Email Marketing
+    if (key === 'emailMarketing') return language === 'pl' ? 'Email Marketing' : 'Email Marketing';
+    if (key === 'emailMarketingDesc') return language === 'pl' ? 'Zarządzaj kampaniami email, segmentacją i analityką' : 'Manage email campaigns, segmentation, and analytics';
+    if (key === 'templates') return language === 'pl' ? 'Szablony' : 'Templates';
+    if (key === 'segments') return language === 'pl' ? 'Segmenty' : 'Segments';
+    if (key === 'campaigns') return language === 'pl' ? 'Kampanie' : 'Campaigns';
+    if (key === 'automation') return language === 'pl' ? 'Automatyzacja' : 'Automation';
+    if (key === 'createTemplate') return language === 'pl' ? 'Utwórz szablon' : 'Create Template';
+    if (key === 'sendTest') return language === 'pl' ? 'Wyślij test' : 'Send Test';
+    if (key === 'schedule') return language === 'pl' ? 'Zaplanuj' : 'Schedule';
+    if (key === 'launch') return language === 'pl' ? 'Uruchom' : 'Launch';
+    if (key === 'openRate') return language === 'pl' ? 'Wskaźnik otwarć' : 'Open Rate';
+    if (key === 'clickRate') return language === 'pl' ? 'Wskaźnik kliknięć' : 'Click Rate';
+    if (key === 'conversions') return language === 'pl' ? 'Konwersje' : 'Conversions';
+    if (key === 'emailTemplates') return language === 'pl' ? 'Szablony Email' : 'Email Templates';
+    if (key === 'customerSegments') return language === 'pl' ? 'Segmenty Klientów' : 'Customer Segments';
+    if (key === 'emailCampaigns') return language === 'pl' ? 'Kampanie Email' : 'Email Campaigns';
+    if (key === 'emailAnalytics') return language === 'pl' ? 'Analityka Email' : 'Email Analytics';
+    if (key === 'automatedCampaigns') return language === 'pl' ? 'Kampanie Automatyczne' : 'Automated Campaigns';
+    if (key === 'createSegment') return language === 'pl' ? 'Utwórz segment' : 'Create Segment';
+    if (key === 'createCampaign') return language === 'pl' ? 'Utwórz kampanię' : 'Create Campaign';
+    if (key === 'campaignName') return language === 'pl' ? 'Nazwa kampanii' : 'Campaign Name';
+    if (key === 'template') return language === 'pl' ? 'Szablon' : 'Template';
+    if (key === 'segment') return language === 'pl' ? 'Segment' : 'Segment';
+    if (key === 'totalSent') return language === 'pl' ? 'Wysłane' : 'Total Sent';
+    if (key === 'automationComingSoon') return language === 'pl' ? 'Automatyzacja wkrótce' : 'Automation Coming Soon';
+    if (key === 'automationDescription') return language === 'pl' ? 'Funkcje automatyzacji kampanii będą dostępne wkrótce' : 'Campaign automation features coming soon';
+    if (key === 'campaignCreated') return language === 'pl' ? 'Kampania utworzona' : 'Campaign Created';
+    if (key === 'campaignLaunched') return language === 'pl' ? 'Kampania uruchomiona' : 'Campaign Launched';
+    if (key === 'testEmailSent') return language === 'pl' ? 'Email testowy wysłany' : 'Test Email Sent';
+    if (key === 'testEmailFailed') return language === 'pl' ? 'Nie udało się wysłać testu' : 'Test Email Failed';
+    if (key === 'confirmLaunchCampaign') return language === 'pl' ? 'Czy na pewno chcesz uruchomić tę kampanię?' : 'Are you sure you want to launch this campaign?';
+    if (key === 'enterTestEmail') return language === 'pl' ? 'Wprowadź email testowy' : 'Enter test email';
+    if (key === 'segmentCreated') return language === 'pl' ? 'Segment utworzony' : 'Segment Created';
+    if (key === 'templateCreated') return language === 'pl' ? 'Szablon utworzony' : 'Template Created';
+    if (key === 'templateUpdated') return language === 'pl' ? 'Szablon zaktualizowany' : 'Template Updated';
+    if (key === 'templateDeleted') return language === 'pl' ? 'Szablon usunięty' : 'Template Deleted';
+    if (key === 'confirmDelete') return language === 'pl' ? 'Czy na pewno chcesz usunąć?' : 'Are you sure you want to delete?';
+    if (key === 'templateName') return language === 'pl' ? 'Nazwa szablonu' : 'Template Name';
+    if (key === 'enterTemplateName') return language === 'pl' ? 'Wprowadź nazwę szablonu' : 'Enter template name';
+    if (key === 'enterSubject') return language === 'pl' ? 'Wprowadź temat' : 'Enter subject';
+    if (key === 'htmlContent') return language === 'pl' ? 'Treść HTML' : 'HTML Content';
+    if (key === 'preview') return language === 'pl' ? 'Podgląd' : 'Preview';
+    if (key === 'editTemplate') return language === 'pl' ? 'Edytuj szablon' : 'Edit Template';
+    if (key === 'fillAllFields') return language === 'pl' ? 'Wypełnij wszystkie pola' : 'Fill all fields';
+    if (key === 'updateFailed') return language === 'pl' ? 'Aktualizacja nie powiodła się' : 'Update failed';
+    if (key === 'createFailed') return language === 'pl' ? 'Tworzenie nie powiodło się' : 'Create failed';
     if (key === 'brandDescription') return language === 'pl' ? 'SPIRIT CANDLES - Luksusowe świece sojowe ręcznie wykonane dla Twojego spokoju i harmonii.' : 'SPIRIT CANDLES - Luxury soy candles handcrafted for your peace and harmony.';
     if (key === 'allCandles') return language === 'pl' ? 'Wszystkie świece' : 'All Candles';
     if (key === 'newArrivals') return language === 'pl' ? 'Nowości' : 'New Arrivals';

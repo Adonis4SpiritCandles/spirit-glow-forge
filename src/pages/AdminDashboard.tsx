@@ -34,6 +34,7 @@ import SiteSettingsHub from '@/components/admin/SiteSettings/SiteSettingsHub';
 import AdminAdvancedAnalytics from '@/components/admin/AdminAdvancedAnalytics';
 import AdminReferralAnalytics from '@/components/admin/AdminReferralAnalytics';
 import AdminAdvancedExport from '@/components/admin/AdminAdvancedExport';
+import { EmailMarketingHub } from '@/components/admin/EmailMarketing/EmailMarketingHub';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { format } from 'date-fns';
@@ -2703,11 +2704,19 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="export" className="space-y-4">
-            <AdminExport data={{
-              products,
-              orders,
-              customers: profiles
-            }} />
+            <AdminAdvancedExport />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-4">
+            <AdminAdvancedAnalytics />
+          </TabsContent>
+
+          <TabsContent value="referrals" className="space-y-4">
+            <AdminReferralAnalytics />
+          </TabsContent>
+
+          <TabsContent value="email" className="space-y-4">
+            <EmailMarketingHub />
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">

@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award, Smile, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award, Smile, Image as ImageIcon, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
@@ -19,6 +19,7 @@ const GifPicker = lazy(() => import('@/components/profile/GifPicker'));
 const CommentReactions = lazy(() => import('@/components/profile/CommentReactions'));
 const PurchasedProducts = lazy(() => import('@/components/profile/PurchasedProducts'));
 const UserReviews = lazy(() => import('@/components/profile/UserReviews'));
+const ReferralDashboard = lazy(() => import('@/components/gamification/ReferralDashboard'));
 
 // Simple ErrorBoundary for badge showcase
 class BadgeErrorBoundary extends Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
@@ -360,6 +361,36 @@ export default function PublicProfile() {
     }
   };
 
+  const submitComment = async () => {
+    if (!user) {
+      toast({ title: t('error'), description: t('pleaseLogin'), variant: 'destructive' });
+      return;
+    }
+    if (!newComment.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('profile_comments')
+        .insert({
+          profile_user_id: userId,
+          commenter_id: user.id,
+          comment: newComment.trim(),
+          parent_comment_id: null,
+        });
+      if (error) throw error;
+
+      setNewComment('');
+      toast({ title: t('success'), description: t('commentAdded') });
+      await loadProfile();
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+      toast({ title: t('error'), description: t('failedToAddComment'), variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const submitReply = async (parentCommentId: string) => {
     if (!user) {
       toast({ title: t('error'), description: t('pleaseLogin'), variant: 'destructive' });
@@ -614,7 +645,7 @@ export default function PublicProfile() {
                 </p>
               ) : (
                 comments.map((comment) => (
-                  <div key={comment.id} className="p-4 bg-card rounded-lg border">
+                  <div key={comment.id} id={`comment-${comment.id}`} className="p-4 bg-card rounded-lg border transition-all duration-300">
                     <div className="flex items-start gap-3">
                       <Link to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}>
                         <Avatar className="h-10 w-10">
@@ -704,6 +735,21 @@ export default function PublicProfile() {
           </CardContent>
         </Card>
 
+        {/* Loyalty Points & Leaderboard */}
+        <Card className="mt-8 bg-card/50 backdrop-blur border-border/50">
+          <CardHeader>
+            <h2 className="text-2xl font-semibold flex items-center gap-2">
+              <Trophy className="h-6 w-6 text-primary" />
+              {language === 'pl' ? 'Punkty Lojalnościowe' : 'Loyalty Points'}
+            </h2>
+          </CardHeader>
+          <CardContent>
+            <Suspense fallback={<div className="text-center py-4">{language === 'pl' ? 'Ładowanie...' : 'Loading...'}</div>}>
+              <ReferralDashboard />
+            </Suspense>
+          </CardContent>
+        </Card>
+
         {/* Purchased Products Section */}
         <Card className="mt-8">
           <CardHeader>
@@ -713,7 +759,9 @@ export default function PublicProfile() {
             </h2>
           </CardHeader>
           <CardContent>
-            <PurchasedProducts userId={userId!} />
+            <Suspense fallback={<div className="text-center py-4">{language === 'pl' ? 'Ładowanie...' : 'Loading...'}</div>}>
+              <PurchasedProducts userId={userId!} />
+            </Suspense>
           </CardContent>
         </Card>
 
@@ -726,7 +774,9 @@ export default function PublicProfile() {
             </h2>
           </CardHeader>
           <CardContent>
-            <UserReviews userId={userId!} />
+            <Suspense fallback={<div className="text-center py-4">{language === 'pl' ? 'Ładowanie...' : 'Loading...'}</div>}>
+              <UserReviews userId={userId!} />
+            </Suspense>
           </CardContent>
         </Card>
       </div>

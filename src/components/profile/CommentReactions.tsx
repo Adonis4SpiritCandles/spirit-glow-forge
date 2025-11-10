@@ -107,26 +107,37 @@ const CommentReactions = ({ commentId }: CommentReactionsProps) => {
 
         if (error) throw error;
       } else {
-        // Add reaction
+        // Add reaction - use upsert to handle duplicates
         const { error } = await supabase
           .from('profile_comment_reactions')
-          .insert({
+          .upsert({
             comment_id: commentId,
             user_id: user.id,
             reaction_type: type,
+          }, {
+            onConflict: 'comment_id,user_id,reaction_type',
+            ignoreDuplicates: true
           });
 
-        if (error) throw error;
+        if (error && error.code !== '23505') { // Ignore duplicate key errors
+          throw error;
+        }
       }
-    } catch (error) {
+      
+      // Reload reactions to ensure sync
+      await loadReactions();
+    } catch (error: any) {
       console.error('Error toggling reaction:', error);
-      toast({
-        title: language === 'pl' ? 'Błąd' : 'Error',
-        description: language === 'pl'
-          ? 'Nie udało się zmienić reakcji'
-          : 'Failed to toggle reaction',
-        variant: 'destructive',
-      });
+      // Don't show error for duplicates
+      if (error.code !== '23505') {
+        toast({
+          title: language === 'pl' ? 'Błąd' : 'Error',
+          description: language === 'pl'
+            ? 'Nie udało się zmienić reakcji'
+            : 'Failed to toggle reaction',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(null);
     }

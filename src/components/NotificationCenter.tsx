@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ interface NotificationCenterProps {
 export default function NotificationCenter({ isBurgerMenu = false, onNotificationClick }: NotificationCenterProps = {}) {
   const { user } = useAuth();
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -68,7 +70,7 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
         .limit(50);
       if (socialErr) throw socialErr;
 
-      // Map social notifications into unified shape
+      // Map social notifications into unified shape with deep-linking
       const mappedSocial = (socialNotifs as any[] || []).map((n) => ({
         id: `pn_${n.id}`,
         user_id: n.user_id,
@@ -79,12 +81,14 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
             ? (language === 'pl' ? 'Nowy komentarz na Twoim profilu' : 'New comment on your profile')
             : n.type === 'reply'
             ? (language === 'pl' ? 'Nowa odpowiedź do Twojego komentarza' : 'New reply to your comment')
+            : n.type === 'reaction'
+            ? (language === 'pl' ? 'Nowa reakcja do Twojego komentarza' : 'New reaction to your comment')
             : (language === 'pl' ? 'Nowe polubienie Twojego komentarza' : 'New like on your comment'),
         read: n.read,
         created_at: n.created_at,
         action_url:
-          n.type === 'comment' || n.type === 'reply'
-            ? `/profile/${n.profile_user_id}`
+          n.type === 'comment' || n.type === 'reply' || n.type === 'reaction'
+            ? `/profile/${n.profile_user_id}#comment-${n.comment_id || n.parent_comment_id || ''}`
             : undefined,
       }));
 
@@ -263,6 +267,35 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
     : notifications.filter(n => n.type === activeTab);
 
   // Swipe gesture handlers (mobile only)
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.read) {
+      markAsRead(notification.id);
+    }
+    
+    if (notification.action_url) {
+      // Parse URL to check for comment hash
+      const url = new URL(notification.action_url, window.location.origin);
+      navigate(url.pathname + url.search + url.hash);
+      
+      // If there's a hash (comment ID), scroll to it after navigation
+      if (url.hash) {
+        setTimeout(() => {
+          const element = document.querySelector(url.hash);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Highlight the comment briefly
+            element.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+            setTimeout(() => {
+              element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+            }, 2000);
+          }
+        }, 500);
+      }
+      
+      setIsOpen(false);
+    }
+  };
+
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
       if (window.innerWidth < 768) {
@@ -438,7 +471,7 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
                           variant="link"
                           size="sm"
                           className="px-0 mt-2 h-auto"
-                          onClick={() => window.location.href = notification.action_url!}
+                          onClick={() => handleNotificationClick(notification)}
                         >
                           {language === 'pl' ? 'Zobacz' : 'View'}
                         </Button>

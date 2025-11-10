@@ -53,9 +53,12 @@ export default function PublicProfile() {
   const { language, t } = useLanguage();
   const [profile, setProfile] = useState<any>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
+  const [replies, setReplies] = useState<Record<string, CommentType[]>>({});
   const [newComment, setNewComment] = useState('');
+  const [replyText, setReplyText] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [replyLoading, setReplyLoading] = useState<string | null>(null);
   const [spiritPoints, setSpiritPoints] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
@@ -158,8 +161,41 @@ export default function PublicProfile() {
         }));
 
         setComments(enrichedComments);
+
+        // Load replies for these comments
+        const parentIds = commentsData.map((c: any) => c.id);
+        const { data: repliesData } = await supabase
+          .from('profile_comments')
+          .select('*')
+          .in('parent_comment_id', parentIds)
+          .eq('is_visible', true)
+          .order('created_at', { ascending: true });
+
+        if (repliesData && repliesData.length > 0) {
+          // load profiles for repliers
+          const replierIds = Array.from(new Set(repliesData.map((r: any) => r.commenter_id)));
+          const { data: replierProfiles } = await supabase
+            .from('public_profile_directory')
+            .select('*')
+            .in('user_id', replierIds);
+          const replierMap = new Map(replierProfiles?.map(p => [p.user_id, p]) || []);
+
+          const grouped: Record<string, CommentType[]> = {};
+          repliesData.forEach((r: any) => {
+            const withProfile = {
+              ...r,
+              commenter_profile: replierMap.get(r.commenter_id) || {},
+            } as CommentType;
+            if (!grouped[r.parent_comment_id]) grouped[r.parent_comment_id] = [];
+            grouped[r.parent_comment_id].push(withProfile);
+          });
+          setReplies(grouped);
+        } else {
+          setReplies({});
+        }
       } else {
         setComments([]);
+        setReplies({});
       }
 
     } catch (error) {
@@ -324,50 +360,37 @@ export default function PublicProfile() {
     }
   };
 
-  const submitComment = async () => {
+  const submitReply = async (parentCommentId: string) => {
     if (!user) {
-      toast({
-        title: t('error'),
-        description: t('pleaseLogin'),
-        variant: 'destructive',
-      });
+      toast({ title: t('error'), description: t('pleaseLogin'), variant: 'destructive' });
       return;
     }
+    const text = replyText[parentCommentId]?.trim();
+    if (!text) return;
 
-    if (!newComment.trim()) return;
-
-    setSubmitting(true);
+    setReplyLoading(parentCommentId);
     try {
       const { error } = await supabase
         .from('profile_comments')
         .insert({
           profile_user_id: userId,
           commenter_id: user.id,
-          comment: newComment.trim(),
+          comment: text,
+          parent_comment_id: parentCommentId,
         });
-
       if (error) throw error;
 
-      setNewComment('');
-      toast({
-        title: t('success'),
-        description: t('commentAdded'),
-      });
-      
-      // Reload comments
-      loadProfile();
+      setReplyText(prev => ({ ...prev, [parentCommentId]: '' }));
+      toast({ title: t('success'), description: t('replyAdded') });
+      // reload replies quickly
+      await loadProfile();
     } catch (error) {
-      console.error('Error submitting comment:', error);
-      toast({
-        title: t('error'),
-        description: t('failedToAddComment'),
-        variant: 'destructive',
-      });
+      console.error('Error submitting reply:', error);
+      toast({ title: t('error'), description: t('failedToAddComment'), variant: 'destructive' });
     } finally {
-      setSubmitting(false);
+      setReplyLoading(null);
     }
   };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -632,6 +655,46 @@ export default function PublicProfile() {
                             <CommentReactions commentId={comment.id} />
                           </Suspense>
                         </div>
+
+                        {/* Replies */}
+                        <div className="mt-4 pl-4 border-l">
+                          {(replies[comment.id] || []).map((reply) => (
+                            <div key={reply.id} className="p-3 mb-2 rounded bg-muted/20">
+                              <div className="flex items-start gap-2">
+                                <Avatar className="h-8 w-8">
+                                  <AvatarImage src={reply.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                                  <AvatarFallback>
+                                    {reply.commenter_profile?.first_name?.[0] || 'U'}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                  <div className="text-sm font-medium">
+                                    {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {(() => { const d = new Date(reply.created_at as any); return isNaN(d.getTime()) ? '' : format(d, 'PPp'); })()}
+                                  </div>
+                                  <div className="mt-1 text-sm whitespace-pre-wrap">{reply.comment}</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* Reply form */}
+                          {user && (
+                            <div className="flex items-start gap-2 mt-2">
+                              <Textarea
+                                value={replyText[comment.id] || ''}
+                                onChange={(e) => setReplyText(prev => ({ ...prev, [comment.id]: e.target.value }))}
+                                placeholder={t('writeReply')}
+                                className="min-h-[60px] resize-none"
+                              />
+                              <Button size="sm" className="self-end" disabled={replyLoading === comment.id || !(replyText[comment.id] || '').trim()} onClick={() => submitReply(comment.id)}>
+                                {replyLoading === comment.id ? t('loading') : t('reply')}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -642,34 +705,30 @@ export default function PublicProfile() {
         </Card>
 
         {/* Purchased Products Section */}
-        {profile.show_purchases && (
-          <Card className="mt-8">
-            <CardHeader>
-              <h2 className="text-2xl font-semibold flex items-center gap-2">
-                <Star className="h-6 w-6 text-primary" />
-                {language === 'pl' ? 'Zakupione Produkty' : 'Purchased Products'}
-              </h2>
-            </CardHeader>
-            <CardContent>
-              <PurchasedProducts userId={userId!} />
-            </CardContent>
-          </Card>
-        )}
+        <Card className="mt-8">
+          <CardHeader>
+            <h2 className="text-2xl font-semibold flex items-center gap-2">
+              <Star className="h-6 w-6 text-primary" />
+              {language === 'pl' ? 'Zakupione Produkty' : 'Purchased Products'}
+            </h2>
+          </CardHeader>
+          <CardContent>
+            <PurchasedProducts userId={userId!} />
+          </CardContent>
+        </Card>
 
         {/* Reviews Section */}
-        {profile.show_reviews && (
-          <Card className="mt-8">
-            <CardHeader>
-              <h2 className="text-2xl font-semibold flex items-center gap-2">
-                <Star className="h-6 w-6 text-primary" />
-                {language === 'pl' ? 'Recenzje' : 'Reviews'}
-              </h2>
-            </CardHeader>
-            <CardContent>
-              <UserReviews userId={userId!} />
-            </CardContent>
-          </Card>
-        )}
+        <Card className="mt-8">
+          <CardHeader>
+            <h2 className="text-2xl font-semibold flex items-center gap-2">
+              <Star className="h-6 w-6 text-primary" />
+              {language === 'pl' ? 'Recenzje' : 'Reviews'}
+            </h2>
+          </CardHeader>
+          <CardContent>
+            <UserReviews userId={userId!} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

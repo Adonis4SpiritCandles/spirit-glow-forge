@@ -134,13 +134,20 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
       supabase.removeChannel(channelSocial);
     };
   };
+  
+  // Helpers to route actions to the right table
+  const isProfileNotif = (id: string) => id.startsWith('pn_');
+  const rawId = (id: string) => (isProfileNotif(id) ? id.slice(3) : id);
 
   const markAsRead = async (notificationId: string) => {
     try {
+      const table = isProfileNotif(notificationId) ? 'profile_notifications' : 'notifications';
+      const id = rawId(notificationId);
+
       await supabase
-        .from('notifications')
+        .from(table as any)
         .update({ read: true })
-        .eq('id', notificationId);
+        .eq('id', id);
 
       setNotifications(prev =>
         prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
@@ -155,8 +162,16 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
     if (!user) return;
 
     try {
+      // Base notifications
       await supabase
         .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+
+      // Social notifications
+      await supabase
+        .from('profile_notifications')
         .update({ read: true })
         .eq('user_id', user.id)
         .eq('read', false);
@@ -168,13 +183,15 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
       console.error('Error marking all as read:', error);
     }
   };
-
   const deleteNotification = async (notificationId: string) => {
     try {
+      const table = isProfileNotif(notificationId) ? 'profile_notifications' : 'notifications';
+      const id = rawId(notificationId);
+
       await supabase
-        .from('notifications')
+        .from(table as any)
         .delete()
-        .eq('id', notificationId);
+        .eq('id', id);
 
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
       toast.success(language === 'pl' ? 'Powiadomienie usunięte' : 'Notification deleted');
@@ -187,8 +204,15 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
     if (!user) return;
 
     try {
+      // Delete base notifications
       await supabase
         .from('notifications')
+        .delete()
+        .eq('user_id', user.id);
+
+      // Delete social notifications
+      await supabase
+        .from('profile_notifications')
         .delete()
         .eq('user_id', user.id);
 

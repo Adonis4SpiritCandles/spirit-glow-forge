@@ -43,6 +43,9 @@ interface DesktopConfig {
 }
 
 interface MobileConfig {
+  logo_url?: string;
+  logo_height?: string;
+  logo_animation?: LogoAnimation;
   show_admin_icon: boolean;
   show_notification_bell: boolean;
   icon_sizes: {
@@ -545,7 +548,202 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
         </CardContent>
       </Card>
 
-      {/* Mobile Configuration */}
+      {/* Mobile & Tablet Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{language === 'pl' ? 'Konfiguracja Mobile/Tablet (< 1024px)' : 'Mobile/Tablet Configuration (< 1024px)'}</CardTitle>
+          <CardDescription>
+            {language === 'pl' 
+              ? 'Dostosuj logo i animacje dla urządzeń mobilnych i tabletów' 
+              : 'Customize logo and animations for mobile and tablet devices'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Mobile Logo URL */}
+          <div className="space-y-2">
+            <Label>{language === 'pl' ? 'Logo URL (Mobile/Tablet)' : 'Logo URL (Mobile/Tablet)'}</Label>
+            <Input 
+              value={settings.mobile_config?.logo_url || settings.logo_url}
+              onChange={(e) => setSettings({ 
+                ...settings, 
+                mobile_config: { ...settings.mobile_config!, logo_url: e.target.value }
+              })}
+              placeholder="/assets/icon-logo-candle-transparent.png"
+            />
+            <p className="text-xs text-muted-foreground">
+              {language === 'pl' 
+                ? 'Zostaw puste, aby użyć logo desktop' 
+                : 'Leave empty to use desktop logo'}
+            </p>
+          </div>
+
+          {/* Mobile Logo Height */}
+          <div className="space-y-2">
+            <Label>{language === 'pl' ? 'Wysokość Logo (Tailwind)' : 'Logo Height (Tailwind)'}</Label>
+            <Input 
+              value={settings.mobile_config?.logo_height || 'h-10'}
+              onChange={(e) => setSettings({ 
+                ...settings, 
+                mobile_config: { ...settings.mobile_config!, logo_height: e.target.value }
+              })}
+              placeholder="h-10"
+            />
+            <p className="text-xs text-muted-foreground">
+              {language === 'pl' 
+                ? 'Przykłady: h-8, h-10, h-12' 
+                : 'Examples: h-8, h-10, h-12'}
+            </p>
+          </div>
+
+          {/* Mobile Logo Animation */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold">{language === 'pl' ? 'Animacja Logo Mobile' : 'Mobile Logo Animation'}</Label>
+            
+            <div className="flex items-center justify-between pl-2">
+              <Label className="text-sm">{language === 'pl' ? 'Włącz animację' : 'Enable Animation'}</Label>
+              <Switch 
+                checked={settings.mobile_config?.logo_animation?.enabled ?? true}
+                onCheckedChange={(checked) => setSettings({ 
+                  ...settings, 
+                  mobile_config: { 
+                    ...settings.mobile_config!, 
+                    logo_animation: { ...settings.mobile_config!.logo_animation!, enabled: checked }
+                  }
+                })}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pl-2">
+              <div className="space-y-2">
+                <Label className="text-xs">{language === 'pl' ? 'Velocità (s)' : 'Speed (s)'}</Label>
+                <Input 
+                  type="number"
+                  value={parseFloat(settings.mobile_config?.logo_animation?.speed || '4')}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    mobile_config: { 
+                      ...settings.mobile_config!, 
+                      logo_animation: { ...settings.mobile_config!.logo_animation!, speed: e.target.value + 's' }
+                    }
+                  })}
+                  placeholder="4"
+                  step="0.5"
+                  min="1"
+                  max="10"
+                  className="text-xs"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">{language === 'pl' ? 'Intensità' : 'Intensity'}</Label>
+                <Input 
+                  type="number"
+                  value={parseFloat(settings.mobile_config?.logo_animation?.glow_intensity || '0.4')}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    mobile_config: { 
+                      ...settings.mobile_config!, 
+                      logo_animation: { ...settings.mobile_config!.logo_animation!, glow_intensity: e.target.value }
+                    }
+                  })}
+                  placeholder="0.4"
+                  step="0.1"
+                  min="0"
+                  max="1"
+                  className="text-xs"
+                />
+              </div>
+              <div className="space-y-2 col-span-2">
+                <Label className="text-xs">{language === 'pl' ? 'Hover Scale' : 'Hover Scale'}</Label>
+                <Input 
+                  type="number"
+                  value={parseFloat(settings.mobile_config?.logo_animation?.hover_scale || '1.05')}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    mobile_config: { 
+                      ...settings.mobile_config!, 
+                      logo_animation: { ...settings.mobile_config!.logo_animation!, hover_scale: e.target.value }
+                    }
+                  })}
+                  placeholder="1.05"
+                  step="0.05"
+                  min="1"
+                  max="1.5"
+                  className="text-xs"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Icon Sizes */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold">{language === 'pl' ? 'Rozmiary Ikon Mobile' : 'Mobile Icon Sizes'}</Label>
+            <div className="grid grid-cols-2 gap-3 pl-2">
+              <div className="space-y-2">
+                <Label className="text-xs">{language === 'pl' ? 'Admin' : 'Admin'}</Label>
+                <Input 
+                  value={settings.mobile_config?.icon_sizes?.admin || 'h-5 w-5'}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    mobile_config: { 
+                      ...settings.mobile_config!, 
+                      icon_sizes: { ...settings.mobile_config!.icon_sizes, admin: e.target.value }
+                    }
+                  })}
+                  placeholder="h-5 w-5"
+                  className="text-xs"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">{language === 'pl' ? 'Notification' : 'Notification'}</Label>
+                <Input 
+                  value={settings.mobile_config?.icon_sizes?.notification || 'h-5 w-5'}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    mobile_config: { 
+                      ...settings.mobile_config!, 
+                      icon_sizes: { ...settings.mobile_config!.icon_sizes, notification: e.target.value }
+                    }
+                  })}
+                  placeholder="h-5 w-5"
+                  className="text-xs"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">{language === 'pl' ? 'Profile' : 'Profile'}</Label>
+                <Input 
+                  value={settings.mobile_config?.icon_sizes?.profile || 'h-6 w-6'}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    mobile_config: { 
+                      ...settings.mobile_config!, 
+                      icon_sizes: { ...settings.mobile_config!.icon_sizes, profile: e.target.value }
+                    }
+                  })}
+                  placeholder="h-6 w-6"
+                  className="text-xs"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">{language === 'pl' ? 'Cart' : 'Cart'}</Label>
+                <Input 
+                  value={settings.mobile_config?.icon_sizes?.cart || 'h-5 w-5'}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    mobile_config: { 
+                      ...settings.mobile_config!, 
+                      icon_sizes: { ...settings.mobile_config!.icon_sizes, cart: e.target.value }
+                    }
+                  })}
+                  placeholder="h-5 w-5"
+                  className="text-xs"
+                />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Header Behavior */}
       <Card>
         <CardHeader>
           <CardTitle>{language === 'pl' ? 'Konfiguracja Mobile (< 768px)' : 'Mobile Configuration (< 768px)'}</CardTitle>

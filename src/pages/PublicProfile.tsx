@@ -24,6 +24,7 @@ interface CommentType {
   comment: string;
   commenter_id: string;
   created_at: string;
+  parent_comment_id?: string | null;
   commenter_profile?: any;
   replies?: CommentType[];
   like_count?: number;
@@ -1145,6 +1146,291 @@ export default function PublicProfile() {
                     </div>
                   </div>
                 )}
+
+                {/* Comments List - Mobile */}
+                <div className="block space-y-6 mt-6">
+                  {comments.filter(c => !c.parent_comment_id).map((comment) => (
+                    <div key={comment.id} className="space-y-4 p-3 bg-card rounded-lg border shadow-sm">
+                      <div className="flex items-start gap-2">
+                        <Link to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}>
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={comment.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                            <AvatarFallback className="text-xs">
+                              {comment.commenter_profile?.first_name?.[0] || 'U'}
+                              {comment.commenter_profile?.last_name?.[0] || ''}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <Link 
+                                to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
+                                className="font-semibold text-sm hover:text-primary transition-colors truncate block"
+                              >
+                                {comment.commenter_profile?.first_name} {comment.commenter_profile?.last_name}
+                              </Link>
+                              {comment.commenter_profile?.username && (
+                                <Link 
+                                  to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
+                                  className="text-xs text-muted-foreground hover:text-primary transition-colors truncate block"
+                                >
+                                  @{comment.commenter_profile?.username}
+                                </Link>
+                              )}
+                              <span className="text-[10px] text-muted-foreground block">
+                                {format(new Date(comment.created_at), 'PPp')}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              {user && user.id === comment.commenter_id && (
+                                <>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 w-7 p-0"
+                                    onClick={() => {
+                                      setEditingCommentId(comment.id);
+                                      setEditCommentText(comment.comment);
+                                    }}
+                                  >
+                                    <Pencil className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => deleteComment(comment.id)}
+                                    className="h-7 w-7 p-0"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {editingCommentId === comment.id ? (
+                            <div className="space-y-2">
+                              <Textarea
+                                value={editCommentText}
+                                onChange={(e) => setEditCommentText(e.target.value)}
+                                className="min-h-[60px] text-sm"
+                              />
+                              <div className="flex items-center gap-2">
+                                <Button size="sm" onClick={() => handleEditComment(comment.id)} className="h-7 text-xs">
+                                  {t('saveEdit')}
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    setEditingCommentId(null);
+                                    setEditCommentText('');
+                                  }}
+                                  className="h-7 text-xs"
+                                >
+                                  {t('cancelEdit')}
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm break-words">{comment.comment}</p>
+                          )}
+
+                          <div className="flex items-center gap-3">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleLikeComment(comment.id, !!comment.user_liked)}
+                              className="gap-1 h-7 px-2"
+                            >
+                              <Heart className={`h-3 w-3 ${comment.user_liked ? 'fill-red-500 text-red-500' : ''}`} />
+                              <span className="text-xs">{comment.like_count || 0}</span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                              className="gap-1 h-7 px-2"
+                            >
+                              <MessageCircle className="h-3 w-3" />
+                              <span className="text-xs">{t('reply')}</span>
+                            </Button>
+                          </div>
+
+                          {replyingTo === comment.id && user && (
+                            <div className="mt-3 p-3 bg-accent/5 rounded-lg border space-y-2">
+                              <Textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder={t('writeReply')}
+                                className="min-h-[60px]"
+                              />
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="relative">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        setShowEmojiPicker(showEmojiPicker === 'reply' ? null : 'reply');
+                                        setShowGifPicker(null);
+                                      }}
+                                    >
+                                      <Smile className="h-4 w-4" />
+                                    </Button>
+                                    {showEmojiPicker === 'reply' && (
+                                      <div className="absolute z-50 top-full mt-2">
+                                        <EmojiPicker onEmojiClick={(emojiData) => onEmojiClick(emojiData, 'reply')} />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="relative">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        setShowGifPicker(showGifPicker === 'reply' ? null : 'reply');
+                                        setShowEmojiPicker(null);
+                                      }}
+                                    >
+                                      <Gift className="h-4 w-4" />
+                                    </Button>
+                                    {showGifPicker === 'reply' && (
+                                      <div className="absolute z-50 top-full mt-2">
+                                        <GifPicker onSelectGif={(gifUrl) => onGifSelect(gifUrl, 'reply')} />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => submitReply(comment.id)} disabled={submitting || !replyText.trim()}>
+                                    <Send className="h-3 w-3 mr-1" />
+                                    {t('reply')}
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={() => {
+                                    setReplyingTo(null);
+                                    setReplyText('');
+                                  }}>
+                                    {t('cancel')}
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {comment.replies && comment.replies.length > 0 && (
+                            <div className="mt-4 ml-8 space-y-3 border-l-2 border-primary/20 pl-3">
+                              {comment.replies.map((reply: any) => (
+                                <div key={reply.id} className="space-y-2 p-2 bg-gradient-to-r from-accent/5 to-transparent rounded-lg">
+                                  <div className="flex items-start gap-2">
+                                    <Link to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}>
+                                      <Avatar className="h-7 w-7">
+                                        <AvatarImage src={reply.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                                        <AvatarFallback className="text-xs">
+                                          {reply.commenter_profile?.first_name?.[0] || 'U'}
+                                          {reply.commenter_profile?.last_name?.[0] || ''}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    </Link>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex flex-col gap-1">
+                                        <div className="min-w-0">
+                                          <Link 
+                                            to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
+                                            className="font-semibold text-xs hover:text-primary transition-colors truncate block"
+                                          >
+                                            {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
+                                          </Link>
+                                          {reply.commenter_profile?.username && (
+                                            <Link 
+                                              to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
+                                              className="text-[10px] text-muted-foreground hover:text-primary transition-colors truncate block"
+                                            >
+                                              @{reply.commenter_profile?.username}
+                                            </Link>
+                                          )}
+                                          <span className="text-[9px] text-muted-foreground block">
+                                            {format(new Date(reply.created_at), 'PPp')}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      
+                                      {editingCommentId === reply.id ? (
+                                        <div className="space-y-2 mt-2">
+                                          <Textarea
+                                            value={editCommentText}
+                                            onChange={(e) => setEditCommentText(e.target.value)}
+                                            className="min-h-[50px] text-sm"
+                                          />
+                                          <div className="flex items-center gap-2">
+                                            <Button size="sm" onClick={() => handleEditComment(reply.id)} className="h-7 text-xs">
+                                              {t('saveEdit')}
+                                            </Button>
+                                            <Button 
+                                              size="sm" 
+                                              variant="outline" 
+                                              onClick={() => {
+                                                setEditingCommentId(null);
+                                                setEditCommentText('');
+                                              }}
+                                              className="h-7 text-xs"
+                                            >
+                                              {t('cancelEdit')}
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <p className="text-xs mt-1 break-words">{reply.comment}</p>
+                                      )}
+                                      
+                                      <div className="flex items-center gap-2 mt-2">
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleLikeComment(reply.id, !!reply.user_liked)}
+                                          className="gap-1 h-6 px-1.5"
+                                        >
+                                          <Heart className={`h-3 w-3 ${reply.user_liked ? 'fill-red-500 text-red-500' : ''}`} />
+                                          <span className="text-xs">{reply.like_count || 0}</span>
+                                        </Button>
+                                        {user && user.id === reply.commenter_id && (
+                                          <div className="flex items-center gap-1">
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => {
+                                                setEditingCommentId(reply.id);
+                                                setEditCommentText(reply.comment);
+                                              }}
+                                              className="h-6 w-6 p-0"
+                                            >
+                                              <Pencil className="h-3 w-3" />
+                                            </Button>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => deleteComment(reply.id)}
+                                              className="h-6 w-6 p-0"
+                                            >
+                                              <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -1269,14 +1555,124 @@ export default function PublicProfile() {
           )}
         </div>
 
-        {/* DESKTOP/TABLET: Grid con nuova struttura */}
+        {/* DESKTOP/TABLET: Grid con nuova struttura - SWAPPED COLUMNS */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-8">
-          {/* COLONNA SINISTRA (2/3) */}
+          {/* COLONNA SINISTRA (2/3) - Spirit Posts, Reviews, Badges */}
           <div className="lg:col-span-2 space-y-8">
-            <BadgeShowcase userId={userId || ''} variant="mini" />
+            
+            {/* Spirit Points Leaderboard */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl md:text-2xl font-semibold flex items-center gap-2">
+                    <Trophy className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                    {t('spiritPointsLeaderboard')}
+                  </h2>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Your Points Section - Always Visible */}
+                <div className="p-3 md:p-4 bg-primary/5 rounded-lg border-2 border-primary/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs md:text-sm text-muted-foreground">
+                        {language === 'pl' ? 'Punti Totali' : 'Total Points'}
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold">
+                        {spiritPoints}
+                      </p>
+                    </div>
+                    {userRank && (
+                      <div className="text-right">
+                        <p className="text-xs md:text-sm text-muted-foreground">
+                          {language === 'pl' ? 'Posizione' : 'Position'}
+                        </p>
+                        <p className="text-xl md:text-2xl font-bold text-primary">
+                          #{userRank}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-            {/* 2. Spirit Posts - da spostare qui */}
-            {/* Placeholder per mantenere struttura */}
+                {/* Leaderboard List - Coming Soon */}
+                <div className="text-center py-8 text-muted-foreground">
+                  <Trophy className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">
+                    {language === 'pl' ? 'Classifica disponibile a breve' : 'Leaderboard coming soon'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Purchased Products */}
+            {purchasedProducts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold flex items-center gap-2">
+                    <ShoppingBag className="h-6 w-6 text-primary" />
+                    {t('purchasedProducts')} ({purchasedProducts.length})
+                  </h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {purchasedProducts.slice(0, 6).map((product: any) => (
+                      <Link key={product.id} to={`/product/${product.id}`}>
+                        <div className="group cursor-pointer">
+                          <div className="aspect-square relative overflow-hidden rounded-lg mb-2">
+                            <img
+                              src={product.image_url}
+                              alt={product.name_en}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                          <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                            {language === 'en' ? product.name_en : product.name_pl}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Wishlist */}
+            {wishlistProducts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-2xl font-semibold flex items-center gap-2">
+                    <Heart className="h-6 w-6 text-primary" />
+                    {t('wishlist')} ({wishlistProducts.length})
+                  </h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {wishlistProducts.slice(0, 6).map((item: any) => (
+                      <Link key={item.id} to={`/product/${item.products.id}`}>
+                        <div className="group cursor-pointer">
+                          <div className="aspect-square relative overflow-hidden rounded-lg mb-2">
+                            <img
+                              src={item.products.image_url}
+                              alt={item.products.name_en}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                          <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                            {language === 'en' ? item.products.name_en : item.products.name_pl}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* COLONNA DESTRA (1/3) - Badges, Reviews, Spirit Posts */}
+          <div className="space-y-8">
+            <BadgeShowcase userId={userId || ''} variant="mini" />
 
             {/* 3. Reviews */}
             {reviews.length > 0 && (

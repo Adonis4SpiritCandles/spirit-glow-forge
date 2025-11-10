@@ -407,19 +407,11 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             ))}
           </nav>
 
-          {/* Right Actions - TASK 1: Aggiunta icona Dashboard User */}
+          {/* Right Actions - Tablet Navigation */}
           <div className="flex items-center gap-0.5">
             {showLanguageToggle && <LanguageToggle />}
             
-            {showSearch && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setIsSearchOpen(true)}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-            )}
+            {/* Search icon removed from tablet - available in dropdown */}
 
             {user && showWishlist && (
               <Link to="/wishlist">

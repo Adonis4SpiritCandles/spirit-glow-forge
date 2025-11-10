@@ -8,13 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Plus, Save, Trash2 } from 'lucide-react';
+import { Plus, Save, Trash2, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export function CustomerSegmentation() {
   const { language } = useLanguage();
   const [segments, setSegments] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [previewCount, setPreviewCount] = useState<number>(0);
+  const [loadingPreview, setLoadingPreview] = useState(false);
   const [formData, setFormData] = useState({
     name_en: '',
     name_pl: '',
@@ -25,6 +27,49 @@ export function CustomerSegmentation() {
   });
 
   useEffect(() => { loadSegments(); }, []);
+
+  useEffect(() => {
+    if (formData.criteriaText && isEditing) {
+      previewSegmentMembers();
+    }
+  }, [formData.criteriaText, isEditing]);
+
+  const previewSegmentMembers = async () => {
+    setLoadingPreview(true);
+    try {
+      const criteria = JSON.parse(formData.criteriaText || '{}');
+      
+      if (criteria.min_orders !== undefined) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - (criteria.last_days || 90));
+        
+        const { data, error } = await supabase
+          .from('orders')
+          .select('user_id')
+          .gte('created_at', cutoffDate.toISOString());
+        
+        if (!error && data) {
+          const userOrderCounts = data.reduce((acc: any, order: any) => {
+            acc[order.user_id] = (acc[order.user_id] || 0) + 1;
+            return acc;
+          }, {});
+          
+          const qualifiedUsers = Object.values(userOrderCounts).filter(
+            (count: any) => count >= criteria.min_orders
+          );
+          
+          setPreviewCount(qualifiedUsers.length);
+        }
+      } else {
+        setPreviewCount(0);
+      }
+    } catch (error) {
+      console.error('Error previewing members:', error);
+      setPreviewCount(0);
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
 
   const loadSegments = async () => {
     const { data, error } = await supabase
@@ -37,7 +82,13 @@ export function CustomerSegmentation() {
   const handleSave = async () => {
     try {
       let criteria: any = {};
-      try { criteria = JSON.parse(formData.criteriaText || '{}'); } catch {}
+      try { 
+        criteria = JSON.parse(formData.criteriaText || '{}');
+      } catch (error) {
+        toast.error(language === 'pl' ? 'Nieprawidłowy format JSON' : 'Invalid JSON format');
+        return;
+      }
+      
       const { error } = await supabase
         .from('customer_segments' as any)
         .insert([{
@@ -46,12 +97,14 @@ export function CustomerSegmentation() {
           description_en: formData.description_en,
           description_pl: formData.description_pl,
           segment_type: formData.segment_type,
-          criteria
+          criteria,
+          member_count: previewCount
         }] as any);
       if (error) throw error;
       toast.success(language === 'pl' ? 'Segment utworzony' : 'Segment created');
       setIsEditing(false);
       setFormData({ name_en: '', name_pl: '', description_en: '', description_pl: '', segment_type: 'custom', criteriaText: '{\n  "min_orders": 0,\n  "last_days": 90\n}' });
+      setPreviewCount(0);
       loadSegments();
     } catch (e:any) {
       toast.error(e.message);
@@ -134,6 +187,33 @@ export function CustomerSegmentation() {
               <Label>Criteria (JSON)</Label>
               <Textarea rows={6} value={formData.criteriaText} onChange={(e) => setFormData({ ...formData, criteriaText: e.target.value })} />
               <p className="text-xs text-muted-foreground mt-1">e.g. {`{ "min_orders": 3, "last_days": 180 }`}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-lg border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {language === 'pl' ? 'Podgląd członków' : 'Members Preview'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {language === 'pl' ? 'Użytkownicy spełniający kryteria' : 'Users matching criteria'}
+                  </p>
+                </div>
+                {loadingPreview ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span className="text-sm text-muted-foreground">
+                      {language === 'pl' ? 'Obliczanie...' : 'Calculating...'}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-right">
+                    <p className="text-3xl font-bold text-primary">{previewCount}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {language === 'pl' ? 'członków' : 'members'}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
             <Button onClick={handleSave}>
               <Save className="mr-2 h-4 w-4" />

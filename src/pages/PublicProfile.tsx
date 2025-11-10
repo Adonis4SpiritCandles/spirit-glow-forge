@@ -630,52 +630,80 @@ export default function PublicProfile() {
 
   const loadFollowersList = async () => {
     if (!userId) return;
-
-    const { data, error } = await supabase
-      .from('profile_follows')
-      .select(`
-        follower_id,
-        profiles!profile_follows_follower_id_fkey (
-          user_id,
-          username,
-          first_name,
-          last_name,
-          profile_image_url
-        )
-      `)
-      .eq('following_id', userId);
-
-    if (error) {
-      console.error('Error loading followers:', error);
-      return;
+    
+    try {
+      const { data: followData, error } = await supabase
+        .from('profile_follows')
+        .select('follower_id')
+        .eq('following_id', userId);
+      
+      if (error) {
+        console.error('Error loading followers:', error);
+        return;
+      }
+      
+      if (!followData || followData.length === 0) {
+        setFollowersList([]);
+        return;
+      }
+      
+      const followerIds = followData.map(f => f.follower_id);
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from('public_profile_directory')
+        .select('user_id, username, first_name, last_name, profile_image_url, public_profile')
+        .in('user_id', followerIds)
+        .eq('public_profile', true);
+      
+      if (profilesError) {
+        console.error('Error loading follower profiles:', profilesError);
+        return;
+      }
+      
+      setFollowersList(profiles || []);
+    } catch (error) {
+      console.error('Error in loadFollowersList:', error);
+      setFollowersList([]);
     }
-
-    setFollowersList(data?.map(f => f.profiles).filter(Boolean) || []);
   };
 
   const loadFollowingList = async () => {
     if (!userId) return;
-
-    const { data, error } = await supabase
-      .from('profile_follows')
-      .select(`
-        following_id,
-        profiles!profile_follows_following_id_fkey (
-          user_id,
-          username,
-          first_name,
-          last_name,
-          profile_image_url
-        )
-      `)
-      .eq('follower_id', userId);
-
-    if (error) {
-      console.error('Error loading following:', error);
-      return;
+    
+    try {
+      const { data: followData, error } = await supabase
+        .from('profile_follows')
+        .select('following_id')
+        .eq('follower_id', userId);
+      
+      if (error) {
+        console.error('Error loading following:', error);
+        return;
+      }
+      
+      if (!followData || followData.length === 0) {
+        setFollowingList([]);
+        return;
+      }
+      
+      const followingIds = followData.map(f => f.following_id);
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from('public_profile_directory')
+        .select('user_id, username, first_name, last_name, profile_image_url, public_profile')
+        .in('user_id', followingIds)
+        .eq('public_profile', true);
+      
+      if (profilesError) {
+        console.error('Error loading following profiles:', profilesError);
+        return;
+      }
+      
+      setFollowingList(profiles || []);
+    } catch (error) {
+      console.error('Error in loadFollowingList:', error);
+      setFollowingList([]);
     }
-
-    setFollowingList(data?.map(f => f.profiles).filter(Boolean) || []);
   };
 
   const submitComment = async () => {
@@ -1120,7 +1148,7 @@ export default function PublicProfile() {
                       onClick={() => setLeaderboardPeriod('all')}
                       className="text-xs px-2 py-1 h-7"
                     >
-                      {language === 'pl' ? 'Tutto' : 'All'}
+                      {language === 'pl' ? 'Wszystko' : 'All'}
                     </Button>
                   </div>
                 </div>
@@ -1131,7 +1159,7 @@ export default function PublicProfile() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        {language === 'pl' ? 'Punti Totali' : 'Total Points'}
+                        {language === 'pl' ? 'Punkty ogółem' : 'Total Points'}
                       </p>
                       <p className="text-xl md:text-2xl font-bold">
                         {spiritPoints}
@@ -1194,7 +1222,7 @@ export default function PublicProfile() {
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    {language === 'pl' ? 'Nessun dato disponibile' : 'No data available'}
+                    {language === 'pl' ? 'Brak danych' : 'No data available'}
                   </p>
                 )}
               </CardContent>

@@ -33,6 +33,7 @@ const Shop = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
   const [priceBounds, setPriceBounds] = useState<[number, number]>([0, 0]);
+  const [availabilityFilter, setAvailabilityFilter] = useState<string[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -94,7 +95,13 @@ const Shop = () => {
                          (filterBy === "bestseller" && product.isBestseller);
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
     const matchesPrice = product.price.pln >= priceRange[0] && product.price.pln <= priceRange[1];
-    return matchesSearch && matchesFilter && matchesCategory && matchesPrice;
+    
+    const matchesAvailability = availabilityFilter.length === 0 ||
+      (availabilityFilter.includes('in_stock') && (product.stock_quantity || 0) > 10) ||
+      (availabilityFilter.includes('low_stock') && (product.stock_quantity || 0) > 0 && (product.stock_quantity || 0) <= 10) ||
+      (availabilityFilter.includes('out_of_stock') && (product.stock_quantity || 0) === 0);
+    
+    return matchesSearch && matchesFilter && matchesCategory && matchesPrice && matchesAvailability;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -105,6 +112,12 @@ const Shop = () => {
         return b.price.pln - a.price.pln;
       case "name":
         return a.name.localeCompare(b.name);
+      case "newest":
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      case "popular":
+        return (b.sales_count || 0) - (a.sales_count || 0);
+      case "rating":
+        return (b.avg_rating || 0) - (a.avg_rating || 0);
       default:
         return 0;
     }
@@ -230,6 +243,9 @@ const Shop = () => {
                   <SelectItem value="price-low">{t('priceLowToHigh')}</SelectItem>
                   <SelectItem value="price-high">{t('priceHighToLow')}</SelectItem>
                   <SelectItem value="name">{t('nameAtoZ')}</SelectItem>
+                  <SelectItem value="newest">{language === 'pl' ? 'Najnowsze' : 'Newest First'}</SelectItem>
+                  <SelectItem value="popular">{language === 'pl' ? 'Najpopularniejsze' : 'Most Popular'}</SelectItem>
+                  <SelectItem value="rating">{language === 'pl' ? 'Najlepiej oceniane' : 'Best Rated'}</SelectItem>
                 </SelectContent>
               </Select>
             </motion.div>
@@ -343,6 +359,49 @@ const Shop = () => {
               <div className="flex justify-between text-sm mt-2">
                 <span>{Math.round(priceRange[0])} PLN</span>
                 <span>{Math.round(priceRange[1])} PLN</span>
+              </div>
+            </div>
+
+            {/* Availability Filter */}
+            <div>
+              <h3 className="font-semibold mb-3">{language === 'pl' ? 'Dostępność' : 'Availability'}</h3>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2">
+                  <Checkbox 
+                    checked={availabilityFilter.includes('in_stock')}
+                    onCheckedChange={(checked) => {
+                      setAvailabilityFilter(checked 
+                        ? [...availabilityFilter, 'in_stock']
+                        : availabilityFilter.filter(f => f !== 'in_stock')
+                      );
+                    }}
+                  />
+                  <span className="text-sm">{language === 'pl' ? 'Dostępne (>10)' : 'In Stock (>10)'}</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <Checkbox 
+                    checked={availabilityFilter.includes('low_stock')}
+                    onCheckedChange={(checked) => {
+                      setAvailabilityFilter(checked 
+                        ? [...availabilityFilter, 'low_stock']
+                        : availabilityFilter.filter(f => f !== 'low_stock')
+                      );
+                    }}
+                  />
+                  <span className="text-sm">{language === 'pl' ? 'Niski stan (1-10)' : 'Low Stock (1-10)'}</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <Checkbox 
+                    checked={availabilityFilter.includes('out_of_stock')}
+                    onCheckedChange={(checked) => {
+                      setAvailabilityFilter(checked 
+                        ? [...availabilityFilter, 'out_of_stock']
+                        : availabilityFilter.filter(f => f !== 'out_of_stock')
+                      );
+                    }}
+                  />
+                  <span className="text-sm">{language === 'pl' ? 'Niedostępne' : 'Out of Stock'}</span>
+                </label>
               </div>
             </div>
           </div>

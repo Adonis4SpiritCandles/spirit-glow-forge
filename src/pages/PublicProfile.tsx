@@ -4,14 +4,18 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award, Smile, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 const BadgeShowcase = lazy(() => import('@/components/gamification/BadgeShowcase'));
+const GifPicker = lazy(() => import('@/components/profile/GifPicker'));
 
 // Simple ErrorBoundary for badge showcase
 class BadgeErrorBoundary extends Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
@@ -58,7 +62,15 @@ export default function PublicProfile() {
     if (userId) {
       loadProfile();
       loadFollowData();
+      subscribeToRealtimeUpdates();
     }
+
+    return () => {
+      if (userId) {
+        supabase.removeChannel(supabase.channel(`profile_comments_${userId}`));
+        supabase.removeChannel(supabase.channel(`profile_follows_${userId}`));
+      }
+    };
   }, [userId, user?.id]);
 
   const loadProfile = async () => {
@@ -157,6 +169,56 @@ export default function PublicProfile() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const subscribeToRealtimeUpdates = () => {
+    if (!userId) return;
+
+    // Subscribe to new comments
+    const commentsChannel = supabase
+      .channel(`profile_comments_${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'profile_comments',
+          filter: `profile_user_id=eq.${userId}`
+        },
+        () => {
+          console.debug('[Profile Realtime] New comment received, reloading');
+          loadProfile();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to follow changes
+    const followsChannel = supabase
+      .channel(`profile_follows_${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profile_follows',
+          filter: `following_id=eq.${userId}`
+        },
+        async (payload) => {
+          console.debug('[Profile Realtime] Follow change:', payload);
+          if (payload.eventType === 'INSERT') {
+            setFollowersCount(prev => prev + 1);
+            if ((payload.new as any).follower_id === user?.id) {
+              setIsFollowing(true);
+            }
+          } else if (payload.eventType === 'DELETE') {
+            setFollowersCount(prev => Math.max(0, prev - 1));
+            if ((payload.old as any).follower_id === user?.id) {
+              setIsFollowing(false);
+            }
+          }
+        }
+      )
+      .subscribe();
   };
 
   const loadFollowData = async () => {
@@ -443,7 +505,7 @@ export default function PublicProfile() {
           <CardContent>
             <BadgeErrorBoundary fallback={<div className="p-4 text-sm text-muted-foreground text-center">{language === 'pl' ? 'Nie można załadować odznak' : 'Unable to load badges'}</div>}>
               <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg"></div>}>
-                <BadgeShowcase userId={userId!} />
+                <BadgeShowcase userId={userId!} variant="mini" />
               </Suspense>
             </BadgeErrorBoundary>
           </CardContent>
@@ -474,8 +536,41 @@ export default function PublicProfile() {
                       placeholder={t('writeComment')}
                       className="min-h-[80px] resize-none"
                     />
-                    <div className="flex items-center justify-end">
-                      <Button onClick={submitComment} disabled={submitting || !newComment.trim()}>
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" type="button">
+                            <Smile className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0 border-0" align="start">
+                          <EmojiPicker
+                            onEmojiClick={(emoji: EmojiClickData) => {
+                              setNewComment(prev => prev + emoji.emoji);
+                            }}
+                            width="100%"
+                          />
+                        </PopoverContent>
+                      </Popover>
+
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" type="button">
+                            <ImageIcon className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px]" align="start">
+                          <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                            <GifPicker
+                              onSelectGif={(gifUrl) => {
+                                setNewComment(prev => prev + ` ${gifUrl}`);
+                              }}
+                            />
+                          </Suspense>
+                        </PopoverContent>
+                      </Popover>
+
+                      <Button onClick={submitComment} disabled={submitting || !newComment.trim()} className="ml-auto">
                         <Send className="h-4 w-4 mr-2" />
                         {t('post')}
                       </Button>

@@ -28,11 +28,11 @@ export function useRealtimeNotifications() {
         if (order.status !== oldOrder.status) {
           if (order.status === 'shipped') {
             toast.success(
-              language === 'pl' ? 'Il tuo ordine è stato spedito!' : 'Your order has been shipped!',
+              language === 'pl' ? 'Twoje zamówienie zostało wysłane!' : 'Your order has been shipped!',
               {
-                description: `${language === 'pl' ? 'Ordine' : 'Order'} #${order.order_number}`,
+                description: `${language === 'pl' ? 'Zamówienie' : 'Order'} #${order.order_number}`,
                 action: {
-                  label: language === 'pl' ? 'Visualizza' : 'View',
+                  label: language === 'pl' ? 'Zobacz' : 'View',
                   onClick: () => window.location.href = '/dashboard'
                 },
                 duration: 8000
@@ -40,11 +40,11 @@ export function useRealtimeNotifications() {
             );
           } else if (order.status === 'delivered') {
             toast.success(
-              language === 'pl' ? 'Il tuo ordine è stato consegnato!' : 'Your order has been delivered!',
+              language === 'pl' ? 'Twoje zamówienie zostało dostarczone!' : 'Your order has been delivered!',
               {
-                description: `${language === 'pl' ? 'Ordine' : 'Order'} #${order.order_number}`,
+                description: `${language === 'pl' ? 'Zamówienie' : 'Order'} #${order.order_number}`,
                 action: {
-                  label: language === 'pl' ? 'Lascia una recensione' : 'Leave a review',
+                  label: language === 'pl' ? 'Zostaw recenzję' : 'Leave a review',
                   onClick: () => window.location.href = '/dashboard'
                 },
                 duration: 10000
@@ -52,9 +52,9 @@ export function useRealtimeNotifications() {
             );
           } else if (order.status === 'cancelled') {
             toast.error(
-              language === 'pl' ? 'Il tuo ordine è stato cancellato' : 'Your order has been cancelled',
+              language === 'pl' ? 'Twoje zamówienie zostało anulowane' : 'Your order has been cancelled',
               {
-                description: `${language === 'pl' ? 'Ordine' : 'Order'} #${order.order_number}`,
+                description: `${language === 'pl' ? 'Zamówienie' : 'Order'} #${order.order_number}`,
                 duration: 8000
               }
             );
@@ -84,11 +84,11 @@ export function useRealtimeNotifications() {
 
         if (order && order.user_id === user.id) {
           toast.info(
-            language === 'pl' ? 'Nuovo aggiornamento tracking!' : 'New tracking update!',
+            language === 'pl' ? 'Nowa aktualizacja śledzenia!' : 'New tracking update!',
             {
-              description: `${language === 'pl' ? 'Ordine' : 'Order'} #${order.order_number}`,
+              description: `${language === 'pl' ? 'Zamówienie' : 'Order'} #${order.order_number}`,
               action: {
-                label: language === 'pl' ? 'Traccia' : 'Track',
+                label: language === 'pl' ? 'Śledź' : 'Track',
                 onClick: () => window.location.href = '/dashboard'
               },
               duration: 8000
@@ -165,11 +165,11 @@ export function useAdminRealtimeNotifications() {
           console.debug('[Admin Realtime] New order:', order);
           
           toast.success(
-            language === 'pl' ? 'Nuovo ordine ricevuto!' : 'New order received!',
+            language === 'pl' ? 'Otrzymano nowe zamówienie!' : 'New order received!',
             {
-              description: `${language === 'pl' ? 'Ordine' : 'Order'} #${order.order_number} - ${order.total_pln.toFixed(2)} PLN`,
+              description: `${language === 'pl' ? 'Zamówienie' : 'Order'} #${order.order_number} - ${order.total_pln.toFixed(2)} PLN`,
               action: {
-                label: language === 'pl' ? 'Gestisci' : 'Manage',
+                label: language === 'pl' ? 'Zarządzaj' : 'Manage',
                 onClick: () => window.location.href = '/admin'
               },
               duration: 10000
@@ -191,7 +191,7 @@ export function useAdminRealtimeNotifications() {
           const submission = payload.new as any;
           
           toast.info(
-            language === 'pl' ? 'Nuova richiesta di contatto' : 'New contact request',
+            language === 'pl' ? 'Nowa prośba o kontakt' : 'New contact request',
             {
               description: submission.subject,
               duration: 8000

@@ -201,7 +201,7 @@ export default function AdminReferralAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Users className="h-4 w-4" />
-              {language === 'pl' ? 'Referral Totali' : 'Total Referrals'}
+              {language === 'pl' ? 'Polecenia ogółem' : 'Total Referrals'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -213,7 +213,7 @@ export default function AdminReferralAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Gift className="h-4 w-4" />
-              {language === 'pl' ? 'Completati' : 'Completed'}
+              {language === 'pl' ? 'Zakończone' : 'Completed'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -225,7 +225,7 @@ export default function AdminReferralAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              {language === 'pl' ? 'Tasso Conversione' : 'Conversion Rate'}
+              {language === 'pl' ? 'Współczynnik konwersji' : 'Conversion Rate'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -237,7 +237,7 @@ export default function AdminReferralAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              {language === 'pl' ? 'Punti Totali' : 'Total Points'}
+              {language === 'pl' ? 'Punkty ogółem' : 'Total Points'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -252,7 +252,7 @@ export default function AdminReferralAnalytics() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {language === 'pl' ? 'Timeline Conversioni' : 'Conversion Timeline'}
+              {language === 'pl' ? 'Oś czasu konwersji' : 'Conversion Timeline'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -262,8 +262,8 @@ export default function AdminReferralAnalytics() {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="referrals" stroke="#D4AF37" name={language === 'pl' ? 'Referral' : 'Referrals'} />
-                <Line type="monotone" dataKey="completed" stroke="#228B22" name={language === 'pl' ? 'Completati' : 'Completed'} />
+                <Line type="monotone" dataKey="referrals" stroke="#D4AF37" name={language === 'pl' ? 'Polecenia' : 'Referrals'} />
+                <Line type="monotone" dataKey="completed" stroke="#228B22" name={language === 'pl' ? 'Zakończone' : 'Completed'} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -273,7 +273,7 @@ export default function AdminReferralAnalytics() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {language === 'pl' ? 'Top 5 Referrer per Punti' : 'Top 5 Referrers by Points'}
+              {language === 'pl' ? 'Top 5 polecających (punkty)' : 'Top 5 Referrers by Points'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -283,7 +283,7 @@ export default function AdminReferralAnalytics() {
                 <XAxis dataKey="first_name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="total_points" fill="#D4AF37" name={language === 'pl' ? 'Punti' : 'Points'} />
+                <Bar dataKey="total_points" fill="#D4AF37" name={language === 'pl' ? 'Punkty' : 'Points'} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -295,7 +295,7 @@ export default function AdminReferralAnalytics() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Award className="h-5 w-5" />
-            {language === 'pl' ? 'Top 10 Referrer' : 'Top 10 Referrers'}
+            {language === 'pl' ? 'Top 10 polecających' : 'Top 10 Referrers'}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -316,15 +316,15 @@ export default function AdminReferralAnalytics() {
                   <div>
                     <p className="font-semibold">{referrer.first_name} {referrer.last_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {language === 'pl' ? 'Referral:' : 'Referrals:'} {referrer.referral_count} | 
-                      {language === 'pl' ? ' Completati:' : ' Completed:'} {referrer.completed_count}
+                      {language === 'pl' ? 'Polecenia:' : 'Referrals:'} {referrer.referral_count} | 
+                      {language === 'pl' ? ' Zakończone:' : ' Completed:'} {referrer.completed_count}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold text-primary">{referrer.total_points} pts</div>
                   <Badge variant="secondary" className="text-xs">
-                    {language === 'pl' ? 'Tasso:' : 'Rate:'} {referrer.referral_count > 0 ? Math.round((referrer.completed_count / referrer.referral_count) * 100) : 0}%
+                    {language === 'pl' ? 'Wskaźnik:' : 'Rate:'} {referrer.referral_count > 0 ? Math.round((referrer.completed_count / referrer.referral_count) * 100) : 0}%
                   </Badge>
                 </div>
               </div>

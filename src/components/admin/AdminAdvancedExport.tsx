@@ -300,11 +300,11 @@ export default function AdminAdvancedExport() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold mb-2">
-          {language === 'pl' ? 'Export Avanzato' : 'Advanced Export'}
+          {language === 'pl' ? 'Zaawansowany eksport' : 'Advanced Export'}
         </h2>
         <p className="text-muted-foreground">
           {language === 'pl' 
-            ? 'Esporta dati con filtri personalizzabili in formato CSV, Excel o JSON'
+            ? 'Eksportuj dane z konfigurowalnymi filtrami w formacie CSV, Excel lub JSON'
             : 'Export data with customizable filters in CSV, Excel, or JSON format'}
         </p>
       </div>
@@ -313,14 +313,14 @@ export default function AdminAdvancedExport() {
         {/* Export Configuration */}
         <Card>
           <CardHeader>
-            <CardTitle>{language === 'pl' ? 'Configurazione' : 'Configuration'}</CardTitle>
+            <CardTitle>{language === 'pl' ? 'Konfiguracja' : 'Configuration'}</CardTitle>
             <CardDescription>
-              {language === 'pl' ? 'Seleziona tipo di dati e formato' : 'Select data type and format'}
+              {language === 'pl' ? 'Wybierz typ danych i format' : 'Select data type and format'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>{language === 'pl' ? 'Tipo di Dati' : 'Data Type'}</Label>
+              <Label>{language === 'pl' ? 'Typ danych' : 'Data Type'}</Label>
               <Select value={exportType} onValueChange={(v) => handleExportTypeChange(v as ExportType)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -341,19 +341,19 @@ export default function AdminAdvancedExport() {
                   <SelectItem value="customers">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      {language === 'pl' ? 'Clienti' : 'Customers'}
+                      {language === 'pl' ? 'Klienci' : 'Customers'}
                     </div>
                   </SelectItem>
                   <SelectItem value="orders">
                     <div className="flex items-center gap-2">
                       <ShoppingCart className="h-4 w-4" />
-                      {language === 'pl' ? 'Ordini' : 'Orders'}
+                      {language === 'pl' ? 'Zamówienia' : 'Orders'}
                     </div>
                   </SelectItem>
                   <SelectItem value="products">
                     <div className="flex items-center gap-2">
                       <Package className="h-4 w-4" />
-                      {language === 'pl' ? 'Prodotti' : 'Products'}
+                      {language === 'pl' ? 'Produkty' : 'Products'}
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -361,7 +361,7 @@ export default function AdminAdvancedExport() {
             </div>
 
             <div className="space-y-2">
-              <Label>{language === 'pl' ? 'Formato Export' : 'Export Format'}</Label>
+              <Label>{language === 'pl' ? 'Format eksportu' : 'Export Format'}</Label>
               <Select value={exportFormat} onValueChange={(v) => setExportFormat(v as ExportFormat)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -376,7 +376,7 @@ export default function AdminAdvancedExport() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>{language === 'pl' ? 'Data Inizio' : 'Date From'}</Label>
+                <Label>{language === 'pl' ? 'Data od' : 'Date From'}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
@@ -391,7 +391,7 @@ export default function AdminAdvancedExport() {
               </div>
 
               <div className="space-y-2">
-                <Label>{language === 'pl' ? 'Data Fine' : 'Date To'}</Label>
+                <Label>{language === 'pl' ? 'Data do' : 'Date To'}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
@@ -411,9 +411,9 @@ export default function AdminAdvancedExport() {
         {/* Metrics Selection */}
         <Card>
           <CardHeader>
-            <CardTitle>{language === 'pl' ? 'Metriche da Esportare' : 'Metrics to Export'}</CardTitle>
+            <CardTitle>{language === 'pl' ? 'Metryki do eksportu' : 'Metrics to Export'}</CardTitle>
             <CardDescription>
-              {language === 'pl' ? 'Seleziona le colonne da includere' : 'Select columns to include'}
+              {language === 'pl' ? 'Wybierz kolumny do uwzględnienia' : 'Select columns to include'}
             </CardDescription>
           </CardHeader>
           <CardContent>

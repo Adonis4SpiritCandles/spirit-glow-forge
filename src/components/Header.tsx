@@ -130,18 +130,17 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             {showLanguageToggle && <LanguageToggle />}
           </div>
           
-          {/* CENTER: Logo */}
+          {/* CENTER: Logo - Force transparent logo and same animation as desktop */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={logoUrl}
+              src={spiritLogoTransparent}
               alt="SPIRIT CANDLES" 
-              className="h-10 w-auto animate-glow-pulse"
+              className="h-10 w-auto"
               style={{ 
-                background: 'transparent !important',
-                backgroundColor: 'transparent !important',
-                mixBlendMode: 'normal',
-                filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.4))',
-                display: 'block'
+                background: 'transparent',
+                backgroundColor: 'transparent',
+                filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
+                animation: 'glow-soft 4s ease-in-out infinite',
               }}
             />
           </Link>

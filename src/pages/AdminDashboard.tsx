@@ -220,7 +220,7 @@ const AdminDashboard = () => {
     }
   }, [user, authLoading]);
 
-  // Setup realtime subscription for new orders
+  // Setup realtime subscription for new orders and updates
   const setupRealtimeSubscription = () => {
     const channel = supabase
       .channel('new-orders-admin')
@@ -234,6 +234,7 @@ const AdminDashboard = () => {
         (payload) => {
           console.log('New order received:', payload);
           setNewOrdersCount(prev => prev + 1);
+          loadDashboardData(); // Reload to update stats
           toast({
             title: t('newOrderNotification'),
             description: `Order #${payload.new.order_number}`,
@@ -245,6 +246,28 @@ const AdminDashboard = () => {
               </Button>
             ),
           });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders'
+        },
+        () => {
+          loadDashboardData(); // Reload stats on update
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'orders'
+        },
+        () => {
+          loadDashboardData(); // Reload stats on delete
         }
       )
       .subscribe();
@@ -316,28 +339,27 @@ const AdminDashboard = () => {
       const activeProfiles = profilesData?.filter(p => !p.exclude_from_stats) || [];
       const revenue = activeOrders.reduce((sum, order) => sum + order.total_pln, 0);
 
-      // Calculate monthly orders (last 6 months)
+      // Calculate monthly orders (from inception - ALL TIME)
       const monthlyOrdersMap = new Map<string, { orders: number; revenue: number }>();
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
       activeOrders.forEach(order => {
         const orderDate = new Date(order.created_at);
-        if (orderDate >= sixMonthsAgo) {
-          const monthKey = format(orderDate, 'MMM');
-          if (!monthlyOrdersMap.has(monthKey)) {
-            monthlyOrdersMap.set(monthKey, { orders: 0, revenue: 0 });
-          }
-          const current = monthlyOrdersMap.get(monthKey)!;
-          current.orders += 1;
-          current.revenue += order.total_pln;
+        const monthKey = format(orderDate, 'yyyy-MM'); // Use yyyy-MM for proper sorting
+        if (!monthlyOrdersMap.has(monthKey)) {
+          monthlyOrdersMap.set(monthKey, { orders: 0, revenue: 0 });
         }
+        const current = monthlyOrdersMap.get(monthKey)!;
+        current.orders += 1;
+        current.revenue += order.total_pln;
       });
 
-      const monthlyOrdersData = Array.from(monthlyOrdersMap.entries()).map(([month, data]) => ({
-        month,
-        ...data
-      }));
+      // Sort by month and format for display
+      const monthlyOrdersData = Array.from(monthlyOrdersMap.entries())
+        .sort((a, b) => a[0].localeCompare(b[0])) // Sort chronologically
+        .map(([monthKey, data]) => ({
+          month: format(new Date(monthKey + '-01'), 'MMM yyyy'), // Format as "Oct 2025"
+          ...data
+        }));
 
       // Calculate category breakdown
       const categoryMap = new Map<string, number>();

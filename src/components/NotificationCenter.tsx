@@ -164,12 +164,12 @@ export default function NotificationCenter() {
         <SheetHeader className="space-y-4">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-2xl">
-              {language === 'pl' ? 'Notifiche' : 'Notifications'}
+              {language === 'pl' ? 'Powiadomienia' : 'Notifications'}
             </SheetTitle>
             {unreadCount > 0 && (
               <Button variant="ghost" size="sm" onClick={markAllAsRead}>
                 <Check className="h-4 w-4 mr-2" />
-                {language === 'pl' ? 'Segna tutto come letto' : 'Mark all as read'}
+                {language === 'pl' ? 'Oznacz wszystko jako przeczytane' : 'Mark all as read'}
               </Button>
             )}
           </div>
@@ -178,16 +178,16 @@ export default function NotificationCenter() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
           <TabsList className="grid grid-cols-4 w-full">
             <TabsTrigger value="all">
-              {language === 'pl' ? 'Tutte' : 'All'}
+              {language === 'pl' ? 'Wszystkie' : 'All'}
             </TabsTrigger>
             <TabsTrigger value="order">
-              {language === 'pl' ? 'Ordini' : 'Orders'}
+              {language === 'pl' ? 'Zamówienia' : 'Orders'}
             </TabsTrigger>
             <TabsTrigger value="message">
-              {language === 'pl' ? 'Messaggi' : 'Messages'}
+              {language === 'pl' ? 'Wiadomości' : 'Messages'}
             </TabsTrigger>
             <TabsTrigger value="referral">
-              {language === 'pl' ? 'Referral' : 'Referral'}
+              {language === 'pl' ? 'Polecenia' : 'Referral'}
             </TabsTrigger>
           </TabsList>
 
@@ -199,7 +199,7 @@ export default function NotificationCenter() {
             ) : filteredNotifications.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Bell className="h-12 w-12 mx-auto mb-4 opacity-30" />
-                <p>{language === 'pl' ? 'Nessuna notifica' : 'No notifications'}</p>
+                <p>{language === 'pl' ? 'Brak powiadomień' : 'No notifications'}</p>
               </div>
             ) : (
               filteredNotifications.map(notification => (
@@ -253,7 +253,7 @@ export default function NotificationCenter() {
                           className="px-0 mt-2 h-auto"
                           onClick={() => window.location.href = notification.action_url!}
                         >
-                          {language === 'pl' ? 'Visualizza' : 'View'}
+                          {language === 'pl' ? 'Zobacz' : 'View'}
                         </Button>
                       )}
                     </div>

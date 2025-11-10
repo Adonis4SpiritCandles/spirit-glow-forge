@@ -153,7 +153,7 @@ export default function AdminAdvancedAnalytics() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">
-          {language === 'pl' ? 'Analytics Avanzati' : 'Advanced Analytics'}
+          {language === 'pl' ? 'Zaawansowana analityka' : 'Advanced Analytics'}
         </h2>
         <div className="flex items-center gap-2">
           <Button
@@ -161,21 +161,21 @@ export default function AdminAdvancedAnalytics() {
             size="sm"
             onClick={() => setPeriod('7d')}
           >
-            {language === 'pl' ? '7 Giorni' : '7 Days'}
+            {language === 'pl' ? '7 dni' : '7 Days'}
           </Button>
           <Button
             variant={period === '30d' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setPeriod('30d')}
           >
-            {language === 'pl' ? '30 Giorni' : '30 Days'}
+            {language === 'pl' ? '30 dni' : '30 Days'}
           </Button>
           <Button
             variant={period === '90d' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setPeriod('90d')}
           >
-            {language === 'pl' ? '90 Giorni' : '90 Days'}
+            {language === 'pl' ? '90 dni' : '90 Days'}
           </Button>
           <Button variant="outline" size="sm" onClick={loadAnalytics}>
             <RefreshCw className="h-4 w-4" />
@@ -189,13 +189,13 @@ export default function AdminAdvancedAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <ShoppingCart className="h-4 w-4" />
-              {language === 'pl' ? 'Ordini Totali' : 'Total Orders'}
+              {language === 'pl' ? 'Zamówienia ogółem' : 'Total Orders'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalOrders}</div>
             <p className="text-xs text-muted-foreground">
-              {language === 'pl' ? 'negli ultimi' : 'in the last'} {period === '7d' ? '7' : period === '30d' ? '30' : '90'} {language === 'pl' ? 'giorni' : 'days'}
+              {language === 'pl' ? 'w ostatnich' : 'in the last'} {period === '7d' ? '7' : period === '30d' ? '30' : '90'} {language === 'pl' ? 'dniach' : 'days'}
             </p>
           </CardContent>
         </Card>
@@ -204,13 +204,13 @@ export default function AdminAdvancedAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              {language === 'pl' ? 'Revenue Totale' : 'Total Revenue'}
+              {language === 'pl' ? 'Suma przychodów' : 'Total Revenue'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalRevenue.toFixed(2)} PLN</div>
             <p className="text-xs text-muted-foreground">
-              {language === 'pl' ? 'Valore medio ordine:' : 'Avg order value:'} {data.avgOrderValue.toFixed(2)} PLN
+              {language === 'pl' ? 'Średnia wartość zamówienia:' : 'Avg order value:'} {data.avgOrderValue.toFixed(2)} PLN
             </p>
           </CardContent>
         </Card>
@@ -219,13 +219,13 @@ export default function AdminAdvancedAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Users className="h-4 w-4" />
-              {language === 'pl' ? 'Utenti Attivi' : 'Active Users'}
+              {language === 'pl' ? 'Użytkownicy aktywni' : 'Active Users'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.activeUsers}</div>
             <p className="text-xs text-muted-foreground">
-              {language === 'pl' ? 'Nuove registrazioni:' : 'New registrations:'} {data.newRegistrations}
+              {language === 'pl' ? 'Nowe rejestracje:' : 'New registrations:'} {data.newRegistrations}
             </p>
           </CardContent>
         </Card>
@@ -234,13 +234,13 @@ export default function AdminAdvancedAnalytics() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              {language === 'pl' ? 'Tasso Conversione' : 'Conversion Rate'}
+              {language === 'pl' ? 'Współczynnik konwersji' : 'Conversion Rate'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.conversionRate}%</div>
             <p className="text-xs text-muted-foreground">
-              {language === 'pl' ? 'Ordini / Utenti attivi' : 'Orders / Active users'}
+              {language === 'pl' ? 'Zamówienia / Aktywni użytkownicy' : 'Orders / Active users'}
             </p>
           </CardContent>
         </Card>
@@ -252,7 +252,7 @@ export default function AdminAdvancedAnalytics() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {language === 'pl' ? 'Vendite per Periodo' : 'Sales by Period'}
+              {language === 'pl' ? 'Sprzedaż wg okresu' : 'Sales by Period'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -263,7 +263,7 @@ export default function AdminAdvancedAnalytics() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="sales" stroke="#D4AF37" name={language === 'pl' ? 'Vendite' : 'Sales'} />
+                <Line type="monotone" dataKey="sales" stroke="#D4AF37" name={language === 'pl' ? 'Sprzedaż' : 'Sales'} />
                 <Line type="monotone" dataKey="revenue" stroke="#228B22" name="Revenue (PLN)" />
               </LineChart>
             </ResponsiveContainer>
@@ -274,7 +274,7 @@ export default function AdminAdvancedAnalytics() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {language === 'pl' ? 'Prodotti Più Venduti' : 'Top Selling Products'}
+              {language === 'pl' ? 'Najlepiej sprzedające się produkty' : 'Top Selling Products'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -295,7 +295,7 @@ export default function AdminAdvancedAnalytics() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {language === 'pl' ? 'Top 10 Prodotti per Revenue' : 'Top 10 Products by Revenue'}
+            {language === 'pl' ? 'Top 10 produktów wg przychodu' : 'Top 10 Products by Revenue'}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -309,7 +309,7 @@ export default function AdminAdvancedAnalytics() {
                 <div className="text-right">
                   <div className="font-bold text-primary">{product.revenue.toFixed(2)} PLN</div>
                   <div className="text-xs text-muted-foreground">
-                    {language === 'pl' ? 'Quantità:' : 'Qty:'} {product.quantity}
+                    {language === 'pl' ? 'Ilość:' : 'Qty:'} {product.quantity}
                   </div>
                 </div>
               </div>

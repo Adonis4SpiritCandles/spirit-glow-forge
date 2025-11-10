@@ -3,10 +3,8 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import ProductCard from "@/components/ProductCard";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 const RECENTLY_VIEWED_KEY = 'spirit_recently_viewed';
 const MAX_RECENT_PRODUCTS = 10;
@@ -100,44 +98,46 @@ const RecentlyViewed = ({ currentProductId }: { currentProductId: string }) => {
           {language === 'pl' ? 'Ostatnio Oglądane' : 'Recently Viewed'}
         </h2>
 
-        <Swiper
-          modules={[Navigation, Autoplay]}
-          spaceBetween={24}
-          slidesPerView={1.5}
-          navigation
-          autoplay={{ delay: 5000, disableOnInteraction: false }}
-          breakpoints={{
-            480: { slidesPerView: 2, spaceBetween: 20 },
-            768: { slidesPerView: 3, spaceBetween: 24 },
-            1024: { slidesPerView: 4, spaceBetween: 28 },
-            1280: { slidesPerView: 4.5, spaceBetween: 32 }
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
           }}
-          className="recently-viewed-swiper py-4"
+          plugins={[
+            Autoplay({
+              delay: 5000,
+            }),
+          ]}
+          className="w-full"
         >
-          {products.map((product, index) => (
-            <SwiperSlide key={product.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-              >
-                <ProductCard
-                  id={product.id}
-                  name={language === 'en' ? product.name_en : product.name_pl}
-                  fragrance=""
-                  summary={product.summary}
-                  description={language === 'en' ? product.description_en : product.description_pl}
-                  category={product.category}
-                  collections={product.collections}
-                  preferredTag={product.preferred_card_tag}
-                  price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
-                  image={product.image_url}
-                  sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: Number(product.price_pln), eur: Number(product.price_eur) } }]}
-                />
-              </motion.div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+          <CarouselContent>
+            {products.map((product, index) => (
+              <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <ProductCard
+                    id={product.id}
+                    name={language === 'en' ? product.name_en : product.name_pl}
+                    fragrance=""
+                    summary={product.summary}
+                    description={language === 'en' ? product.description_en : product.description_pl}
+                    category={product.category}
+                    collections={product.collections}
+                    preferredTag={product.preferred_card_tag}
+                    price={{ pln: Number(product.price_pln), eur: Number(product.price_eur) }}
+                    image={product.image_url}
+                    sizes={[{ size: product.size, weight: product.weight || product.size, price: { pln: Number(product.price_pln), eur: Number(product.price_eur) } }]}
+                  />
+                </motion.div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </section>
   );

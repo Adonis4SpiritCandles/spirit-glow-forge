@@ -102,16 +102,6 @@ export default function PublicProfile() {
       setLoadingLeaderboard(false);
     }
   };
-      
-    } catch (error) {
-      console.error('Error loading leaderboard (non-critical):', error);
-      // Set empty state, don't show error toast
-      setLeaderboardData([]);
-      setUserRank(null);
-    } finally {
-      setLoadingLeaderboard(false);
-    }
-  };
 
   useEffect(() => {
     if (userId) {

@@ -68,6 +68,7 @@ export default function PublicProfile() {
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<'week' | 'month' | 'all'>('all');
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   const COMMENTS_PER_PAGE = 10;
+  const SHOW_LEADERBOARD = false;
 
   // Load Leaderboard Function using secure RPC
   const loadLeaderboard = async () => {
@@ -366,7 +367,7 @@ export default function PublicProfile() {
         .from('public_profile_directory')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (profileError) throw profileError;
 
@@ -382,7 +383,7 @@ export default function PublicProfile() {
           .from('profiles')
           .select('*')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
         
         setProfile({ ...profileData, ...fullProfile });
       } else {
@@ -394,7 +395,7 @@ export default function PublicProfile() {
         .from('loyalty_points')
         .select('points, lifetime_points')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       setSpiritPoints(loyaltyData?.points || 0);
 
@@ -1115,6 +1116,7 @@ export default function PublicProfile() {
           </div>
 
           {/* 2. Spirit Points Leaderboard - Functional */}
+          {SHOW_LEADERBOARD && (
           <div className="order-2">
             <Card>
               <CardHeader>
@@ -1123,7 +1125,6 @@ export default function PublicProfile() {
                     <Trophy className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                     {t('spiritPointsLeaderboard')}
                   </h2>
-                  
                   {/* Period Filters */}
                   <div className="flex items-center gap-1">
                     <Button
@@ -1228,6 +1229,7 @@ export default function PublicProfile() {
               </CardContent>
             </Card>
           </div>
+          )}
 
           {/* 3. Spirit Posts */}
           <div className="order-3">
@@ -1718,6 +1720,7 @@ export default function PublicProfile() {
           <div className="lg:col-span-2 space-y-8">
             
             {/* Spirit Points Leaderboard - Functional */}
+            {SHOW_LEADERBOARD && (
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
@@ -1725,7 +1728,6 @@ export default function PublicProfile() {
                     <Trophy className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                     {t('spiritPointsLeaderboard')}
                   </h2>
-                  
                   <div className="flex items-center gap-1">
                     <Button variant={leaderboardPeriod === 'week' ? 'default' : 'outline'} size="sm" onClick={() => setLeaderboardPeriod('week')} className="text-xs px-2 py-1">
                       {language === 'pl' ? 'Tydzień' : 'Week'}
@@ -1734,7 +1736,7 @@ export default function PublicProfile() {
                       {language === 'pl' ? 'Miesiąc' : 'Month'}
                     </Button>
                     <Button variant={leaderboardPeriod === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setLeaderboardPeriod('all')} className="text-xs px-2 py-1">
-                      {language === 'pl' ? 'Tutto' : 'All'}
+                      {language === 'pl' ? 'Wszystko' : 'All'}
                     </Button>
                   </div>
                 </div>
@@ -1743,7 +1745,7 @@ export default function PublicProfile() {
                 <div className="p-3 md:p-4 bg-primary/5 rounded-lg border-2 border-primary/30">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground">{language === 'pl' ? 'Punti' : 'Points'}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground">{language === 'pl' ? 'Punkty' : 'Points'}</p>
                       <p className="text-xl md:text-2xl font-bold">{spiritPoints}</p>
                     </div>
                     {userRank && (
@@ -1771,17 +1773,18 @@ export default function PublicProfile() {
                   <div className="text-center py-12 text-muted-foreground">
                     <Trophy className="h-16 w-16 mx-auto mb-4 opacity-30" />
                     <p className="text-lg font-medium mb-2">
-                      {language === 'pl' ? 'Nessun dato disponibile' : 'No data available yet'}
+                      {language === 'pl' ? 'Brak danych' : 'No data available yet'}
                     </p>
                     <p className="text-sm">
                       {language === 'pl' 
-                        ? 'Inizia a guadagnare Spirit Points per apparire nella classifica!' 
+                        ? 'Zacznij zdobywać Spirit Points, aby pojawić się w rankingu!' 
                         : 'Start earning Spirit Points to appear on the leaderboard!'}
                     </p>
                   </div>
                 )}
               </CardContent>
             </Card>
+            )}
 
             {/* Purchased Products */}
             {purchasedProducts.length > 0 && (

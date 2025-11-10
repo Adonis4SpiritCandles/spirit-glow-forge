@@ -13,6 +13,8 @@ import { toast } from '@/hooks/use-toast';
 import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award, Smile, Image as ImageIcon, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const BadgeShowcase = lazy(() => import('@/components/gamification/BadgeShowcase'));
 const GifPicker = lazy(() => import('@/components/profile/GifPicker'));
@@ -64,6 +66,8 @@ export default function PublicProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [replyOpenId, setReplyOpenId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (userId) {

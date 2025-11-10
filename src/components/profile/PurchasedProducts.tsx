@@ -3,6 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Package, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+
 
 interface PurchasedProductsProps {
   userId: string;
@@ -21,6 +24,7 @@ const PurchasedProducts = ({ userId }: PurchasedProductsProps) => {
   const { language } = useLanguage();
   const [products, setProducts] = useState<PurchasedProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     loadPurchasedProducts();
@@ -112,33 +116,65 @@ const PurchasedProducts = ({ userId }: PurchasedProductsProps) => {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {products.map((product) => (
-        <Link
-          key={product.product_id}
-          to={`/product/${product.product_id}`}
-          className="group"
-        >
-          <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-mystical mb-2 transition-transform duration-300 group-hover:scale-105">
-            <img
-              src={product.product_image}
-              alt={language === 'en' ? product.product_name_en : product.product_name_pl}
-              className="w-full h-full object-cover"
-            />
-            {product.quantity > 1 && (
-              <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-bold flex items-center gap-1">
-                <Package className="h-3 w-3" />
-                ×{product.quantity}
-              </div>
-            )}
-          </div>
-          <h3 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
-            {language === 'en' ? product.product_name_en : product.product_name_pl}
-          </h3>
-        </Link>
-      ))}
-    </div>
+    ((isMobile && products.length > 2) || (!isMobile && products.length > 4)) ? (
+      <Carousel className="w-full">
+        <CarouselContent>
+          {products.map((product) => (
+            <CarouselItem key={product.product_id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+              <Link to={`/product/${product.product_id}`} className="group block">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-mystical mb-2 transition-transform duration-300 group-hover:scale-105 border border-primary/30">
+                  <img
+                    src={product.product_image}
+                    alt={language === 'en' ? product.product_name_en : product.product_name_pl}
+                    className="w-full h-full object-cover"
+                  />
+                  {product.quantity > 1 && (
+                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-bold flex items-center gap-1">
+                      <Package className="h-3 w-3" />
+                      ×{product.quantity}
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-medium text-sm text-center line-clamp-2 group-hover:text-primary transition-colors">
+                  {language === 'en' ? product.product_name_en : product.product_name_pl}
+                </h3>
+              </Link>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    ) : (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.map((product) => (
+          <Link
+            key={product.product_id}
+            to={`/product/${product.product_id}`}
+            className="group"
+          >
+            <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-mystical mb-2 transition-transform duration-300 group-hover:scale-105 border border-primary/30">
+              <img
+                src={product.product_image}
+                alt={language === 'en' ? product.product_name_en : product.product_name_pl}
+                className="w-full h-full object-cover"
+              />
+              {product.quantity > 1 && (
+                <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-bold flex items-center gap-1">
+                  <Package className="h-3 w-3" />
+                  ×{product.quantity}
+                </div>
+              )}
+            </div>
+            <h3 className="font-medium text-sm text-center line-clamp-2 group-hover:text-primary transition-colors">
+              {language === 'en' ? product.product_name_en : product.product_name_pl}
+            </h3>
+          </Link>
+        ))}
+      </div>
+    )
   );
+
 };
 
 export default PurchasedProducts;

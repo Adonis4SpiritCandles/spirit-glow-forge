@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Package, Users, ShoppingCart, Trash2, Database, Tags, Gift, BarChart3, FileText, Settings, Globe } from 'lucide-react';
+import { Package, Users, ShoppingCart, Trash2, Database, Tags, Gift, BarChart3, FileText, Settings, Globe, TrendingUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AdminDashboardTabsProps {
@@ -9,7 +9,7 @@ interface AdminDashboardTabsProps {
 }
 
 const AdminDashboardTabs = ({ activeTab, setActiveTab }: AdminDashboardTabsProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const tabs = [
     { value: 'products', icon: <Package className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('products') },
@@ -22,6 +22,8 @@ const AdminDashboardTabs = ({ activeTab, setActiveTab }: AdminDashboardTabsProps
     { value: 'settings', icon: <Settings className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('spiritToolsAndSite') },
     { value: 'social', icon: <Globe className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('socialMedia') },
     { value: 'statistics', icon: <BarChart3 className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('statistics') },
+    { value: 'analytics', icon: <TrendingUp className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: language === 'pl' ? 'Analytics' : 'Analytics' },
+    { value: 'referrals', icon: <Gift className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: language === 'pl' ? 'Referral' : 'Referral' },
     { value: 'export', icon: <FileText className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('export') },
   ];
 

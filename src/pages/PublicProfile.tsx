@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { toast as sonnerToast } from 'sonner';
 import { ArrowLeft, MessageSquare, Award, Star, Heart, TrendingUp, ShoppingBag, Settings, MessageCircle, Trash2, Pencil, Send, Smile, Image as ImageIcon, Gift, X, Users, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
@@ -101,7 +102,11 @@ export default function PublicProfile() {
       
       const { data, error } = await query;
       
-      if (error) throw error;
+      if (error) {
+        console.error('Leaderboard error:', error);
+        sonnerToast.error(language === 'pl' ? 'Błąd ładowania leaderboard' : 'Failed to load leaderboard');
+        return;
+      }
       
       // Aggregate by user_id
       const userPointsMap = new Map<string, { user: any, total: number }>();
@@ -135,6 +140,7 @@ export default function PublicProfile() {
       
     } catch (error) {
       console.error('Error loading leaderboard:', error);
+      sonnerToast.error(language === 'pl' ? 'Błąd ładowania rankingu' : 'Error loading leaderboard');
     } finally {
       setLoadingLeaderboard(false);
     }

@@ -5,13 +5,23 @@ interface GeneralSettings {
   show_floating_plus: boolean;
   show_live_chat: boolean;
   gradient_overlay_intensity: number;
+  enable_notifications: boolean;
+  enable_admin_notifications: boolean;
+  maintenance_mode: boolean;
+  enable_registration: boolean;
+  newsletter_enabled: boolean;
 }
 
 export const useGeneralSettings = () => {
   const [settings, setSettings] = useState<GeneralSettings>({
     show_floating_plus: true,
     show_live_chat: true,
-    gradient_overlay_intensity: 20
+    gradient_overlay_intensity: 20,
+    enable_notifications: true,
+    enable_admin_notifications: true,
+    maintenance_mode: false,
+    enable_registration: true,
+    newsletter_enabled: true
   });
   const [loading, setLoading] = useState(true);
 

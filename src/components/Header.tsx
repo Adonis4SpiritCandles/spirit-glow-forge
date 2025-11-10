@@ -135,8 +135,11 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             <img 
               src="/assets/icon-logo-candle-transparent.png"
               alt="SPIRIT CANDLES" 
-              className={`${logoHeight} w-auto animate-glow-pulse ${!logoTransparentBg ? 'bg-background p-2 rounded' : ''}`}
-              style={{ mixBlendMode: logoTransparentBg ? 'normal' : 'multiply' }}
+              className="h-10 w-auto animate-glow-pulse"
+              style={{ 
+                background: 'transparent',
+                mixBlendMode: 'normal'
+              }}
             />
           </Link>
           

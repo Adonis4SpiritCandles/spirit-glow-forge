@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface StatsData {
   totalProducts: number;
@@ -16,15 +17,25 @@ interface StatsData {
 
 interface AdminStatisticsProps {
   stats: StatsData;
+  onRefresh?: () => Promise<void>;
 }
 
-const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
+const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
   const { t, language } = useLanguage();
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleRefresh = () => {
-    setRefreshing(true);
-    window.location.reload();
+  const handleRefresh = async () => {
+    if (onRefresh) {
+      setRefreshing(true);
+      try {
+        await onRefresh();
+        toast.success(language === 'pl' ? 'Statystyki odświeżone' : 'Statistics refreshed');
+      } catch (error) {
+        toast.error(language === 'pl' ? 'Błąd odświeżania' : 'Refresh failed');
+      } finally {
+        setRefreshing(false);
+      }
+    }
   };
 
   const handleReset = () => {

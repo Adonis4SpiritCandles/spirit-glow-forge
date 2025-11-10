@@ -13,6 +13,11 @@ interface GeneralSettings {
   show_floating_plus: boolean;
   show_live_chat: boolean;
   gradient_overlay_intensity: number;
+  enable_notifications: boolean;
+  enable_admin_notifications: boolean;
+  maintenance_mode: boolean;
+  enable_registration: boolean;
+  newsletter_enabled: boolean;
 }
 
 export default function GeneralSettingsMain({ onBack }: { onBack: () => void }) {
@@ -20,7 +25,12 @@ export default function GeneralSettingsMain({ onBack }: { onBack: () => void }) 
   const [settings, setSettings] = useState<GeneralSettings>({
     show_floating_plus: true,
     show_live_chat: true,
-    gradient_overlay_intensity: 20
+    gradient_overlay_intensity: 20,
+    enable_notifications: true,
+    enable_admin_notifications: true,
+    maintenance_mode: false,
+    enable_registration: true,
+    newsletter_enabled: true
   });
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -147,6 +157,123 @@ export default function GeneralSettingsMain({ onBack }: { onBack: () => void }) 
                 ? 'Kontroluje ciemność nakładki na kartach gradientowych w sekcji Spirit Tools' 
                 : 'Controls darkness of overlay on gradient cards in Spirit Tools section'}
             </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {language === 'pl' ? 'Sistema Notifiche' : 'Notification System'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="enable-notifications">
+                {language === 'pl' ? 'Abilita Notifiche Globali' : 'Enable Global Notifications'}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Disabilita tutte le notifiche del sito (ordini, tracking, etc)'
+                  : 'Disable all site notifications (orders, tracking, etc)'}
+              </p>
+            </div>
+            <Switch
+              id="enable-notifications"
+              checked={settings.enable_notifications}
+              onCheckedChange={(checked) => setSettings({ ...settings, enable_notifications: checked })}
+            />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="enable-admin-notifications">
+                {language === 'pl' ? 'Notifiche Admin' : 'Admin Notifications'}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Notifiche per nuovi ordini in admin dashboard'
+                  : 'Notifications for new orders in admin dashboard'}
+              </p>
+            </div>
+            <Switch
+              id="enable-admin-notifications"
+              checked={settings.enable_admin_notifications}
+              onCheckedChange={(checked) => setSettings({ ...settings, enable_admin_notifications: checked })}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {language === 'pl' ? 'Modalità Sito' : 'Site Mode'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="maintenance-mode">
+                {language === 'pl' ? 'Modalità Manutenzione' : 'Maintenance Mode'}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Mostra pagina di manutenzione a tutti gli utenti (eccetto admin)'
+                  : 'Show maintenance page to all users (except admins)'}
+              </p>
+            </div>
+            <Switch
+              id="maintenance-mode"
+              checked={settings.maintenance_mode}
+              onCheckedChange={(checked) => setSettings({ ...settings, maintenance_mode: checked })}
+            />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="enable-registration">
+                {language === 'pl' ? 'Abilita Registrazioni' : 'Enable Registration'}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Permetti nuove registrazioni utenti'
+                  : 'Allow new user registrations'}
+              </p>
+            </div>
+            <Switch
+              id="enable-registration"
+              checked={settings.enable_registration}
+              onCheckedChange={(checked) => setSettings({ ...settings, enable_registration: checked })}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {language === 'pl' ? 'Impostazioni Newsletter' : 'Newsletter Settings'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="newsletter-enabled">
+                {language === 'pl' ? 'Abilita Newsletter' : 'Enable Newsletter'}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Mostra form di iscrizione newsletter'
+                  : 'Show newsletter subscription form'}
+              </p>
+            </div>
+            <Switch
+              id="newsletter-enabled"
+              checked={settings.newsletter_enabled}
+              onCheckedChange={(checked) => setSettings({ ...settings, newsletter_enabled: checked })}
+            />
           </div>
         </CardContent>
       </Card>

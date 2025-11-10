@@ -31,8 +31,11 @@ import AdminCoupons from '@/components/admin/AdminCoupons';
 import AdminCollections from '@/components/admin/AdminCollections';
 import AdminReferralRewardsEnhanced from '@/components/admin/AdminReferralRewardsEnhanced';
 import SiteSettingsHub from '@/components/admin/SiteSettings/SiteSettingsHub';
+import AdminAdvancedAnalytics from '@/components/admin/AdminAdvancedAnalytics';
+import AdminReferralAnalytics from '@/components/admin/AdminReferralAnalytics';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
+import { format } from 'date-fns';
 
 interface Product {
   id: string;
@@ -310,14 +313,52 @@ const AdminDashboard = () => {
       const activeProducts = productsData?.filter(p => !p.exclude_from_stats) || [];
       const activeProfiles = profilesData?.filter(p => !p.exclude_from_stats) || [];
       const revenue = activeOrders.reduce((sum, order) => sum + order.total_pln, 0);
-      
+
+      // Calculate monthly orders (last 6 months)
+      const monthlyOrdersMap = new Map<string, { orders: number; revenue: number }>();
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+      activeOrders.forEach(order => {
+        const orderDate = new Date(order.created_at);
+        if (orderDate >= sixMonthsAgo) {
+          const monthKey = format(orderDate, 'MMM');
+          if (!monthlyOrdersMap.has(monthKey)) {
+            monthlyOrdersMap.set(monthKey, { orders: 0, revenue: 0 });
+          }
+          const current = monthlyOrdersMap.get(monthKey)!;
+          current.orders += 1;
+          current.revenue += order.total_pln;
+        }
+      });
+
+      const monthlyOrdersData = Array.from(monthlyOrdersMap.entries()).map(([month, data]) => ({
+        month,
+        ...data
+      }));
+
+      // Calculate category breakdown
+      const categoryMap = new Map<string, number>();
+      activeProducts.forEach(product => {
+        const category = product.category || 'Other';
+        categoryMap.set(category, (categoryMap.get(category) || 0) + 1);
+      });
+
+      const total = activeProducts.length || 1;
+      const colors = ['#D4AF37', '#228B22', '#87CEEB', '#FF6B6B', '#9B59B6'];
+      const categoryData = Array.from(categoryMap.entries()).map(([name, count], index) => ({
+        name,
+        value: Math.round((count / total) * 100),
+        color: colors[index % colors.length]
+      }));
+
       setStats({
         totalProducts: activeProducts.length,
         totalOrders: activeOrders.length,
         totalCustomers: activeProfiles.length,
         revenue,
-        monthlyOrders: [],
-        categoryBreakdown: []
+        monthlyOrders: monthlyOrdersData,
+        categoryBreakdown: categoryData
       });
 
       // Count new orders not seen by admin

@@ -700,8 +700,13 @@ export type Database = {
       general_settings: {
         Row: {
           created_at: string | null
+          enable_admin_notifications: boolean | null
+          enable_notifications: boolean | null
+          enable_registration: boolean | null
           gradient_overlay_intensity: number | null
           id: string
+          maintenance_mode: boolean | null
+          newsletter_enabled: boolean | null
           show_floating_plus: boolean | null
           show_live_chat: boolean | null
           updated_at: string | null
@@ -709,8 +714,13 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          enable_admin_notifications?: boolean | null
+          enable_notifications?: boolean | null
+          enable_registration?: boolean | null
           gradient_overlay_intensity?: number | null
           id?: string
+          maintenance_mode?: boolean | null
+          newsletter_enabled?: boolean | null
           show_floating_plus?: boolean | null
           show_live_chat?: boolean | null
           updated_at?: string | null
@@ -718,8 +728,13 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          enable_admin_notifications?: boolean | null
+          enable_notifications?: boolean | null
+          enable_registration?: boolean | null
           gradient_overlay_intensity?: number | null
           id?: string
+          maintenance_mode?: boolean | null
+          newsletter_enabled?: boolean | null
           show_floating_plus?: boolean | null
           show_live_chat?: boolean | null
           updated_at?: string | null

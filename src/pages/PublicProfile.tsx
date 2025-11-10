@@ -68,12 +68,28 @@ export default function PublicProfile() {
   const [followingCount, setFollowingCount] = useState(0);
   const [replyOpenId, setReplyOpenId] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     if (userId) {
       loadProfile();
       loadFollowData();
       subscribeToRealtimeUpdates();
+    }
+
+    // Load current user profile for role check
+    if (user) {
+      const loadCurrentUser = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+        setCurrentUser(data);
+      };
+      loadCurrentUser();
     }
 
     return () => {
@@ -374,6 +390,10 @@ export default function PublicProfile() {
 
     setSubmitting(true);
     try {
+      // Extract mentions (@username)
+      const mentionRegex = /@(\w+)/g;
+      const mentions = [...newComment.matchAll(mentionRegex)].map(m => m[1]);
+
       const { error } = await supabase
         .from('profile_comments')
         .insert({
@@ -383,6 +403,28 @@ export default function PublicProfile() {
           parent_comment_id: null,
         });
       if (error) throw error;
+
+      // Send mention notifications
+      if (mentions.length > 0) {
+        for (const username of mentions) {
+          const { data: mentionedUser } = await supabase
+            .from('profiles')
+            .select('user_id')
+            .eq('username', username)
+            .single();
+
+          if (mentionedUser) {
+            await supabase.from('profile_notifications').insert({
+              user_id: mentionedUser.user_id,
+              profile_user_id: userId,
+              actor_id: user.id,
+              type: 'mention',
+              message_en: `mentioned you in a comment`,
+              message_pl: `wspomniał o Tobie w komentarzu`,
+            });
+          }
+        }
+      }
 
       setNewComment('');
       toast({ title: t('success'), description: t('commentAdded') });
@@ -405,6 +447,10 @@ export default function PublicProfile() {
 
     setReplyLoading(parentCommentId);
     try {
+      // Extract mentions
+      const mentionRegex = /@(\w+)/g;
+      const mentions = [...text.matchAll(mentionRegex)].map(m => m[1]);
+
       const { error } = await supabase
         .from('profile_comments')
         .insert({
@@ -415,9 +461,31 @@ export default function PublicProfile() {
         });
       if (error) throw error;
 
+      // Send mention notifications
+      if (mentions.length > 0) {
+        for (const username of mentions) {
+          const { data: mentionedUser } = await supabase
+            .from('profiles')
+            .select('user_id')
+            .eq('username', username)
+            .single();
+
+          if (mentionedUser) {
+            await supabase.from('profile_notifications').insert({
+              user_id: mentionedUser.user_id,
+              profile_user_id: userId,
+              actor_id: user.id,
+              type: 'mention',
+              message_en: `mentioned you in a reply`,
+              message_pl: `wspomniał o Tobie w odpowiedzi`,
+            });
+          }
+        }
+      }
+
       setReplyText(prev => ({ ...prev, [parentCommentId]: '' }));
+      setReplyOpenId(null);
       toast({ title: t('success'), description: t('replyAdded') });
-      // reload replies quickly
       await loadProfile();
     } catch (error) {
       console.error('Error submitting reply:', error);
@@ -426,6 +494,63 @@ export default function PublicProfile() {
       setReplyLoading(null);
     }
   };
+
+  // Edit and delete comment functions
+  const startEditComment = (commentId: string, currentContent: string) => {
+    setEditingCommentId(commentId);
+    setEditContent(currentContent);
+  };
+
+  const updateComment = async (commentId: string) => {
+    if (!editContent.trim()) return;
+
+    const { error } = await supabase
+      .from('profile_comments')
+      .update({ comment: editContent, updated_at: new Date().toISOString() })
+      .eq('id', commentId);
+
+    if (error) {
+      toast({
+        title: language === 'pl' ? 'Błąd' : 'Error',
+        description: language === 'pl' ? 'Nie udało się zaktualizować' : 'Failed to update',
+        variant: 'destructive',
+      });
+    } else {
+      setEditingCommentId(null);
+      setEditContent('');
+      loadProfile();
+      toast({
+        title: language === 'pl' ? 'Sukces' : 'Success',
+        description: language === 'pl' ? 'Komentarz zaktualizowany' : 'Comment updated',
+      });
+    }
+  };
+
+  const deleteComment = async (commentId: string) => {
+    if (!confirm(language === 'pl' ? 'Czy na pewno usunąć?' : 'Are you sure you want to delete?')) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from('profile_comments')
+      .delete()
+      .eq('id', commentId);
+
+    if (error) {
+      toast({
+        title: language === 'pl' ? 'Błąd' : 'Error',
+        description: language === 'pl' ? 'Nie udało się usunąć' : 'Failed to delete',
+        variant: 'destructive',
+      });
+    } else {
+      loadProfile();
+      toast({
+        title: language === 'pl' ? 'Sukces' : 'Success',
+        description: language === 'pl' ? 'Komentarz usunięty' : 'Comment deleted',
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

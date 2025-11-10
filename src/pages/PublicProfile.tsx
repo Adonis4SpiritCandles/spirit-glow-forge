@@ -481,7 +481,10 @@ export default function PublicProfile() {
                               </p>
                             )}
                             <span className="text-xs text-muted-foreground">
-                              {format(new Date(comment.created_at), 'PPp')}
+                              {(() => {
+                                const d = new Date(comment.created_at as any);
+                                return isNaN(d.getTime()) ? '' : format(d, 'PPp');
+                              })()}
                             </span>
                           </div>
                         </div>

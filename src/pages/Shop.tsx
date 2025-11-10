@@ -35,6 +35,11 @@ const Shop = () => {
   const [priceBounds, setPriceBounds] = useState<[number, number]>([0, 0]);
   const [availabilityFilter, setAvailabilityFilter] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [displayedCount, setDisplayedCount] = useState(10);
+
+  const loadMoreProducts = () => {
+    setDisplayedCount(prev => Math.min(prev + 10, filteredProducts.length));
+  };
 
   // Check if mobile/tablet
   useEffect(() => {
@@ -114,7 +119,9 @@ const Shop = () => {
     return matchesSearch && matchesFilter && matchesCategory && matchesPrice && matchesAvailability;
   });
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const displayedProducts = filteredProducts.slice(0, displayedCount);
+
+  const sortedProducts = [...displayedProducts].sort((a, b) => {
     switch (sortBy) {
       case "price-low":
         return a.price.pln - b.price.pln;
@@ -599,7 +606,7 @@ const Shop = () => {
         </div>
 
         {/* Load More with Animation */}
-        {sortedProducts.length > 0 && (
+        {displayedProducts.length >= 10 && displayedProducts.length < filteredProducts.length && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -608,11 +615,12 @@ const Shop = () => {
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button 
+                onClick={loadMoreProducts}
                 variant="outline" 
                 size="lg"
                 className="px-12 py-6 text-lg hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-elegant hover:shadow-luxury"
               >
-                {t('loadMoreProducts')}
+                {t('loadMore')}
               </Button>
             </motion.div>
           </motion.div>

@@ -147,7 +147,11 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               </Link>
             )}
             
-            {showLanguageToggle && <LanguageToggle />}
+            {showLanguageToggle && (
+              <div className={user && userProfile?.role !== 'admin' ? 'mr-1.5' : ''}>
+                <LanguageToggle />
+              </div>
+            )}
           </div>
           
           {/* CENTER: Logo - Mobile with candle icon */}
@@ -274,14 +278,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                 style={{ WebkitOverflowScrolling: 'touch' }}
                 {...burgerSwipeHandlers}
               >
-                {/* Custom Close Button - Bigger and nicer */}
+                {/* Custom Close Button - Bigger */}
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="absolute top-4 right-4 h-8 w-8 rounded-full hover:bg-accent z-50"
+                  className="absolute top-4 right-4 h-9 w-9 rounded-full hover:bg-accent z-50"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-6 w-6" />
                 </Button>
 
                 <SheetHeader>
@@ -323,6 +327,29 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </div>
                   )}
                   
+                  {user && (
+                    <Link 
+                      to="/dashboard" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px]"
+                    >
+                      <LayoutDashboard className="h-5 w-5" />
+                      {t('dashboard')}
+                    </Link>
+                  )}
+                  
+                  {user && userProfile?.role === 'admin' && (
+                    <Link 
+                      to="/admin" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px] relative ${unseenCount > 0 ? 'animate-pulse' : ''}`}
+                    >
+                      <img src={goldShieldMiniIcon} alt="Admin" className="h-5 w-5" />
+                      Dashboard Admin
+                      {unseenCount > 0 && <Badge className="ml-auto bg-red-500">{unseenCount}</Badge>}
+                    </Link>
+                  )}
+                  
                   {showCart && (
                     <div 
                       className={`flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 cursor-pointer font-normal text-[15px] relative ${itemCount > 0 ? 'animate-pulse' : ''}`}
@@ -350,26 +377,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                   )}
                   
                   {user && (
-                    <Link 
-                      to="/dashboard" 
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px]"
-                    >
-                      <LayoutDashboard className="h-5 w-5" />
-                      {t('dashboard')}
-                    </Link>
-                  )}
-                  
-                  {user && userProfile?.role === 'admin' && (
-                    <Link 
-                      to="/admin" 
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center gap-2 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 hover:bg-primary/5 transition hover:border-primary/50 font-normal text-[15px] relative ${unseenCount > 0 ? 'animate-pulse' : ''}`}
-                    >
-                      <img src={goldShieldMiniIcon} alt="Admin" className="h-5 w-5" />
-                      {t('admin')}
-                      {unseenCount > 0 && <Badge className="ml-auto bg-red-500">{unseenCount}</Badge>}
-                    </Link>
+                    <NotificationCenter isBurgerMenu={true} onNotificationClick={() => setIsMenuOpen(false)} />
                   )}
                   
                   {user ? (

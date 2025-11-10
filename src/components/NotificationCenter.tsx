@@ -22,7 +22,12 @@ interface Notification {
   action_url?: string;
 }
 
-export default function NotificationCenter() {
+interface NotificationCenterProps {
+  isBurgerMenu?: boolean;
+  onNotificationClick?: () => void;
+}
+
+export default function NotificationCenter({ isBurgerMenu = false, onNotificationClick }: NotificationCenterProps = {}) {
   const { user } = useAuth();
   const { language } = useLanguage();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -30,6 +35,7 @@ export default function NotificationCenter() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [selectedAll, setSelectedAll] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -198,7 +204,24 @@ export default function NotificationCenter() {
   });
 
   return (
-    <Sheet>
+    isBurgerMenu ? (
+      <div 
+        className={`flex items-center gap-2 rounded-xl border border-destructive/30 bg-background/60 px-4 py-3 hover:bg-destructive/10 transition hover:border-destructive/50 cursor-pointer font-normal text-[15px] relative ${unreadCount > 0 ? 'animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.4)]' : ''}`}
+        onClick={() => {
+          setIsOpen(true);
+          onNotificationClick?.();
+        }}
+      >
+        <Bell className="h-5 w-5 text-destructive" />
+        <span className="text-destructive">{language === 'pl' ? 'Powiadomienia' : 'Notifications'}</span>
+        {unreadCount > 0 && (
+          <Badge className="ml-auto bg-destructive text-destructive-foreground">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </Badge>
+        )}
+      </div>
+    ) : (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
@@ -372,5 +395,6 @@ export default function NotificationCenter() {
         </Tabs>
       </SheetContent>
     </Sheet>
+    )
   );
 }

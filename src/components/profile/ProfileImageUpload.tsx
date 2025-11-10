@@ -165,6 +165,7 @@ export default function ProfileImageUpload({
         accept="image/*"
         onChange={handleFileSelect}
         className="hidden"
+        capture="environment"
       />
 
       <Button
@@ -180,10 +181,10 @@ export default function ProfileImageUpload({
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Move className="h-5 w-5" />
+            <DialogTitle className="flex items-center gap-2 text-base sm:text-xl">
+              <Move className="h-4 w-4 sm:h-5 sm:w-5" />
               {language === 'pl' 
                 ? `Dostosuj obraz ${imageType === 'profile' ? 'profilu' : 'okładki'}`
                 : `Adjust ${imageType === 'profile' ? 'profile' : 'cover'} image`}
@@ -192,7 +193,7 @@ export default function ProfileImageUpload({
 
           <div className="space-y-4">
             {/* Cropper */}
-            <div className="relative h-96 bg-muted rounded-lg overflow-hidden">
+            <div className="relative h-64 sm:h-96 bg-muted rounded-lg overflow-hidden touch-none">
               {imageSrc && (
                 <Cropper
                   image={imageSrc}
@@ -202,6 +203,7 @@ export default function ProfileImageUpload({
                   onCropChange={setCrop}
                   onZoomChange={setZoom}
                   onCropComplete={onCropComplete}
+                  restrictPosition={true}
                 />
               )}
             </div>
@@ -209,7 +211,7 @@ export default function ProfileImageUpload({
             {/* Zoom Control */}
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <ZoomOut className="h-4 w-4 text-muted-foreground" />
+                <ZoomOut className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <Slider
                   value={[zoom]}
                   min={1}
@@ -218,7 +220,7 @@ export default function ProfileImageUpload({
                   onValueChange={(value) => setZoom(value[0])}
                   className="flex-1"
                 />
-                <ZoomIn className="h-4 w-4 text-muted-foreground" />
+                <ZoomIn className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               </div>
               <p className="text-xs text-muted-foreground text-center">
                 {language === 'pl' 

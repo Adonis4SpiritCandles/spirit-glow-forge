@@ -16,6 +16,7 @@ import { toast } from '@/hooks/use-toast';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { User, Settings, ShoppingBag, CreditCard, Package, Truck, Eye, Save, Users, Award, Gift, AlertCircle, Clock, CheckCircle, TrendingUp, Globe } from 'lucide-react';
 import AdminOrderDetailsModal from '@/components/AdminOrderDetailsModal';
+import UserOrderDetailsModal from '@/components/UserOrderDetailsModal';
 import { CarrierBadge } from '@/utils/carrierStyles';
 import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import ReferralDashboard from '@/components/gamification/ReferralDashboard';

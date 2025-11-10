@@ -60,6 +60,7 @@ interface HeaderSettings {
   id: string;
   logo_url: string;
   logo_height: string;
+  logo_transparent_bg: boolean;
   show_search: boolean;
   show_wishlist: boolean;
   show_cart: boolean;
@@ -140,6 +141,7 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
       // Parse navigation_items and configs from JSONB with defaults
       const parsedData = {
         ...data,
+        logo_transparent_bg: data.logo_transparent_bg ?? true, // Default to transparent
         navigation_items: (data.navigation_items as any) || [],
         logo_animation: (data.logo_animation as any) || {
           enabled: true,
@@ -194,6 +196,7 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
         .update({
           logo_url: settings.logo_url,
           logo_height: settings.logo_height,
+          logo_transparent_bg: settings.logo_transparent_bg,
           show_search: settings.show_search,
           show_wishlist: settings.show_wishlist,
           show_cart: settings.show_cart,
@@ -334,6 +337,20 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
                 ? 'Przykłady: h-8, h-10, h-12, h-16' 
                 : 'Examples: h-8, h-10, h-12, h-16'}
             </p>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>{language === 'pl' ? 'Sfondo Trasparente' : 'Transparent Background'}</Label>
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Logo senza sfondo (consigliato per logo PNG trasparenti)' 
+                  : 'Logo without background (recommended for transparent PNG logos)'}
+              </p>
+            </div>
+            <Switch 
+              checked={settings.logo_transparent_bg ?? true}
+              onCheckedChange={(checked) => setSettings({ ...settings, logo_transparent_bg: checked })}
+            />
           </div>
         </CardContent>
       </Card>

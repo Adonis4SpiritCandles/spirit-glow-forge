@@ -12,6 +12,7 @@ interface NavigationItem {
 interface HeaderSettings {
   logo_url: string;
   logo_height: string;
+  logo_transparent_bg: boolean;
   show_search: boolean;
   show_wishlist: boolean;
   show_cart: boolean;
@@ -60,6 +61,7 @@ export function useHeaderSettings() {
 
       setSettings({
         ...data,
+        logo_transparent_bg: data.logo_transparent_bg ?? true,
         navigation_items: (data.navigation_items as any) || []
       } as HeaderSettings);
     } catch (error) {

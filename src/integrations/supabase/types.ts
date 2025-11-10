@@ -734,6 +734,7 @@ export type Database = {
           id: string
           logo_animation: Json | null
           logo_height: string
+          logo_transparent_bg: boolean | null
           logo_url: string
           mobile_config: Json | null
           navigation_items: Json
@@ -753,6 +754,7 @@ export type Database = {
           id?: string
           logo_animation?: Json | null
           logo_height?: string
+          logo_transparent_bg?: boolean | null
           logo_url?: string
           mobile_config?: Json | null
           navigation_items?: Json
@@ -772,6 +774,7 @@ export type Database = {
           id?: string
           logo_animation?: Json | null
           logo_height?: string
+          logo_transparent_bg?: boolean | null
           logo_url?: string
           mobile_config?: Json | null
           navigation_items?: Json

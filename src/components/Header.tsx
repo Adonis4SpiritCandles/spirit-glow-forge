@@ -71,6 +71,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   // Get logo settings
   const logoUrl = headerSettings?.logo_url || iconLogoCandle;
   const logoHeight = headerSettings?.logo_height || 'h-8';
+  const logoTransparentBg = headerSettings?.logo_transparent_bg ?? true;
   
   // Feature flags from settings
   const showSearch = headerSettings?.show_search ?? true;
@@ -134,7 +135,8 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             <img 
               src="/assets/icon-logo-candle-transparent.png"
               alt="SPIRIT CANDLES" 
-              className={`${logoHeight} w-auto animate-glow-pulse`}
+              className={`${logoHeight} w-auto animate-glow-pulse ${!logoTransparentBg ? 'bg-background p-2 rounded' : ''}`}
+              style={{ mixBlendMode: logoTransparentBg ? 'normal' : 'multiply' }}
             />
           </Link>
           
@@ -372,10 +374,11 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               <img 
                 src={logoUrl} 
                 alt="SPIRIT CANDLES" 
-                className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700`}
+                className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700 ${!logoTransparentBg ? 'bg-background p-2 rounded' : ''}`}
                 style={{
                   filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
-                  animation: 'glow-soft 4s ease-in-out infinite'
+                  animation: 'glow-soft 4s ease-in-out infinite',
+                  mixBlendMode: logoTransparentBg ? 'normal' : 'multiply'
                 }}
               />
             </Link>

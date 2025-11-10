@@ -148,7 +148,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             )}
             
             {showLanguageToggle && (
-              <div className={user && userProfile?.role !== 'admin' ? 'mr-1.5' : ''}>
+              <div className={user && userProfile?.role !== 'admin' ? 'ml-2' : ''}>
                 <LanguageToggle />
               </div>
             )}
@@ -278,15 +278,6 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                 style={{ WebkitOverflowScrolling: 'touch' }}
                 {...burgerSwipeHandlers}
               >
-                {/* Custom Close Button - Bigger */}
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setIsMenuOpen(false)}
-                  className="absolute top-4 right-4 h-9 w-9 rounded-full hover:bg-accent z-50"
-                >
-                  <X className="h-6 w-6" />
-                </Button>
 
                 <SheetHeader>
                   <SheetTitle className="flex justify-center mb-6">
@@ -376,10 +367,10 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                     </Link>
                   )}
                   
+                  
                   {user && (
                     <NotificationCenter isBurgerMenu={true} onNotificationClick={() => setIsMenuOpen(false)} />
                   )}
-                  
                   {user ? (
                     <div 
                       className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-background/60 px-4 py-3 hover:bg-destructive/10 transition hover:border-destructive/50 cursor-pointer font-normal text-[15px] text-destructive"

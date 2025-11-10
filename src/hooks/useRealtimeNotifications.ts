@@ -111,7 +111,6 @@ export function useRealtimeNotifications() {
       }, (payload) => {
         const notification = payload.new as any;
         console.debug('[Realtime] New notification:', notification);
-        
         toast.info(notification.title, {
           description: notification.message,
           duration: 6000
@@ -120,6 +119,30 @@ export function useRealtimeNotifications() {
       .subscribe();
 
     channelsRef.current.push(notificationsChannel);
+
+    // Social notifications (comments, replies, likes)
+    const socialChannel = supabase
+      .channel(`user_profile_notifications_${user.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'profile_notifications',
+        filter: `user_id=eq.${user.id}`
+      }, (payload) => {
+        const n = payload.new as any;
+        const msg = n.type === 'comment'
+          ? (language === 'pl' ? 'Nowy komentarz na Twoim profilu' : 'New comment on your profile')
+          : n.type === 'reply'
+          ? (language === 'pl' ? 'Nowa odpowiedź do Twojego komentarza' : 'New reply to your comment')
+          : (language === 'pl' ? 'Nowe polubienie Twojego komentarza' : 'New like on your comment');
+        toast.info(language === 'pl' ? 'Powiadomienie' : 'Notification', {
+          description: msg,
+          duration: 6000
+        });
+      })
+      .subscribe();
+
+    channelsRef.current.push(socialChannel);
 
     // Cleanup function
     return () => {

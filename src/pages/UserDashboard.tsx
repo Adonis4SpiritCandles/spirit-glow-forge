@@ -985,7 +985,7 @@ const UserDashboard = () => {
           </Tabs>
 
           {selectedOrder && (
-            <AdminOrderDetailsModal
+            <UserOrderDetailsModal
               order={selectedOrder}
               isOpen={isOrderModalOpen}
               onClose={() => {

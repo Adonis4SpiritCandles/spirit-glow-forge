@@ -40,7 +40,8 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
   useEffect(() => {
     if (user) {
       loadNotifications();
-      subscribeToNotifications();
+      const cleanup = subscribeToNotifications();
+      return () => cleanup && cleanup();
     }
   }, [user]);
 
@@ -49,17 +50,51 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // Base app notifications
+      const { data: baseNotifs, error: baseErr } = await supabase
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);
+      if (baseErr) throw baseErr;
 
-      if (error) throw error;
+      // Social/profile notifications (comments, replies, likes)
+      const { data: socialNotifs, error: socialErr } = await supabase
+        .from('profile_notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (socialErr) throw socialErr;
 
-      setNotifications((data as any[]) || []);
-      setUnreadCount(data?.filter((n: any) => !n.read).length || 0);
+      // Map social notifications into unified shape
+      const mappedSocial = (socialNotifs as any[] || []).map((n) => ({
+        id: `pn_${n.id}`,
+        user_id: n.user_id,
+        type: 'message' as const,
+        title: language === 'pl' ? 'Wiadomość społeczności' : 'Social activity',
+        message:
+          n.type === 'comment'
+            ? (language === 'pl' ? 'Nowy komentarz na Twoim profilu' : 'New comment on your profile')
+            : n.type === 'reply'
+            ? (language === 'pl' ? 'Nowa odpowiedź do Twojego komentarza' : 'New reply to your comment')
+            : (language === 'pl' ? 'Nowe polubienie Twojego komentarza' : 'New like on your comment'),
+        read: n.read,
+        created_at: n.created_at,
+        action_url:
+          n.type === 'comment' || n.type === 'reply'
+            ? `/profile/${n.profile_user_id}`
+            : undefined,
+      }));
+
+      const merged = [
+        ...((baseNotifs as any[]) || []),
+        ...mappedSocial,
+      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setNotifications(merged as any);
+      setUnreadCount(merged.filter((n: any) => !n.read).length || 0);
     } catch (error) {
       console.error('Error loading notifications:', error);
     } finally {
@@ -70,7 +105,7 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
   const subscribeToNotifications = () => {
     if (!user) return;
 
-    const channel = supabase
+    const channelBase = supabase
       .channel(`notifications_${user.id}`)
       .on('postgres_changes', {
         event: 'INSERT',
@@ -82,8 +117,21 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
       })
       .subscribe();
 
+    const channelSocial = supabase
+      .channel(`profile_notifications_${user.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'profile_notifications',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        loadNotifications();
+      })
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(channelBase);
+      supabase.removeChannel(channelSocial);
     };
   };
 
@@ -194,9 +242,7 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
       if (window.innerWidth < 768) {
-        // Close sidebar on swipe
-        const closeButton = document.querySelector('[data-notification-close]') as HTMLButtonElement;
-        closeButton?.click();
+        setIsOpen(false);
       }
     },
     trackMouse: false,
@@ -239,19 +285,6 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
         className="w-full sm:max-w-lg overflow-y-auto"
         {...swipeHandlers}
       >
-        {/* Custom Close Button - Bigger and nicer */}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={(e) => {
-            const sheet = e.currentTarget.closest('[role="dialog"]');
-            sheet?.querySelector('[data-radix-dismiss]')?.dispatchEvent(new Event('click', { bubbles: true }));
-          }}
-          className="absolute top-4 right-4 h-8 w-8 rounded-full hover:bg-accent z-50"
-          data-notification-close
-        >
-          <X className="h-5 w-5" />
-        </Button>
 
         <SheetHeader className="space-y-4">
           <div className="flex items-center justify-between mb-2">

@@ -39,15 +39,6 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
         className="w-full sm:w-[450px] md:w-[500px] lg:w-[550px] flex flex-col overflow-y-auto"
         {...swipeHandlers}
       >
-        {/* Custom Close Button - Bigger and nicer */}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onClose}
-          className="absolute top-4 right-4 h-8 w-8 rounded-full hover:bg-accent z-50"
-        >
-          <X className="h-5 w-5" />
-        </Button>
 
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 flex-col">

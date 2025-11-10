@@ -192,8 +192,7 @@ export default function ProfileImageUpload({
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Cropper */}
-            <div className="relative h-64 sm:h-96 bg-muted rounded-lg overflow-hidden touch-none">
+            <div className="relative h-[70vh] sm:h-96 bg-muted rounded-lg overflow-hidden">
               {imageSrc && (
                 <Cropper
                   image={imageSrc}

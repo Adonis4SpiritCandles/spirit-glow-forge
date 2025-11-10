@@ -8,6 +8,7 @@ import { useCartContext } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import spiritLogo from "@/assets/spirit-logo.png";
+import { useSwipeable } from 'react-swipeable';
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -19,10 +20,35 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
   const { t, language } = useLanguage();
   const { user } = useAuth();
 
+  // Swipe gesture handlers (mobile only)
+  const swipeHandlers = useSwipeable({
+    onSwipedRight: () => {
+      if (window.innerWidth < 768) {
+        onClose();
+      }
+    },
+    trackMouse: false,
+    trackTouch: true,
+  });
+
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-[400px] sm:w-[500px] flex flex-col">
+    <Sheet open={isOpen} onOpenChange={onClose} modal>
+      <SheetContent 
+        side="right" 
+        className="w-full sm:w-[450px] md:w-[500px] lg:w-[550px] flex flex-col overflow-y-auto"
+        {...swipeHandlers}
+      >
+        {/* Custom Close Button - Bigger and nicer */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={onClose}
+          className="absolute top-4 right-4 h-8 w-8 rounded-full hover:bg-accent z-50"
+        >
+          <X className="h-5 w-5" />
+        </Button>
+
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 flex-col">
             {/* Animated Logo */}

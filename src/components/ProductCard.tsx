@@ -187,7 +187,7 @@ const ProductCard = ({
               ) : (
                 category && (
                   <Badge variant="outline" className="text-xs py-0.5 px-2">
-                    {category}
+                    {t('category_' + category)}
                   </Badge>
                 )
               )}

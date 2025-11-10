@@ -9,6 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useSwipeable } from 'react-swipeable';
 
 interface Notification {
   id: string;
@@ -183,6 +184,19 @@ export default function NotificationCenter() {
     ? notifications 
     : notifications.filter(n => n.type === activeTab);
 
+  // Swipe gesture handlers (mobile only)
+  const swipeHandlers = useSwipeable({
+    onSwipedRight: () => {
+      if (window.innerWidth < 768) {
+        // Close sidebar on swipe
+        const closeButton = document.querySelector('[data-notification-close]') as HTMLButtonElement;
+        closeButton?.click();
+      }
+    },
+    trackMouse: false,
+    trackTouch: true,
+  });
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -198,7 +212,24 @@ export default function NotificationCenter() {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+      <SheetContent 
+        className="w-full sm:max-w-lg overflow-y-auto"
+        {...swipeHandlers}
+      >
+        {/* Custom Close Button - Bigger and nicer */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={(e) => {
+            const sheet = e.currentTarget.closest('[role="dialog"]');
+            sheet?.querySelector('[data-radix-dismiss]')?.dispatchEvent(new Event('click', { bubbles: true }));
+          }}
+          className="absolute top-4 right-4 h-8 w-8 rounded-full hover:bg-accent z-50"
+          data-notification-close
+        >
+          <X className="h-5 w-5" />
+        </Button>
+
         <SheetHeader className="space-y-4">
           <div className="flex items-center justify-between mb-2">
             <SheetTitle className="text-2xl">

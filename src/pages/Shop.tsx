@@ -34,6 +34,15 @@ const Shop = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
   const [priceBounds, setPriceBounds] = useState<[number, number]>([0, 0]);
   const [availabilityFilter, setAvailabilityFilter] = useState<string[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile/tablet
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -317,108 +326,216 @@ const Shop = () => {
           </motion.div>
         </motion.div>
 
-        {/* Advanced Filters: Categories + Price Range */}
-        <motion.div
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="bg-card/60 border border-border/40 rounded-xl p-6 mb-8"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Categories */}
-            <div>
-              <h3 className="font-semibold mb-3">{language === 'pl' ? 'Kategorie' : 'Categories'}</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {[...new Set(products.map(p => p.category).filter(Boolean))].map((cat) => (
-                  <label key={cat} className="flex items-center gap-2">
+        {/* Advanced Filters - Mobile/Tablet (Horizontal) */}
+        {isMobile && (
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="bg-card/60 border border-border/40 rounded-xl p-6 mb-8"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Categories */}
+              <div>
+                <h3 className="font-semibold mb-3">{t('categories')}</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {[...new Set(products.map(p => p.category).filter(Boolean))].map((cat) => (
+                    <label key={cat} className="flex items-center gap-2">
+                      <Checkbox 
+                        checked={selectedCategories.includes(cat)}
+                        onCheckedChange={(checked) => {
+                          setSelectedCategories(checked 
+                            ? [...selectedCategories, cat]
+                            : selectedCategories.filter(c => c !== cat)
+                          );
+                        }}
+                      />
+                      <span className="text-sm">{t('category_' + cat)}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div>
+                <h3 className="font-semibold mb-3">{t('priceRange')}</h3>
+                <Slider 
+                  value={priceRange} 
+                  onValueChange={(v:any) => setPriceRange(v as [number, number])}
+                  min={priceBounds[0]}
+                  max={priceBounds[1]}
+                  step={5}
+                  className="mt-4"
+                />
+                <div className="flex justify-between text-sm mt-2">
+                  <span>{Math.round(priceRange[0])} PLN</span>
+                  <span>{Math.round(priceRange[1])} PLN</span>
+                </div>
+              </div>
+
+              {/* Availability Filter */}
+              <div>
+                <h3 className="font-semibold mb-3">{t('availability')}</h3>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2">
                     <Checkbox 
-                      checked={selectedCategories.includes(cat)}
+                      checked={availabilityFilter.includes('in_stock')}
                       onCheckedChange={(checked) => {
-                        setSelectedCategories(checked 
-                          ? [...selectedCategories, cat]
-                          : selectedCategories.filter(c => c !== cat)
+                        setAvailabilityFilter(checked 
+                          ? [...availabilityFilter, 'in_stock']
+                          : availabilityFilter.filter(f => f !== 'in_stock')
                         );
                       }}
                     />
-                    <span className="text-sm">{cat}</span>
+                    <span className="text-sm">{language === 'pl' ? 'Dostępne (>10)' : 'In Stock (>10)'}</span>
                   </label>
-                ))}
+                  <label className="flex items-center gap-2">
+                    <Checkbox 
+                      checked={availabilityFilter.includes('low_stock')}
+                      onCheckedChange={(checked) => {
+                        setAvailabilityFilter(checked 
+                          ? [...availabilityFilter, 'low_stock']
+                          : availabilityFilter.filter(f => f !== 'low_stock')
+                        );
+                      }}
+                    />
+                    <span className="text-sm">{language === 'pl' ? 'Niski stan (1-10)' : 'Low Stock (1-10)'}</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <Checkbox 
+                      checked={availabilityFilter.includes('out_of_stock')}
+                      onCheckedChange={(checked) => {
+                        setAvailabilityFilter(checked 
+                          ? [...availabilityFilter, 'out_of_stock']
+                          : availabilityFilter.filter(f => f !== 'out_of_stock')
+                        );
+                      }}
+                    />
+                    <span className="text-sm">{language === 'pl' ? 'Niedostępne' : 'Out of Stock'}</span>
+                  </label>
+                </div>
               </div>
             </div>
+          </motion.div>
+        )}
 
-            {/* Price Range */}
-            <div>
-              <h3 className="font-semibold mb-3">{language === 'pl' ? 'Przedział cenowy (PLN)' : 'Price Range (PLN)'}</h3>
-              <Slider 
-                value={priceRange} 
-                onValueChange={(v:any) => setPriceRange(v as [number, number])}
-                min={priceBounds[0]}
-                max={priceBounds[1]}
-                step={5}
-                className="mt-4"
-              />
-              <div className="flex justify-between text-sm mt-2">
-                <span>{Math.round(priceRange[0])} PLN</span>
-                <span>{Math.round(priceRange[1])} PLN</span>
-              </div>
-            </div>
-
-            {/* Availability Filter */}
-            <div>
-              <h3 className="font-semibold mb-3">{language === 'pl' ? 'Dostępność' : 'Availability'}</h3>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2">
-                  <Checkbox 
-                    checked={availabilityFilter.includes('in_stock')}
-                    onCheckedChange={(checked) => {
-                      setAvailabilityFilter(checked 
-                        ? [...availabilityFilter, 'in_stock']
-                        : availabilityFilter.filter(f => f !== 'in_stock')
-                      );
-                    }}
-                  />
-                  <span className="text-sm">{language === 'pl' ? 'Dostępne (>10)' : 'In Stock (>10)'}</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <Checkbox 
-                    checked={availabilityFilter.includes('low_stock')}
-                    onCheckedChange={(checked) => {
-                      setAvailabilityFilter(checked 
-                        ? [...availabilityFilter, 'low_stock']
-                        : availabilityFilter.filter(f => f !== 'low_stock')
-                      );
-                    }}
-                  />
-                  <span className="text-sm">{language === 'pl' ? 'Niski stan (1-10)' : 'Low Stock (1-10)'}</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <Checkbox 
-                    checked={availabilityFilter.includes('out_of_stock')}
-                    onCheckedChange={(checked) => {
-                      setAvailabilityFilter(checked 
-                        ? [...availabilityFilter, 'out_of_stock']
-                        : availabilityFilter.filter(f => f !== 'out_of_stock')
-                      );
-                    }}
-                  />
-                  <span className="text-sm">{language === 'pl' ? 'Niedostępne' : 'Out of Stock'}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-        <AnimatePresence mode="wait">
-          {sortedProducts.length > 0 ? (
-            <motion.div
-              key={viewMode}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className={viewMode === "grid" 
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
-                : "grid grid-cols-1 gap-4"}
+        {/* Desktop Layout: Sidebar + Products */}
+        <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-6`}>
+          
+          {/* Sidebar Filtri (Desktop only) */}
+          {!isMobile && (
+            <motion.aside
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-64 flex-shrink-0"
             >
+              <div className="sticky top-24 space-y-6 bg-card/60 border border-border/40 rounded-xl p-4 shadow-elegant max-h-[calc(100vh-7rem)] overflow-y-auto">
+                <div>
+                  <h3 className="font-semibold mb-3 text-lg flex items-center gap-2">
+                    <Filter className="h-5 w-5" />
+                    {t('filters')}
+                  </h3>
+                  
+                  {/* Categories */}
+                  <div className="mb-6">
+                    <h4 className="font-medium mb-3 text-sm text-muted-foreground uppercase">{t('categories')}</h4>
+                    <div className="space-y-2">
+                      {[...new Set(products.map(p => p.category).filter(Boolean))].map((cat) => (
+                        <label key={cat} className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                          <Checkbox 
+                            checked={selectedCategories.includes(cat)}
+                            onCheckedChange={(checked) => {
+                              setSelectedCategories(checked 
+                                ? [...selectedCategories, cat]
+                                : selectedCategories.filter(c => c !== cat)
+                              );
+                            }}
+                          />
+                          <span className="text-sm">{t('category_' + cat)}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price Range */}
+                  <div className="mb-6">
+                    <h4 className="font-medium mb-3 text-sm text-muted-foreground uppercase">{t('priceRange')}</h4>
+                    <Slider 
+                      value={priceRange} 
+                      onValueChange={(v:any) => setPriceRange(v as [number, number])}
+                      min={priceBounds[0]}
+                      max={priceBounds[1]}
+                      step={5}
+                      className="mt-4"
+                    />
+                    <div className="flex justify-between text-xs mt-2 text-muted-foreground">
+                      <span>{Math.round(priceRange[0])} PLN</span>
+                      <span>{Math.round(priceRange[1])} PLN</span>
+                    </div>
+                  </div>
+
+                  {/* Availability */}
+                  <div>
+                    <h4 className="font-medium mb-3 text-sm text-muted-foreground uppercase">{t('availability')}</h4>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                        <Checkbox 
+                          checked={availabilityFilter.includes('in_stock')}
+                          onCheckedChange={(checked) => {
+                            setAvailabilityFilter(checked 
+                              ? [...availabilityFilter, 'in_stock']
+                              : availabilityFilter.filter(f => f !== 'in_stock')
+                            );
+                          }}
+                        />
+                        <span className="text-sm">{language === 'pl' ? 'Dostępne (>10)' : 'In Stock (>10)'}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                        <Checkbox 
+                          checked={availabilityFilter.includes('low_stock')}
+                          onCheckedChange={(checked) => {
+                            setAvailabilityFilter(checked 
+                              ? [...availabilityFilter, 'low_stock']
+                              : availabilityFilter.filter(f => f !== 'low_stock')
+                            );
+                          }}
+                        />
+                        <span className="text-sm">{language === 'pl' ? 'Niski stan (1-10)' : 'Low Stock (1-10)'}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                        <Checkbox 
+                          checked={availabilityFilter.includes('out_of_stock')}
+                          onCheckedChange={(checked) => {
+                            setAvailabilityFilter(checked 
+                              ? [...availabilityFilter, 'out_of_stock']
+                              : availabilityFilter.filter(f => f !== 'out_of_stock')
+                            );
+                          }}
+                        />
+                        <span className="text-sm">{language === 'pl' ? 'Niedostępne' : 'Out of Stock'}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.aside>
+          )}
+
+          {/* Products Grid */}
+          <div className="flex-1">
+            <AnimatePresence mode="wait">
+              {sortedProducts.length > 0 ? (
+                <motion.div
+                  key={viewMode}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={viewMode === "grid" 
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+                    : "grid grid-cols-1 gap-4"}
+                >
               {sortedProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
@@ -433,9 +550,9 @@ const Shop = () => {
                 >
                   <ProductCard {...product} />
                 </motion.div>
-              ))}
-            </motion.div>
-          ) : (
+                  ))}
+                </motion.div>
+              ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -474,10 +591,12 @@ const Shop = () => {
                 >
                   {t('clearFilters')}
                 </Button>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </AnimatePresence>
+          </div>
+        </div>
 
         {/* Load More with Animation */}
         {sortedProducts.length > 0 && (

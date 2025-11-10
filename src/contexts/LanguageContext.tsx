@@ -1228,6 +1228,30 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'billingSettingsDesc') return language === 'pl' ? 'Zarządzaj metodami płatności i fakturami' : 'Manage payment methods and invoices';
     if (key === 'billingInfo') return language === 'pl' ? 'Informacje o Płatnościach' : 'Billing Information';
     
+    // Move to trash translations
+    if (key === 'moveToTrash') return language === 'pl' ? 'Przenieś do kosza' : 'Move to Trash';
+    if (key === 'moveToTrashWarning') return language === 'pl' 
+      ? 'To zamówienie zostanie przeniesione do kosza. Możesz je przywrócić później.'
+      : 'This order will be moved to trash. You can restore it later.';
+
+    // Category translations
+    if (key.startsWith('category_')) {
+      const catKey = key.replace('category_', '').toLowerCase();
+      const categories: Record<string, { en: string; pl: string }> = {
+        nature: { en: 'Nature', pl: 'Natura' },
+        luxury: { en: 'Luxury', pl: 'Luksus' },
+        oriental: { en: 'Oriental', pl: 'Orientalne' },
+        fresh: { en: 'Fresh', pl: 'Świeże' }
+      };
+      return categories[catKey]?.[language] || catKey;
+    }
+
+    // Shop filters
+    if (key === 'filters') return language === 'pl' ? 'Filtry' : 'Filters';
+    if (key === 'priceRange') return language === 'pl' ? 'Zakres cen' : 'Price Range';
+    if (key === 'availability') return language === 'pl' ? 'Dostępność' : 'Availability';
+    if (key === 'noCategory') return language === 'pl' ? 'Brak kategorii' : 'No Category';
+    
     // Dashboard tabs
     if (key === 'rewards') return language === 'pl' ? 'Nagrody' : 'Rewards';
     if (key === 'referrals') return language === 'pl' ? 'Polecenia' : 'Referrals';

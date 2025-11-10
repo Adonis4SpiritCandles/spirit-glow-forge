@@ -110,6 +110,7 @@ export function useRealtimeNotifications() {
         filter: `user_id=eq.${user.id}`
       }, (payload) => {
         const notification = payload.new as any;
+        console.debug('[Realtime] New notification:', notification);
         
         toast.info(notification.title, {
           description: notification.message,
@@ -161,6 +162,7 @@ export function useAdminRealtimeNotifications() {
           table: 'orders'
         }, (payload) => {
           const order = payload.new as any;
+          console.debug('[Admin Realtime] New order:', order);
           
           toast.success(
             language === 'pl' ? 'Nuovo ordine ricevuto!' : 'New order received!',

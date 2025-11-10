@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy, Component } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,8 +8,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageCircle, Settings, Send, Users, Star } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award } from 'lucide-react';
 import { format } from 'date-fns';
+
+const BadgeShowcase = lazy(() => import('@/components/gamification/BadgeShowcase'));
+
+// Simple ErrorBoundary for badge showcase
+class BadgeErrorBoundary extends Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 interface CommentType {
   id: string;
@@ -410,6 +431,23 @@ export default function PublicProfile() {
             )}
           </div>
         </div>
+
+        {/* Badges Section */}
+        <Card className="mt-8">
+          <CardHeader>
+            <h2 className="text-2xl font-semibold flex items-center gap-2">
+              <Award className="h-6 w-6 text-primary" />
+              {language === 'pl' ? 'Odznaki' : 'Badges'}
+            </h2>
+          </CardHeader>
+          <CardContent>
+            <BadgeErrorBoundary fallback={<div className="p-4 text-sm text-muted-foreground text-center">{language === 'pl' ? 'Nie można załadować odznak' : 'Unable to load badges'}</div>}>
+              <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg"></div>}>
+                <BadgeShowcase userId={userId!} />
+              </Suspense>
+            </BadgeErrorBoundary>
+          </CardContent>
+        </Card>
 
         {/* Spirit Posts */}
         <Card className="mt-8">

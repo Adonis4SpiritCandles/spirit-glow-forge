@@ -136,7 +136,10 @@ export default function NotificationCenter() {
         return <MessageCircle className="h-4 w-4" />;
       case 'referral':
         return <Gift className="h-4 w-4" />;
+      case 'general':
+        return <Bell className="h-4 w-4" />;
       default:
+        console.warn('Unknown notification type:', type);
         return <Bell className="h-4 w-4" />;
     }
   };
@@ -220,7 +223,10 @@ export default function NotificationCenter() {
                           <p className="font-semibold text-sm">{notification.title}</p>
                           <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
                           <p className="text-xs text-muted-foreground mt-2">
-                            {format(new Date(notification.created_at), 'PPp')}
+                            {(() => {
+                              const d = new Date(notification.created_at);
+                              return isNaN(d.getTime()) ? '' : format(d, 'PPp');
+                            })()}
                           </p>
                         </div>
                         

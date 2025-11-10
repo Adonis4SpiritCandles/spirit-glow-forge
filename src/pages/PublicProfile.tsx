@@ -63,7 +63,82 @@ export default function PublicProfile() {
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [followersList, setFollowersList] = useState<any[]>([]);
   const [followingList, setFollowingList] = useState<any[]>([]);
+  const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+  const [leaderboardPeriod, setLeaderboardPeriod] = useState<'week' | 'month' | 'all'>('all');
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   const COMMENTS_PER_PAGE = 10;
+
+  // Load Leaderboard Function
+  const loadLeaderboard = async () => {
+    if (!userId) return;
+    
+    setLoadingLeaderboard(true);
+    try {
+      let query = supabase
+        .from('loyalty_points_history')
+        .select(`
+          user_id,
+          points_change,
+          created_at,
+          profiles:user_id (
+            first_name,
+            last_name,
+            username,
+            profile_image_url
+          )
+        `);
+      
+      // Filter by period
+      if (leaderboardPeriod === 'week') {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        query = query.gte('created_at', weekAgo.toISOString());
+      } else if (leaderboardPeriod === 'month') {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        query = query.gte('created_at', monthAgo.toISOString());
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      
+      // Aggregate by user_id
+      const userPointsMap = new Map<string, { user: any, total: number }>();
+      
+      data?.forEach((entry: any) => {
+        const entryUserId = entry.user_id;
+        if (!userPointsMap.has(entryUserId)) {
+          userPointsMap.set(entryUserId, {
+            user: entry.profiles,
+            total: 0
+          });
+        }
+        userPointsMap.get(entryUserId)!.total += entry.points_change;
+      });
+      
+      // Convert to array and sort
+      const leaderboard = Array.from(userPointsMap.entries())
+        .map(([id, data]) => ({
+          user_id: id,
+          ...data.user,
+          total_points: data.total
+        }))
+        .sort((a, b) => b.total_points - a.total_points)
+        .slice(0, 10);  // Top 10
+      
+      setLeaderboardData(leaderboard);
+      
+      // Find current user position
+      const position = leaderboard.findIndex(u => u.user_id === userId);
+      setUserRank(position >= 0 ? position + 1 : null);
+      
+    } catch (error) {
+      console.error('Error loading leaderboard:', error);
+    } finally {
+      setLoadingLeaderboard(false);
+    }
+  };
 
   useEffect(() => {
     if (userId) {
@@ -71,6 +146,12 @@ export default function PublicProfile() {
       loadFollowData();
     }
   }, [userId, commentsPage, user?.id]);
+
+  useEffect(() => {
+    if (userId) {
+      loadLeaderboard();
+    }
+  }, [userId, leaderboardPeriod]);
 
   // Load user role
   useEffect(() => {
@@ -348,13 +429,16 @@ export default function PublicProfile() {
       // Load spirit points
       const { data: loyaltyData } = await supabase
         .from('loyalty_points')
-        .select('lifetime_points')
+        .select('points, lifetime_points')
         .eq('user_id', userId)
         .single();
-      
-      setSpiritPoints(loyaltyData?.lifetime_points || 0);
 
-      // Load comments with profiles
+      setSpiritPoints(loyaltyData?.points || 0);
+
+      // Load leaderboard
+      // Note: loadLeaderboard is called in useEffect separately
+
+      // Load reviews
       const { data: commentsData } = await supabase
         .from('profile_comments')
         .select(`
@@ -1055,19 +1139,117 @@ export default function PublicProfile() {
             <BadgeShowcase userId={userId || ''} variant="mini" />
           </div>
 
-          {/* 2. Spirit Points Leaderboard (placeholder - da implementare con Your Points) */}
+          {/* 2. Spirit Points Leaderboard - Functional */}
           <div className="order-2">
             <Card>
               <CardHeader>
-                <h2 className="text-2xl font-semibold flex items-center gap-2">
-                  <Trophy className="h-6 w-6 text-primary" />
-                  {t('spiritPointsLeaderboard')}
-                </h2>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h2 className="text-xl md:text-2xl font-semibold flex items-center gap-2">
+                    <Trophy className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                    {t('spiritPointsLeaderboard')}
+                  </h2>
+                  
+                  {/* Period Filters */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant={leaderboardPeriod === 'week' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setLeaderboardPeriod('week')}
+                      className="text-xs px-2 py-1 h-7"
+                    >
+                      {language === 'pl' ? 'Tydzień' : 'Week'}
+                    </Button>
+                    <Button
+                      variant={leaderboardPeriod === 'month' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setLeaderboardPeriod('month')}
+                      className="text-xs px-2 py-1 h-7"
+                    >
+                      {language === 'pl' ? 'Miesiąc' : 'Month'}
+                    </Button>
+                    <Button
+                      variant={leaderboardPeriod === 'all' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setLeaderboardPeriod('all')}
+                      className="text-xs px-2 py-1 h-7"
+                    >
+                      {language === 'pl' ? 'Tutto' : 'All'}
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  {language === 'pl' ? 'Leaderboard wkrótce dostępny' : 'Leaderboard coming soon'}
-                </p>
+              <CardContent className="space-y-4">
+                {/* Your Points Section - Always Visible */}
+                <div className="p-3 md:p-4 bg-primary/5 rounded-lg border-2 border-primary/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs md:text-sm text-muted-foreground">
+                        {language === 'pl' ? 'Punti Totali' : 'Total Points'}
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold">
+                        {spiritPoints}
+                      </p>
+                    </div>
+                    {userRank && (
+                      <div className="text-right">
+                        <p className="text-xs md:text-sm text-muted-foreground">
+                          {t('yourPosition')}
+                        </p>
+                        <p className="text-xl md:text-2xl font-bold text-primary">
+                          #{userRank}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Leaderboard List */}
+                {loadingLeaderboard ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : leaderboardData.length > 0 ? (
+                  <div className="space-y-2">
+                    {leaderboardData.map((lbUser, index) => (
+                      <Link
+                        key={lbUser.user_id}
+                        to={`/profile/${lbUser.user_id}`}
+                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors group"
+                      >
+                        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-muted text-xs font-bold">
+                          {index === 0 && '🥇'}
+                          {index === 1 && '🥈'}
+                          {index === 2 && '🥉'}
+                          {index > 2 && `#${index + 1}`}
+                        </div>
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={lbUser.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                          <AvatarFallback className="text-xs">
+                            {lbUser.first_name?.[0]}{lbUser.last_name?.[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate group-hover:text-primary transition-colors">
+                            {lbUser.first_name} {lbUser.last_name}
+                          </p>
+                          {lbUser.username && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              @{lbUser.username}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 text-primary font-bold text-sm">
+                          <Star className="h-4 w-4 fill-primary" />
+                          {lbUser.total_points}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    {language === 'pl' ? 'Nessun dato disponibile' : 'No data available'}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -1557,17 +1739,90 @@ export default function PublicProfile() {
 
         {/* DESKTOP/TABLET: Grid con nuova struttura - SWAPPED COLUMNS */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-8">
-          {/* COLONNA SINISTRA (2/3) - Spirit Posts, Reviews, Badges */}
+          {/* COLONNA SINISTRA (2/3) - Leaderboard, Purchased, Wishlist */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Spirit Points Leaderboard */}
+            {/* Spirit Points Leaderboard - Functional */}
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h2 className="text-xl md:text-2xl font-semibold flex items-center gap-2">
                     <Trophy className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                     {t('spiritPointsLeaderboard')}
                   </h2>
+                  
+                  <div className="flex items-center gap-1">
+                    <Button variant={leaderboardPeriod === 'week' ? 'default' : 'outline'} size="sm" onClick={() => setLeaderboardPeriod('week')} className="text-xs px-2 py-1">
+                      {language === 'pl' ? 'Tydzień' : 'Week'}
+                    </Button>
+                    <Button variant={leaderboardPeriod === 'month' ? 'default' : 'outline'} size="sm" onClick={() => setLeaderboardPeriod('month')} className="text-xs px-2 py-1">
+                      {language === 'pl' ? 'Miesiąc' : 'Month'}
+                    </Button>
+                    <Button variant={leaderboardPeriod === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setLeaderboardPeriod('all')} className="text-xs px-2 py-1">
+                      {language === 'pl' ? 'Tutto' : 'All'}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-3 md:p-4 bg-primary/5 rounded-lg border-2 border-primary/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs md:text-sm text-muted-foreground">{language === 'pl' ? 'Punti' : 'Points'}</p>
+                      <p className="text-xl md:text-2xl font-bold">{spiritPoints}</p>
+                    </div>
+                    {userRank && (
+                      <div className="text-right">
+                        <p className="text-xs md:text-sm text-muted-foreground">{t('yourPosition')}</p>
+                        <p className="text-xl md:text-2xl font-bold text-primary">#{userRank}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {loadingLeaderboard ? (
+                  <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+                ) : leaderboardData.length > 0 ? (
+                  <div className="space-y-2">
+                    {leaderboardData.map((lbUser, idx) => (
+                      <Link key={lbUser.user_id} to={`/profile/${lbUser.user_id}`} className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors group">
+                        <div className="w-7 h-7 rounded-full bg-muted text-xs font-bold flex items-center justify-center">{idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}</div>
+                        <Avatar className="h-8 w-8"><AvatarImage src={lbUser.profile_image_url} /><AvatarFallback>{lbUser.first_name?.[0]}{lbUser.last_name?.[0]}</AvatarFallback></Avatar>
+                        <div className="flex-1 min-w-0"><p className="text-sm font-semibold truncate group-hover:text-primary">{lbUser.first_name} {lbUser.last_name}</p>{lbUser.username && <p className="text-xs text-muted-foreground truncate">@{lbUser.username}</p>}</div>
+                        <div className="flex items-center gap-1 text-primary font-bold text-sm"><Star className="h-4 w-4 fill-primary" />{lbUser.total_points}</div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (<p className="text-sm text-muted-foreground text-center py-4">{language === 'pl' ? 'Nessun dato' : 'No data'}</p>)}
+              </CardContent>
+            </Card>
+                  
+                  {/* Period Filters */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant={leaderboardPeriod === 'week' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setLeaderboardPeriod('week')}
+                      className="text-xs px-2 py-1"
+                    >
+                      {language === 'pl' ? 'Tydzień' : 'Week'}
+                    </Button>
+                    <Button
+                      variant={leaderboardPeriod === 'month' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setLeaderboardPeriod('month')}
+                      className="text-xs px-2 py-1"
+                    >
+                      {language === 'pl' ? 'Miesiąc' : 'Month'}
+                    </Button>
+                    <Button
+                      variant={leaderboardPeriod === 'all' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setLeaderboardPeriod('all')}
+                      className="text-xs px-2 py-1"
+                    >
+                      {language === 'pl' ? 'Tutto' : 'All'}
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -1585,7 +1840,7 @@ export default function PublicProfile() {
                     {userRank && (
                       <div className="text-right">
                         <p className="text-xs md:text-sm text-muted-foreground">
-                          {language === 'pl' ? 'Posizione' : 'Position'}
+                          {t('yourPosition')}
                         </p>
                         <p className="text-xl md:text-2xl font-bold text-primary">
                           #{userRank}
@@ -1595,13 +1850,53 @@ export default function PublicProfile() {
                   </div>
                 </div>
 
-                {/* Leaderboard List - Coming Soon */}
-                <div className="text-center py-8 text-muted-foreground">
-                  <Trophy className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">
-                    {language === 'pl' ? 'Classifica disponibile a breve' : 'Leaderboard coming soon'}
+                {/* Leaderboard List - Functional */}
+                {loadingLeaderboard ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : leaderboardData.length > 0 ? (
+                  <div className="space-y-2">
+                    {leaderboardData.map((lbUser, index) => (
+                      <Link
+                        key={lbUser.user_id}
+                        to={`/profile/${lbUser.user_id}`}
+                        className="flex items-center gap-3 p-2 md:p-3 rounded-lg hover:bg-accent/50 transition-colors group"
+                      >
+                        <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-muted text-xs md:text-sm font-bold">
+                          {index === 0 && '🥇'}
+                          {index === 1 && '🥈'}
+                          {index === 2 && '🥉'}
+                          {index > 2 && `#${index + 1}`}
+                        </div>
+                        <Avatar className="h-8 w-8 md:h-10 md:w-10">
+                          <AvatarImage src={lbUser.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                          <AvatarFallback>
+                            {lbUser.first_name?.[0]}{lbUser.last_name?.[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm md:text-base font-semibold truncate group-hover:text-primary transition-colors">
+                            {lbUser.first_name} {lbUser.last_name}
+                          </p>
+                          {lbUser.username && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              @{lbUser.username}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 text-primary font-bold text-sm md:text-base">
+                          <Star className="h-4 w-4 fill-primary" />
+                          {lbUser.total_points}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    {language === 'pl' ? 'Nessun dato disponibile' : 'No data available'}
                   </p>
-                </div>
+                )}
               </CardContent>
             </Card>
 

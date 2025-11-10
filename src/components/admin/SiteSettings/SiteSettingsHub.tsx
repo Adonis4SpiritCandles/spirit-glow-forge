@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useGeneralSettings } from '@/hooks/useGeneralSettings';
 import { 
   MessageSquare, 
   Mail, 
@@ -30,6 +31,10 @@ import GeneralSettingsMain from './GeneralSettings/GeneralSettingsMain';
 export default function SiteSettingsHub() {
   const { language, t } = useLanguage();
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const { settings: generalSettings } = useGeneralSettings();
+
+  // Calculate overlay opacity from intensity (0-50 becomes 0-0.5)
+  const overlayOpacity = (generalSettings.gradient_overlay_intensity || 20) / 100;
 
   // Spirit Tools sections
   const spiritToolsSections = [
@@ -215,8 +220,11 @@ export default function SiteSettingsHub() {
                 }}
               />
               
-              {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/20 md:bg-black/30" />
+              {/* Dark overlay - dynamic from general_settings */}
+              <div 
+                className="absolute inset-0" 
+                style={{ backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})` }}
+              />
               
               <CardHeader className="relative z-10">
                 <div className="flex items-center justify-between mb-3">
@@ -278,8 +286,11 @@ export default function SiteSettingsHub() {
                 }}
               />
               
-              {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/20 md:bg-black/30" />
+              {/* Dark overlay - dynamic from general_settings */}
+              <div 
+                className="absolute inset-0" 
+                style={{ backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})` }}
+              />
               
               <CardHeader className="relative z-10">
                 <div className="flex items-center justify-between mb-3">

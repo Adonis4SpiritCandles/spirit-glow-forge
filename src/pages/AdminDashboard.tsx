@@ -115,6 +115,8 @@ const AdminDashboard = () => {
     totalOrders: 0,
     totalCustomers: 0,
     revenue: 0,
+    monthlyOrders: [] as Array<{ month: string; orders: number; revenue: number }>,
+    categoryBreakdown: [] as Array<{ name: string; value: number; color: string }>
   });
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   
@@ -314,6 +316,8 @@ const AdminDashboard = () => {
         totalOrders: activeOrders.length,
         totalCustomers: activeProfiles.length,
         revenue,
+        monthlyOrders: [],
+        categoryBreakdown: []
       });
 
       // Count new orders not seen by admin

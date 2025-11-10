@@ -47,6 +47,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
  import { CartProvider } from "./contexts/CartContext";
  import { useReferral } from "./hooks/useReferral";
  import FloatingActionButton from "./components/FloatingActionButton";
+ import { useGeneralSettings } from "./hooks/useGeneralSettings";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const RouteChangeHandler = () => {
 
 const App = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { settings: generalSettings } = useGeneralSettings();
 
   return (
     <HelmetProvider>
@@ -119,8 +121,8 @@ const App = () => {
               <Footer />
               <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
               <CookieBanner />
-              <LiveChatWidget />
-              <FloatingActionButton />
+              {generalSettings.show_live_chat && <LiveChatWidget />}
+              {generalSettings.show_floating_plus && <FloatingActionButton />}
             </div>
           </TooltipProvider>
         </CartProvider>

@@ -33,6 +33,7 @@ import AdminReferralRewardsEnhanced from '@/components/admin/AdminReferralReward
 import SiteSettingsHub from '@/components/admin/SiteSettings/SiteSettingsHub';
 import AdminAdvancedAnalytics from '@/components/admin/AdminAdvancedAnalytics';
 import AdminReferralAnalytics from '@/components/admin/AdminReferralAnalytics';
+import AdminAdvancedExport from '@/components/admin/AdminAdvancedExport';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { format } from 'date-fns';

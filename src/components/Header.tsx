@@ -18,7 +18,7 @@ import spiritLogoTransparent from '@/assets/spirit-logo-transparent.png';
 import goldShieldIcon from '@/assets/gold-shield-admin-mini.png';
 import iconLogoCandle from '@/assets/icon-logo-candle-transparent.png';
 import goldShieldMiniIcon from '@/assets/gold-shield-admin-mini-2.png';
-import NotificationBell from '@/components/NotificationBell';
+import NotificationCenter from '@/components/NotificationCenter';
 
 const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -147,7 +147,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           
           {/* RIGHT SECTION: Bell, Profile, Burger Menu */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            {user && <NotificationBell />}
+            {user && <NotificationCenter />}
             
             {user ? (
               <DropdownMenu>
@@ -453,7 +453,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
               </Link>
             )}
 
-            {user && <NotificationBell />}
+            {user && <NotificationCenter />}
 
             {user ? (
               <DropdownMenu>

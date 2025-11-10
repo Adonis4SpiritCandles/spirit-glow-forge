@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRealtimeNotifications, useAdminRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -71,6 +72,9 @@ const RouteChangeHandler = () => {
 const App = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { settings: generalSettings } = useGeneralSettings();
+  
+  useRealtimeNotifications();
+  useAdminRealtimeNotifications();
 
   return (
     <HelmetProvider>

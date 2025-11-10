@@ -17,6 +17,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import SEOManager from "@/components/SEO/SEOManager";
 import { generateBreadcrumbStructuredData } from "@/utils/seoUtils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 
 const Shop = () => {
   const { t, language } = useLanguage();
@@ -27,6 +30,9 @@ const Shop = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [headerRef, headerInView] = useInView({ threshold: 0.1, triggerOnce: true });
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
+  const [priceBounds, setPriceBounds] = useState<[number, number]>([0, 0]);
 
   useEffect(() => {
     const load = async () => {
@@ -61,6 +67,13 @@ const Shop = () => {
           isBestseller: false,
         }));
         setProducts(mapped);
+
+        // Compute price bounds (PLN)
+        const prices = mapped.map((m:any) => m.price.pln);
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        setPriceBounds([min, max]);
+        setPriceRange([min, max]);
       }
     };
     load();
@@ -73,14 +86,15 @@ const Shop = () => {
   }, [language]);
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.fragrance.toLowerCase().includes(searchQuery.toLowerCase());
-    
+    const q = searchQuery.toLowerCase();
+    const matchesSearch = product.name.toLowerCase().includes(q) ||
+                          (product.description || '').toLowerCase().includes(q);
     const matchesFilter = filterBy === "all" || 
                          (filterBy === "new" && product.isNew) ||
                          (filterBy === "bestseller" && product.isBestseller);
-    
-    return matchesSearch && matchesFilter;
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
+    const matchesPrice = product.price.pln >= priceRange[0] && product.price.pln <= priceRange[1];
+    return matchesSearch && matchesFilter && matchesCategory && matchesPrice;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -286,7 +300,53 @@ const Shop = () => {
           </motion.div>
         </motion.div>
 
-        {/* Products Grid with Stagger Animation */}
+        {/* Advanced Filters: Categories + Price Range */}
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="bg-card/60 border border-border/40 rounded-xl p-6 mb-8"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Categories */}
+            <div>
+              <h3 className="font-semibold mb-3">{language === 'pl' ? 'Kategorie' : 'Categories'}</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {[...new Set(products.map(p => p.category).filter(Boolean))].map((cat) => (
+                  <label key={cat} className="flex items-center gap-2">
+                    <Checkbox 
+                      checked={selectedCategories.includes(cat)}
+                      onCheckedChange={(checked) => {
+                        setSelectedCategories(checked 
+                          ? [...selectedCategories, cat]
+                          : selectedCategories.filter(c => c !== cat)
+                        );
+                      }}
+                    />
+                    <span className="text-sm">{cat}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Range */}
+            <div>
+              <h3 className="font-semibold mb-3">{language === 'pl' ? 'Przedział cenowy (PLN)' : 'Price Range (PLN)'}</h3>
+              <Slider 
+                value={priceRange} 
+                onValueChange={(v:any) => setPriceRange(v as [number, number])}
+                min={priceBounds[0]}
+                max={priceBounds[1]}
+                step={5}
+                className="mt-4"
+              />
+              <div className="flex justify-between text-sm mt-2">
+                <span>{Math.round(priceRange[0])} PLN</span>
+                <span>{Math.round(priceRange[1])} PLN</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
         <AnimatePresence mode="wait">
           {sortedProducts.length > 0 ? (
             <motion.div

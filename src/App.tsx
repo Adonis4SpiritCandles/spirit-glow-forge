@@ -39,6 +39,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import ARViewer from "./pages/ARViewer";
   import PublicProfile from "./pages/PublicProfile";
   import CustomCandles from "./pages/CustomCandles";
+  import ReferralLeaderboard from "./pages/ReferralLeaderboard";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
@@ -111,6 +112,7 @@ const AppContent = () => {
         <Route path="/custom-candles" element={<CustomCandles />} />
         <Route path="/ar/:productId" element={<ARViewer />} />
         <Route path="/profile/:userId" element={<PublicProfile />} />
+        <Route path="/leaderboard" element={<ReferralLeaderboard />} />
         <Route path="/wishlist/shared/:token" element={<SharedWishlist />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

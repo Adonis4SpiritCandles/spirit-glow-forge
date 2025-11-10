@@ -71,6 +71,13 @@ interface HeaderSettings {
   logo_animation?: LogoAnimation;
   desktop_config?: DesktopConfig;
   mobile_config?: MobileConfig;
+  // New per-device logo settings
+  mobile_logo_url?: string;
+  mobile_logo_height?: string;
+  mobile_logo_animation?: LogoAnimation;
+  tablet_logo_url?: string;
+  tablet_logo_height?: string;
+  tablet_logo_animation?: LogoAnimation;
 }
 
 function SortableNavItem({ item, index, onUpdate, onDelete }: { item: NavigationItem; index: number; onUpdate: (index: number, field: keyof NavigationItem, value: any) => void; onDelete: (index: number) => void }) {
@@ -138,7 +145,6 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
 
       if (error) throw error;
       
-      // Parse navigation_items and configs from JSONB with defaults
       const parsedData = {
         ...data,
         logo_transparent_bg: data.logo_transparent_bg ?? true, // Default to transparent
@@ -149,6 +155,7 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
           glow_intensity: '0.4',
           hover_scale: '1.05'
         },
+        // Desktop defaults
         desktop_config: (data.desktop_config as any) || {
           show_admin_icon: true,
           show_notification_bell: true,
@@ -159,6 +166,7 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
             cart: 'h-5 w-5'
           }
         },
+        // Mobile defaults
         mobile_config: (data.mobile_config as any) || {
           show_admin_icon: true,
           show_notification_bell: true,
@@ -168,7 +176,14 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
             profile: 'h-6 w-6',
             cart: 'h-5 w-5'
           }
-        }
+        },
+        // New: per-device logo settings (with good defaults)
+        mobile_logo_url: (data as any).mobile_logo_url || '/assets/icon-logo-candle-transparent.png',
+        mobile_logo_height: (data as any).mobile_logo_height || 'h-14',
+        mobile_logo_animation: (data as any).mobile_logo_animation || { enabled: true, speed: '4s', glow_intensity: '0.4', hover_scale: '1.05' },
+        tablet_logo_url: (data as any).tablet_logo_url || '/assets/icon-logo-candle-transparent.png',
+        tablet_logo_height: (data as any).tablet_logo_height || 'h-12',
+        tablet_logo_animation: (data as any).tablet_logo_animation || { enabled: true, speed: '4s', glow_intensity: '0.4', hover_scale: '1.05' },
       };
       
       setSettings(parsedData as HeaderSettings);
@@ -207,6 +222,13 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
           logo_animation: settings.logo_animation as any,
           desktop_config: settings.desktop_config as any,
           mobile_config: settings.mobile_config as any,
+          // New per-device fields
+          mobile_logo_url: settings.mobile_logo_url,
+          mobile_logo_height: settings.mobile_logo_height,
+          mobile_logo_animation: settings.mobile_logo_animation as any,
+          tablet_logo_url: settings.tablet_logo_url,
+          tablet_logo_height: settings.tablet_logo_height,
+          tablet_logo_animation: settings.tablet_logo_animation as any,
           updated_at: new Date().toISOString()
         })
         .eq('id', settings.id);
@@ -351,6 +373,108 @@ export default function HeaderSettingsMain({ onBack }: HeaderSettingsMainProps) 
               checked={settings.logo_transparent_bg ?? true}
               onCheckedChange={(checked) => setSettings({ ...settings, logo_transparent_bg: checked })}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tablet Logo Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{language === 'pl' ? 'Logo Tablet' : 'Tablet Logo'}</CardTitle>
+          <CardDescription>
+            {language === 'pl' ? 'Ustawienia logo dla tabletów (md)' : 'Logo settings for tablets (md)'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>URL</Label>
+            <Input 
+              value={settings.tablet_logo_url || ''}
+              onChange={(e) => setSettings({ ...settings, tablet_logo_url: e.target.value })}
+              placeholder="/assets/icon-logo-candle-transparent.png"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{language === 'pl' ? 'Wysokość (Tailwind)' : 'Height (Tailwind)'}</Label>
+            <Input 
+              value={settings.tablet_logo_height || ''}
+              onChange={(e) => setSettings({ ...settings, tablet_logo_height: e.target.value })}
+              placeholder="h-12"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label>{language === 'pl' ? 'Prędkość' : 'Speed'}</Label>
+              <Input 
+                value={settings.tablet_logo_animation?.speed || '4s'}
+                onChange={(e) => setSettings({ ...settings, tablet_logo_animation: { ...(settings.tablet_logo_animation || {} as any), speed: e.target.value } })}
+              />
+            </div>
+            <div>
+              <Label>{language === 'pl' ? 'Poświata' : 'Glow'}</Label>
+              <Input 
+                value={settings.tablet_logo_animation?.glow_intensity || '0.4'}
+                onChange={(e) => setSettings({ ...settings, tablet_logo_animation: { ...(settings.tablet_logo_animation || {} as any), glow_intensity: e.target.value } })}
+              />
+            </div>
+            <div>
+              <Label>{language === 'pl' ? 'Skalowanie' : 'Hover Scale'}</Label>
+              <Input 
+                value={settings.tablet_logo_animation?.hover_scale || '1.05'}
+                onChange={(e) => setSettings({ ...settings, tablet_logo_animation: { ...(settings.tablet_logo_animation || {} as any), hover_scale: e.target.value } })}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Mobile Logo Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{language === 'pl' ? 'Logo Mobile' : 'Mobile Logo'}</CardTitle>
+          <CardDescription>
+            {language === 'pl' ? 'Ustawienia logo dla urządzeń mobilnych (sm)' : 'Logo settings for mobile devices (sm)'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>URL</Label>
+            <Input 
+              value={settings.mobile_logo_url || ''}
+              onChange={(e) => setSettings({ ...settings, mobile_logo_url: e.target.value })}
+              placeholder="/assets/icon-logo-candle-transparent.png"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{language === 'pl' ? 'Wysokość (Tailwind)' : 'Height (Tailwind)'}</Label>
+            <Input 
+              value={settings.mobile_logo_height || ''}
+              onChange={(e) => setSettings({ ...settings, mobile_logo_height: e.target.value })}
+              placeholder="h-14"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label>{language === 'pl' ? 'Prędkość' : 'Speed'}</Label>
+              <Input 
+                value={settings.mobile_logo_animation?.speed || '4s'}
+                onChange={(e) => setSettings({ ...settings, mobile_logo_animation: { ...(settings.mobile_logo_animation || {} as any), speed: e.target.value } })}
+              />
+            </div>
+            <div>
+              <Label>{language === 'pl' ? 'Poświata' : 'Glow'}</Label>
+              <Input 
+                value={settings.mobile_logo_animation?.glow_intensity || '0.4'}
+                onChange={(e) => setSettings({ ...settings, mobile_logo_animation: { ...(settings.mobile_logo_animation || {} as any), glow_intensity: e.target.value } })}
+              />
+            </div>
+            <div>
+              <Label>{language === 'pl' ? 'Skalowanie' : 'Hover Scale'}</Label>
+              <Input 
+                value={settings.mobile_logo_animation?.hover_scale || '1.05'}
+                onChange={(e) => setSettings({ ...settings, mobile_logo_animation: { ...(settings.mobile_logo_animation || {} as any), hover_scale: e.target.value } })}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>

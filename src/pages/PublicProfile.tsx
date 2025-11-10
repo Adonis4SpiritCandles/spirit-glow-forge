@@ -77,7 +77,7 @@ export default function PublicProfile() {
     try {
       // Use secure RPC function for leaderboard
       const { data, error } = await supabase.rpc('get_spirit_leaderboard' as any, {
-        period: leaderboardPeriod,
+        time_period: leaderboardPeriod,
         limit_count: 10
       });
 

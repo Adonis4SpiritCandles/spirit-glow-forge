@@ -72,6 +72,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const logoUrl = headerSettings?.logo_url || spiritLogoTransparent;
   const logoHeight = headerSettings?.logo_height || 'h-8';
   const logoTransparentBg = headerSettings?.logo_transparent_bg ?? true;
+
+  // Mobile & Tablet specific logo settings
+  const mobileLogoUrl = headerSettings?.mobile_logo_url || iconLogoCandle;
+  const mobileLogoHeight = headerSettings?.mobile_logo_height || 'h-14';
+  const mobileAnim = headerSettings?.mobile_logo_animation || headerSettings?.logo_animation;
+  const tabletLogoUrl = headerSettings?.tablet_logo_url || logoUrl;
+  const tabletLogoHeight = headerSettings?.tablet_logo_height || logoHeight;
+  const tabletAnim = headerSettings?.tablet_logo_animation || headerSettings?.logo_animation;
   
   // Feature flags from settings
   const showSearch = headerSettings?.show_search ?? true;
@@ -133,14 +141,14 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* CENTER: Logo - Mobile with candle icon */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={iconLogoCandle}
+              src={mobileLogoUrl}
               alt="SPIRIT CANDLES" 
-              className="h-14 w-auto hover:scale-105 transition-all duration-700"
+              className={`${mobileLogoHeight} w-auto hover:scale-105 transition-all duration-700`}
               style={{ 
                 background: 'transparent',
                 backgroundColor: 'transparent',
-                filter: `drop-shadow(0 0 6px rgba(255, 255, 255, ${headerSettings?.logo_animation?.glow_intensity || '0.4'}))`,
-                animation: headerSettings?.logo_animation?.enabled ? `glow-soft ${headerSettings?.logo_animation?.speed || '4s'} ease-in-out infinite` : 'none'
+                filter: `drop-shadow(0 0 6px rgba(255, 255, 255, ${mobileAnim?.glow_intensity || '0.4'}))`,
+                animation: mobileAnim?.enabled ? `glow-soft ${mobileAnim?.speed || '4s'} ease-in-out infinite` : 'none'
               }}
             />
           </Link>
@@ -376,13 +384,25 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* Logo */}
           <div className="flex items-center ml-3 md:ml-4">
             <Link to="/" className="md:mr-4 lg:mr-6">
+              {/* Tablet logo (md only) */}
+              <img 
+                src={tabletLogoUrl} 
+                alt="SPIRIT CANDLES" 
+                className={`${tabletLogoHeight} w-auto hover:scale-105 transition-all duration-700 hidden md:block lg:hidden ${!logoTransparentBg ? 'bg-background p-2 rounded' : ''}`}
+                style={{
+                  filter: `drop-shadow(0 0 6px rgba(255, 255, 255, ${tabletAnim?.glow_intensity || '0.4'}))`,
+                  animation: tabletAnim?.enabled ? `glow-soft ${tabletAnim?.speed || '4s'} ease-in-out infinite` : 'none',
+                  mixBlendMode: logoTransparentBg ? 'normal' : 'multiply'
+                }}
+              />
+              {/* Desktop logo (lg and up) */}
               <img 
                 src={logoUrl} 
                 alt="SPIRIT CANDLES" 
-                className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700 ${!logoTransparentBg ? 'bg-background p-2 rounded' : ''}`}
+                className={`${logoHeight} w-auto hover:scale-105 transition-all duration-700 hidden lg:block ${!logoTransparentBg ? 'bg-background p-2 rounded' : ''}`}
                 style={{
-                  filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
-                  animation: 'glow-soft 4s ease-in-out infinite',
+                  filter: `drop-shadow(0 0 6px rgba(255, 255, 255, ${headerSettings?.logo_animation?.glow_intensity || '0.4'}))`,
+                  animation: headerSettings?.logo_animation?.enabled ? `glow-soft ${headerSettings?.logo_animation?.speed || '4s'} ease-in-out infinite` : 'none',
                   mixBlendMode: logoTransparentBg ? 'normal' : 'multiply'
                 }}
               />

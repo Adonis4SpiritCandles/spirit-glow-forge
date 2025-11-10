@@ -688,6 +688,11 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment CREATED!';
     if (key === 'shipped') return language === 'pl' ? 'WYSŁANY' : 'SHIPPED';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped successfully';
+    if (key === 'spiritPointsLeaderboard') return language === 'pl' ? 'Ranking Punktów Spirit' : 'Spirit Points Leaderboard';
+    if (key === 'yourPosition') return language === 'pl' ? 'Twoja Pozycja' : 'Your Position';
+    if (key === 'yourPoints') return language === 'pl' ? 'Twoje Punkty' : 'Your Points';
+    if (key === 'login') return language === 'pl' ? 'Zaloguj' : 'Login';
+    if (key === 'generalSettings') return language === 'pl' ? 'Ustawienia Ogólne' : 'General Settings';
     if (key === 'sentVia') return language === 'pl' ? 'Wysłano przez' : 'Sent via';
     if (key === 'noShipmentCreated') return language === 'pl' ? 'BRAK Przesyłki' : 'NO Shipment';
     if (key === 'syncTracking') return language === 'pl' ? 'Synchronizuj śledzenie z FURGONETKI' : 'Sync Tracking from FURGONETKA';

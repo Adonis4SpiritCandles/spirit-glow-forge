@@ -25,6 +25,7 @@ import HeaderSettings from './HeaderSettings/HeaderSettingsMain';
 import AdminEmailManager from '../AdminEmailManager';
 import AdminReferralRewardsEnhanced from '../AdminReferralRewardsEnhanced';
 import CustomCandlesSettingsMain from './CustomCandlesSettings/CustomCandlesSettingsMain';
+import GeneralSettingsMain from './GeneralSettings/GeneralSettingsMain';
 
 export default function SiteSettingsHub() {
   const { language, t } = useLanguage();
@@ -32,6 +33,16 @@ export default function SiteSettingsHub() {
 
   // Spirit Tools sections
   const spiritToolsSections = [
+    {
+      id: 'general',
+      icon: <Settings className="h-6 w-6" />,
+      title: language === 'pl' ? 'Ustawienia Ogólne' : 'General Settings',
+      description: language === 'pl'
+        ? 'Konfiguruj elementy UI, ikony fluttuanti i gradienti'
+        : 'Configure UI elements, floating icons and gradients',
+      itemCount: 3,
+      color: 'text-gray-500'
+    },
     {
       id: 'referrals',
       icon: <Gift className="h-6 w-6" />,
@@ -123,6 +134,10 @@ export default function SiteSettingsHub() {
   ];
 
   // Conditional rendering for each setting section
+  if (selectedSection === 'general') {
+    return <GeneralSettingsMain onBack={() => setSelectedSection(null)} />;
+  }
+
   if (selectedSection === 'footer') {
     return <FooterSettings onBack={() => setSelectedSection(null)} />;
   }

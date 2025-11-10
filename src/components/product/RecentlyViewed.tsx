@@ -102,17 +102,17 @@ const RecentlyViewed = ({ currentProductId }: { currentProductId: string }) => {
 
         <Swiper
           modules={[Navigation, Autoplay]}
-          spaceBetween={16}
-          slidesPerView={2}
+          spaceBetween={24}
+          slidesPerView={1.5}
           navigation
           autoplay={{ delay: 5000, disableOnInteraction: false }}
           breakpoints={{
-            640: { slidesPerView: 3, spaceBetween: 20 },
-            768: { slidesPerView: 4, spaceBetween: 24 },
-            1024: { slidesPerView: 5, spaceBetween: 24 },
-            1280: { slidesPerView: 6, spaceBetween: 24 }
+            480: { slidesPerView: 2, spaceBetween: 20 },
+            768: { slidesPerView: 3, spaceBetween: 24 },
+            1024: { slidesPerView: 4, spaceBetween: 28 },
+            1280: { slidesPerView: 4.5, spaceBetween: 32 }
           }}
-          className="recently-viewed-swiper"
+          className="recently-viewed-swiper py-4"
         >
           {products.map((product, index) => (
             <SwiperSlide key={product.id}>

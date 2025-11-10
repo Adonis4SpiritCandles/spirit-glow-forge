@@ -67,7 +67,7 @@ export default function AdminCouponActivity() {
         amount_saved_eur,
         coupon:coupons(id, code),
         order:orders(id, order_number),
-        profile:profiles!coupon_redemptions_user_id_fkey(user_id, first_name, last_name, email)
+        profiles!coupon_redemptions_user_id_fkey(user_id, first_name, last_name, email)
       `)
       .order('redeemed_at', { ascending: false });
 

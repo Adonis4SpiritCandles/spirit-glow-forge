@@ -697,6 +697,36 @@ export type Database = {
         }
         Relationships: []
       }
+      general_settings: {
+        Row: {
+          created_at: string | null
+          gradient_overlay_intensity: number | null
+          id: string
+          show_floating_plus: boolean | null
+          show_live_chat: boolean | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          gradient_overlay_intensity?: number | null
+          id?: string
+          show_floating_plus?: boolean | null
+          show_live_chat?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          gradient_overlay_intensity?: number | null
+          id?: string
+          show_floating_plus?: boolean | null
+          show_live_chat?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       header_settings: {
         Row: {
           created_at: string
@@ -712,6 +742,7 @@ export type Database = {
           show_search: boolean
           show_wishlist: boolean
           sticky_header: boolean
+          tablet_config: Json | null
           transparent_on_scroll: boolean
           updated_at: string
           updated_by: string | null
@@ -730,6 +761,7 @@ export type Database = {
           show_search?: boolean
           show_wishlist?: boolean
           sticky_header?: boolean
+          tablet_config?: Json | null
           transparent_on_scroll?: boolean
           updated_at?: string
           updated_by?: string | null
@@ -748,6 +780,7 @@ export type Database = {
           show_search?: boolean
           show_wishlist?: boolean
           sticky_header?: boolean
+          tablet_config?: Json | null
           transparent_on_scroll?: boolean
           updated_at?: string
           updated_by?: string | null

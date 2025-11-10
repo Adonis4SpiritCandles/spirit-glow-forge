@@ -27,22 +27,22 @@ const AdminDashboardTabs = ({ activeTab, setActiveTab }: AdminDashboardTabsProps
 
   return (
     <>
-      {/* Desktop/Tablet - Grid centrato con wrapping */}
-      <div className="hidden sm:grid sm:grid-cols-5 md:grid-cols-6 gap-1.5 sm:gap-1.5 md:gap-1.5 lg:gap-2 p-2 bg-muted/40 rounded-lg mb-6 place-items-center">
+      {/* Desktop/Tablet - Grid centrato con wrapping - max 5 per row */}
+      <div className="hidden sm:grid sm:grid-cols-5 gap-2 md:gap-3 p-2 bg-muted/40 rounded-lg mb-6 place-items-center">
         {tabs.map(tab => (
           <Button
             key={tab.value}
             variant={activeTab === tab.value ? "default" : "ghost"}
             size="sm"
             onClick={() => setActiveTab(tab.value)}
-            className={`gap-1.5 sm:gap-1.5 md:gap-1.5 lg:gap-2 px-2.5 sm:px-2.5 md:px-2.5 lg:px-3 py-1.5 sm:py-1.5 md:py-1.5 lg:py-2 transition-all w-full ${
+            className={`gap-1.5 md:gap-2 px-3 py-2 transition-all w-full max-w-[180px] ${
               activeTab === tab.value 
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                 : 'hover:bg-primary/20 hover:text-primary'
             }`}
           >
             {tab.icon}
-            <span className="text-[12px] sm:text-[12px] md:text-[12px] lg:text-sm whitespace-nowrap">{tab.label}</span>
+            <span className="text-[11px] md:text-xs truncate">{tab.label}</span>
           </Button>
         ))}
       </div>

@@ -132,7 +132,7 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
           {/* CENTER: Logo */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={spiritLogoTransparent}
+              src="/assets/icon-logo-candle-transparent.png"
               alt="SPIRIT CANDLES" 
               className={`${logoHeight} w-auto animate-glow-pulse`}
             />

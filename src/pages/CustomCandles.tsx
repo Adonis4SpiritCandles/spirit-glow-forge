@@ -124,14 +124,14 @@ const CustomCandles = () => {
                 ? 'Stwórz świecę idealną dla siebie lub jako wyjątkowy prezent'
                 : 'Create the perfect candle for yourself or as a unique gift'}
             </p>
-            <div className="flex gap-3 justify-center items-center text-primary text-xs md:text-sm flex-wrap">
-              <Sparkles className="h-5 w-5 animate-pulse" />
-              <span>{language === 'pl' ? '100% Wosk Sojowy' : '100% Soy Wax'}</span>
+            <div className="flex gap-2 md:gap-3 justify-center items-center text-primary text-[10px] sm:text-xs md:text-sm flex-wrap">
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5 animate-pulse" />
+              <span className="whitespace-nowrap">{language === 'pl' ? '100% Wosk Sojowy' : '100% Soy Wax'}</span>
               <span>•</span>
-              <span>{language === 'pl' ? 'Ręcznie Robione' : 'Handcrafted'}</span>
+              <span className="whitespace-nowrap">{language === 'pl' ? 'Ręcznie Robione' : 'Handcrafted'}</span>
               <span>•</span>
-              <span>{language === 'pl' ? 'Personalizowane' : 'Personalized'}</span>
-              <Sparkles className="h-5 w-5 animate-pulse" />
+              <span className="whitespace-nowrap">{language === 'pl' ? 'Personalizowane' : 'Personalized'}</span>
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5 animate-pulse" />
             </div>
           </motion.div>
         </div>

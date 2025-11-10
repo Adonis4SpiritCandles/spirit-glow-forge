@@ -397,34 +397,34 @@ const UserDashboard = () => {
             </div>
             
             {/* Tablet/Desktop: visible tabs - REORDERED */}
-            <TabsList className="hidden sm:grid sm:grid-cols-7 w-full gap-1 mb-6">
+            <TabsList className="hidden sm:grid sm:grid-cols-7 w-full gap-2 mb-6">
               <TabsTrigger value="orders" className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('orders')}</span>
+                <span className="text-xs md:text-sm truncate">{t('orders')}</span>
               </TabsTrigger>
               <TabsTrigger value="social" className="flex items-center gap-2">
                 <Users className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('profile')}</span>
+                <span className="text-xs md:text-sm truncate">{t('profile')}</span>
               </TabsTrigger>
               <TabsTrigger value="billing" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('billing')}</span>
+                <span className="text-xs md:text-sm truncate">{t('billing')}</span>
               </TabsTrigger>
               <TabsTrigger value="rewards" className="flex items-center gap-2">
                 <Award className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('rewards') || 'Rewards'}</span>
+                <span className="text-xs md:text-sm truncate">{t('rewards') || 'Rewards'}</span>
               </TabsTrigger>
               <TabsTrigger value="referrals" className="flex items-center gap-2">
                 <Gift className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('referrals') || 'Referrals'}</span>
+                <span className="text-xs md:text-sm truncate">{t('referrals') || 'Referrals'}</span>
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Settings className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('settings')}</span>
+                <span className="text-xs md:text-sm truncate">{t('settings')}</span>
               </TabsTrigger>
               <TabsTrigger value="language" className="flex items-center gap-2">
                 <Globe className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm">{t('language')}</span>
+                <span className="text-xs md:text-sm truncate">{t('language')}</span>
               </TabsTrigger>
             </TabsList>
 

@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Package, Users, ShoppingCart } from 'lucide-react';
+import { TrendingUp, Package, Users, ShoppingCart, RefreshCw, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 interface StatsData {
   totalProducts: number;
@@ -17,10 +19,22 @@ interface AdminStatisticsProps {
 }
 
 const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    window.location.reload();
+  };
+
+  const handleReset = () => {
+    if (confirm(language === 'pl' ? 'Czy na pewno chcesz odświeżyć statystyki?' : 'Are you sure you want to refresh statistics?')) {
+      handleRefresh();
+    }
+  };
 
   // Sample monthly data - in real app this would come from props
-  const monthlyData = [
+  const monthlyData = stats.monthlyOrders || [
     { month: 'Jan', orders: 12, revenue: 2400 },
     { month: 'Feb', orders: 19, revenue: 3800 },
     { month: 'Mar', orders: 8, revenue: 1600 },
@@ -29,7 +43,7 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
     { month: 'Jun', orders: 30, revenue: 6000 },
   ];
 
-  const categoryData = [
+  const categoryData = stats.categoryBreakdown || [
     { name: 'Luxury', value: 35, color: '#D4AF37' },
     { name: 'Nature', value: 45, color: '#228B22' },
     { name: 'Fresh', value: 20, color: '#87CEEB' },
@@ -37,6 +51,32 @@ const AdminStatistics = ({ stats }: AdminStatisticsProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Header with Refresh/Reset buttons */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">{t('statistics')}</h2>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            {language === 'pl' ? 'Odśwież' : 'Refresh'}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleReset}
+            className="gap-2"
+          >
+            <X className="h-4 w-4" />
+            {language === 'pl' ? 'Reset' : 'Reset'}
+          </Button>
+        </div>
+      </div>
+
       {/* Overview Stats */}
       <div className="grid md:grid-cols-4 gap-6">
         <Card>

@@ -515,22 +515,6 @@ export default function PublicProfile() {
 
       setWishlistProducts(wishlistData?.map((w: any) => w.products).filter(Boolean) || []);
 
-      // Load leaderboard
-      const { data: leaderboardData } = await supabase
-        .from('loyalty_points')
-        .select(`
-          *,
-          profiles(first_name, last_name, username, profile_image_url, public_profile, user_id)
-        `)
-        .order('lifetime_points', { ascending: false })
-        .limit(10);
-
-      const publicLeaderboard = leaderboardData?.filter((entry: any) => entry.profiles?.public_profile) || [];
-      setLeaderboard(publicLeaderboard);
-
-      const rank = publicLeaderboard.findIndex((entry: any) => entry.user_id === userId) + 1;
-      setUserRank(rank > 0 ? rank : null);
-
     } catch (error) {
       console.error('Error loading profile:', error);
       toast({

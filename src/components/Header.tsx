@@ -130,17 +130,17 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
             {showLanguageToggle && <LanguageToggle />}
           </div>
           
-          {/* CENTER: Logo - Force transparent logo and same animation as desktop */}
+          {/* CENTER: Logo - Mobile with candle icon */}
           <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src={spiritLogoTransparent}
+              src={iconLogoCandle}
               alt="SPIRIT CANDLES" 
-              className="h-10 w-auto"
+              className="h-14 w-auto hover:scale-105 transition-all duration-700"
               style={{ 
                 background: 'transparent',
                 backgroundColor: 'transparent',
-                filter: 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))',
-                animation: 'glow-soft 4s ease-in-out infinite',
+                filter: `drop-shadow(0 0 6px rgba(255, 255, 255, ${headerSettings?.logo_animation?.glow_intensity || '0.4'}))`,
+                animation: headerSettings?.logo_animation?.enabled ? `glow-soft ${headerSettings?.logo_animation?.speed || '4s'} ease-in-out infinite` : 'none'
               }}
             />
           </Link>

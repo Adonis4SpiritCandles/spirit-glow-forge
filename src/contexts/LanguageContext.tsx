@@ -98,6 +98,18 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'conversions') return language === 'pl' ? 'Konwersje' : 'Conversions';
     if (key === 'emailTemplates') return language === 'pl' ? 'Szablony Email' : 'Email Templates';
     if (key === 'customerSegments') return language === 'pl' ? 'Segmenty Klientów' : 'Customer Segments';
+    
+    // Inventory & Warehouse
+    if (key === 'inventory') return language === 'pl' ? 'Magazyn' : 'Inventory';
+    if (key === 'warehouse') return language === 'pl' ? 'Zarządzanie Magazynem' : 'Warehouse Management';
+    if (key === 'stockLevel') return language === 'pl' ? 'Stan Magazynu' : 'Stock Level';
+    if (key === 'lowStock') return language === 'pl' ? 'Niski Stan' : 'Low Stock';
+    if (key === 'outOfStock') return language === 'pl' ? 'Brak w Magazynie' : 'Out of Stock';
+    if (key === 'reorder') return language === 'pl' ? 'Zamów Ponownie' : 'Reorder';
+    
+    // Leaderboard
+    if (key === 'leaderboard') return language === 'pl' ? 'Ranking' : 'Leaderboard';
+    if (key === 'topReferrers') return language === 'pl' ? 'Najlepsi Polecający' : 'Top Referrers';
     if (key === 'emailCampaigns') return language === 'pl' ? 'Kampanie Email' : 'Email Campaigns';
     if (key === 'emailAnalytics') return language === 'pl' ? 'Analityka Email' : 'Email Analytics';
     if (key === 'automatedCampaigns') return language === 'pl' ? 'Kampanie Automatyczne' : 'Automated Campaigns';

@@ -9,10 +9,24 @@ interface NavigationItem {
   is_active: boolean;
 }
 
+interface LogoAnimation {
+  enabled: boolean;
+  speed: string;
+  glow_intensity: string;
+  hover_scale: string;
+}
+
 interface HeaderSettings {
   logo_url: string;
   logo_height: string;
   logo_transparent_bg: boolean;
+  logo_animation?: LogoAnimation;
+  mobile_logo_url?: string;
+  mobile_logo_height?: string;
+  mobile_logo_animation?: LogoAnimation;
+  tablet_logo_url?: string;
+  tablet_logo_height?: string;
+  tablet_logo_animation?: LogoAnimation;
   show_search: boolean;
   show_wishlist: boolean;
   show_cart: boolean;
@@ -62,6 +76,9 @@ export function useHeaderSettings() {
       setSettings({
         ...data,
         logo_transparent_bg: data.logo_transparent_bg ?? true,
+        logo_animation: (data.logo_animation as any) || { enabled: true, speed: '4s', glow_intensity: '0.4', hover_scale: '1.05' },
+        mobile_logo_animation: (data.mobile_logo_animation as any) || { enabled: true, speed: '4s', glow_intensity: '0.4', hover_scale: '1.05' },
+        tablet_logo_animation: (data.tablet_logo_animation as any) || { enabled: true, speed: '4s', glow_intensity: '0.4', hover_scale: '1.05' },
         navigation_items: (data.navigation_items as any) || []
       } as HeaderSettings);
     } catch (error) {

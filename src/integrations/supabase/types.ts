@@ -478,6 +478,51 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_segments: {
+        Row: {
+          created_at: string | null
+          criteria: Json
+          description_en: string | null
+          description_pl: string | null
+          id: string
+          is_active: boolean | null
+          is_system: boolean | null
+          member_count: number | null
+          name_en: string
+          name_pl: string
+          segment_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          criteria?: Json
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          member_count?: number | null
+          name_en: string
+          name_pl: string
+          segment_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          criteria?: Json
+          description_en?: string | null
+          description_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          member_count?: number | null
+          name_en?: string
+          name_pl?: string
+          segment_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       data_requests: {
         Row: {
           admin_notes: string | null
@@ -752,6 +797,9 @@ export type Database = {
           logo_transparent_bg: boolean | null
           logo_url: string
           mobile_config: Json | null
+          mobile_logo_animation: Json | null
+          mobile_logo_height: string | null
+          mobile_logo_url: string | null
           navigation_items: Json
           show_cart: boolean
           show_language_toggle: boolean
@@ -759,6 +807,9 @@ export type Database = {
           show_wishlist: boolean
           sticky_header: boolean
           tablet_config: Json | null
+          tablet_logo_animation: Json | null
+          tablet_logo_height: string | null
+          tablet_logo_url: string | null
           transparent_on_scroll: boolean
           updated_at: string
           updated_by: string | null
@@ -772,6 +823,9 @@ export type Database = {
           logo_transparent_bg?: boolean | null
           logo_url?: string
           mobile_config?: Json | null
+          mobile_logo_animation?: Json | null
+          mobile_logo_height?: string | null
+          mobile_logo_url?: string | null
           navigation_items?: Json
           show_cart?: boolean
           show_language_toggle?: boolean
@@ -779,6 +833,9 @@ export type Database = {
           show_wishlist?: boolean
           sticky_header?: boolean
           tablet_config?: Json | null
+          tablet_logo_animation?: Json | null
+          tablet_logo_height?: string | null
+          tablet_logo_url?: string | null
           transparent_on_scroll?: boolean
           updated_at?: string
           updated_by?: string | null
@@ -792,6 +849,9 @@ export type Database = {
           logo_transparent_bg?: boolean | null
           logo_url?: string
           mobile_config?: Json | null
+          mobile_logo_animation?: Json | null
+          mobile_logo_height?: string | null
+          mobile_logo_url?: string | null
           navigation_items?: Json
           show_cart?: boolean
           show_language_toggle?: boolean
@@ -799,6 +859,9 @@ export type Database = {
           show_wishlist?: boolean
           sticky_header?: boolean
           tablet_config?: Json | null
+          tablet_logo_animation?: Json | null
+          tablet_logo_height?: string | null
+          tablet_logo_url?: string | null
           transparent_on_scroll?: boolean
           updated_at?: string
           updated_by?: string | null
@@ -951,6 +1014,47 @@ export type Database = {
           video_url?: string
         }
         Relationships: []
+      }
+      inventory_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_triggered_at: string | null
+          product_id: string
+          threshold: number
+          updated_at: string | null
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_triggered_at?: string | null
+          product_id: string
+          threshold: number
+          updated_at?: string | null
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_triggered_at?: string | null
+          product_id?: string
+          threshold?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       legal_documents: {
         Row: {
@@ -1872,6 +1976,73 @@ export type Database = {
           },
         ]
       }
+      reorder_history: {
+        Row: {
+          actual_delivery_date: string | null
+          created_at: string | null
+          created_by: string | null
+          expected_delivery_date: string | null
+          id: string
+          notes: string | null
+          order_date: string | null
+          product_id: string
+          quantity_ordered: number
+          status: string | null
+          supplier: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          actual_delivery_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string | null
+          product_id: string
+          quantity_ordered: number
+          status?: string | null
+          supplier?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          actual_delivery_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string | null
+          product_id?: string
+          quantity_ordered?: number
+          status?: string | null
+          supplier?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reorder_history_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "reorder_history_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "reorder_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           comment: string | null
@@ -1907,6 +2078,52 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      segment_members: {
+        Row: {
+          added_at: string | null
+          id: string
+          last_updated: string | null
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          id?: string
+          last_updated?: string | null
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          id?: string
+          last_updated?: string | null
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "segment_members_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "customer_segments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "segment_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "segment_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2050,6 +2267,70 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      stock_movements: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          movement_type: string
+          new_stock: number
+          notes: string | null
+          previous_stock: number
+          product_id: string
+          quantity_change: number
+          reference_id: string | null
+          reference_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          movement_type: string
+          new_stock: number
+          notes?: string | null
+          previous_stock: number
+          product_id: string
+          quantity_change: number
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          movement_type?: string
+          new_stock?: number
+          notes?: string | null
+          previous_stock?: number
+          product_id?: string
+          quantity_change?: number
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "stock_movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles_safe"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       testimonials: {
         Row: {
@@ -2243,6 +2524,16 @@ export type Database = {
         }[]
       }
       get_current_user_role: { Args: never; Returns: string }
+      get_spirit_leaderboard: {
+        Args: { limit_count: number; time_period: string }
+        Returns: {
+          profile: Json
+          rank: number
+          total_points: number
+          total_referrals: number
+          user_id: string
+        }[]
+      }
       has_role:
         | { Args: { _role: string; _user_id: string }; Returns: boolean }
         | {

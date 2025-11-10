@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award, Smile, Image as ImageIcon, Trophy } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Settings, Send, Users, Star, Award, Smile, Image as ImageIcon, Trophy, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -22,6 +22,7 @@ const CommentReactions = lazy(() => import('@/components/profile/CommentReaction
 const PurchasedProducts = lazy(() => import('@/components/profile/PurchasedProducts'));
 const UserReviews = lazy(() => import('@/components/profile/UserReviews'));
 const ReferralDashboard = lazy(() => import('@/components/gamification/ReferralDashboard'));
+const ProfileWishlist = lazy(() => import('@/components/profile/ProfileWishlist'));
 
 // Simple ErrorBoundary for badge showcase
 class BadgeErrorBoundary extends Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
@@ -787,72 +788,278 @@ export default function PublicProfile() {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <div>
+                          <div className="flex-1">
                             <Link 
                               to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
-                              className="font-semibold hover:text-primary transition-colors"
+                              className="font-semibold hover:text-primary transition-colors md:text-base text-sm"
                             >
                               {comment.commenter_profile?.first_name} {comment.commenter_profile?.last_name}
                             </Link>
                             {comment.commenter_profile?.username && (
-                              <p className="text-sm text-muted-foreground">
+                              <Link
+                                to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
+                                className="text-sm text-muted-foreground hover:text-primary transition-colors block md:text-sm text-xs"
+                              >
                                 @{comment.commenter_profile?.username}
-                              </p>
+                              </Link>
                             )}
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-muted-foreground md:text-xs text-[10px]">
                               {(() => {
                                 const d = new Date(comment.created_at as any);
                                 return isNaN(d.getTime()) ? '' : format(d, 'PPp');
                               })()}
                             </span>
                           </div>
-                        </div>
-                        <p className="mt-2 whitespace-pre-wrap break-words">{comment.comment}</p>
-                        
-                        {/* Reaction Buttons */}
-                        <div className="mt-3">
-                          <Suspense fallback={<div className="h-8 w-32 bg-muted animate-pulse rounded" />}>
-                            <CommentReactions commentId={comment.id} />
-                          </Suspense>
+
+                          {/* Edit/Delete for owner or admin */}
+                          {user && (comment.commenter_id === user.id || currentUser?.role === 'admin') && (
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => startEditComment(comment.id, comment.comment)}
+                                className="h-7 w-7 p-0"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteComment(comment.id)}
+                                className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
 
+                        {/* Edit mode */}
+                        {editingCommentId === comment.id ? (
+                          <div className="space-y-2 mt-2">
+                            <Textarea
+                              value={editContent}
+                              onChange={(e) => setEditContent(e.target.value)}
+                              className="min-h-[60px] resize-none md:text-sm text-xs"
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={() => updateComment(comment.id)}>
+                                {language === 'pl' ? 'Zapisz' : 'Save'}
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setEditingCommentId(null)}>
+                                {language === 'pl' ? 'Anuluj' : 'Cancel'}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="mt-2 whitespace-pre-wrap break-words md:text-base text-xs">{comment.comment}</p>
+                            
+                            {/* Reaction Buttons and Reply Button */}
+                            <div className="mt-3 flex items-center gap-2 flex-wrap">
+                              <Suspense fallback={<div className="h-8 w-32 bg-muted animate-pulse rounded" />}>
+                                <CommentReactions commentId={comment.id} />
+                              </Suspense>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-xs h-7 px-2 ml-auto"
+                                onClick={() => setReplyOpenId(replyOpenId === comment.id ? null : comment.id)}
+                              >
+                                {language === 'pl' ? 'Odpowiedz' : 'Reply'}
+                              </Button>
+                            </div>
+                          </>
+                        )}
+
                         {/* Replies */}
-                        <div className="mt-4 pl-4 border-l">
+                        <div className="mt-4 md:pl-4 pl-6 border-l md:ml-0 ml-2">
                           {(replies[comment.id] || []).map((reply) => (
-                            <div key={reply.id} className="p-3 mb-2 rounded bg-muted/20">
+                            <div key={reply.id} id={`comment-${reply.id}`} className="p-3 mb-2 rounded bg-muted/20">
                               <div className="flex items-start gap-2">
-                                <Avatar className="h-8 w-8">
-                                  <AvatarImage src={reply.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
-                                  <AvatarFallback>
-                                    {reply.commenter_profile?.first_name?.[0] || 'U'}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                  <div className="text-sm font-medium">
-                                    {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
+                                <Link to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}>
+                                  <Avatar className="h-8 w-8">
+                                    <AvatarImage src={reply.commenter_profile?.profile_image_url || '/assets/mini-spirit-logo.png'} />
+                                    <AvatarFallback>
+                                      {reply.commenter_profile?.first_name?.[0] || 'U'}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                </Link>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="flex-1">
+                                      <Link
+                                        to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
+                                        className="text-sm font-medium hover:text-primary transition-colors md:text-sm text-xs"
+                                      >
+                                        {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
+                                      </Link>
+                                      {reply.commenter_profile?.username && (
+                                        <Link
+                                          to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
+                                          className="text-xs text-muted-foreground hover:text-primary transition-colors block md:text-xs text-[10px]"
+                                        >
+                                          @{reply.commenter_profile?.username}
+                                        </Link>
+                                      )}
+                                      <div className="text-xs text-muted-foreground md:text-xs text-[10px]">
+                                        {(() => { const d = new Date(reply.created_at as any); return isNaN(d.getTime()) ? '' : format(d, 'PPp'); })()}
+                                      </div>
+                                    </div>
+
+                                    {/* Edit/Delete for owner or admin */}
+                                    {user && (reply.commenter_id === user.id || currentUser?.role === 'admin') && (
+                                      <div className="flex gap-1">
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => startEditComment(reply.id, reply.comment)}
+                                          className="h-6 w-6 p-0"
+                                        >
+                                          <Edit className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => deleteComment(reply.id)}
+                                          className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {(() => { const d = new Date(reply.created_at as any); return isNaN(d.getTime()) ? '' : format(d, 'PPp'); })()}
-                                  </div>
-                                  <div className="mt-1 text-sm whitespace-pre-wrap">{reply.comment}</div>
+
+                                  {/* Edit mode for reply */}
+                                  {editingCommentId === reply.id ? (
+                                    <div className="space-y-2 mt-2">
+                                      <Textarea
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                        className="min-h-[50px] resize-none text-xs"
+                                      />
+                                      <div className="flex gap-2">
+                                        <Button size="sm" onClick={() => updateComment(reply.id)}>
+                                          {language === 'pl' ? 'Zapisz' : 'Save'}
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => setEditingCommentId(null)}>
+                                          {language === 'pl' ? 'Anuluj' : 'Cancel'}
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="mt-1 text-sm whitespace-pre-wrap md:text-sm text-[11px]">{reply.comment}</div>
+                                  )}
                                 </div>
                               </div>
                             </div>
                           ))}
 
-                          {/* Reply form */}
-                          {user && (
+                          {/* Reply form - Desktop/Tablet */}
+                          {user && !isMobile && replyOpenId === comment.id && (
                             <div className="flex items-start gap-2 mt-2">
                               <Textarea
                                 value={replyText[comment.id] || ''}
                                 onChange={(e) => setReplyText(prev => ({ ...prev, [comment.id]: e.target.value }))}
                                 placeholder={t('writeReply')}
-                                className="min-h-[60px] resize-none"
+                                className="min-h-[60px] resize-none text-sm"
                               />
-                              <Button size="sm" className="self-end" disabled={replyLoading === comment.id || !(replyText[comment.id] || '').trim()} onClick={() => submitReply(comment.id)}>
-                                {replyLoading === comment.id ? t('loading') : t('reply')}
-                              </Button>
+                              <div className="flex flex-col gap-1">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" size="sm" type="button">
+                                      <Smile className="h-4 w-4" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-full p-0 border-0" align="start">
+                                    <EmojiPicker
+                                      onEmojiClick={(emoji: EmojiClickData) => {
+                                        setReplyText(prev => ({ ...prev, [comment.id]: (prev[comment.id] || '') + emoji.emoji }));
+                                      }}
+                                      width="100%"
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" size="sm" type="button">
+                                      <ImageIcon className="h-4 w-4" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-[400px]" align="start">
+                                    <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                      <GifPicker
+                                        onSelectGif={(gifUrl) => {
+                                          setReplyText(prev => ({ ...prev, [comment.id]: (prev[comment.id] || '') + ` ${gifUrl}` }));
+                                        }}
+                                      />
+                                    </Suspense>
+                                  </PopoverContent>
+                                </Popover>
+                                <Button size="sm" disabled={replyLoading === comment.id || !(replyText[comment.id] || '').trim()} onClick={() => submitReply(comment.id)}>
+                                  {replyLoading === comment.id ? t('loading') : t('reply')}
+                                </Button>
+                              </div>
                             </div>
+                          )}
+
+                          {/* Reply form - Mobile (Dialog) */}
+                          {user && isMobile && (
+                            <Dialog open={replyOpenId === comment.id} onOpenChange={(open) => setReplyOpenId(open ? comment.id : null)}>
+                              <DialogContent className="max-w-[90vw]">
+                                <DialogHeader>
+                                  <DialogTitle>{language === 'pl' ? 'Odpowiedz' : 'Reply'}</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-3">
+                                  <Textarea
+                                    value={replyText[comment.id] || ''}
+                                    onChange={(e) => setReplyText(prev => ({ ...prev, [comment.id]: e.target.value }))}
+                                    placeholder={t('writeReply')}
+                                    className="min-h-[100px] resize-none text-sm"
+                                  />
+                                  <div className="flex items-center gap-2">
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" type="button">
+                                          <Smile className="h-4 w-4" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-full p-0 border-0" align="start">
+                                        <EmojiPicker
+                                          onEmojiClick={(emoji: EmojiClickData) => {
+                                            setReplyText(prev => ({ ...prev, [comment.id]: (prev[comment.id] || '') + emoji.emoji }));
+                                          }}
+                                          width="100%"
+                                        />
+                                      </PopoverContent>
+                                    </Popover>
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" type="button">
+                                          <ImageIcon className="h-4 w-4" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-[90vw]" align="start">
+                                        <Suspense fallback={<Skeleton className="h-[250px] w-full" />}>
+                                          <GifPicker
+                                            onSelectGif={(gifUrl) => {
+                                              setReplyText(prev => ({ ...prev, [comment.id]: (prev[comment.id] || '') + ` ${gifUrl}` }));
+                                            }}
+                                          />
+                                        </Suspense>
+                                      </PopoverContent>
+                                    </Popover>
+                                    <Button 
+                                      className="ml-auto" 
+                                      disabled={replyLoading === comment.id || !(replyText[comment.id] || '').trim()} 
+                                      onClick={() => submitReply(comment.id)}
+                                    >
+                                      {replyLoading === comment.id ? t('loading') : t('reply')}
+                                    </Button>
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                           )}
                         </div>
                       </div>
@@ -893,6 +1100,13 @@ export default function PublicProfile() {
             </Suspense>
           </CardContent>
         </Card>
+
+        {/* Wishlist Section */}
+        <Suspense fallback={<div className="text-center py-4 mt-8">{language === 'pl' ? 'Ładowanie...' : 'Loading...'}</div>}>
+          <div className="mt-8">
+            <ProfileWishlist userId={userId!} />
+          </div>
+        </Suspense>
 
         {/* Reviews Section */}
         <Card className="mt-8">

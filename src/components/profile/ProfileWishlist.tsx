@@ -134,3 +134,5 @@ export const ProfileWishlist = ({ userId }: ProfileWishlistProps) => {
     </Card>
   );
 };
+
+export default ProfileWishlist;

@@ -83,12 +83,14 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
             ? (language === 'pl' ? 'Nowa odpowiedź do Twojego komentarza' : 'New reply to your comment')
             : n.type === 'reaction'
             ? (language === 'pl' ? 'Nowa reakcja do Twojego komentarza' : 'New reaction to your comment')
+            : n.type === 'mention'
+            ? (language === 'pl' ? 'Wspomniał o Tobie' : 'Mentioned you')
             : (language === 'pl' ? 'Nowe polubienie Twojego komentarza' : 'New like on your comment'),
         read: n.read,
         created_at: n.created_at,
         action_url:
-          n.type === 'comment' || n.type === 'reply' || n.type === 'reaction'
-            ? `/profile/${n.profile_user_id}#comment-${n.comment_id || n.parent_comment_id || ''}`
+          n.type === 'comment' || n.type === 'reply' || n.type === 'reaction' || n.type === 'mention'
+            ? `/profile/${n.profile_user_id}#comment-${n.comment_id || n.reference_id || ''}`
             : undefined,
       }));
 
@@ -267,31 +269,45 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
     : notifications.filter(n => n.type === activeTab);
 
   // Swipe gesture handlers (mobile only)
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     if (!notification.read) {
       markAsRead(notification.id);
     }
     
-    if (notification.action_url) {
-      // Parse URL to check for comment hash
-      const url = new URL(notification.action_url, window.location.origin);
-      navigate(url.pathname + url.search + url.hash);
+    // Navigate based on notification type
+    if (notification.type === 'order' || notification.type === 'tracking') {
+      // For orders and tracking, go to dashboard
+      navigate('/dashboard');
+      if (onNotificationClick) onNotificationClick();
+      setIsOpen(false);
+    } else if (notification.action_url) {
+      // Check if action_url contains a comment hash
+      const hashMatch = notification.action_url.match(/#comment-(.+)$/);
       
-      // If there's a hash (comment ID), scroll to it after navigation
-      if (url.hash) {
+      if (hashMatch) {
+        const commentId = hashMatch[1];
+        const basePath = notification.action_url.replace(/#comment-.+$/, '');
+        
+        // Navigate to the profile page first
+        navigate(basePath);
+        
+        // Wait for page to load, then scroll to comment
         setTimeout(() => {
-          const element = document.querySelector(url.hash);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const commentElement = document.getElementById(`comment-${commentId}`);
+          if (commentElement) {
+            commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             // Highlight the comment briefly
-            element.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+            commentElement.classList.add('ring-2', 'ring-primary', 'rounded-lg');
             setTimeout(() => {
-              element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+              commentElement.classList.remove('ring-2', 'ring-primary', 'rounded-lg');
             }, 2000);
           }
         }, 500);
+      } else {
+        navigate(notification.action_url);
       }
       
+      if (onNotificationClick) onNotificationClick();
       setIsOpen(false);
     }
   };

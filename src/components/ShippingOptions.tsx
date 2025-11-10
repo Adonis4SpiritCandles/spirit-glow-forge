@@ -106,25 +106,6 @@ const ShippingOptions = ({ options, selectedServiceId, onSelect, onConfirm, isLo
             ))}
           </div>
         </RadioGroup>
-
-        {/* Desktop Only - Selected shipping confirmation */}
-        {selectedOption && (
-          <div className="pt-4 border-t hidden md:block">
-            <div className="flex justify-between items-center mb-4">
-              <span className="font-semibold">{t('selectedShipping')}:</span>
-              <span className="text-primary font-bold">
-                {selectedOption.price.gross.toFixed(2)} {selectedOption.price.currency}
-              </span>
-            </div>
-            <Button
-              onClick={onConfirm}
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? t('processing') : t('confirmAndProceed')}
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

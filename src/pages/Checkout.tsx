@@ -268,7 +268,13 @@ const Checkout = () => {
 
     setIsLoading(true);
     try {
+      // Get current session for authentication
+      const { data: sessionData } = await supabase.auth.getSession();
+      
       const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${sessionData?.session?.access_token}`,
+        },
         body: { 
           cartItems,
           shippingAddress,

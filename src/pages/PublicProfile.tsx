@@ -16,6 +16,9 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 const BadgeShowcase = lazy(() => import('@/components/gamification/BadgeShowcase'));
 const GifPicker = lazy(() => import('@/components/profile/GifPicker'));
+const CommentReactions = lazy(() => import('@/components/profile/CommentReactions'));
+const PurchasedProducts = lazy(() => import('@/components/profile/PurchasedProducts'));
+const UserReviews = lazy(() => import('@/components/profile/UserReviews'));
 
 // Simple ErrorBoundary for badge showcase
 class BadgeErrorBoundary extends Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
@@ -622,6 +625,13 @@ export default function PublicProfile() {
                           </div>
                         </div>
                         <p className="mt-2 whitespace-pre-wrap break-words">{comment.comment}</p>
+                        
+                        {/* Reaction Buttons */}
+                        <div className="mt-3">
+                          <Suspense fallback={<div className="h-8 w-32 bg-muted animate-pulse rounded" />}>
+                            <CommentReactions commentId={comment.id} />
+                          </Suspense>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -630,6 +640,36 @@ export default function PublicProfile() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Purchased Products Section */}
+        {profile.show_purchases && (
+          <Card className="mt-8">
+            <CardHeader>
+              <h2 className="text-2xl font-semibold flex items-center gap-2">
+                <Star className="h-6 w-6 text-primary" />
+                {language === 'pl' ? 'Zakupione Produkty' : 'Purchased Products'}
+              </h2>
+            </CardHeader>
+            <CardContent>
+              <PurchasedProducts userId={userId!} />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Reviews Section */}
+        {profile.show_reviews && (
+          <Card className="mt-8">
+            <CardHeader>
+              <h2 className="text-2xl font-semibold flex items-center gap-2">
+                <Star className="h-6 w-6 text-primary" />
+                {language === 'pl' ? 'Recenzje' : 'Reviews'}
+              </h2>
+            </CardHeader>
+            <CardContent>
+              <UserReviews userId={userId!} />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

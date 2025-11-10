@@ -28,6 +28,7 @@ export default function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedAll, setSelectedAll] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -121,9 +122,43 @@ export default function NotificationCenter() {
         .eq('id', notificationId);
 
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
-      toast.success(language === 'pl' ? 'Notifica eliminata' : 'Notification deleted');
+      toast.success(language === 'pl' ? 'Powiadomienie usunięte' : 'Notification deleted');
     } catch (error) {
       console.error('Error deleting notification:', error);
+    }
+  };
+
+  const deleteAllNotifications = async () => {
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', user.id);
+
+      setNotifications([]);
+      setUnreadCount(0);
+      setSelectedAll(false);
+      toast.success(language === 'pl' ? 'Wszystkie powiadomienia usunięte' : 'All notifications deleted');
+    } catch (error) {
+      console.error('Error deleting all notifications:', error);
+      toast.error(language === 'pl' ? 'Błąd usuwania powiadomień' : 'Error deleting notifications');
+    }
+  };
+
+  const handleSelectAll = () => {
+    setSelectedAll(!selectedAll);
+  };
+
+  const handleMarkRead = async () => {
+    await markAllAsRead();
+    setSelectedAll(false);
+  };
+
+  const handleDeleteAll = async () => {
+    if (confirm(language === 'pl' ? 'Czy na pewno chcesz usunąć wszystkie powiadomienia?' : 'Are you sure you want to delete all notifications?')) {
+      await deleteAllNotifications();
     }
   };
 
@@ -165,17 +200,52 @@ export default function NotificationCenter() {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <SheetTitle className="text-2xl">
               {language === 'pl' ? 'Powiadomienia' : 'Notifications'}
             </SheetTitle>
-            {unreadCount > 0 && (
-              <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-                <Check className="h-4 w-4 mr-2" />
-                {language === 'pl' ? 'Oznacz wszystko jako przeczytane' : 'Mark all as read'}
-              </Button>
-            )}
           </div>
+
+          {/* New Select All / Mark Read / Delete Section */}
+          {notifications.length > 0 && (
+            <div className="flex flex-col gap-3 py-3 border-b border-border">
+              {/* Select All Button - Centered */}
+              <div className="flex justify-center">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleSelectAll}
+                  className="gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  {language === 'pl' ? 'Zaznacz wszystkie' : 'Select All'}
+                </Button>
+              </div>
+
+              {/* Mark Read & Delete Buttons */}
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleMarkRead}
+                  disabled={!selectedAll}
+                  className="gap-2 bg-[#D4AF37] hover:bg-[#B8941F] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Check className="h-4 w-4" />
+                  {language === 'pl' ? 'Oznacz przeczytane' : 'Mark Read'}
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleDeleteAll}
+                  disabled={!selectedAll}
+                  className="gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">

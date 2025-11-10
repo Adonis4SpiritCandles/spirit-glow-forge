@@ -261,7 +261,22 @@ export default function AdminAdvancedAnalytics() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgb(39, 39, 42)',
+                    border: '1px solid rgb(63, 63, 70)',
+                    borderRadius: '8px',
+                    padding: '8px 12px'
+                  }}
+                  labelStyle={{
+                    color: 'rgb(250, 250, 250)',
+                    fontWeight: '600'
+                  }}
+                  itemStyle={{
+                    color: 'rgb(250, 204, 21)',
+                    fontWeight: '500'
+                  }}
+                />
                 <Legend />
                 <Line type="monotone" dataKey="sales" stroke="#D4AF37" name={language === 'pl' ? 'Sprzedaż' : 'Sales'} />
                 <Line type="monotone" dataKey="revenue" stroke="#228B22" name="Revenue (PLN)" />
@@ -283,7 +298,22 @@ export default function AdminAdvancedAnalytics() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgb(39, 39, 42)',
+                    border: '1px solid rgb(63, 63, 70)',
+                    borderRadius: '8px',
+                    padding: '8px 12px'
+                  }}
+                  labelStyle={{
+                    color: 'rgb(250, 250, 250)',
+                    fontWeight: '600'
+                  }}
+                  itemStyle={{
+                    color: 'rgb(250, 204, 21)',
+                    fontWeight: '500'
+                  }}
+                />
                 <Bar dataKey="revenue" fill="#D4AF37" name="Revenue (PLN)" />
               </BarChart>
             </ResponsiveContainer>

@@ -64,6 +64,7 @@ const Shop = () => {
           price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
           image: p.image_url,
           sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
+          stock_quantity: p.stock_quantity || 0,
           isNew: false,
           isBestseller: false,
         }));

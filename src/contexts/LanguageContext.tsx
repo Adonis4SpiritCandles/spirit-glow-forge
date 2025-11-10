@@ -81,6 +81,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'markAllAsRead') return language === 'pl' ? 'Oznacz wszystkie jako przeczytane' : 'Mark All as Read';
     if (key === 'noNotificationsYet') return language === 'pl' ? 'Brak powiadomień' : 'No notifications yet';
     if (key === 'deleteAll') return language === 'pl' ? 'Usuń wszystkie' : 'Delete All';
+    if (key === 'moveToTrash') return language === 'pl' ? 'Przenieś do kosza' : 'Move to Trash';
+    if (key === 'moveToTrashWarning') return language === 'pl' ? 'To zamówienie zostanie przeniesione do kosza. Możesz je przywrócić później.' : 'This order will be moved to trash. You can restore it later.';
     
     // Email Marketing
     if (key === 'emailMarketing') return language === 'pl' ? 'Email Marketing' : 'Email Marketing';

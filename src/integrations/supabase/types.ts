@@ -1898,6 +1898,7 @@ export type Database = {
       }
       public_profile_directory: {
         Row: {
+          banned: boolean | null
           cover_image_url: string | null
           created_at: string
           first_name: string | null
@@ -1909,6 +1910,7 @@ export type Database = {
           username: string | null
         }
         Insert: {
+          banned?: boolean | null
           cover_image_url?: string | null
           created_at?: string
           first_name?: string | null
@@ -1920,6 +1922,7 @@ export type Database = {
           username?: string | null
         }
         Update: {
+          banned?: boolean | null
           cover_image_url?: string | null
           created_at?: string
           first_name?: string | null

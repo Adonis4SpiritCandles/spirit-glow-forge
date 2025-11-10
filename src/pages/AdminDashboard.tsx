@@ -29,6 +29,8 @@ import ShipmentConfirmationModal from '@/components/ShipmentConfirmationModal';
 import AdminSocialMedia from '@/components/admin/AdminSocialMedia';
 import AdminCoupons from '@/components/admin/AdminCoupons';
 import AdminCollections from '@/components/admin/AdminCollections';
+import AdminCategories from '@/components/admin/AdminCategories';
+import AdminSocialModeration from '@/components/admin/AdminSocialModeration';
 import AdminReferralRewardsEnhanced from '@/components/admin/AdminReferralRewardsEnhanced';
 import SiteSettingsHub from '@/components/admin/SiteSettings/SiteSettingsHub';
 import AdminAdvancedAnalytics from '@/components/admin/AdminAdvancedAnalytics';
@@ -1822,6 +1824,10 @@ const AdminDashboard = () => {
             <AdminCollections />
           </TabsContent>
 
+          <TabsContent value="categories" className="space-y-4">
+            <AdminCategories />
+          </TabsContent>
+
             <TabsContent value="orders" className="space-y-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -2723,6 +2729,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="coupons" className="space-y-4">
             <AdminCoupons />
+          </TabsContent>
+
+          <TabsContent value="social-moderation" className="space-y-4">
+            <AdminSocialModeration />
           </TabsContent>
 
           <TabsContent value="export" className="space-y-4">

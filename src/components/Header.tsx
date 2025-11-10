@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, Search, ShoppingCart, User, LogOut, Heart, LayoutDashboard, Settings as SettingsIcon, Package, ShoppingBag, ChevronDown } from 'lucide-react';
+import { Menu, Search, ShoppingCart, User, LogOut, Heart, LayoutDashboard, Settings as SettingsIcon, Package, ShoppingBag, ChevronDown, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useCartContext } from '@/contexts/CartContext';
@@ -12,6 +12,7 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { useHeaderSettings } from '@/hooks/useHeaderSettings';
 import { supabase } from '@/integrations/supabase/client';
+import { useSwipeable } from 'react-swipeable';
 import LanguageToggle from '@/components/LanguageToggle';
 import SearchModal from '@/components/SearchModal';
 import spiritLogoTransparent from '@/assets/spirit-logo-transparent.png';
@@ -31,6 +32,17 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
   const { settings: headerSettings, loading: headerLoading } = useHeaderSettings();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+
+  // Swipe handlers for burger menu (mobile only)
+  const burgerSwipeHandlers = useSwipeable({
+    onSwipedRight: () => {
+      if (window.innerWidth < 768 && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    },
+    trackMouse: false,
+    trackTouch: true,
+  });
 
   // Load user profile to check role and profile image
   useEffect(() => {
@@ -256,7 +268,22 @@ const Header = ({ onCartOpen }: { onCartOpen?: () => void }) => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto h-full overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <SheetContent 
+                side="right" 
+                className="w-[300px] sm:w-[400px] overflow-y-auto h-full overscroll-contain" 
+                style={{ WebkitOverflowScrolling: 'touch' }}
+                {...burgerSwipeHandlers}
+              >
+                {/* Custom Close Button - Bigger and nicer */}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="absolute top-4 right-4 h-8 w-8 rounded-full hover:bg-accent z-50"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+
                 <SheetHeader>
                   <SheetTitle className="flex justify-center mb-6">
                     <img 

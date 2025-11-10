@@ -41,6 +41,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
   import PublicProfile from "./pages/PublicProfile";
   import CustomCandles from "./pages/CustomCandles";
   import ReferralLeaderboard from "./pages/ReferralLeaderboard";
+  import OrderTimeline from "./pages/OrderTimeline";
   import Header from "./components/Header";
   import Footer from "./components/Footer";
   import CartSidebar from "./components/CartSidebar";
@@ -114,6 +115,7 @@ const AppContent = () => {
         <Route path="/ar/:productId" element={<ARViewer />} />
         <Route path="/profile/:userId" element={<PublicProfile />} />
         <Route path="/leaderboard" element={<ReferralLeaderboard />} />
+        <Route path="/order/:orderId/timeline" element={<OrderTimeline />} />
         <Route path="/wishlist/shared/:token" element={<SharedWishlist />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

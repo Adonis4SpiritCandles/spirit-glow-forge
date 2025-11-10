@@ -23,6 +23,7 @@ interface AdminStatisticsProps {
 const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
   const { t, language } = useLanguage();
   const [refreshing, setRefreshing] = useState(false);
+  const [period, setPeriod] = useState<'7d' | '15d' | '30d' | '90d'>('30d');
 
   const handleRefresh = async () => {
     if (onRefresh) {
@@ -39,7 +40,7 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
   };
 
   const handleReset = () => {
-    if (confirm(language === 'pl' ? 'Czy na pewno chcesz odświeżyć statystyki?' : 'Are you sure you want to refresh statistics?')) {
+    if (confirm(language === 'pl' ? 'Czy na pewno chcesz odświeżyć statystyki do aktualnych wartości?' : 'Are you sure you want to refresh statistics to current values?')) {
       handleRefresh();
     }
   };
@@ -62,10 +63,45 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Header with Refresh/Reset buttons */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Header with Period Filters + Refresh/Reset buttons */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <h2 className="text-2xl font-bold">{t('statistics')}</h2>
-        <div className="flex items-center gap-2">
+        
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Period Filters */}
+          <Button 
+            variant={period === '7d' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setPeriod('7d')}
+          >
+            {language === 'pl' ? '7 dni' : '7 Days'}
+          </Button>
+          <Button 
+            variant={period === '15d' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setPeriod('15d')}
+          >
+            {language === 'pl' ? '15 dni' : '15 Days'}
+          </Button>
+          <Button 
+            variant={period === '30d' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setPeriod('30d')}
+          >
+            {language === 'pl' ? '30 dni' : '30 Days'}
+          </Button>
+          <Button 
+            variant={period === '90d' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setPeriod('90d')}
+          >
+            {language === 'pl' ? '90 dni' : '90 Days'}
+          </Button>
+          
+          {/* Divider */}
+          <div className="h-6 w-px bg-border mx-1" />
+          
+          {/* Refresh & Reset */}
           <Button 
             variant="outline" 
             size="sm" 

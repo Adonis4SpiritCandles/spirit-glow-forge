@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Package, Users, ShoppingCart, Trash2, Database, Tags, Gift, BarChart3, FileText, Settings, Globe, TrendingUp, Mail } from 'lucide-react';
+import { Package, Users, ShoppingCart, Trash2, Database, Tags, Gift, BarChart3, FileText, Settings, Globe, TrendingUp, Mail, FolderTree } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AdminDashboardTabsProps {
@@ -13,11 +13,13 @@ const AdminDashboardTabs = ({ activeTab, setActiveTab }: AdminDashboardTabsProps
 
   const tabs = [
     { value: 'products', icon: <Package className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('products') },
+    { value: 'categories', icon: <FolderTree className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('categories') },
     { value: 'collections', icon: <Tags className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('collections') },
     { value: 'orders', icon: <ShoppingCart className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('orders') },
     { value: 'trash', icon: <Trash2 className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('ordersTrash') },
     { value: 'customers', icon: <Users className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('customers') },
     { value: 'warehouse', icon: <Database className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('warehouse') },
+    { value: 'social-moderation', icon: <Users className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: language === 'pl' ? 'Moderacja' : 'Moderation' },
     { value: 'coupons', icon: <Tags className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('coupons') },
     { value: 'settings', icon: <Settings className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('spiritToolsAndSite') },
     { value: 'social', icon: <Globe className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('socialMedia') },

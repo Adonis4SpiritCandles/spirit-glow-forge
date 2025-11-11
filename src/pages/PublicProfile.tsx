@@ -405,8 +405,8 @@ export default function PublicProfile() {
               profile_user_id: userId,
               actor_id: user.id,
               type: 'mention',
-              message_en: `mentioned you in a comment`,
-              message_pl: `wspomniał o Tobie w komentarzu`,
+              comment_id: null,
+              read: false,
             });
           }
         }
@@ -462,8 +462,8 @@ export default function PublicProfile() {
               profile_user_id: userId,
               actor_id: user.id,
               type: 'mention',
-              message_en: `mentioned you in a reply`,
-              message_pl: `wspomniał o Tobie w odpowiedzi`,
+              comment_id: parentCommentId,
+              read: false,
             });
           }
         }
@@ -920,18 +920,19 @@ export default function PublicProfile() {
                             })()}
                             
                             {/* Reaction Buttons and Reply Button */}
-                            <div className={`mt-3 ${isMobile ? 'flex flex-col items-start gap-1' : 'flex items-center flex-wrap gap-2'}`}>
+                            <div className={`mt-3 ${isMobile ? 'flex items-center justify-end gap-2 w-full' : 'flex items-center flex-wrap gap-2'}`}>
                               <Suspense fallback={<div className="h-8 w-32 bg-muted animate-pulse rounded" />}>
                                 <CommentReactions commentId={comment.id} />
                               </Suspense>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className={`text-xs h-7 px-2 ${isMobile ? 'mt-1' : 'ml-auto'}`}
+                                className={`text-xs h-7 px-2 ${isMobile ? '' : 'ml-auto'}`}
                                 onClick={() => setReplyOpenId(replyOpenId === comment.id ? null : comment.id)}
                               >
                                 {language === 'pl' ? 'Odpowiedz' : 'Reply'}
-                              </Button>
+                              </Button
+                              >
                             </div>
                           </>
                         )}
@@ -955,7 +956,7 @@ export default function PublicProfile() {
                                       <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-1`}>
                                         <Link
                                           to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                          className={`font-medium hover:text-primary transition-colors ${isMobile ? 'text-[10.5px] leading-tight truncate' : 'text-sm'}`}
+                                          className={`font-medium hover:text-primary transition-colors ${isMobile ? 'text-[11px] leading-tight truncate' : 'text-sm'}`}
                                         >
                                           {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
                                         </Link>
@@ -964,7 +965,7 @@ export default function PublicProfile() {
                                             {!isMobile && <span className="text-muted-foreground text-xs">•</span>}
                                             <Link
                                               to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                              className={`text-muted-foreground hover:text-primary transition-colors ${isMobile ? 'text-[9.5px] leading-tight truncate' : 'text-xs'}`}
+                                              className={`text-muted-foreground hover:text-primary transition-colors ${isMobile ? 'text-[10px] leading-tight truncate' : 'text-xs'}`}
                                             >
                                               @{reply.commenter_profile?.username}
                                             </Link>

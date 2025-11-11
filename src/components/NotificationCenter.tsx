@@ -38,6 +38,7 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
   const [activeTab, setActiveTab] = useState('all');
   const [selectedAll, setSelectedAll] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [limit, setLimit] = useState(20);
 
   useEffect(() => {
     if (user) {
@@ -52,13 +53,12 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
 
     setLoading(true);
     try {
-      // Base app notifications
       const { data: baseNotifs, error: baseErr } = await supabase
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(50);
+        .limit(limit);
       if (baseErr) throw baseErr;
 
       // Social/profile notifications (comments, replies, likes)
@@ -67,7 +67,7 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(50);
+        .limit(limit);
       if (socialErr) throw socialErr;
 
       // Map social notifications into unified shape with deep-linking
@@ -382,7 +382,6 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
                 </Button>
               </div>
 
-              {/* Mark Read & Delete Buttons */}
               <div className="flex items-center justify-center gap-2">
                 <Button
                   variant="default"
@@ -393,15 +392,6 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
                 >
                   <Check className="h-4 w-4" />
                   {language === 'pl' ? 'Oznacz przeczytane' : 'Mark Read'}
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleDeleteAll}
-                  disabled={!selectedAll}
-                  className="gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -471,14 +461,6 @@ export default function NotificationCenter({ isBurgerMenu = false, onNotificatio
                               <Check className="h-4 w-4" />
                             </Button>
                           )}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => deleteNotification(notification.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
                         </div>
                       </div>
 

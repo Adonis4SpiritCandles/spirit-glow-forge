@@ -98,46 +98,23 @@ const CommentReactions = ({ commentId }: CommentReactionsProps) => {
     setLoading(type);
 
     try {
-      if (reaction.userReacted && reaction.reactionId) {
-        // Remove reaction
-        const { error } = await supabase
-          .from('profile_comment_reactions')
-          .delete()
-          .eq('id', reaction.reactionId);
+      const { data, error } = await supabase.rpc('toggle_comment_reaction', {
+        p_comment_id: commentId,
+        p_type: type,
+      });
+      if (error) throw error;
 
-        if (error) throw error;
-      } else {
-        // Add reaction - use upsert to handle duplicates
-        const { error } = await supabase
-          .from('profile_comment_reactions')
-          .upsert({
-            comment_id: commentId,
-            user_id: user.id,
-            reaction_type: type,
-          }, {
-            onConflict: 'comment_id,user_id,reaction_type',
-            ignoreDuplicates: true
-          });
-
-        if (error && error.code !== '23505') { // Ignore duplicate key errors
-          throw error;
-        }
-      }
-      
       // Reload reactions to ensure sync
       await loadReactions();
     } catch (error: any) {
       console.error('Error toggling reaction:', error);
-      // Don't show error for duplicates
-      if (error.code !== '23505') {
-        toast({
-          title: language === 'pl' ? 'Błąd' : 'Error',
-          description: language === 'pl'
-            ? 'Nie udało się zmienić reakcji'
-            : 'Failed to toggle reaction',
-          variant: 'destructive',
-        });
-      }
+      toast({
+        title: language === 'pl' ? 'Błąd' : 'Error',
+        description: language === 'pl'
+          ? 'Nie udało się zmienić reakcji'
+          : 'Failed to toggle reaction',
+        variant: 'destructive',
+      });
     } finally {
       setLoading(null);
     }

@@ -338,33 +338,18 @@ export default function PublicProfile() {
     }
 
     try {
-      if (isFollowing) {
-        // Unfollow
-        const { error } = await supabase
-          .from('profile_follows')
-          .delete()
-          .eq('follower_id', user.id)
-          .eq('following_id', userId);
+      const { data, error } = await supabase.rpc('toggle_follow', { target_user_id: userId });
+      if (error) throw error;
+      const action = (data as any)?.action;
 
-        if (error) throw error;
-
+      if (action === 'unfollowed') {
         setIsFollowing(false);
-        setFollowersCount(prev => prev - 1);
+        setFollowersCount(prev => Math.max(0, prev - 1));
         toast({
           title: t('success'),
           description: language === 'pl' ? 'Przestałeś obserwować' : 'Unfollowed successfully',
         });
-      } else {
-        // Follow
-        const { error } = await supabase
-          .from('profile_follows')
-          .insert({
-            follower_id: user.id,
-            following_id: userId
-          });
-
-        if (error) throw error;
-
+      } else if (action === 'followed') {
         setIsFollowing(true);
         setFollowersCount(prev => prev + 1);
         toast({
@@ -935,14 +920,14 @@ export default function PublicProfile() {
                             })()}
                             
                             {/* Reaction Buttons and Reply Button */}
-                            <div className={`mt-3 flex items-center gap-2 ${isMobile ? 'justify-between' : 'flex-wrap'}`}>
+                            <div className={`mt-3 ${isMobile ? 'flex flex-col items-start gap-1' : 'flex items-center flex-wrap gap-2'}`}>
                               <Suspense fallback={<div className="h-8 w-32 bg-muted animate-pulse rounded" />}>
                                 <CommentReactions commentId={comment.id} />
                               </Suspense>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className={`text-xs h-7 px-2 ${!isMobile && 'ml-auto'}`}
+                                className={`text-xs h-7 px-2 ${isMobile ? 'mt-1' : 'ml-auto'}`}
                                 onClick={() => setReplyOpenId(replyOpenId === comment.id ? null : comment.id)}
                               >
                                 {language === 'pl' ? 'Odpowiedz' : 'Reply'}
@@ -970,7 +955,7 @@ export default function PublicProfile() {
                                       <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-1`}>
                                         <Link
                                           to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                          className={`font-medium hover:text-primary transition-colors ${isMobile ? 'text-[10px] leading-tight truncate' : 'text-sm'}`}
+                                          className={`font-medium hover:text-primary transition-colors ${isMobile ? 'text-[10.5px] leading-tight truncate' : 'text-sm'}`}
                                         >
                                           {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
                                         </Link>
@@ -979,7 +964,7 @@ export default function PublicProfile() {
                                             {!isMobile && <span className="text-muted-foreground text-xs">•</span>}
                                             <Link
                                               to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                              className={`text-muted-foreground hover:text-primary transition-colors ${isMobile ? 'text-[9px] leading-tight truncate' : 'text-xs'}`}
+                                              className={`text-muted-foreground hover:text-primary transition-colors ${isMobile ? 'text-[9.5px] leading-tight truncate' : 'text-xs'}`}
                                             >
                                               @{reply.commenter_profile?.username}
                                             </Link>

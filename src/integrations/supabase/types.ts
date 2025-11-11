@@ -2609,6 +2609,7 @@ export type Database = {
             }
             Returns: undefined
           }
+      ensure_purge_trigger: { Args: { _table: unknown }; Returns: undefined }
       find_user_by_username_or_email: {
         Args: { identifier: string }
         Returns: {
@@ -2655,6 +2656,11 @@ export type Database = {
           stock_quantity: number
         }[]
       }
+      toggle_comment_reaction: {
+        Args: { p_comment_id: string; p_type: string }
+        Returns: Json
+      }
+      toggle_follow: { Args: { target_user_id: string }; Returns: Json }
       validate_email: { Args: { email: string }; Returns: boolean }
     }
     Enums: {

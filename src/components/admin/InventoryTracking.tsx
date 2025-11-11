@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { AlertTriangle, Package, TrendingUp, TrendingDown, Clock, CheckCircle, XCircle, Plus } from 'lucide-react';
+import { AlertTriangle, Package, TrendingUp, TrendingDown, Clock, CheckCircle, XCircle, Plus, Edit } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -248,6 +248,13 @@ export default function InventoryTracking() {
                         <p className="font-bold">{product.stock_quantity}</p>
                       </div>
                       {getStockStatusBadge(product.stock_quantity)}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(`/admin?tab=products&edit=${product.id}`, '_blank')}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}

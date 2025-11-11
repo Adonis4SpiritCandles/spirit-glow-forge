@@ -709,7 +709,8 @@ export default function PublicProfile() {
           <CardContent className="space-y-6">
             {user && (
               <div className="space-y-3 p-4 bg-accent/5 rounded-lg border">
-                <div className="flex items-start gap-3">
+                {/* Desktop/Tablet - with avatar */}
+                <div className={`${isMobile ? 'hidden' : 'flex'} items-start gap-3`}>
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={user?.user_metadata?.profile_image_url || '/assets/mini-spirit-logo.png'} />
                     <AvatarFallback>
@@ -764,6 +765,56 @@ export default function PublicProfile() {
                     </div>
                   </div>
                 </div>
+
+                {/* Mobile - no avatar, buttons below */}
+                <div className={`${isMobile ? 'flex' : 'hidden'} flex-col space-y-2`}>
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder={t('writeComment')}
+                    className="min-h-[80px] resize-none"
+                  />
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" type="button">
+                            <Smile className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0 border-0" align="start">
+                          <EmojiPicker
+                            onEmojiClick={(emoji: EmojiClickData) => {
+                              setNewComment(prev => prev + emoji.emoji);
+                            }}
+                            width="100%"
+                          />
+                        </PopoverContent>
+                      </Popover>
+
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" type="button">
+                            <ImageIcon className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[90vw]" align="start">
+                          <Suspense fallback={<Skeleton className="h-[250px] w-full" />}>
+                            <GifPicker
+                              onSelectGif={(gifUrl) => {
+                                setNewComment(prev => prev + ` ${gifUrl}`);
+                              }}
+                            />
+                          </Suspense>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <Button onClick={submitComment} disabled={submitting || !newComment.trim()}>
+                      <Send className="h-4 w-4 mr-2" />
+                      {t('post')}
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -788,27 +839,33 @@ export default function PublicProfile() {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <Link 
-                              to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
-                              className="font-semibold hover:text-primary transition-colors md:text-base text-sm"
-                            >
-                              {comment.commenter_profile?.first_name} {comment.commenter_profile?.last_name}
-                            </Link>
-                            {comment.commenter_profile?.username && (
-                              <Link
+                          <div className="flex-1 min-w-0">
+                            <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-1`}>
+                              <Link 
                                 to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
-                                className="text-sm text-muted-foreground hover:text-primary transition-colors block md:text-sm text-xs"
+                                className={`font-semibold hover:text-primary transition-colors ${isMobile ? 'text-xs leading-tight truncate' : 'text-base'}`}
                               >
-                                @{comment.commenter_profile?.username}
+                                {comment.commenter_profile?.first_name} {comment.commenter_profile?.last_name}
                               </Link>
-                            )}
-                            <span className="text-xs text-muted-foreground md:text-xs text-[10px]">
-                              {(() => {
-                                const d = new Date(comment.created_at as any);
-                                return isNaN(d.getTime()) ? '' : format(d, 'PPp');
-                              })()}
-                            </span>
+                              {comment.commenter_profile?.username && (
+                                <>
+                                  {!isMobile && <span className="text-muted-foreground">•</span>}
+                                  <Link
+                                    to={comment.commenter_profile?.public_profile ? `/profile/${comment.commenter_id}` : '#'}
+                                    className={`text-muted-foreground hover:text-primary transition-colors ${isMobile ? 'text-[10px] leading-tight truncate' : 'text-sm'}`}
+                                  >
+                                    @{comment.commenter_profile?.username}
+                                  </Link>
+                                </>
+                              )}
+                              {!isMobile && <span className="text-muted-foreground">•</span>}
+                              <span className={`text-muted-foreground ${isMobile ? 'text-[9px] leading-tight' : 'text-xs'}`}>
+                                {(() => {
+                                  const d = new Date(comment.created_at as any);
+                                  return isNaN(d.getTime()) ? '' : (isMobile ? format(d, 'MMM d') : format(d, 'PPp'));
+                                })()}
+                              </span>
+                            </div>
                           </div>
 
                           {/* Edit/Delete for owner or admin */}
@@ -853,17 +910,39 @@ export default function PublicProfile() {
                           </div>
                         ) : (
                           <>
-                            <p className="mt-2 whitespace-pre-wrap break-words md:text-base text-xs">{comment.comment}</p>
+                            {/* Display GIF if present */}
+                            {(() => {
+                              const gifMatch = comment.comment.match(/https?:\/\/[^\s]*\.gif(\?[^\s]*)?/i);
+                              const textContent = gifMatch ? comment.comment.replace(gifMatch[0], '').trim() : comment.comment;
+                              
+                              return (
+                                <>
+                                  {gifMatch && (
+                                    <div className="mt-2 mb-2">
+                                      <img 
+                                        src={gifMatch[0]} 
+                                        alt="GIF" 
+                                        className={`rounded-lg ${isMobile ? 'max-w-full h-auto' : 'max-w-md'}`}
+                                        style={{ maxHeight: isMobile ? '200px' : '300px', objectFit: 'contain' }}
+                                      />
+                                    </div>
+                                  )}
+                                  {textContent && (
+                                    <p className="mt-2 whitespace-pre-wrap break-words md:text-base text-xs">{textContent}</p>
+                                  )}
+                                </>
+                              );
+                            })()}
                             
                             {/* Reaction Buttons and Reply Button */}
-                            <div className="mt-3 flex items-center gap-2 flex-wrap">
+                            <div className={`mt-3 flex items-center gap-2 ${isMobile ? 'justify-between' : 'flex-wrap'}`}>
                               <Suspense fallback={<div className="h-8 w-32 bg-muted animate-pulse rounded" />}>
                                 <CommentReactions commentId={comment.id} />
                               </Suspense>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-xs h-7 px-2 ml-auto"
+                                className={`text-xs h-7 px-2 ${!isMobile && 'ml-auto'}`}
                                 onClick={() => setReplyOpenId(replyOpenId === comment.id ? null : comment.id)}
                               >
                                 {language === 'pl' ? 'Odpowiedz' : 'Reply'}
@@ -887,23 +966,32 @@ export default function PublicProfile() {
                                 </Link>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-start justify-between gap-2">
-                                    <div className="flex-1">
-                                      <Link
-                                        to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                        className="text-sm font-medium hover:text-primary transition-colors md:text-sm text-xs"
-                                      >
-                                        {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
-                                      </Link>
-                                      {reply.commenter_profile?.username && (
+                                     <div className="flex-1 min-w-0">
+                                      <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-1`}>
                                         <Link
                                           to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
-                                          className="text-xs text-muted-foreground hover:text-primary transition-colors block md:text-xs text-[10px]"
+                                          className={`font-medium hover:text-primary transition-colors ${isMobile ? 'text-[10px] leading-tight truncate' : 'text-sm'}`}
                                         >
-                                          @{reply.commenter_profile?.username}
+                                          {reply.commenter_profile?.first_name} {reply.commenter_profile?.last_name}
                                         </Link>
-                                      )}
-                                      <div className="text-xs text-muted-foreground md:text-xs text-[10px]">
-                                        {(() => { const d = new Date(reply.created_at as any); return isNaN(d.getTime()) ? '' : format(d, 'PPp'); })()}
+                                        {reply.commenter_profile?.username && (
+                                          <>
+                                            {!isMobile && <span className="text-muted-foreground text-xs">•</span>}
+                                            <Link
+                                              to={reply.commenter_profile?.public_profile ? `/profile/${reply.commenter_id}` : '#'}
+                                              className={`text-muted-foreground hover:text-primary transition-colors ${isMobile ? 'text-[9px] leading-tight truncate' : 'text-xs'}`}
+                                            >
+                                              @{reply.commenter_profile?.username}
+                                            </Link>
+                                          </>
+                                        )}
+                                        {!isMobile && <span className="text-muted-foreground text-xs">•</span>}
+                                        <span className={`text-muted-foreground ${isMobile ? 'text-[8px] leading-tight' : 'text-xs'}`}>
+                                          {(() => { 
+                                            const d = new Date(reply.created_at as any); 
+                                            return isNaN(d.getTime()) ? '' : (isMobile ? format(d, 'MMM d') : format(d, 'PPp')); 
+                                          })()}
+                                        </span>
                                       </div>
                                     </div>
 
@@ -931,7 +1019,7 @@ export default function PublicProfile() {
                                   </div>
 
                                   {/* Edit mode for reply */}
-                                  {editingCommentId === reply.id ? (
+                                   {editingCommentId === reply.id ? (
                                     <div className="space-y-2 mt-2">
                                       <Textarea
                                         value={editContent}
@@ -947,9 +1035,33 @@ export default function PublicProfile() {
                                         </Button>
                                       </div>
                                     </div>
-                                  ) : (
-                                    <div className="mt-1 text-sm whitespace-pre-wrap md:text-sm text-[11px]">{reply.comment}</div>
-                                  )}
+                                   ) : (
+                                     <>
+                                       {/* Display GIF if present in reply */}
+                                       {(() => {
+                                         const gifMatch = reply.comment.match(/https?:\/\/[^\s]*\.gif(\?[^\s]*)?/i);
+                                         const textContent = gifMatch ? reply.comment.replace(gifMatch[0], '').trim() : reply.comment;
+                                         
+                                         return (
+                                           <>
+                                             {gifMatch && (
+                                               <div className="mt-1 mb-1">
+                                                 <img 
+                                                   src={gifMatch[0]} 
+                                                   alt="GIF" 
+                                                   className={`rounded-lg ${isMobile ? 'max-w-full h-auto' : 'max-w-sm'}`}
+                                                   style={{ maxHeight: isMobile ? '150px' : '200px', objectFit: 'contain' }}
+                                                 />
+                                               </div>
+                                             )}
+                                             {textContent && (
+                                               <div className="mt-1 text-sm whitespace-pre-wrap md:text-sm text-[11px]">{textContent}</div>
+                                             )}
+                                           </>
+                                         );
+                                       })()}
+                                     </>
+                                   )}
                                 </div>
                               </div>
                             </div>
@@ -1071,20 +1183,6 @@ export default function PublicProfile() {
           </CardContent>
         </Card>
 
-        {/* Loyalty Points & Leaderboard */}
-        <Card className="mt-8 bg-card/50 backdrop-blur border-border/50">
-          <CardHeader>
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <Trophy className="h-6 w-6 text-primary" />
-              {language === 'pl' ? 'Punkty Lojalnościowe' : 'Loyalty Points'}
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <Suspense fallback={<div className="text-center py-4">{language === 'pl' ? 'Ładowanie...' : 'Loading...'}</div>}>
-              <ReferralDashboard />
-            </Suspense>
-          </CardContent>
-        </Card>
 
         {/* Purchased Products Section */}
         <Card className="mt-8">

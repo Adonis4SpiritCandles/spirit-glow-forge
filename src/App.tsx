@@ -48,6 +48,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
  import { CookieBanner } from "./components/CookieBanner";
  import LiveChatWidget from "./components/chat/LiveChatWidget";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { CurrencyProvider } from "./contexts/CurrencyContext";
  import { CartProvider } from "./contexts/CartContext";
  import { useReferral } from "./hooks/useReferral";
  import FloatingActionButton from "./components/FloatingActionButton";
@@ -134,13 +135,15 @@ const App = () => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <LanguageProvider>
-            <CartProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <AppContent />
-              </TooltipProvider>
-            </CartProvider>
+            <CurrencyProvider>
+              <CartProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <AppContent />
+                </TooltipProvider>
+              </CartProvider>
+            </CurrencyProvider>
           </LanguageProvider>
         </QueryClientProvider>
       </HelmetProvider>

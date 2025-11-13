@@ -2,5 +2,19 @@
 alwaysApply: true
 ---
 
-Reference the following files to stay on track with the project alignments:
+Reference the following files to stay on track with the project alignments, info, riles, guide and others:
 
+rules/
+├── .cursorrules
+├── CURSOR_PROMPT_TEMPLATE.md
+├── CURSOR_AGENT_GUIDE.md
+
+and
+
+/
+├── README.md
+├── all files with .md or .mdc extension
+
+and
+
+eference the following files to stay on track with the project alignments, info, riles, guide and others of all files with .md or .mdc extension

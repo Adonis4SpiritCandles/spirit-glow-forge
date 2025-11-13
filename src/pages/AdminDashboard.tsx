@@ -821,23 +821,61 @@ const AdminDashboard = () => {
   const toggleUserRole = async (profile: Profile) => {
     const newRole = profile.role === 'admin' ? 'user' : 'admin';
     try {
-      const { error } = await supabase
+      // Strategia: aggiorna prima user_roles (fonte di verità), poi sincronizza profiles
+      
+      // 1. Rimuovi il ruolo opposto da user_roles se esiste
+      const oppositeRole = newRole === 'admin' ? 'user' : 'admin';
+      await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', profile.user_id)
+        .eq('role', oppositeRole);
+
+      // 2. Inserisci/aggiorna il nuovo ruolo in user_roles
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .upsert(
+          {
+            user_id: profile.user_id,
+            role: newRole,
+            updated_at: new Date().toISOString()
+          },
+          {
+            onConflict: 'user_id,role'
+          }
+        );
+
+      if (roleError) {
+        console.error('Error updating user_roles:', roleError);
+        throw new Error(`Failed to update user role: ${roleError.message}`);
+      }
+
+      // 3. Sincronizza profiles.role per retrocompatibilità
+      // Il trigger dovrebbe farlo automaticamente, ma facciamolo esplicitamente per sicurezza
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({ role: newRole })
         .eq('user_id', profile.user_id);
 
-      if (error) throw error;
+      if (profileError) {
+        console.warn('Warning: Failed to sync profiles.role (non-critical):', profileError);
+        // Non bloccare se fallisce, user_roles è la fonte di verità
+      }
 
       toast({
         title: t('success'),
         description: newRole === 'admin' ? t('userPromotedToAdmin') : t('userDemotedToUser'),
       });
 
-      loadDashboardData();
+      // Ricarica i dati dopo un breve delay per assicurarsi che le modifiche siano propagate
+      setTimeout(() => {
+        loadDashboardData();
+      }, 500);
     } catch (error: any) {
+      console.error('Error in toggleUserRole:', error);
       toast({
         title: t('error'),
-        description: error.message,
+        description: error.message || t('failedToUpdateUserRole') || 'Failed to update user role',
         variant: 'destructive',
       });
     }

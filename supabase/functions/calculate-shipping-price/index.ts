@@ -53,6 +53,9 @@ serve(async (req) => {
     }
     const access_token = tokenData.access_token;
     const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    
+    console.log('Using Furgonetka API URL:', apiBaseUrl);
+    console.log('Token obtained successfully');
 
     // Prepare sender/pickup address (your warehouse)
     const sender = {
@@ -119,7 +122,9 @@ serve(async (req) => {
     // Note: API may expect top-level package fields for this endpoint. We won't block on failure; we log and continue to pricing.
     let preValidationErrors: any[] = [];
     try {
-      const validateResponse = await fetch(`${apiBaseUrl}/packages/validate`, {
+      const validateUrl = `${apiBaseUrl}/packages/validate`;
+      console.log('Validating package at:', validateUrl);
+      const validateResponse = await fetch(validateUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${access_token}`,
@@ -140,7 +145,9 @@ serve(async (req) => {
     }
 
     // 2) FETCH ACTIVE ACCOUNT SERVICES
-    const servicesResponse = await fetch(`${apiBaseUrl}/account/services`, {
+    const servicesUrl = `${apiBaseUrl}/account/services`;
+    console.log('Fetching services from:', servicesUrl);
+    const servicesResponse = await fetch(servicesUrl, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${access_token}`,
@@ -151,7 +158,13 @@ serve(async (req) => {
 
     if (!servicesResponse.ok) {
       const errorText = await servicesResponse.text();
-      console.error('Furgonetka services error:', servicesResponse.status, servicesResponse.statusText, errorText);
+      console.error('Furgonetka services error:', {
+        url: servicesUrl,
+        status: servicesResponse.status,
+        statusText: servicesResponse.statusText,
+        error: errorText,
+        apiBaseUrl: apiBaseUrl
+      });
       throw new Error(`Failed to load services: ${servicesResponse.status} ${servicesResponse.statusText} ${errorText}`);
     }
 
@@ -187,8 +200,10 @@ serve(async (req) => {
     };
 
     console.log('Calculating shipping prices with:', JSON.stringify(calculateBody));
-
-    const priceResponse = await fetch(`${apiBaseUrl}/packages/calculate-price`, {
+    
+    const priceUrl = `${apiBaseUrl}/packages/calculate-price`;
+    console.log('Calculating price at:', priceUrl);
+    const priceResponse = await fetch(priceUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,
@@ -201,7 +216,14 @@ serve(async (req) => {
 
     if (!priceResponse.ok) {
       const errorText = await priceResponse.text();
-      console.error('Furgonetka API error:', priceResponse.status, priceResponse.statusText, errorText);
+      console.error('Furgonetka API error:', {
+        url: priceUrl,
+        status: priceResponse.status,
+        statusText: priceResponse.statusText,
+        error: errorText,
+        apiBaseUrl: apiBaseUrl,
+        requestBody: JSON.stringify(calculateBody).substring(0, 500) // Limit log size
+      });
       throw new Error(`Failed to calculate prices: ${priceResponse.status} ${priceResponse.statusText} ${errorText}`);
     }
 

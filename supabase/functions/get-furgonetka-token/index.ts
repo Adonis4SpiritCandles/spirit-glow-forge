@@ -51,7 +51,11 @@ serve(async (req) => {
     const password = Deno.env.get('FURGONETKA_PASSWORD');
 
     const basic = btoa(`${clientId}:${clientSecret}`);
-    const url = 'https://api.furgonetka.pl/oauth/token';
+    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    const url = `${apiBaseUrl}/oauth/token`;
+    
+    console.log('Furgonetka API URL:', apiBaseUrl);
+    console.log('Token endpoint:', url);
 
     let body: URLSearchParams;
     if (email && password) {
@@ -81,8 +85,16 @@ serve(async (req) => {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error('Furgonetka auth error:', errorText);
-      throw new Error(`Furgonetka authentication failed: ${errorText}`);
+      console.error('Furgonetka auth error:', {
+        url: url,
+        status: tokenResponse.status,
+        statusText: tokenResponse.statusText,
+        error: errorText,
+        apiBaseUrl: apiBaseUrl,
+        hasClientId: !!clientId,
+        hasClientSecret: !!clientSecret
+      });
+      throw new Error(`Furgonetka authentication failed: ${tokenResponse.status} ${tokenResponse.statusText} ${errorText}`);
     }
 
     const tokenData: TokenResponse = await tokenResponse.json();

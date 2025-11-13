@@ -197,7 +197,59 @@ serve(async (req) => {
 
     const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
 
-    // 1) Validate package with correct payload structure
+    // 0) Verify service_id is still valid - fetch available services first
+    let validServiceId = order.service_id;
+    try {
+      console.log('Verifying service_id is valid:', validServiceId);
+      const servicesResponse = await fetch(`${apiBaseUrl}/account/services`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${access_token}`,
+          'Accept': 'application/vnd.furgonetka.v1+json',
+          'X-Language': 'en_GB',
+        },
+      });
+
+      if (servicesResponse.ok) {
+        const servicesData = await servicesResponse.json();
+        const availableServices = servicesData.services || servicesData || [];
+        
+        // Check if the stored service_id exists in available services
+        const serviceExists = availableServices.some((s: any) => 
+          (s.id || s.service_id) === validServiceId || s.service_id === validServiceId
+        );
+
+        if (!serviceExists && availableServices.length > 0) {
+          console.warn(`Stored service_id ${validServiceId} not found in available services. Using first available service.`);
+          // Try to find a service from the same carrier if possible
+          const carrierName = order.carrier_name || order.carrier || '';
+          let fallbackService = availableServices.find((s: any) => {
+            const serviceName = (s.service || s.name || '').toString().toLowerCase();
+            const carrierLower = carrierName.toLowerCase();
+            return serviceName.includes(carrierLower) || carrierLower.includes(serviceName);
+          });
+          
+          // If no matching carrier found, use first available service
+          if (!fallbackService) {
+            fallbackService = availableServices[0];
+          }
+          
+          validServiceId = fallbackService.id || fallbackService.service_id;
+          console.log('Using fallback service_id:', validServiceId, 'from carrier:', fallbackService.service || fallbackService.name);
+          
+          // Update order with new service_id to prevent future issues
+          await supabase
+            .from('orders')
+            .update({ service_id: validServiceId })
+            .eq('id', orderId);
+        }
+      }
+    } catch (serviceCheckError) {
+      console.warn('Failed to verify service_id (continuing anyway):', serviceCheckError);
+      // Continue with original service_id even if check fails
+    }
+
+    // 1) Validate package with correct payload structure using verified service_id
     try {
       const validateResp = await fetch(`${apiBaseUrl}/packages/validate`, {
         method: 'POST',
@@ -209,7 +261,7 @@ serve(async (req) => {
         },
         // IMPORTANT: the validate endpoint expects pickup/sender/receiver/parcels at the TOP level
         body: JSON.stringify({ 
-          service_id: order.service_id,
+          service_id: validServiceId,
           ...packagePayload 
         }),
       });
@@ -244,7 +296,7 @@ serve(async (req) => {
 
     // 2) Create package with flattened structure (same as validation)
     const createBody = {
-      service_id: order.service_id,
+      service_id: validServiceId,
       pickup: packagePayload.pickup,
       sender: packagePayload.sender,
       receiver: packagePayload.receiver,

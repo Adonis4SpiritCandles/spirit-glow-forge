@@ -173,8 +173,15 @@ serve(async (req) => {
     // Note: API may expect top-level package fields for this endpoint. We won't block on failure; we log and continue to pricing.
     let preValidationErrors: any[] = [];
     try {
+      // Double-check apiBaseUrl is valid before constructing URL
+      if (!apiBaseUrl || typeof apiBaseUrl !== 'string' || apiBaseUrl.trim() === '') {
+        console.error('CRITICAL: apiBaseUrl is invalid before validation:', apiBaseUrl);
+        apiBaseUrl = 'https://api.sandbox.furgonetka.pl';
+      }
+      
       const validateUrl = `${apiBaseUrl}/packages/validate`;
       console.log('Validating package at:', validateUrl);
+      console.log('validateUrl is valid URL:', validateUrl.startsWith('http'));
       const validateResponse = await fetch(validateUrl, {
         method: 'POST',
         headers: {

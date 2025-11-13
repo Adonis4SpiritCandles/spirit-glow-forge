@@ -34,6 +34,10 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   }, [language]);
 
   const t = (key: string): string => {
+
+    // Various - Adonis
+    if (key === 'fieldTooLong') return language === 'pl' ? 'Za długo' : 'Too long';
+
     // Navigation
     if (key === 'home') return language === 'pl' ? 'Strona główna' : 'Home';
     if (key === 'shop') return language === 'pl' ? 'Sklep' : 'Shop';

@@ -81,8 +81,26 @@ const Checkout = () => {
         address: address
       });
 
-      const { data, error } = await supabase.functions.invoke('calculate-shipping-price', {
-        body: {
+      // Use fetch directly to get full error response body
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      // Get Supabase URL and key from the client
+      const supabaseUrl = 'https://fhtuqmdlgzmpsbflxhra.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodHVxbWRsZ3ptcHNiZmx4aHJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDk3MTQsImV4cCI6MjA3Mzc4NTcxNH0.ZirsPuupBWZ7zXjqu_qHRp-EG6EmuwvGX2nix8_IsGY';
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/calculate-shipping-price`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': supabaseKey,
+        },
+        body: JSON.stringify({
           receiver: address,
           parcels: [{
             weight: totalWeight,
@@ -90,10 +108,42 @@ const Checkout = () => {
             width: 10,
             height: 10
           }]
-        },
+        }),
       });
 
-      if (error) throw error;
+      let data: any;
+      let errorDetails: any = null;
+
+      if (!response.ok) {
+        // Try to parse error response body
+        try {
+          errorDetails = await response.json();
+          console.error('Error response from calculate-shipping-price:', {
+            status: response.status,
+            statusText: response.statusText,
+            errorDetails,
+          });
+        } catch (e) {
+          const errorText = await response.text();
+          console.error('Error response (not JSON):', errorText);
+          errorDetails = { error: errorText || `HTTP ${response.status}: ${response.statusText}` };
+        }
+        
+        // Show detailed error message
+        const errorMessage = errorDetails?.error || errorDetails?.message || `HTTP ${response.status}: ${response.statusText}`;
+        const apiUrlInfo = errorDetails?.details?.apiBaseUrl 
+          ? ` (API URL: ${errorDetails.details.apiBaseUrl}, hasEnvVar: ${errorDetails.details.hasEnvVar})`
+          : '';
+        
+        toast({
+          title: t('error') || 'Error',
+          description: `${errorMessage}${apiUrlInfo}`,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      data = await response.json();
 
       if (data?.options && data.options.length > 0) {
         setShippingOptions(data.options);
@@ -122,10 +172,24 @@ const Checkout = () => {
         });
       }
     } catch (error) {
-      console.error('Error calculating shipping:', error);
+      // Catch any unexpected errors
+      const errorMessage = (error as any)?.message || (error as any)?.context?.message || 'Unknown error';
+      const errorDetails = (error as any)?.context?.body || (error as any)?.details;
+      
+      console.error('Error calculating shipping:', {
+        error,
+        message: errorMessage,
+        details: errorDetails,
+        fullError: JSON.stringify(error, null, 2)
+      });
+      
+      const displayMessage = errorDetails?.error 
+        ? `${errorDetails.error}${errorDetails.details?.apiBaseUrl ? ` (API URL: ${errorDetails.details.apiBaseUrl})` : ''}`
+        : errorMessage;
+      
       toast({
         title: t('error') || 'Error',
-        description: t('shippingCalculationError') || 'Failed to calculate shipping options. Please try again.',
+        description: displayMessage || t('shippingCalculationError') || 'Failed to calculate shipping options. Please try again.',
         variant: 'destructive',
       });
     } finally {

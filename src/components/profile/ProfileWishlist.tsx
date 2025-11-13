@@ -90,7 +90,7 @@ export const ProfileWishlist = ({ userId }: ProfileWishlistProps) => {
             {language === 'pl' ? product.name_pl : product.name_en}
           </h4>
           <p className="text-primary font-bold text-center">
-            {language === 'pl' ? `${product.price_pln} PLN` : `€${product.price_eur}`}
+            {product.price_pln} PLN · ~€{product.price_eur}
           </p>
         </CardContent>
       </Card>

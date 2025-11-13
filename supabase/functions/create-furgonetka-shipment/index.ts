@@ -195,9 +195,11 @@ serve(async (req) => {
 
     console.log('Validating package before creation:', JSON.stringify({ service_id: order.service_id, package: packagePayload }));
 
+    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+
     // 1) Validate package with correct payload structure
     try {
-      const validateResp = await fetch(`https://api.furgonetka.pl/oauth/token/packages/validate`, {
+      const validateResp = await fetch(`${apiBaseUrl}/packages/validate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${access_token}`,
@@ -254,7 +256,7 @@ serve(async (req) => {
 
     console.log('Creating Furgonetka package with body:', JSON.stringify(createBody));
 
-    const shipmentResponse = await fetch(`https://api.furgonetka.pl/oauth/token/packages`, {
+    const shipmentResponse = await fetch(`${apiBaseUrl}/packages`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,

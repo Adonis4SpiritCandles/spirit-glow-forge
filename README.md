@@ -1,4 +1,5 @@
 # SPIRIT GLOW FORGE — Spirit Candle eCommerce # Spirit Candles — Project README
+# Last Update of README.md: 07/11/2025
 
 ## Project info
 

@@ -86,14 +86,16 @@ const { data: collections } = await supabase
   .order('display_order');
 ```
 
-### CollectionDetail.tsx - New Page
+### CollectionDetail.tsx - New Page (if it hasn't already been done)
+(if it hasn't already been done)
 **Needed**: Complete new page at `/collections/:slug`
 - Query collection by slug
 - Filter products by collection_id
 - Breadcrumbs and SEO
 - Similar layout to Shop page
 
-### Multi-Coupon Checkout
+### Multi-Coupon Checkout (if it hasn't already been done)
+(if it hasn't already been done)
 **Why Manual?**: Complex cart logic affecting:
 - State management (appliedCoupon → appliedCoupons[])
 - UI for multiple coupon display
@@ -103,7 +105,8 @@ const { data: collections } = await supabase
 
 **Impact**: Touches checkout flow, order creation, payment processing
 
-### SpiritPoints Rebranding
+### SpiritPoints Rebranding (if it hasn't already been done)
+(if it hasn't already been done)
 **Why Manual?**: Requires global search/replace across ~15 files:
 - All component files mentioning "Points"
 - Translation keys in LanguageContext
@@ -123,27 +126,25 @@ const { data: collections } = await supabase
 | Auth/Registration | ✅ 100% | 1 page (Auth.tsx) |
 | Reviews | ✅ 100% | 2 files (component + hook) |
 | Header | ✅ 100% | 1 file |
-| Dashboard | ⚠️ 20% | Needs restructure |
-| PublicProfile | ⚠️ 30% | Needs 6 sections |
-| Collections | ⚠️ 10% | Needs full system |
-| Checkout | ⚠️ 0% | Needs multi-coupon |
-| SpiritPoints | ⚠️ 0% | Needs global replace |
+| Dashboard | ⚠️ 20% | Check! if it hasn't already been done |
+| PublicProfile | ⚠️ 30% | Check! if it hasn't already been done |
+| Collections | ⚠️ 10% | Check! if it hasn't already been done |
+| Checkout | ⚠️ 0% | Needs multi-coupon | | Check! if it hasn't already been done |
+| SpiritPoints | ⚠️ 0% | Needs global replace | | Check! if it hasn't already been done |
 
 ## 🎯 RECOMMENDED NEXT STEPS
 
 ### Priority 1 - Quick Wins (1-2 hours)
-1. ✅ Complete UserDashboard tab restructure
-2. ✅ Make Collections.tsx dynamic with DB query
-3. ✅ Global SpiritPoints search/replace
+1. ✅ Complete UserDashboard tab restructure (if it hasn't already been done)
+2. ✅ Make Collections.tsx dynamic with DB query (if it hasn't already been done)
+3. ✅ Global SpiritPoints search/replace (if it hasn't already been done)
 
 ### Priority 2 - Medium Complexity (3-5 hours)
-4. Create CollectionDetail.tsx page
-5. Integrate AdminCollections with Supabase
-6. Add 3 PublicProfile sections (Reviews, Badges, Purchased)
+4. Create CollectionDetail.tsx page (if it hasn't already been done)
+5. Integrate AdminCollections with Supabase (if it hasn't already been done)
 
 ### Priority 3 - Complex Features (5-8 hours)
-7. Complete PublicProfile (Wishlist, Leaderboard, Likes)
-8. Implement multi-coupon checkout system
+8. Implement or chack is already present the multi-coupon checkout system (if it hasn't already been done)
 9. Full QA testing on mobile/tablet/desktop
 
 ## 🚀 PRODUCTION READY

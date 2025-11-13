@@ -8,6 +8,8 @@ You are an experienced full‑stack engineer with expertise in Node.js, TypeScri
 - Follow existing design tokens, spacing, and typography.
 - When implementing new sections: provide accessible markup, aria labels, keyboard nav.
 
+
+
 # Cursor Rules for Spirit Glow Forge
 
 These guidelines are intended for AI assistants (e.g. Cursor) working on the `spirit-glow-forge` repository and live web site http://spirit-vandle.com .  Follow them whenever you edit, generate or refactor code, create new pages/components or write migrations.  Adhering to these rules ensures consistency, accessibility, security and a premium user experience.
@@ -104,6 +106,16 @@ When drafting prompts for Cursor, remind the agent of this technical context so 
 - For 3D/AR features, use `@react-three/fiber` and `@react-three/drei`.  Wrap AR components in Suspense and lazy‑load heavy assets.
 - Prepare for **WebXR** by hosting USDZ/GLB files in Supabase Storage and checking device capability.  Provide a fallback 3D viewer when AR is unsupported.
 - Keep file sizes small; compress textures and models.
+
+## 14. Getting Help
+
+1. Check `IMPLEMENTATION_STATUS_OLD.md` for current state and create new file update `IMPLEMENTATION_STATUS.md`.
+2. Review `CURSOR_PROMPT_TEMPLATE.md` for prompt structure.
+3. Check `.cursorrules` for Rules.
+4. Check `.README.md` for general info of site or project actually.
+5. Search codebase for similar patterns
+6. Check Supabase logs for backend errors
+7. Use browser DevTools for frontend debugging
 
 ## -----------
 

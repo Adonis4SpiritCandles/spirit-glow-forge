@@ -213,7 +213,7 @@ UI & Pages:
 
 **Autore & Lead developer:**  
 Antonio Adonis Gagliardi  
-Instagram: @adonis4u  
+tiktok: @adonis4u  
 Email: adonis.gagliardi@gmail.com
 
 _Questo documento è aggiornato al 03 Novembre 2025 sulla fotografia live di [spirit-candle.com](https://spirit-candle.com) e del progetto in produzione._

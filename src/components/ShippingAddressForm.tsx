@@ -112,6 +112,36 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
       : (phonePrefix.trim() ? `+${phonePrefix.trim()}` : '');
     const combinedPhone = [normalizedPrefix, phoneNumber.trim()].filter(Boolean).join(' ');
 
+    // Validate Furgonetka limits
+    const errors = [];
+    if (address.name.length > FURGONETKA_LIMITS.name) {
+      errors.push(`${t('fullName') || 'Name'}: max ${FURGONETKA_LIMITS.name} characters`);
+    }
+    if (fullStreet.length > FURGONETKA_LIMITS.street) {
+      errors.push(`${t('streetAddress') || 'Street'}: max ${FURGONETKA_LIMITS.street} characters`);
+    }
+    if (address.city.length > FURGONETKA_LIMITS.city) {
+      errors.push(`${t('city') || 'City'}: max ${FURGONETKA_LIMITS.city} characters`);
+    }
+    if (address.postalCode.length > FURGONETKA_LIMITS.postalCode) {
+      errors.push(`${t('postalCode') || 'Postal Code'}: max ${FURGONETKA_LIMITS.postalCode} characters`);
+    }
+    if (combinedPhone.length > FURGONETKA_LIMITS.phone) {
+      errors.push(`${t('phone') || 'Phone'}: max ${FURGONETKA_LIMITS.phone} characters`);
+    }
+    if (address.email.length > FURGONETKA_LIMITS.email) {
+      errors.push(`${t('email') || 'Email'}: max ${FURGONETKA_LIMITS.email} characters`);
+    }
+
+    if (errors.length > 0) {
+      toast({
+        title: t('validationError') || 'Validation Error',
+        description: errors.join(', '),
+        variant: 'destructive'
+      });
+      return;
+    }
+
     onSubmit({
       ...address,
       street: fullStreet,
@@ -119,13 +149,49 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
     });
   };
 
+  // Furgonetka field length limits
+  const FURGONETKA_LIMITS = {
+    name: 35,
+    street: 35,
+    city: 35,
+    postalCode: 10,
+    phone: 20,
+    email: 100,
+  };
+
   const countries = [
-    { code: 'PL', name: 'Poland' },
-    { code: 'IT', name: 'Italy' },
-    { code: 'DE', name: 'Germany' },
+    { code: 'AT', name: 'Austria' },
+    { code: 'BE', name: 'Belgium' },
+    { code: 'BG', name: 'Bulgaria' },
+    { code: 'HR', name: 'Croatia' },
+    { code: 'CY', name: 'Cyprus' },
+    { code: 'CZ', name: 'Czech Republic' },
+    { code: 'DK', name: 'Denmark' },
+    { code: 'EE', name: 'Estonia' },
+    { code: 'FI', name: 'Finland' },
     { code: 'FR', name: 'France' },
+    { code: 'DE', name: 'Germany' },
+    { code: 'GR', name: 'Greece' },
+    { code: 'HU', name: 'Hungary' },
+    { code: 'IS', name: 'Iceland' },
+    { code: 'IE', name: 'Ireland' },
+    { code: 'IT', name: 'Italy' },
+    { code: 'LV', name: 'Latvia' },
+    { code: 'LI', name: 'Liechtenstein' },
+    { code: 'LT', name: 'Lithuania' },
+    { code: 'LU', name: 'Luxembourg' },
+    { code: 'MT', name: 'Malta' },
+    { code: 'NL', name: 'Netherlands' },
+    { code: 'NO', name: 'Norway' },
+    { code: 'PL', name: 'Poland' },
+    { code: 'PT', name: 'Portugal' },
+    { code: 'RO', name: 'Romania' },
+    { code: 'SK', name: 'Slovakia' },
+    { code: 'SI', name: 'Slovenia' },
     { code: 'ES', name: 'Spain' },
-    { code: 'UK', name: 'United Kingdom' },
+    { code: 'SE', name: 'Sweden' },
+    { code: 'CH', name: 'Switzerland' },
+    { code: 'GB', name: 'United Kingdom' },
   ];
 
   return (
@@ -136,7 +202,12 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">{t('fullName') || 'Full Name'}</Label>
+            <Label htmlFor="name">
+              {t('fullName') || 'Full Name'}
+              <span className="text-xs text-muted-foreground ml-2">
+                ({address.name.length}/{FURGONETKA_LIMITS.name})
+              </span>
+            </Label>
             <Input
               id="name"
               required
@@ -157,12 +228,40 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                   });
                 }
               }}
+              className={address.name.length > FURGONETKA_LIMITS.name ? 'border-red-500' : 
+                         address.name.length > FURGONETKA_LIMITS.name * 0.9 ? 'border-yellow-500' : ''}
               placeholder="John Doe"
             />
+            {address.name.length > FURGONETKA_LIMITS.name && (
+              <p className="text-xs text-red-500">
+                {t('fieldTooLong') || `This field is too long. Maximum ${FURGONETKA_LIMITS.name} characters.`}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="country">{t('country') === 'country' ? 'Country' : t('country') || 'Country'}</Label>
+            <Select value={address.country} onValueChange={(value) => setAddress({ ...address, country: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('country') === 'country' ? 'Country' : t('country')} />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map((country) => (
+                  <SelectItem key={country.code} value={country.code}>
+                    {country.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2 relative">
-            <Label htmlFor="street">{t('streetAddress')}</Label>
+            <Label htmlFor="street">
+              {t('streetAddress')}
+              <span className="text-xs text-muted-foreground ml-2">
+                ({address.street.length}/{FURGONETKA_LIMITS.street})
+              </span>
+            </Label>
             <div className="relative">
               <Input
                 id="street"
@@ -173,6 +272,8 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                   fetchAddressSuggestions(e.target.value);
                 }}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className={address.street.length > FURGONETKA_LIMITS.street ? 'border-red-500' : 
+                           address.street.length > FURGONETKA_LIMITS.street * 0.9 ? 'border-yellow-500' : ''}
                 placeholder=""
               />
               {isLoadingSuggestions && (
@@ -192,6 +293,11 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                   </button>
                 ))}
               </div>
+            )}
+            {address.street.length > FURGONETKA_LIMITS.street && (
+              <p className="text-xs text-red-500">
+                {t('fieldTooLong') || `This field is too long. Maximum ${FURGONETKA_LIMITS.street} characters.`}
+              </p>
             )}
           </div>
 
@@ -219,57 +325,82 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="city">{t('city')}</Label>
+              <Label htmlFor="city">
+                {t('city')}
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({address.city.length}/{FURGONETKA_LIMITS.city})
+                </span>
+              </Label>
               <Input
                 id="city"
                 required
                 value={address.city}
                 onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                className={address.city.length > FURGONETKA_LIMITS.city ? 'border-red-500' : 
+                           address.city.length > FURGONETKA_LIMITS.city * 0.9 ? 'border-yellow-500' : ''}
                 placeholder=""
               />
+              {address.city.length > FURGONETKA_LIMITS.city && (
+                <p className="text-xs text-red-500">
+                  {t('fieldTooLong') || `Max ${FURGONETKA_LIMITS.city} chars`}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="postalCode">{t('postalCode')}</Label>
+              <Label htmlFor="postalCode">
+                {t('postalCode')}
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({address.postalCode.length}/{FURGONETKA_LIMITS.postalCode})
+                </span>
+              </Label>
               <Input
                 id="postalCode"
                 required
                 value={address.postalCode}
                 onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
+                className={address.postalCode.length > FURGONETKA_LIMITS.postalCode ? 'border-red-500' : 
+                           address.postalCode.length > FURGONETKA_LIMITS.postalCode * 0.9 ? 'border-yellow-500' : ''}
                 placeholder=""
               />
+              {address.postalCode.length > FURGONETKA_LIMITS.postalCode && (
+                <p className="text-xs text-red-500">
+                  {t('fieldTooLong') || `Max ${FURGONETKA_LIMITS.postalCode} chars`}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country">{t('country') === 'country' ? 'Country' : t('country') || 'Country'}</Label>
-            <Select value={address.country} onValueChange={(value) => setAddress({ ...address, country: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('country') === 'country' ? 'Country' : t('country')} />
-              </SelectTrigger>
-              <SelectContent>
-                {countries.map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
-                    {country.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">{t('email') || 'Email'}</Label>
+            <Label htmlFor="email">
+              {t('email') || 'Email'}
+              <span className="text-xs text-muted-foreground ml-2">
+                ({address.email.length}/{FURGONETKA_LIMITS.email})
+              </span>
+            </Label>
             <Input
               id="email"
               type="email"
               required
               value={address.email}
               onChange={(e) => setAddress({ ...address, email: e.target.value })}
+              className={address.email.length > FURGONETKA_LIMITS.email ? 'border-red-500' : 
+                         address.email.length > FURGONETKA_LIMITS.email * 0.9 ? 'border-yellow-500' : ''}
               placeholder="john@example.com"
             />
+            {address.email.length > FURGONETKA_LIMITS.email && (
+              <p className="text-xs text-red-500">
+                {t('fieldTooLong') || `This field is too long. Maximum ${FURGONETKA_LIMITS.email} characters.`}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">{t('phone') || 'Phone'}</Label>
+            <Label htmlFor="phone">
+              {t('phone') || 'Phone'}
+              <span className="text-xs text-muted-foreground ml-2">
+                ({(phonePrefix + ' ' + phoneNumber).trim().length}/{FURGONETKA_LIMITS.phone})
+              </span>
+            </Label>
             <div className="grid grid-cols-3 gap-2">
               <Input
                 id="phonePrefix"
@@ -277,19 +408,27 @@ const ShippingAddressForm = ({ onSubmit, isLoading }: ShippingAddressFormProps) 
                 required
                 value={phonePrefix}
                 onChange={(e) => setPhonePrefix(e.target.value)}
+                className={(phonePrefix + ' ' + phoneNumber).trim().length > FURGONETKA_LIMITS.phone ? 'border-red-500' : 
+                           (phonePrefix + ' ' + phoneNumber).trim().length > FURGONETKA_LIMITS.phone * 0.9 ? 'border-yellow-500' : ''}
                 placeholder="+48"
               />
               <Input
                 id="phoneNumber"
                 type="tel"
                 required
-                className="col-span-2"
+                className={`col-span-2 ${(phonePrefix + ' ' + phoneNumber).trim().length > FURGONETKA_LIMITS.phone ? 'border-red-500' : 
+                           (phonePrefix + ' ' + phoneNumber).trim().length > FURGONETKA_LIMITS.phone * 0.9 ? 'border-yellow-500' : ''}`}
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder=""
               />
             </div>
             <p className="text-xs text-muted-foreground">{t('phonePrefixHint') === 'phonePrefixHint' ? "Telephone prefix (include '+', e.g., +48)" : t('phonePrefixHint') || "Telephone prefix (include '+', e.g., +48)"}</p>
+            {(phonePrefix + ' ' + phoneNumber).trim().length > FURGONETKA_LIMITS.phone && (
+              <p className="text-xs text-red-500">
+                {t('fieldTooLong') || `This field is too long. Maximum ${FURGONETKA_LIMITS.phone} characters.`}
+              </p>
+            )}
           </div>
 
           <Button type="submit" className="w-full whitespace-normal min-h-[2.5rem]" disabled={isLoading}>

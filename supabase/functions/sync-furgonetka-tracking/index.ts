@@ -101,12 +101,15 @@ Deno.serve(async (req) => {
       );
     }
 
+    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    const webBaseUrl = apiBaseUrl.replace('api.', ''); // https://furgonetka.pl (no sandbox)
+
     const accessToken = tokenData.access_token;
 
     // Call Furgonetka API to get package details
     console.log('Fetching package details for:', order.furgonetka_package_id);
     const packageResponse = await fetch(
-      `https://api.sandbox.furgonetka.pl/packages/${order.furgonetka_package_id}`,
+      `${apiBaseUrl}/packages/${order.furgonetka_package_id}`,
       {
         method: 'GET',
         headers: {
@@ -154,7 +157,7 @@ Deno.serve(async (req) => {
 
     // Fallback: construct a public tracking URL if API didn't provide one
     const finalTrackingUrl = trackingUrl || (trackingNumber
-      ? `https://sandbox.furgonetka.pl/zlokalizuj/${trackingNumber}`
+      ? `${webBaseUrl}/zlokalizuj/${trackingNumber}`
       : null);
 
     // Extract shipping status

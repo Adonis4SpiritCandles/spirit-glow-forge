@@ -85,7 +85,16 @@ serve(async (req) => {
       throw new Error('Failed to get Furgonetka token');
     }
     const access_token = tokenData.access_token;
-    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    let apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    
+    // Ensure apiBaseUrl is a valid string (not undefined/null)
+    if (!apiBaseUrl || typeof apiBaseUrl !== 'string') {
+      console.error('FURGONETKA_API_URL is not set or invalid:', apiBaseUrl);
+      apiBaseUrl = 'https://api.sandbox.furgonetka.pl';
+    }
+    
+    // Remove trailing slash if present
+    apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
     
     console.log('Using Furgonetka API URL:', apiBaseUrl);
     console.log('Token obtained successfully');

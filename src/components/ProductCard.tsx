@@ -228,16 +228,10 @@ const ProductCard = ({
             <div className="flex items-center justify-between gap-2 mt-auto pt-2">
               <div className="space-y-1 flex-shrink-0">
                 <div className="text-lg font-semibold text-primary whitespace-nowrap">
-                  {language === 'pl' 
-                    ? `${Number(displayPrice?.pln ?? 0).toFixed(2)} PLN`
-                    : `€${Number(displayPrice?.eur ?? 0).toFixed(2)}`
-                  }
+                  {Number(displayPrice?.pln ?? 0).toFixed(2)} PLN
                 </div>
                 <div className="text-xs text-muted-foreground whitespace-nowrap">
-                  {language === 'pl' 
-                    ? `~€${Number(displayPrice?.eur ?? 0).toFixed(2)}`
-                    : `~${Number(displayPrice?.pln ?? 0).toFixed(2)} PLN`
-                  }
+                  ~€{Number(displayPrice?.eur ?? 0).toFixed(2)}
                 </div>
               </div>
               

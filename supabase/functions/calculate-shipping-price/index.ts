@@ -52,7 +52,6 @@ serve(async (req) => {
       throw new Error('Failed to get Furgonetka token');
     }
     const access_token = tokenData.access_token;
-    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
 
     // Prepare sender/pickup address (your warehouse)
     const sender = {
@@ -119,7 +118,7 @@ serve(async (req) => {
     // Note: API may expect top-level package fields for this endpoint. We won't block on failure; we log and continue to pricing.
     let preValidationErrors: any[] = [];
     try {
-      const validateResponse = await fetch(`${apiBaseUrl}/packages/validate`, {
+      const validateResponse = await fetch(`https://api.furgonetka.pl/oauth/token/packages/validate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${access_token}`,
@@ -140,7 +139,7 @@ serve(async (req) => {
     }
 
     // 2) FETCH ACTIVE ACCOUNT SERVICES
-    const servicesResponse = await fetch(`${apiBaseUrl}/account/services`, {
+    const servicesResponse = await fetch(`https://api.furgonetka.pl/oauth/token/account/services`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${access_token}`,
@@ -188,7 +187,7 @@ serve(async (req) => {
 
     console.log('Calculating shipping prices with:', JSON.stringify(calculateBody));
 
-    const priceResponse = await fetch(`${apiBaseUrl}/packages/calculate-price`, {
+    const priceResponse = await fetch(`https://api.furgonetka.pl/oauth/token/packages/calculate-price`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,

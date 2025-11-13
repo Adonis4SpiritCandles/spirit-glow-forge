@@ -51,8 +51,7 @@ serve(async (req) => {
     const password = Deno.env.get('FURGONETKA_PASSWORD');
 
     const basic = btoa(`${clientId}:${clientSecret}`);
-    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
-    const url = `${apiBaseUrl}/oauth/token`;
+    const url = 'https://api.furgonetka.pl/oauth/token';
 
     let body: URLSearchParams;
     if (email && password) {

@@ -222,9 +222,12 @@ serve(async (req) => {
     console.log('servicesUrl is valid URL:', servicesUrl.startsWith('http'));
     
     if (!servicesUrl.startsWith('http')) {
-      throw new Error(`Invalid servicesUrl constructed: ${servicesUrl} (apiBaseUrl was: ${apiBaseUrl})`);
+      const errorMsg = `Invalid servicesUrl constructed: ${servicesUrl} (apiBaseUrl was: ${JSON.stringify(apiBaseUrl)}, type: ${typeof apiBaseUrl})`;
+      console.error('CRITICAL ERROR:', errorMsg);
+      throw new Error(errorMsg);
     }
     
+    console.log('About to fetch services from URL:', servicesUrl);
     const servicesResponse = await fetch(servicesUrl, {
       method: 'GET',
       headers: {

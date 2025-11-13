@@ -1,14 +1,21 @@
 # Implementation Status - Spirit Candles Improvements
 
+**Last Updated:** November 13, 2025
+
 ## ✅ COMPLETED
 
 ### 1. Database Migrations
 - ✅ Created `collections` table with RLS
 - ✅ Added `collection_id` to products
-- ✅ Created `profile_comment_likes` table
+- ✅ Created `profile_comment_reactions` table (likes, fire, heart, celebrate)
+- ✅ Created `profile_follows` table for user following system
+- ✅ Created `profile_notifications` table for social notifications
 - ✅ Added `parent_comment_id` for threaded replies
 - ✅ Created `collection-images` storage bucket with policies
 - ✅ Seeded initial 4 collections (Luxury, Fresh, Romantic, Bestsellers)
+- ✅ Added REPLICA IDENTITY FULL for realtime support
+- ✅ Created RPC functions: `toggle_comment_reaction`, `toggle_follow`
+- ✅ Added automatic notification purge (30 days) with triggers
 
 ### 2. Email & Notifications
 - ✅ Updated welcome email subject: "We have a GIFT for you!"
@@ -18,25 +25,49 @@
 - ✅ Updated footer with contact email instead of tagline
 - ✅ Fixed referral banner - now floating overlay with transparent backdrop
 - ✅ Fixed admin notification banner - now fixed position overlay
+- ✅ Implemented notification center with Load More (batch loading 20 items)
+- ✅ Automatic notification deletion after 30 days
+
+### 3. Social Features (Public Profile)
+- ✅ Comment reactions system (Like, Fire, Heart, Celebrate) with RPC toggle
+- ✅ Follow/Unfollow functionality with RPC and real-time updates
+- ✅ Profile notifications for reactions, follows, mentions
+- ✅ Threaded comment replies with improved mobile UI
+- ✅ Fixed notification triggers to avoid column mismatches
+- ✅ Profile statistics (followers, following, posts, reactions)
+
+### 4. Checkout & Shipping
+- ✅ Multi-country support (50+ countries including all EU, US, CA, AU, JP, etc.)
+- ✅ Country selection moved before address fields
+- ✅ Address autocomplete via Geoapify API for all countries
+- ✅ Field length validation for Furgonetka compatibility:
+  - Full Name: max 50 chars
+  - Street Address: max 100 chars
+  - City: max 50 chars
+  - Postal Code: max 20 chars
+  - Email: max 100 chars
+- ✅ Character counters on all input fields
+- ✅ Responsive design maintained (mobile/tablet/desktop)
+- ✅ Bilingual support (EN/PL) maintained
 
 ## 🚧 IN PROGRESS
 
-### 3. Auth.tsx Registration Updates
-- TODO: Add text under "You'll receive 100 bonus points!": "Plus 10% discount on your first order!" (EN/PL)
+### 5. Auth.tsx Registration Updates
+- ✅ COMPLETED: Added "Plus 10% discount on your first order!" text (EN/PL)
 
-### 4. User Dashboard Restructure
+### 6. User Dashboard Restructure
 - TODO: Merge "User Data" tab content into "Settings" tab
 - TODO: Remove "User Data" tab completely
 - TODO: Update TabsList grid from `grid-cols-3 lg:grid-cols-7` to `grid-cols-3 lg:grid-cols-6`
 - TODO: Fix Settings tab translation keys
 - TODO: Ensure all 6 tabs visible on mobile/tablet with horizontal scroll
 
-### 5. Header Dropdown Menu
+### 7. Header Dropdown Menu
 - TODO: Update dropdown to include "Public Profile" link to `/dashboard?tab=social`
 - TODO: Ensure clicking menu items from within dashboard changes active tab
 - TODO: Test navigation both from inside and outside dashboard
 
-### 6. Public Profile Enhancements
+### 8. Public Profile Enhancements
 - TODO: Add Reviews section (with product links)
 - TODO: Fix Comments system (currently not working)
 - TODO: Add Badges showcase (earned + locked)
@@ -47,11 +78,11 @@
 - TODO: Add Like functionality to comments
 - TODO: Update comment avatars to use profile images
 
-### 7. Product Reviews Avatars
+### 9. Product Reviews Avatars
 - TODO: Update ProductReviews.tsx to display profile_image_url in Avatar
 - TODO: Add fallback to Spirit mini logo
 
-### 8. Collections System - Full Implementation
+### 10. Collections System - Full Implementation
 - TODO: Rewrite AdminCollections.tsx with Supabase integration
 - TODO: Add full CRUD operations (Create, Read, Update, Delete)
 - TODO: Implement image upload to collection-images bucket
@@ -61,14 +92,14 @@
 - TODO: Add collection dropdown in product create/edit forms
 - TODO: Update product assignment logic
 
-### 9. Multi-Coupon System
+### 11. Multi-Coupon System
 - TODO: Modify Checkout.tsx to support multiple coupons
 - TODO: Change from `appliedCoupon` to `appliedCoupons[]` array
 - TODO: Add UI to show list of applied coupons with remove buttons
 - TODO: Implement cumulative discount calculation
 - TODO: Update coupon_redemptions to support multiple entries per order
 
-### 10. Global "Points" → "SpiritPoints" Rebranding
+### 12. Global "Points" → "SpiritPoints" Rebranding
 - TODO: Search and replace across all files
 - TODO: Update translation keys in LanguageContext
 - TODO: Update UserDashboard

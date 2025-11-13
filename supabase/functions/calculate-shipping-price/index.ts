@@ -196,8 +196,20 @@ serve(async (req) => {
     }
 
     // 2) FETCH ACTIVE ACCOUNT SERVICES
+    // Double-check apiBaseUrl is valid before constructing URL
+    if (!apiBaseUrl || typeof apiBaseUrl !== 'string' || apiBaseUrl.trim() === '') {
+      console.error('CRITICAL: apiBaseUrl is invalid before fetch:', apiBaseUrl);
+      apiBaseUrl = 'https://api.sandbox.furgonetka.pl';
+    }
+    
     const servicesUrl = `${apiBaseUrl}/account/services`;
     console.log('Fetching services from:', servicesUrl);
+    console.log('servicesUrl is valid URL:', servicesUrl.startsWith('http'));
+    
+    if (!servicesUrl.startsWith('http')) {
+      throw new Error(`Invalid servicesUrl constructed: ${servicesUrl} (apiBaseUrl was: ${apiBaseUrl})`);
+    }
+    
     const servicesResponse = await fetch(servicesUrl, {
       method: 'GET',
       headers: {
@@ -252,8 +264,20 @@ serve(async (req) => {
 
     console.log('Calculating shipping prices with:', JSON.stringify(calculateBody));
     
+    // Double-check apiBaseUrl is valid before constructing URL
+    if (!apiBaseUrl || typeof apiBaseUrl !== 'string' || apiBaseUrl.trim() === '') {
+      console.error('CRITICAL: apiBaseUrl is invalid before price calculation:', apiBaseUrl);
+      apiBaseUrl = 'https://api.sandbox.furgonetka.pl';
+    }
+    
     const priceUrl = `${apiBaseUrl}/packages/calculate-price`;
     console.log('Calculating price at:', priceUrl);
+    console.log('priceUrl is valid URL:', priceUrl.startsWith('http'));
+    
+    if (!priceUrl.startsWith('http')) {
+      throw new Error(`Invalid priceUrl constructed: ${priceUrl} (apiBaseUrl was: ${apiBaseUrl})`);
+    }
+    
     const priceResponse = await fetch(priceUrl, {
       method: 'POST',
       headers: {

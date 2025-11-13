@@ -356,14 +356,23 @@ serve(async (req) => {
       console.error('Could not stringify error:', e);
     }
     
+    // Always include error details for debugging
+    const errorResponse = {
+      error: error?.message || 'Internal server error',
+      details: {
+        name: error?.name,
+        message: error?.message,
+        stack: error?.stack,
+        cause: error?.cause,
+        apiBaseUrl: Deno.env.get('FURGONETKA_API_URL') || 'NOT SET',
+        hasEnvVar: !!Deno.env.get('FURGONETKA_API_URL'),
+      }
+    };
+    
+    console.error('Returning error response:', JSON.stringify(errorResponse, null, 2));
+    
     return new Response(
-      JSON.stringify({ 
-        error: error?.message || 'Internal server error',
-        details: process.env.NODE_ENV === 'development' ? {
-          stack: error?.stack,
-          name: error?.name,
-        } : undefined
-      }),
+      JSON.stringify(errorResponse),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

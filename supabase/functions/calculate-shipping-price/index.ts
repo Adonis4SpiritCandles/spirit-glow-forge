@@ -33,12 +33,45 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('calculate-shipping-price: Request received', {
+    method: req.method,
+    url: req.url,
+    hasBody: !!req.body,
+  });
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+    }
+    
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-    const { receiver, parcels }: CalculateRequest = await req.json();
+    let requestBody: CalculateRequest;
+    try {
+      requestBody = await req.json();
+      console.log('Request body parsed successfully:', {
+        hasReceiver: !!requestBody.receiver,
+        hasParcels: !!requestBody.parcels,
+        parcelsCount: requestBody.parcels?.length || 0,
+      });
+    } catch (parseError: any) {
+      console.error('Failed to parse request body:', {
+        error: parseError?.message,
+        stack: parseError?.stack,
+      });
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body. Expected JSON with receiver and parcels.' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    const { receiver, parcels } = requestBody;
 
     // Validate input
     if (!receiver || !parcels || parcels.length === 0) {
@@ -305,9 +338,32 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
-    console.error('Error in calculate-shipping-price:', error);
+    console.error('Error in calculate-shipping-price:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+      cause: error?.cause,
+      errorType: typeof error,
+      errorString: String(error),
+      apiBaseUrl: Deno.env.get('FURGONETKA_API_URL') || 'NOT SET',
+      hasEnvVar: !!Deno.env.get('FURGONETKA_API_URL'),
+    });
+    
+    // Log the full error object for debugging
+    try {
+      console.error('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    } catch (e) {
+      console.error('Could not stringify error:', e);
+    }
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error?.message || 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? {
+          stack: error?.stack,
+          name: error?.name,
+        } : undefined
+      }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

@@ -85,7 +85,15 @@ serve(async (req) => {
       throw new Error('Failed to get Furgonetka token');
     }
     const access_token = tokenData.access_token;
-    let apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    
+    // Log environment variable status
+    const envApiUrl = Deno.env.get('FURGONETKA_API_URL');
+    console.log('FURGONETKA_API_URL from env:', envApiUrl);
+    console.log('FURGONETKA_API_URL type:', typeof envApiUrl);
+    console.log('FURGONETKA_API_URL is defined:', envApiUrl !== undefined);
+    console.log('FURGONETKA_API_URL is null:', envApiUrl === null);
+    
+    let apiBaseUrl = envApiUrl || 'https://api.sandbox.furgonetka.pl';
     
     // Ensure apiBaseUrl is a valid string (not undefined/null)
     if (!apiBaseUrl || typeof apiBaseUrl !== 'string') {
@@ -96,7 +104,8 @@ serve(async (req) => {
     // Remove trailing slash if present
     apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
     
-    console.log('Using Furgonetka API URL:', apiBaseUrl);
+    console.log('Using Furgonetka API URL (final):', apiBaseUrl);
+    console.log('API URL is a valid string:', typeof apiBaseUrl === 'string');
     console.log('Token obtained successfully');
 
     // Prepare sender/pickup address (your warehouse)

@@ -135,6 +135,9 @@ const Checkout = () => {
           ? ` (API URL: ${errorDetails.details.apiBaseUrl}, hasEnvVar: ${errorDetails.details.hasEnvVar})`
           : '';
         
+        // Log full error details to console for debugging
+        console.error('Full error details:', JSON.stringify(errorDetails, null, 2));
+        
         toast({
           title: t('error') || 'Error',
           description: `${errorMessage}${apiUrlInfo}`,

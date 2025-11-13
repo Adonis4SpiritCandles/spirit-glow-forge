@@ -821,9 +821,24 @@ const AdminDashboard = () => {
   const toggleUserRole = async (profile: Profile) => {
     const newRole = profile.role === 'admin' ? 'user' : 'admin';
     try {
-      // Strategia: aggiorna prima user_roles (fonte di verità), poi sincronizza profiles
+      // Strategia: prima sincronizza profiles.role (che triggererà il sync automatico)
+      // Poi aggiorna manualmente user_roles per sicurezza
       
-      // 1. Rimuovi il ruolo opposto da user_roles se esiste
+      // 1. Aggiorna profiles.role (questo triggererà il sync automatico via trigger)
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('user_id', profile.user_id);
+
+      if (profileError) {
+        console.error('Error updating profiles.role:', profileError);
+        throw new Error(`Failed to update profile role: ${profileError.message}`);
+      }
+
+      // 2. Attendi un momento per permettere al trigger di eseguire
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 3. Rimuovi il ruolo opposto da user_roles (se esiste)
       const oppositeRole = newRole === 'admin' ? 'user' : 'admin';
       await supabase
         .from('user_roles')
@@ -831,7 +846,8 @@ const AdminDashboard = () => {
         .eq('user_id', profile.user_id)
         .eq('role', oppositeRole);
 
-      // 2. Inserisci/aggiorna il nuovo ruolo in user_roles
+      // 4. Assicurati che il nuovo ruolo esista in user_roles
+      // Usa upsert ma gestisci il caso in cui esista già
       const { error: roleError } = await supabase
         .from('user_roles')
         .upsert(
@@ -847,19 +863,8 @@ const AdminDashboard = () => {
 
       if (roleError) {
         console.error('Error updating user_roles:', roleError);
-        throw new Error(`Failed to update user role: ${roleError.message}`);
-      }
-
-      // 3. Sincronizza profiles.role per retrocompatibilità
-      // Il trigger dovrebbe farlo automaticamente, ma facciamolo esplicitamente per sicurezza
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('user_id', profile.user_id);
-
-      if (profileError) {
-        console.warn('Warning: Failed to sync profiles.role (non-critical):', profileError);
-        // Non bloccare se fallisce, user_roles è la fonte di verità
+        // Non bloccare, il trigger dovrebbe aver già sincronizzato
+        console.warn('Warning: user_roles update failed, but profiles.role was updated');
       }
 
       toast({
@@ -867,7 +872,7 @@ const AdminDashboard = () => {
         description: newRole === 'admin' ? t('userPromotedToAdmin') : t('userDemotedToUser'),
       });
 
-      // Ricarica i dati dopo un breve delay per assicurarsi che le modifiche siano propagate
+      // Ricarica i dati dopo un breve delay
       setTimeout(() => {
         loadDashboardData();
       }, 500);

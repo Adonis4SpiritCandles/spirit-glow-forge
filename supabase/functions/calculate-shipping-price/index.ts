@@ -93,19 +93,27 @@ serve(async (req) => {
     console.log('FURGONETKA_API_URL is defined:', envApiUrl !== undefined);
     console.log('FURGONETKA_API_URL is null:', envApiUrl === null);
     
-    let apiBaseUrl = envApiUrl || 'https://api.sandbox.furgonetka.pl';
-    
-    // Ensure apiBaseUrl is a valid string (not undefined/null)
-    if (!apiBaseUrl || typeof apiBaseUrl !== 'string') {
-      console.error('FURGONETKA_API_URL is not set or invalid:', apiBaseUrl);
+    // Ensure apiBaseUrl is ALWAYS a valid string
+    let apiBaseUrl: string;
+    if (envApiUrl && typeof envApiUrl === 'string' && envApiUrl.trim() !== '') {
+      apiBaseUrl = envApiUrl.trim();
+    } else {
+      console.warn('FURGONETKA_API_URL not set or invalid, using sandbox fallback');
       apiBaseUrl = 'https://api.sandbox.furgonetka.pl';
     }
     
     // Remove trailing slash if present
     apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
     
+    // Final validation - ensure it's a valid URL format
+    if (!apiBaseUrl.startsWith('http://') && !apiBaseUrl.startsWith('https://')) {
+      console.error('CRITICAL: apiBaseUrl is not a valid URL:', apiBaseUrl);
+      apiBaseUrl = 'https://api.sandbox.furgonetka.pl';
+    }
+    
     console.log('Using Furgonetka API URL (final):', apiBaseUrl);
     console.log('API URL is a valid string:', typeof apiBaseUrl === 'string');
+    console.log('API URL starts with http:', apiBaseUrl.startsWith('http'));
     console.log('Token obtained successfully');
 
     // Prepare sender/pickup address (your warehouse)

@@ -102,7 +102,8 @@ Deno.serve(async (req) => {
     }
 
     const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
-    const webBaseUrl = apiBaseUrl.replace('api.', ''); // https://furgonetka.pl (no sandbox)
+    // Convert API URL to web URL: api.furgonetka.pl -> furgonetka.pl, api.sandbox.furgonetka.pl -> sandbox.furgonetka.pl
+    const webBaseUrl = apiBaseUrl.replace(/^https?:\/\/api\./, 'https://').replace(/^https?:\/\/api\.sandbox\./, 'https://sandbox.');
 
     const accessToken = tokenData.access_token;
 

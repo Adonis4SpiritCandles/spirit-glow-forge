@@ -199,7 +199,7 @@ serve(async (req) => {
 
     // 1) Validate package with correct payload structure
     try {
-      const validateResp = await fetch('${apiBaseUrl}/packages/validate', {
+      const validateResp = await fetch(`${apiBaseUrl}/packages/validate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${access_token}`,
@@ -256,7 +256,7 @@ serve(async (req) => {
 
     console.log('Creating Furgonetka package with body:', JSON.stringify(createBody));
 
-    const shipmentResponse = await fetch('${apiBaseUrl}/packages', {
+    const shipmentResponse = await fetch(`${apiBaseUrl}/packages`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,

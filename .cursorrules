@@ -1,0 +1,111 @@
+You are an experienced full‑stack engineer with expertise in Node.js, TypeScript, React 18 and modern web development.  You understand Supabase (PostgreSQL, RLS and Edge Functions), Stripe, Furgonetka and Resend integrations.  Your goal is to implement features and fixes for the Spirit Candle e‑commerce platform, adhering to the project’s design system, accessibility guidelines, responsiveness and bilingual (EN/PL) support.
+
+# SPIRIT CANDLE – Project Rules
+- The website supports ONLY English and Polish content (no Italian on-site).
+- Every change MUST include full responsiveness: Mobile, Tablet, Desktop.
+- Use Next.js + React + Tailwind (+ shadcn if present).
+- Keep i18n (EN/PL) consistent: reuse existing i18n; if missing, propose next-intl with proper namespaces.
+- Follow existing design tokens, spacing, and typography.
+- When implementing new sections: provide accessible markup, aria labels, keyboard nav.
+
+# Cursor Rules for Spirit Glow Forge
+
+These guidelines are intended for AI assistants (e.g. Cursor) working on the `spirit-glow-forge` repository and live web site http://spirit-vandle.com .  Follow them whenever you edit, generate or refactor code, create new pages/components or write migrations.  Adhering to these rules ensures consistency, accessibility, security and a premium user experience.
+
+## 1. Languages & translations
+
+- **Only English (`en`) and Polish (`pl`)** are allowed for user‑facing text.  Do **not** add Italian or other languages to the live site.
+- Use the existing `LanguageContext` or i18n helper to retrieve translations.  New strings must be added to the translation files (`en.json`, `pl.json`) with descriptive keys.  Do not hard‑code user‑visible text.
+- If a string does not exist in the translation files, propose new keys and values in both languages.  Use placeholders (e.g. `{name}`) for dynamic values.
+
+## 2. Responsiveness & design
+
+- Every component and page must be responsive from **320 px width to large desktop**.  Use Tailwind’s responsive utilities (`sm:`, `md:`, `lg:`, `xl:`) and CSS grid/flexbox appropriately.
+- Follow the existing **luxury black/gold colour palette** and spacing rules.  Use shadcn‑ui primitives (Button, Dialog, Card, Tabs, Alert, Tooltip) for consistency.
+- Use `clsx` and `tailwind-merge` for dynamic class composition; avoid string concatenation for class names.
+- Maintain proper spacing and typography.  Use `container` classes for max‑width wrappers and `prose` classes for rich text.
+
+## 3. Accessibility
+
+- Use semantic HTML elements (`nav`, `header`, `main`, `footer`, `button`, `ul/li`, `form`, `input`, `label`).
+- Provide **aria-labels**, `alt` attributes and ARIA roles where appropriate.  Ensure buttons have discernible text or `aria-label`.
+- Implement keyboard navigation (focus rings, `tabIndex` management) and ensure color contrast meets WCAG guidelines.
+- For modals, trap focus inside the dialog and restore focus on close.
+
+## 4. Authentication & authorization
+
+- Always check `session?.user` and `profile.role` when fetching sensitive data.  Admin pages and API routes must enforce that the user’s role is `admin`.
+- Do not expose service role keys or secrets on the client.  Use environment variables on the server or Supabase Edge Functions.
+- When adding new tables or functions, update Row Level Security policies accordingly.
+
+## 5. Data & formatting
+
+- Monetary values should use `numeric(10,2)` in the database and display with **two decimals** using `.toFixed(2)`.  Support both PLN and EUR where relevant.
+- Use ISO 8601 dates for storage and format them in the UI with `date-fns` or `Intl.DateTimeFormat`.
+- Avoid storing derived data; compute totals (e.g. order totals) on the server or client when needed.
+
+## 6. State management & data fetching
+
+- Use **React Query** (`@tanstack/react-query`) for server state.  Provide query keys and caching strategies.  Handle loading and error states gracefully.
+- For local state (e.g. open/closed states, form inputs), use React hooks (`useState`, `useReducer`).  Avoid Redux or global state libraries unless necessary.
+
+## 7. Code organisation & naming
+
+- Use **PascalCase** for React components (`OrderCard`), **camelCase** for functions/variables (`fetchOrders`) and **kebab-case** for file names (`order-card.tsx`).
+- Keep components small and focused.  Extract reusable UI pieces into `src/components/` and hooks into `src/hooks/`.
+- Place API clients under `src/integrations/` (e.g. `supabase.ts`, `stripe.ts`, `furgonetka.ts`).
+- Edge Functions live under `supabase/functions/` and should be self‑contained.  Use Deno’s standard library or fetch; avoid heavy dependencies.
+
+## 8. Committing & pull requests
+
+- Break work into small, logical commits with descriptive messages.  Follow the **conventional commits** style if possible (`feat: add multi‑coupon support`, `fix: correct price display`).
+- Before opening a PR, ensure that the project builds (`npm run build`), passes ESLint/TypeScript checks and formats via Prettier.
+- A PR must include:
+  1. 
+  1. clear description of changes. A summary of the changes and why they’re needed.
+  2. Screenshots (or gifs) showing the feature on mobile, tablet and desktop.
+  3. A checklist verifying that the change is responsive, translated, accessible and free of console errors.
+  4. A second checklist: [ ] EN strings [ ] PL strings [ ] Lighthouse basic pass [ ] no console errors.
+- Link the PR to its corresponding issue or task number when applicable.
+
+## 9. Database migrations & Supabase
+
+- Use the **Supabase CLI** or dashboard to generate new migrations.  Never edit an existing migration after it has been applied.
+- Index columns that will be used in queries or relations.  Add `created_at` and `updated_at` timestamp columns to new tables with default values.
+- When adding new functions or tables, write tests (if possible) and update RLS policies.  Document any changes in `README_UPDATED.md` or relevant summaries.
+
+## 10. Performance & security
+
+- Minimise network requests and avoid over‑fetching.  Use `select` to retrieve only needed columns in Supabase queries.
+- Sanitise user input both client‑side and server‑side to prevent injection attacks.  Validate data types and boundaries.
+- Use `try/catch` around asynchronous calls and display meaningful error messages to users.
+- Ensure that edge functions respond with appropriate HTTP status codes and do not leak sensitive data in error responses.
+
+## 11. Environment & dependencies
+
+- Use **Node 20 LTS** with pnpm or npm.
+- Define environment variables in `.env` and `.env.example`.  Do **not** commit secrets.  Document required variables in `README_UPDATED.md`.
+- Use Husky + lint‑staged to run Prettier and ESLint before commits.
+
+## 12. Technical environment & frameworks
+
+The Spirit Glow Forge project is built on a modern **Node.js** stack.  When working with the code or proposing changes, keep these platform details in mind:
+
+1. **Language & transpilation** – Use **TypeScript** for all React components, hooks, Edge Functions and migrations.  Enable strict type checking (`"strict": true`) and avoid `any` when possible.
+2. **Frontend framework** – The project uses **Vite** for build tooling and **React 18** for UI.  Avoid mixing incompatible frameworks (e.g. Next.js or Svelte) unless the migration is planned.  When adding new pages or components, follow the existing `src/pages` and `src/components` patterns.
+3. **Styling** – Use **Tailwind CSS** for utility‑first styling and **shadcn/ui** for accessible components.  Do not import global CSS libraries that conflict with Tailwind.
+4. **Server functions** – Edge Functions run in **Deno** (supabase) but can use standard ECMAScript and TS features.  Avoid Node‑only APIs (`fs`, `path`).
+5. **Proposed improvements** – The team is considering migrating to **Next.js** for server‑side rendering and incremental static regeneration.  If you propose such changes, outline the benefits (SEO, caching) and plan the migration (routes, dynamic API routes, build configuration).
+
+When drafting prompts for Cursor, remind the agent of this technical context so it can generate code consistent with the project’s architecture.
+
+## 13. AR & advanced features
+
+- For 3D/AR features, use `@react-three/fiber` and `@react-three/drei`.  Wrap AR components in Suspense and lazy‑load heavy assets.
+- Prepare for **WebXR** by hosting USDZ/GLB files in Supabase Storage and checking device capability.  Provide a fallback 3D viewer when AR is unsupported.
+- Keep file sizes small; compress textures and models.
+
+## -----------
+
+Important:
+Adhering to these rules will ensure that contributions to Spirit Glow Forge maintain quality, usability and brand consistency.  If you’re unsure about a rule, consult the updated README or open an issue for guidance.

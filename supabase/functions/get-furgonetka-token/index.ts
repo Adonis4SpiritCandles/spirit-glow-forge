@@ -30,6 +30,9 @@ serve(async (req) => {
       throw new Error('Missing Furgonetka credentials');
     }
 
+    // Get API URL to verify token compatibility
+    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    
     // Check if we have a valid token in database
     const { data: existingToken } = await supabase
       .from('furgonetka_tokens')
@@ -39,19 +42,27 @@ serve(async (req) => {
       .single();
 
     // If token exists, not expired, and is a user token (has refresh_token), reuse it
-    if (existingToken && existingToken.refresh_token && existingToken.refresh_token !== '' && new Date(existingToken.expires_at) > new Date()) {
-      console.log('Using existing valid token');
-      return new Response(
-        JSON.stringify({ access_token: existingToken.access_token }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // BUT: Check if token was created for the same API URL (stored in a metadata field or check creation time after last API URL change)
+    // For now, we'll always regenerate if switching between sandbox and production
+    // This is a safety measure: tokens from sandbox won't work with production and vice versa
+    
+    const tokenStillValid = existingToken && 
+                            existingToken.refresh_token && 
+                            existingToken.refresh_token !== '' && 
+                            new Date(existingToken.expires_at) > new Date();
+    
+    if (tokenStillValid) {
+      console.log('Found existing token, but will regenerate to ensure compatibility with current API URL:', apiBaseUrl);
+      // Force regeneration to ensure token matches current API environment
+      // Delete old token to force new token generation
+      await supabase.from('furgonetka_tokens').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     }
 
     const email = Deno.env.get('FURGONETKA_EMAIL');
     const password = Deno.env.get('FURGONETKA_PASSWORD');
 
     const basic = btoa(`${clientId}:${clientSecret}`);
-    const apiBaseUrl = Deno.env.get('FURGONETKA_API_URL') || 'https://api.sandbox.furgonetka.pl';
+    // apiBaseUrl already defined above
     const url = `${apiBaseUrl}/oauth/token`;
     
     console.log('Furgonetka API URL:', apiBaseUrl);

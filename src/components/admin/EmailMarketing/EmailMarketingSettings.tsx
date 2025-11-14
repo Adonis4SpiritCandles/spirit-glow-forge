@@ -137,7 +137,37 @@ export default function EmailMarketingSettings() {
             <Switch
               id="newsletter-section-homepage"
               checked={settings.show_newsletter_section_homepage}
-              onCheckedChange={(checked) => setSettings({ ...settings, show_newsletter_section_homepage: checked })}
+              onCheckedChange={async (checked) => {
+                const newSettings = { ...settings, show_newsletter_section_homepage: checked };
+                setSettings(newSettings);
+                // Save immediately when toggle changes
+                try {
+                  const { error } = await supabase
+                    .from('email_marketing_settings')
+                    .upsert({
+                      ...newSettings,
+                      updated_at: new Date().toISOString()
+                    }, {
+                      onConflict: 'id'
+                    });
+                  
+                  if (error) throw error;
+                  
+                  toast({
+                    title: language === 'pl' ? 'Zaktualizowano' : 'Updated',
+                    description: language === 'pl' ? 'Ustawienia zapisane pomyślnie' : 'Settings saved successfully'
+                  });
+                } catch (error: any) {
+                  console.error('Error saving email marketing settings:', error);
+                  toast({
+                    title: language === 'pl' ? 'Błąd' : 'Error',
+                    description: error.message || (language === 'pl' ? 'Nie udało się zapisać ustawień' : 'Failed to save settings'),
+                    variant: 'destructive'
+                  });
+                  // Revert on error
+                  setSettings({ ...settings });
+                }
+              }}
             />
           </div>
 
@@ -156,7 +186,37 @@ export default function EmailMarketingSettings() {
             <Switch
               id="newsletter-checkbox-registration"
               checked={settings.show_newsletter_checkbox_registration}
-              onCheckedChange={(checked) => setSettings({ ...settings, show_newsletter_checkbox_registration: checked })}
+              onCheckedChange={async (checked) => {
+                const newSettings = { ...settings, show_newsletter_checkbox_registration: checked };
+                setSettings(newSettings);
+                // Save immediately when toggle changes
+                try {
+                  const { error } = await supabase
+                    .from('email_marketing_settings')
+                    .upsert({
+                      ...newSettings,
+                      updated_at: new Date().toISOString()
+                    }, {
+                      onConflict: 'id'
+                    });
+                  
+                  if (error) throw error;
+                  
+                  toast({
+                    title: language === 'pl' ? 'Zaktualizowano' : 'Updated',
+                    description: language === 'pl' ? 'Ustawienia zapisane pomyślnie' : 'Settings saved successfully'
+                  });
+                } catch (error: any) {
+                  console.error('Error saving email marketing settings:', error);
+                  toast({
+                    title: language === 'pl' ? 'Błąd' : 'Error',
+                    description: error.message || (language === 'pl' ? 'Nie udało się zapisać ustawień' : 'Failed to save settings'),
+                    variant: 'destructive'
+                  });
+                  // Revert on error
+                  setSettings({ ...settings });
+                }
+              }}
             />
           </div>
 
@@ -175,7 +235,37 @@ export default function EmailMarketingSettings() {
             <Switch
               id="newsletter-checkbox-contact"
               checked={settings.show_newsletter_checkbox_contact}
-              onCheckedChange={(checked) => setSettings({ ...settings, show_newsletter_checkbox_contact: checked })}
+              onCheckedChange={async (checked) => {
+                const newSettings = { ...settings, show_newsletter_checkbox_contact: checked };
+                setSettings(newSettings);
+                // Save immediately when toggle changes
+                try {
+                  const { error } = await supabase
+                    .from('email_marketing_settings')
+                    .upsert({
+                      ...newSettings,
+                      updated_at: new Date().toISOString()
+                    }, {
+                      onConflict: 'id'
+                    });
+                  
+                  if (error) throw error;
+                  
+                  toast({
+                    title: language === 'pl' ? 'Zaktualizowano' : 'Updated',
+                    description: language === 'pl' ? 'Ustawienia zapisane pomyślnie' : 'Settings saved successfully'
+                  });
+                } catch (error: any) {
+                  console.error('Error saving email marketing settings:', error);
+                  toast({
+                    title: language === 'pl' ? 'Błąd' : 'Error',
+                    description: error.message || (language === 'pl' ? 'Nie udało się zapisać ustawień' : 'Failed to save settings'),
+                    variant: 'destructive'
+                  });
+                  // Revert on error
+                  setSettings({ ...settings });
+                }
+              }}
             />
           </div>
 

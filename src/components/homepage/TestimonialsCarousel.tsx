@@ -65,13 +65,42 @@ const TestimonialsCarousel = () => {
   if (!sectionActive || testimonials.length === 0) return null;
 
   return (
-    <section ref={ref} className="py-20 bg-background/50">
+    <section ref={ref} className="py-8 md:py-12 lg:py-16 bg-background/50">
+      <style>{`
+        .testimonials-swiper .swiper-pagination-bullet {
+          background-color: hsl(var(--primary)) !important;
+          opacity: 0.5;
+          width: 8px !important;
+          height: 8px !important;
+        }
+        .testimonials-swiper .swiper-pagination-bullet-active {
+          background-color: hsl(var(--primary)) !important;
+          opacity: 1;
+          width: 24px !important;
+        }
+        /* Fluorescenza gialla sulla card attiva in mobile */
+        @media (max-width: 767px) {
+          .testimonials-swiper .swiper-slide-active .testimonial-card {
+            box-shadow: 0 0 25px hsl(var(--primary) / 0.5),
+                        0 0 50px hsl(var(--primary) / 0.3),
+                        0 0 75px hsl(var(--primary) / 0.2) !important;
+            border-color: hsl(var(--primary) / 0.8) !important;
+          }
+        }
+        /* Fluorescenza su hover desktop */
+        @media (min-width: 768px) {
+          .testimonials-swiper .testimonial-card:hover {
+            box-shadow: 0 0 30px hsl(var(--primary) / 0.4),
+                        0 0 60px hsl(var(--primary) / 0.2) !important;
+          }
+        }
+      `}</style>
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
             {t('customerReviews') || 'What Our Customers Say'}
@@ -85,7 +114,7 @@ const TestimonialsCarousel = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative"
+          className="relative pt-8 md:pt-12 px-2 md:px-4"
         >
           <Swiper
             modules={[Autoplay, Pagination, Navigation, EffectCoverflow]}
@@ -128,7 +157,7 @@ const TestimonialsCarousel = () => {
                 effect: 'coverflow'
               },
             }}
-            className="testimonials-swiper pb-16"
+            className="testimonials-swiper pb-12 md:pb-16"
           >
             {testimonials.map((testimonial, index) => (
               <SwiperSlide key={testimonial.id}>
@@ -145,7 +174,7 @@ const TestimonialsCarousel = () => {
                     y: -5,
                     transition: { duration: 0.3 }
                   }}
-                  className="bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 h-full flex flex-col cursor-grab active:cursor-grabbing"
+                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 md:hover:shadow-[0_0_30px_rgba(255,215,0,0.3)] h-full flex flex-col cursor-grab active:cursor-grabbing"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     {testimonial.avatar ? (
@@ -199,10 +228,10 @@ const TestimonialsCarousel = () => {
           </Swiper>
           
           {/* Custom Navigation Buttons */}
-          <button className="swiper-button-prev-testimonials absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
+          <button className="swiper-button-prev-testimonials absolute left-2 md:left-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <button className="swiper-button-next-testimonials absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
+          <button className="swiper-button-next-testimonials absolute right-2 md:right-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
             <ChevronRight className="w-5 h-5" />
           </button>
         </motion.div>

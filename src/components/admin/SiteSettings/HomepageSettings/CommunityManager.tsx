@@ -140,7 +140,37 @@ export default function CommunityManager() {
           <Switch
             id="community-active"
             checked={settings.is_active}
-            onCheckedChange={(checked) => setSettings({ ...settings, is_active: checked })}
+            onCheckedChange={async (checked) => {
+              const newSettings = { ...settings, is_active: checked };
+              setSettings(newSettings);
+              // Save immediately when toggle changes
+              try {
+                const { error } = await supabase
+                  .from('homepage_community_settings')
+                  .upsert({
+                    ...newSettings,
+                    updated_at: new Date().toISOString()
+                  }, {
+                    onConflict: 'id'
+                  });
+                
+                if (error) throw error;
+                
+                toast({
+                  title: language === 'pl' ? 'Zaktualizowano' : 'Updated',
+                  description: language === 'pl' ? 'Ustawienia zapisane pomyślnie' : 'Settings saved successfully'
+                });
+              } catch (error: any) {
+                console.error('Error saving community settings:', error);
+                toast({
+                  title: language === 'pl' ? 'Błąd' : 'Error',
+                  description: error.message || (language === 'pl' ? 'Nie udało się zapisać ustawień' : 'Failed to save settings'),
+                  variant: 'destructive'
+                });
+                // Revert on error
+                setSettings({ ...settings });
+              }
+            }}
           />
         </div>
 

@@ -38,11 +38,12 @@ const SocialFeed = () => {
 
   const loadSettings = async () => {
     try {
+      // Remove is_active filter from query - we need to load settings regardless of active status
+      // to properly check if section should be displayed
       const { data } = await supabase
         .from('homepage_community_settings')
         .select('*')
         .eq('id', '00000000-0000-0000-0000-000000000001')
-        .eq('is_active', true)
         .single();
       
       if (data) {

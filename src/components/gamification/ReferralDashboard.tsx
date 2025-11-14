@@ -89,15 +89,24 @@ const ReferralDashboard = () => {
   const loadReferrals = async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from('referrals')
-      .select('*')
-      .eq('referrer_id', user.id)
-      .eq('status', 'completed')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('referrals')
+        .select('*, referee:referee_id (user_id, first_name, last_name, email, profile_image_url)')
+        .eq('referrer_id', user.id)
+        .eq('status', 'completed')
+        .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      setReferrals(data);
+      if (error) {
+        console.error('Error loading referrals:', error);
+        toast.error(language === 'pl' ? 'Błąd ładowania poleceń' : 'Error loading referrals');
+      } else {
+        setReferrals(data || []);
+        console.log(`Loaded ${data?.length || 0} completed referrals`);
+      }
+    } catch (err) {
+      console.error('Exception loading referrals:', err);
+      toast.error(language === 'pl' ? 'Błąd ładowania poleceń' : 'Error loading referrals');
     }
   };
 

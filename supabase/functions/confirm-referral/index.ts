@@ -135,87 +135,144 @@ serve(async (req) => {
 
     if (rpcError) {
       console.error('Error executing complete_referral:', rpcError);
+      // Non bloccare, ma loggare l'errore
+      // I punti potrebbero essere già stati aggiunti dal trigger o dalla funzione
     } else {
       console.log('Complete referral function executed - 200 points awarded to referrer');
       
-      // Log points history for referrer
-      await supabaseAdmin
-        .from('loyalty_points_history')
-        .insert({
-          user_id: referrer_id,
-          points_change: 200,
-          reason: `Referred ${refereeName} (${refereeEmail})`,
-          action_type: 'earn',
-          reference_type: 'referral',
-          reference_id: referee_id
-        });
+      // Log points history for referrer (con gestione errori)
+      try {
+        const { error: historyError } = await supabaseAdmin
+          .from('loyalty_points_history')
+          .insert({
+            user_id: referrer_id,
+            points_change: 200,
+            reason: `Referred ${refereeName} (${refereeEmail})`,
+            action_type: 'earn',
+            reference_type: 'referral',
+            reference_id: referee_id
+          });
+        
+        if (historyError) {
+          console.warn('Error logging points history (non-critical):', historyError);
+        }
+      } catch (historyErr) {
+        console.warn('Exception logging points history (non-critical):', historyErr);
+      }
     }
 
     // Step 5: Update referee's profile with referral_source_id
-    const { error: profileUpdateError } = await supabaseAdmin
+    // Nota: referral_source_id potrebbe essere già stato salvato dal trigger handle_new_user
+    // Controlliamo prima se è già impostato
+    const { data: currentProfile } = await supabaseAdmin
       .from('profiles')
-      .update({ referral_source_id: referrer_id })
-      .eq('user_id', referee_id);
+      .select('referral_source_id')
+      .eq('user_id', referee_id)
+      .single();
 
-    if (profileUpdateError) {
-      console.error('Error updating referee profile:', profileUpdateError);
+    // Aggiorna solo se non è già impostato o se è diverso
+    if (!currentProfile?.referral_source_id || currentProfile.referral_source_id !== referrer_id) {
+      const { error: profileUpdateError } = await supabaseAdmin
+        .from('profiles')
+        .update({ referral_source_id: referrer_id })
+        .eq('user_id', referee_id);
+
+      if (profileUpdateError) {
+        console.error('Error updating referee profile with referral_source_id:', profileUpdateError);
+        // Non bloccare, ma loggare
+      } else {
+        console.log('Referee profile updated with referral_source_id:', referrer_id);
+      }
     } else {
-      console.log('Referee profile updated with referral_source_id');
+      console.log('Referee profile already has referral_source_id:', currentProfile.referral_source_id);
     }
 
     // Step 6: Award welcome points to referee (100 points)
-    const { data: existingPoints } = await supabaseAdmin
+    // Verifica se i punti sono già stati assegnati (idempotency)
+    const { data: existingPoints, error: pointsCheckError } = await supabaseAdmin
       .from('loyalty_points')
       .select('*')
       .eq('user_id', referee_id)
       .single();
 
-    if (existingPoints) {
-      await supabaseAdmin
-        .from('loyalty_points')
-        .update({
-          points: (existingPoints.points || 0) + 100,
-          lifetime_points: (existingPoints.lifetime_points || 0) + 100
-        })
-        .eq('user_id', referee_id);
+    if (pointsCheckError && pointsCheckError.code !== 'PGRST116') {
+      // PGRST116 = no rows returned, che è normale se non ci sono punti ancora
+      console.error('Error checking existing points:', pointsCheckError);
     } else {
-      await supabaseAdmin
-        .from('loyalty_points')
-        .insert({
-          user_id: referee_id,
-          points: 100,
-          lifetime_points: 100
-        });
+      if (existingPoints) {
+        const { error: updateError } = await supabaseAdmin
+          .from('loyalty_points')
+          .update({
+            points: (existingPoints.points || 0) + 100,
+            lifetime_points: (existingPoints.lifetime_points || 0) + 100,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', referee_id);
+        
+        if (updateError) {
+          console.error('Error updating referee loyalty points:', updateError);
+        } else {
+          console.log('Welcome points (100) added to referee existing balance');
+        }
+      } else {
+        const { error: insertError } = await supabaseAdmin
+          .from('loyalty_points')
+          .insert({
+            user_id: referee_id,
+            points: 100,
+            lifetime_points: 100
+          });
+        
+        if (insertError) {
+          console.error('Error inserting referee loyalty points:', insertError);
+        } else {
+          console.log('Welcome points (100) created for referee');
+        }
+      }
+      
+      // Log points history for referee (con gestione errori)
+      try {
+        const { error: historyError } = await supabaseAdmin
+          .from('loyalty_points_history')
+          .insert({
+            user_id: referee_id,
+            points_change: 100,
+            reason: 'Welcome bonus - registered via referral',
+            action_type: 'bonus',
+            reference_type: 'referral',
+            reference_id: referrer_id
+          });
+        
+        if (historyError) {
+          console.warn('Error logging referee points history (non-critical):', historyError);
+        }
+      } catch (historyErr) {
+        console.warn('Exception logging referee points history (non-critical):', historyErr);
+      }
     }
 
-    console.log('Welcome points (100) awarded to referee');
-    
-    // Log points history for referee
-    await supabaseAdmin
-      .from('loyalty_points_history')
-      .insert({
-        user_id: referee_id,
-        points_change: 100,
-        reason: 'Welcome bonus - registered via referral',
-        action_type: 'bonus',
-        reference_type: 'referral',
-        reference_id: referrer_id
-      });
-
-    // Step 7: Assign badges
-    await supabaseAdmin
-      .from('user_badges')
-      .insert([
-        { user_id: referrer_id, badge_id: 'referral_inviter' },
-        { user_id: referee_id, badge_id: 'welcome' }
-      ])
-      .then(({ error }) => {
-        if (error) {
-          console.log('Badge assignment (expected conflicts):', error.message);
+    // Step 7: Assign badges (con gestione errori migliorata)
+    try {
+      const { error: badgeError } = await supabaseAdmin
+        .from('user_badges')
+        .insert([
+          { user_id: referrer_id, badge_id: 'referral_inviter' },
+          { user_id: referee_id, badge_id: 'welcome' }
+        ]);
+      
+      if (badgeError) {
+        // Expected: potrebbe essere un conflitto se badge già assegnato
+        if (badgeError.code === '23505' || badgeError.message?.includes('duplicate')) {
+          console.log('Badges already assigned (expected):', badgeError.message);
         } else {
-          console.log('Badges assigned successfully');
+          console.warn('Error assigning badges (non-critical):', badgeError);
         }
-      });
+      } else {
+        console.log('Badges assigned successfully');
+      }
+    } catch (badgeErr) {
+      console.warn('Exception assigning badges (non-critical):', badgeErr);
+    }
 
     // Step 8: Get referrer profile for emails
     const { data: referrerProfile } = await supabaseAdmin
@@ -225,31 +282,43 @@ serve(async (req) => {
       .single();
 
     if (referrerProfile) {
-      // Send referral emails
-      try {
-        await supabaseAdmin.functions.invoke('send-referral-emails', {
-          body: {
-            referrerEmail: referrerProfile.email,
-            referrerName: referrerProfile.first_name || 'Friend',
-            refereeName: refereeName,
-            refereeEmail: refereeEmail,
-            language: referrerProfile.preferred_language || 'en'
-          }
-        });
-        console.log('Referral emails sent successfully');
-      } catch (emailErr) {
-        console.error('Failed to send referral emails:', emailErr);
-      }
+      // Send referral emails (non-blocking)
+      supabaseAdmin.functions.invoke('send-referral-emails', {
+        body: {
+          referrerEmail: referrerProfile.email,
+          referrerName: referrerProfile.first_name || 'Friend',
+          refereeName: refereeName,
+          refereeEmail: refereeEmail,
+          language: referrerProfile.preferred_language || 'en'
+        }
+      })
+      .then(({ error: emailErr }) => {
+        if (emailErr) {
+          console.error('Failed to send referral emails:', emailErr);
+        } else {
+          console.log('Referral emails sent successfully');
+        }
+      })
+      .catch((emailErr) => {
+        console.error('Exception sending referral emails:', emailErr);
+      });
 
-      // Process referral rewards (check thresholds for badges/coupons)
-      try {
-        await supabaseAdmin.functions.invoke('process-referral-rewards', {
-          body: { referrerId: referrer_id }
-        });
-        console.log('Referral rewards processed');
-      } catch (rewardErr) {
-        console.error('Failed to process referral rewards:', rewardErr);
-      }
+      // Process referral rewards (check thresholds for badges/coupons) - non-blocking
+      supabaseAdmin.functions.invoke('process-referral-rewards', {
+        body: { referrerId: referrer_id }
+      })
+      .then(({ error: rewardErr }) => {
+        if (rewardErr) {
+          console.error('Failed to process referral rewards:', rewardErr);
+        } else {
+          console.log('Referral rewards processed');
+        }
+      })
+      .catch((rewardErr) => {
+        console.error('Exception processing referral rewards:', rewardErr);
+      });
+    } else {
+      console.warn('Referrer profile not found, skipping email and rewards processing');
     }
 
     return new Response(

@@ -100,38 +100,39 @@ const Auth = () => {
           return;
         }
         
-        // Validate referral code if provided
+        // Validate referral code if provided (NON blocca registrazione se referrer non ha codice)
         let validatedReferralId: string | null = null;
         const referralInput = referralCode || getReferralId();
         
         if (referralInput) {
           // Check if it's a short code (8 chars) or UUID
           if (referralInput.match(/^[A-Za-z0-9]{8}$/)) {
-            const { data: profileData } = await supabase
+            // Cerca per referral_short_code
+            const { data: profileData, error: codeError } = await supabase
               .from('profiles')
               .select('user_id')
               .eq('referral_short_code', referralInput.toUpperCase())
               .single();
             
-            if (!profileData) {
-              toast({
-                title: t('error') || "Error",
-                description: language === 'pl' 
-                  ? 'Nieprawidłowy kod polecający. Sprawdź kod i spróbuj ponownie.'
-                  : 'Invalid referral code. Please check the code and try again.',
-                variant: "destructive",
-              });
-              return;
+            if (!profileData && codeError) {
+              // Se non trova il codice, potrebbe essere che il referrer non abbia ancora generato il codice
+              // NON blocchiamo la registrazione, ma loggiamo l'errore
+              console.warn('Referral code not found:', referralInput, codeError);
+              // Non bloccare, lasciamo validatedReferralId null per ora
+              // Il codice potrebbe essere generato automaticamente dopo
+            } else if (profileData) {
+              validatedReferralId = profileData.user_id;
             }
-            validatedReferralId = profileData.user_id;
           } else if (referralInput.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-            const { data: profileData } = await supabase
+            // UUID: verifica che l'utente esista
+            const { data: profileData, error: uuidError } = await supabase
               .from('profiles')
               .select('user_id')
               .eq('user_id', referralInput)
               .single();
             
-            if (!profileData) {
+            if (!profileData && uuidError) {
+              // UUID non valido
               toast({
                 title: t('error') || "Error",
                 description: language === 'pl'
@@ -140,8 +141,9 @@ const Auth = () => {
                 variant: "destructive",
               });
               return;
+            } else if (profileData) {
+              validatedReferralId = referralInput;
             }
-            validatedReferralId = referralInput;
           } else if (referralInput.trim() !== '') {
             // Invalid format
             toast({
@@ -155,7 +157,16 @@ const Auth = () => {
           }
         }
         
-        const { error } = await signUp(emailOrUsername, password, firstName, lastName, username, preferredLanguage);
+        // Pass referral_source_id nei metadata se validato (per handle_new_user trigger)
+        const { error } = await signUp(
+          emailOrUsername, 
+          password, 
+          firstName, 
+          lastName, 
+          username, 
+          preferredLanguage,
+          validatedReferralId // Pass referral_source_id
+        );
         if (error) {
           toast({
             title: "Error",
@@ -197,29 +208,77 @@ const Auth = () => {
             console.error('Failed to send welcome email:', emailErr);
           }
 
-          // Handle referral if validated
+          // Handle referral confirmation (usa onAuthStateChange invece di setTimeout)
+          // Il referral_source_id è già stato salvato via metadata in signUp
+          // Ma dobbiamo ancora processare il referral (punti, email, etc.) via confirm-referral
           if (validatedReferralId) {
-            setTimeout(async () => {
-              try {
-                const { data: userData } = await supabase.auth.getUser();
-                if (userData.user) {
-                  // Call centralized confirm-referral edge function
-                  await supabase.functions.invoke('confirm-referral', {
-                    body: {
-                      referee_id: userData.user.id,
-                      referral_code_or_id: validatedReferralId,
-                      preferredLanguage,
-                      refereeEmail: emailOrUsername,
-                      refereeName: `${firstName} ${lastName}`
+            // Setup listener per quando l'utente è autenticato
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(
+              async (event, session) => {
+                if (event === 'SIGNED_IN' && session?.user) {
+                  // Rimuovi listener dopo uso
+                  subscription.unsubscribe();
+                  
+                  // Retry logic per confirm-referral
+                  let retries = 3;
+                  let success = false;
+                  
+                  while (retries > 0 && !success) {
+                    try {
+                      console.log(`Processing referral (${4 - retries}/3 attempts)...`);
+                      
+                      const { data, error: referralError } = await supabase.functions.invoke('confirm-referral', {
+                        body: {
+                          referee_id: session.user.id,
+                          referral_code_or_id: validatedReferralId,
+                          preferredLanguage,
+                          refereeEmail: emailOrUsername,
+                          refereeName: `${firstName} ${lastName}`
+                        }
+                      });
+                      
+                      if (referralError) {
+                        throw referralError;
+                      }
+                      
+                      console.log('Referral confirmed successfully:', data);
+                      success = true;
+                      clearReferral();
+                      
+                      toast({
+                        title: language === 'pl' ? "Sukces!" : "Success!",
+                        description: language === 'pl' 
+                          ? "Kod polecający został aktywowany. Sprawdź swoją pocztę!"
+                          : "Referral code activated! Check your email!",
+                      });
+                    } catch (err: any) {
+                      retries--;
+                      console.error(`Referral processing error (${3 - retries}/3):`, err);
+                      
+                      if (retries > 0) {
+                        // Aspetta 1 secondo prima di riprovare
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                      } else {
+                        // Ultimo tentativo fallito
+                        console.error('Failed to process referral after 3 attempts:', err);
+                        toast({
+                          title: language === 'pl' ? "Ostrzeżenie" : "Warning",
+                          description: language === 'pl'
+                            ? "Kod polecający został zapisany, ale aktywacja może potrwać chwilę."
+                            : "Referral code saved, but activation may take a moment.",
+                          variant: "default",
+                        });
+                      }
                     }
-                  });
-                  console.log('Referral confirmed via edge function');
-                  clearReferral();
+                  }
                 }
-              } catch (err) {
-                console.error('Referral processing error:', err);
               }
-            }, 1000);
+            );
+            
+            // Timeout di sicurezza: rimuovi listener dopo 30 secondi
+            setTimeout(() => {
+              subscription.unsubscribe();
+            }, 30000);
           }
 
           toast({

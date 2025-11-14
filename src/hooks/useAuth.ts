@@ -30,20 +30,38 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string, username: string, preferredLanguage: string = 'en') => {
+  const signUp = async (
+    email: string, 
+    password: string, 
+    firstName: string, 
+    lastName: string, 
+    username: string, 
+    preferredLanguage: string = 'en',
+    referralSourceId: string | null = null
+  ) => {
     const redirectUrl = `${window.location.origin}/`;
+    
+    // Prepara metadata con referral_source_id se presente
+    const userMetadata: Record<string, any> = {
+      first_name: firstName,
+      last_name: lastName,
+      username: username,
+      preferred_language: preferredLanguage,
+    };
+    
+    // Aggiungi referral_source_id ai metadata se presente
+    // Il trigger handle_new_user lo userà per salvare referral_source_id nel profilo
+    if (referralSourceId) {
+      userMetadata.referral_source_id = referralSourceId;
+      console.log('Adding referral_source_id to user metadata:', referralSourceId);
+    }
     
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          username: username,
-          preferred_language: preferredLanguage,
-        }
+        data: userMetadata
       }
     });
     return { error };

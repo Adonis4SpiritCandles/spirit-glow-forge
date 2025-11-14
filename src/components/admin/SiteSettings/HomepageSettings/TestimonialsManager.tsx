@@ -199,67 +199,66 @@ const TestimonialsManager = () => {
             onCheckedChange={handleToggleSection}
           />
         </div>
-      </CardHeader>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setEditingTestimonial({ id: 'new', name: '', avatar: '', rating: 5, comment: '', location: '', product: '', is_featured: false })}>
-                <Plus className="w-4 h-4 mr-2" />
-                {language === 'pl' ? 'Dodaj Opinię' : 'Add Testimonial'}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editingTestimonial?.id === 'new' ? (language === 'pl' ? 'Nowa Opinia' : 'New Testimonial') : (language === 'pl' ? 'Edytuj Opinię' : 'Edit Testimonial')}</DialogTitle>
-              </DialogHeader>
-              {editingTestimonial && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>{language === 'pl' ? 'Imię' : 'Name'}</Label>
-                      <Input value={editingTestimonial.name} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, name: e.target.value })} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{language === 'pl' ? 'Lokalizacja' : 'Location'}</Label>
-                      <Input value={editingTestimonial.location} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, location: e.target.value })} />
-                    </div>
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => setEditingTestimonial({ id: 'new', name: '', avatar: '', rating: 5, comment: '', location: '', product: '', is_featured: false })}>
+              <Plus className="w-4 h-4 mr-2" />
+              {language === 'pl' ? 'Dodaj Opinię' : 'Add Testimonial'}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingTestimonial?.id === 'new' ? (language === 'pl' ? 'Nowa Opinia' : 'New Testimonial') : (language === 'pl' ? 'Edytuj Opinię' : 'Edit Testimonial')}</DialogTitle>
+            </DialogHeader>
+            {editingTestimonial && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{language === 'pl' ? 'Imię' : 'Name'}</Label>
+                    <Input value={editingTestimonial.name} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, name: e.target.value })} />
                   </div>
                   <div className="space-y-2">
-                    <Label>{language === 'pl' ? 'URL Avatara (opcjonalnie)' : 'Avatar URL (optional)'}</Label>
-                    <Input value={editingTestimonial.avatar || ''} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, avatar: e.target.value })} placeholder="https://..." />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{language === 'pl' ? 'Produkt (opcjonalnie)' : 'Product (optional)'}</Label>
-                    <Input value={editingTestimonial.product || ''} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, product: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{language === 'pl' ? 'Ocena' : 'Rating'}</Label>
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`w-8 h-8 cursor-pointer ${star <= editingTestimonial.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`}
-                          onClick={() => setEditingTestimonial({ ...editingTestimonial, rating: star })}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{language === 'pl' ? 'Komentarz' : 'Comment'}</Label>
-                    <Textarea value={editingTestimonial.comment} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, comment: e.target.value })} rows={4} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="featured">{language === 'pl' ? 'Polecane na stronie głównej' : 'Featured on Homepage'}</Label>
-                    <Switch id="featured" checked={editingTestimonial.is_featured} onCheckedChange={(checked) => setEditingTestimonial({ ...editingTestimonial, is_featured: checked })} />
-                  </div>
-                  <div className="flex justify-end gap-2 pt-4">
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{language === 'pl' ? 'Anuluj' : 'Cancel'}</Button>
-                    <Button onClick={handleSaveTestimonial}>{language === 'pl' ? 'Zapisz' : 'Save'}</Button>
+                    <Label>{language === 'pl' ? 'Lokalizacja' : 'Location'}</Label>
+                    <Input value={editingTestimonial.location} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, location: e.target.value })} />
                   </div>
                 </div>
-              )}
-            </DialogContent>
-          </Dialog>
-        </div>
+                <div className="space-y-2">
+                  <Label>{language === 'pl' ? 'URL Avatara (opcjonalnie)' : 'Avatar URL (optional)'}</Label>
+                  <Input value={editingTestimonial.avatar || ''} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, avatar: e.target.value })} placeholder="https://..." />
+                </div>
+                <div className="space-y-2">
+                  <Label>{language === 'pl' ? 'Produkt (opcjonalnie)' : 'Product (optional)'}</Label>
+                  <Input value={editingTestimonial.product || ''} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, product: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>{language === 'pl' ? 'Ocena' : 'Rating'}</Label>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`w-8 h-8 cursor-pointer ${star <= editingTestimonial.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`}
+                        onClick={() => setEditingTestimonial({ ...editingTestimonial, rating: star })}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>{language === 'pl' ? 'Komentarz' : 'Comment'}</Label>
+                  <Textarea value={editingTestimonial.comment} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, comment: e.target.value })} rows={4} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="featured">{language === 'pl' ? 'Polecane na stronie głównej' : 'Featured on Homepage'}</Label>
+                  <Switch id="featured" checked={editingTestimonial.is_featured} onCheckedChange={(checked) => setEditingTestimonial({ ...editingTestimonial, is_featured: checked })} />
+                </div>
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{language === 'pl' ? 'Anuluj' : 'Cancel'}</Button>
+                  <Button onClick={handleSaveTestimonial}>{language === 'pl' ? 'Zapisz' : 'Save'}</Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </CardHeader>
       <CardContent className="space-y-3">
         {testimonials.map((testimonial) => (

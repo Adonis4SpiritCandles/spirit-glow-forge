@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Flame, Leaf, Heart, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,49 +8,123 @@ import candleWax from "@/assets/candle-wax.png";
 import spiritLogo from "@/assets/spirit-logo.png";
 import SEOManager from "@/components/SEO/SEOManager";
 import { generateBreadcrumbStructuredData, getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 const About = () => {
   const { t, language } = useLanguage();
+  const [settings, setSettings] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load settings from database
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const { data } = await supabase
+          .from('about_settings')
+          .select('*')
+          .eq('id', '00000000-0000-0000-0000-000000000001')
+          .eq('is_active', true)
+          .single();
+        
+        if (data) {
+          setSettings(data);
+        }
+      } catch (error) {
+        console.error('Error loading about settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadSettings();
+  }, []);
+
+  // Icon map for features
+  const iconMap: Record<string, any> = {
+    leaf: Leaf,
+    heart: Heart,
+    flame: Flame,
+    award: Award,
+  };
 
   const breadcrumbData = generateBreadcrumbStructuredData([
     { name: 'Home', url: getFullUrl('/', language) },
     { name: language === 'en' ? 'About Us' : 'O Nas', url: getFullUrl('/about', language) }
   ]);
   
-  const features = [
-    {
-      icon: <Leaf className="w-6 h-6 text-primary" />,
-      title: t('feature1Title'),
-      description: t('feature1Desc')
-    },
-    {
-      icon: <Heart className="w-6 h-6 text-primary" />,
-      title: t('feature2Title'),
-      description: t('feature2Desc')
-    },
-    {
-      icon: <Flame className="w-6 h-6 text-primary" />,
-      title: t('feature3Title'),
-      description: t('feature3Desc')
-    },
-    {
-      icon: <Award className="w-6 h-6 text-primary" />,
-      title: t('feature4Title'),
-      description: t('feature4Desc')
-    },
-    {
-      icon: <Leaf className="w-6 h-6 text-primary" />,
-      title: t('feature5Title'),
-      description: t('feature5Desc')
-    },
-    {
-      icon: <Award className="w-6 h-6 text-primary" />,
-      title: t('feature6Title'),
-      description: language === 'pl' 
-        ? 'Stwórz swoją własną spersonalizowaną świecę, z personalizowaną etykietą lub zapachem według własnego wyboru dla siebie lub jako unikalny prezent!' 
-        : 'Create your own personalized candle, with a personalized label, or fragrance of your choice for yourself or as a unique gift!'
-    }
-  ];
+  // Use settings if available, otherwise fallback to defaults
+  const heroTitle = settings?.hero_title_en && settings?.hero_title_pl
+    ? (language === 'en' ? settings.hero_title_en : settings.hero_title_pl)
+    : t('rebornYourNature');
+  
+  const heroIntro1 = settings?.hero_intro1_en && settings?.hero_intro1_pl
+    ? (language === 'en' ? settings.hero_intro1_en : settings.hero_intro1_pl)
+    : t('aboutIntro1');
+  
+  const heroIntro2 = settings?.hero_intro2_en && settings?.hero_intro2_pl
+    ? (language === 'en' ? settings.hero_intro2_en : settings.hero_intro2_pl)
+    : t('aboutIntro2');
+  
+  const heroButtonText = settings?.hero_button_text_en && settings?.hero_button_text_pl
+    ? (language === 'en' ? settings.hero_button_text_en : settings.hero_button_text_pl)
+    : t('discoverOurCollection');
+  
+  const heroImageUrl = settings?.hero_image_url || candleWax;
+  
+  const featuresSectionTitle = settings?.features_section_title_en && settings?.features_section_title_pl
+    ? (language === 'en' ? settings.features_section_title_en : settings.features_section_title_pl)
+    : t('whyChooseSpiritCandles');
+  
+  const featuresSectionDescription = settings?.features_section_description_en && settings?.features_section_description_pl
+    ? (language === 'en' ? settings.features_section_description_en : settings.features_section_description_pl)
+    : t('whyChooseDesc');
+  
+  // Build features array from settings or fallback to defaults
+  const features = settings?.features && Array.isArray(settings.features) && settings.features.length > 0
+    ? settings.features.map((feature: any) => {
+        const IconComponent = iconMap[feature.icon] || Leaf;
+        return {
+          icon: <IconComponent className="w-6 h-6 text-primary" />,
+          title: language === 'en' ? feature.title_en : feature.title_pl,
+          description: language === 'en' ? feature.description_en : feature.description_pl,
+          link: feature.link
+        };
+      })
+    : [
+        {
+          icon: <Leaf className="w-6 h-6 text-primary" />,
+          title: t('feature1Title'),
+          description: t('feature1Desc')
+        },
+        {
+          icon: <Heart className="w-6 h-6 text-primary" />,
+          title: t('feature2Title'),
+          description: t('feature2Desc')
+        },
+        {
+          icon: <Flame className="w-6 h-6 text-primary" />,
+          title: t('feature3Title'),
+          description: t('feature3Desc')
+        },
+        {
+          icon: <Award className="w-6 h-6 text-primary" />,
+          title: t('feature4Title'),
+          description: t('feature4Desc')
+        },
+        {
+          icon: <Leaf className="w-6 h-6 text-primary" />,
+          title: t('feature5Title'),
+          description: t('feature5Desc')
+        },
+        {
+          icon: <Award className="w-6 h-6 text-primary" />,
+          title: t('feature6Title'),
+          description: language === 'pl' 
+            ? 'Stwórz swoją własną spersonalizowaną świecę, z personalizowaną etykietą lub zapachem według własnego wyboru dla siebie lub jako unikalny prezent!' 
+            : 'Create your own personalized candle, with a personalized label, or fragrance of your choice for yourself or as a unique gift!',
+          link: '/custom-candles'
+        }
+      ];
 
   return (
     <>
@@ -72,26 +147,28 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-foreground leading-tight">
-                {t('rebornYourNature')}
+                {heroTitle}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                {t('aboutIntro1')}
+                {heroIntro1}
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                {t('aboutIntro2')}
+                {heroIntro2}
               </p>
-              <Button 
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-luxury hover:scale-105 transition-all duration-300"
-              >
-                {t('discoverOurCollection')}
-              </Button>
+              <Link to={settings?.hero_button_link || '/shop'}>
+                <Button 
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-luxury hover:scale-105 transition-all duration-300"
+                >
+                  {heroButtonText}
+                </Button>
+              </Link>
             </div>
             
             <div className="relative">
               <div className="aspect-square bg-gradient-glow rounded-full p-8">
                 <img 
-                  src={candleWax}
+                  src={heroImageUrl}
                   alt="Handcrafted SPIRIT CANDLE"
                   className="w-full h-full object-cover rounded-full candle-glow"
                 />
@@ -113,10 +190,10 @@ const About = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-foreground mb-4">
-              {t('whyChooseSpiritCandles')}
+              {featuresSectionTitle}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t('whyChooseDesc')}
+              {featuresSectionDescription}
             </p>
           </div>
 
@@ -138,8 +215,8 @@ const About = () => {
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
-                  {index === 5 && (
-                    <Link to="/custom-candles">
+                  {feature.link && (
+                    <Link to={feature.link}>
                       <Button className="mt-4 w-full">
                         {language === 'pl' ? 'Dowiedz się więcej' : 'Learn More'}
                       </Button>

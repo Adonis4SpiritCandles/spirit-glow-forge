@@ -27,6 +27,7 @@ import AdminEmailManager from '../AdminEmailManager';
 import AdminReferralRewardsEnhanced from '../AdminReferralRewardsEnhanced';
 import CustomCandlesSettingsMain from './CustomCandlesSettings/CustomCandlesSettingsMain';
 import GeneralSettingsMain from './GeneralSettings/GeneralSettingsMain';
+import AboutSettingsMain from './AboutSettings/AboutSettingsMain';
 
 export default function SiteSettingsHub() {
   const { language, t } = useLanguage();
@@ -126,6 +127,17 @@ export default function SiteSettingsHub() {
       comingSoon: false
     },
     {
+      id: 'about',
+      icon: <FileText className="h-6 w-6" />,
+      title: language === 'pl' ? 'Ustawienia Strony O Nas' : 'About Page Settings',
+      description: language === 'pl'
+        ? 'Zarządzaj treścią strony O Nas'
+        : 'Manage About page content',
+      itemCount: 2,
+      color: 'text-purple-500',
+      comingSoon: false
+    },
+    {
       id: 'footer',
       icon: <FileText className="h-6 w-6" />,
       title: t('footerSettings'),
@@ -173,6 +185,10 @@ export default function SiteSettingsHub() {
 
   if (selectedSection === 'custom_candles') {
     return <CustomCandlesSettingsMain onBack={() => setSelectedSection(null)} />;
+  }
+
+  if (selectedSection === 'about') {
+    return <AboutSettingsMain onBack={() => setSelectedSection(null)} />;
   }
 
   // Main hub view with two sections
@@ -282,6 +298,8 @@ export default function SiteSettingsHub() {
                     ? 'linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(17, 88%, 52%) 100%)'
                     : section.id === 'custom_candles'
                     ? 'linear-gradient(135deg, hsl(238, 83%, 66%) 0%, hsl(243, 80%, 62%) 100%)'
+                    : section.id === 'about'
+                    ? 'linear-gradient(135deg, hsl(271, 70%, 70%) 0%, hsl(271, 65%, 65%) 100%)'
                     : 'linear-gradient(135deg, hsl(214, 95%, 58%) 0%, hsl(221, 83%, 53%) 100%)'
                 }}
               />

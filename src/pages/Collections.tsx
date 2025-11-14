@@ -40,22 +40,41 @@ const Collections = () => {
 
       if (error) throw error;
 
-      // Count products for each collection
+      // Count products for each collection using product_collections junction table
       const collectionsWithCount = await Promise.all(
         (data || []).map(async (col) => {
-          const { count } = await supabase
-            .from('products')
-            .select('*', { count: 'exact', head: true })
-            .eq('collection_id', col.id)
-            .eq('published', true);
+          // Count products using product_collections junction table
+          const { data: productCollections, error: pcError } = await supabase
+            .from('product_collections')
+            .select('product_id', { count: 'exact', head: false })
+            .eq('collection_id', col.id);
+
+          if (pcError) {
+            console.error(`Error counting products for collection ${col.id}:`, pcError);
+          }
+
+          // Get product IDs
+          const productIds = productCollections?.map(pc => pc.product_id) || [];
+
+          // Count only published products
+          let productCount = 0;
+          if (productIds.length > 0) {
+            const { count } = await supabase
+              .from('products')
+              .select('*', { count: 'exact', head: true })
+              .in('id', productIds)
+              .eq('published', true);
+            productCount = count || 0;
+          }
 
           return {
             id: col.slug,
+            collectionId: col.id, // Store actual collection ID for filtering
             name: language === 'en' ? col.name_en : col.name_pl,
             description: language === 'en' ? col.description_en : col.description_pl,
             icon: getIconComponent(col.icon_name),
             image: col.image_url || candleLit,
-            productCount: count || 0,
+            productCount: productCount,
             gradient: col.gradient_classes || 'from-primary/20',
             featured: col.featured || false,
           };
@@ -77,22 +96,45 @@ const Collections = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
+      // Load products with their collections via product_collections junction table
+      const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          product_collections(
+            collection:collections(
+              id,
+              slug,
+              name_en,
+              name_pl
+            )
+          )
+        `)
         .eq('published', true)
         .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error loading products:', error);
+        return;
+      }
+
       if (data) {
-        const mapped = data.map((p) => ({
-          id: p.id,
-          name: language === 'en' ? p.name_en : p.name_pl,
-          fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
-          price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
-          image: p.image_url,
-          description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
-          sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
-          collection: p.category,
-        }));
+        const mapped = data.map((p) => {
+          // Extract collection slugs from product_collections
+          const collectionSlugs = (p.product_collections || []).map((pc: any) => pc.collection?.slug).filter(Boolean);
+          
+          return {
+            id: p.id,
+            name: language === 'en' ? p.name_en : p.name_pl,
+            fragrance: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+            price: { pln: Number(p.price_pln), eur: Number(p.price_eur) },
+            image: p.image_url,
+            description: language === 'en' ? (p.description_en || '') : (p.description_pl || ''),
+            sizes: [{ size: p.size, weight: p.weight || p.size, price: { pln: Number(p.price_pln), eur: Number(p.price_eur) } }],
+            collections: collectionSlugs, // Array of collection slugs
+            collection: p.category, // Keep for backward compatibility if needed
+          };
+        });
         setProducts(mapped);
       }
     };
@@ -101,6 +143,7 @@ const Collections = () => {
     const channel = supabase
       .channel('products-collections')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, load)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_collections' }, load)
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [language]);
@@ -114,8 +157,12 @@ const Collections = () => {
     { id: "cozy", name: language === 'en' ? "Cozy" : "Przytulny", icon: Flame, color: "text-orange-400" },
   ];
 
+  // Filter products by selected collection slug using collections array
   const filteredProducts = selectedCollection 
-    ? products.filter(product => product.collection === selectedCollection)
+    ? products.filter(product => 
+        (product.collections && product.collections.includes(selectedCollection)) ||
+        product.collection === selectedCollection // Fallback for backward compatibility
+      )
     : [];
 
   const breadcrumbData = generateBreadcrumbStructuredData([

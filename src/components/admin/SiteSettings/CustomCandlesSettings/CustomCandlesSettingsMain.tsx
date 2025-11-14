@@ -42,15 +42,23 @@ export default function CustomCandlesSettingsMain({ onBack }: CustomCandlesSetti
 
   const handleSave = async () => {
     setLoading(true);
+    
+    // Ensure hero_image_url is explicitly included in the update
+    const updateData = {
+      hero_image_url: settings?.hero_image_url || null,
+      fragrances,
+      quality_items_en: qualityItemsEn,
+      quality_items_pl: qualityItemsPl,
+      info_card_title_en: settings?.info_card_title_en || null,
+      info_card_text_en: settings?.info_card_text_en || null,
+      info_card_title_pl: settings?.info_card_title_pl || null,
+      info_card_text_pl: settings?.info_card_text_pl || null,
+      updated_at: new Date().toISOString()
+    };
+    
     const { error } = await supabase
       .from('custom_candles_settings')
-      .update({
-        ...settings,
-        fragrances,
-        quality_items_en: qualityItemsEn,
-        quality_items_pl: qualityItemsPl,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', '00000000-0000-0000-0000-000000000001');
 
     if (error) {

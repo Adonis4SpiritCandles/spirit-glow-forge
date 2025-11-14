@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Parallax } from 'react-parallax';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,7 @@ import candleWax from '@/assets/candle-wax.png';
 const CustomCandles = () => {
   const { t, language } = useLanguage();
   const { user } = useAuth();
+  const [heroImageUrl, setHeroImageUrl] = useState<string>(candleWax);
   const [formData, setFormData] = useState({
     fragrance: '',
     customFragrance: '',
@@ -27,6 +28,29 @@ const CustomCandles = () => {
     email: user?.email || '',
     name: user ? `${user.user_metadata?.first_name || ''} ${user.user_metadata?.last_name || ''}`.trim() : ''
   });
+
+  // Load hero image from settings
+  useEffect(() => {
+    const loadHeroImage = async () => {
+      try {
+        const { data } = await supabase
+          .from('custom_candles_settings')
+          .select('hero_image_url')
+          .eq('id', '00000000-0000-0000-0000-000000000001')
+          .eq('is_active', true)
+          .single();
+        
+        if (data?.hero_image_url) {
+          setHeroImageUrl(data.hero_image_url);
+        }
+      } catch (error) {
+        console.error('Error loading hero image:', error);
+        // Keep default image if loading fails
+      }
+    };
+    
+    loadHeroImage();
+  }, []);
 
   const fragrances = [
     'Vanilla Dream',
@@ -103,7 +127,7 @@ const CustomCandles = () => {
       {/* Hero Section con Parallax */}
       <Parallax
         blur={0}
-        bgImage={candleWax}
+        bgImage={heroImageUrl}
         strength={300}
         className="relative"
       >

@@ -145,7 +145,6 @@ const AdminDashboard = () => {
     stock_quantity: 0,
     image_url: '',
     image_urls: [] as string[],
-    collection_id: null as string | null,
     preferred_card_tag: 'category' as string
   });
 
@@ -281,11 +280,22 @@ const AdminDashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      // Load products
+      // Load products with collections
       const { data: productsData } = await supabase
         .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select(`
+          *,
+          product_collections(
+            collection:collections(
+              id,
+              slug,
+              name_en,
+              name_pl,
+              gradient_classes
+            )
+          )
+        `)
+        .order('updated_at', { ascending: false });
 
       setProducts(productsData || []);
 
@@ -660,8 +670,10 @@ const AdminDashboard = () => {
         return;
       }
 
+      // Remove collection_id from payload since we use product_collections junction table
+      const { collection_id, ...productFormWithoutCollection } = productForm;
       const payload = {
-        ...productForm,
+        ...productFormWithoutCollection,
         price_pln: pricePln,
         price_eur: priceEur,
       };
@@ -715,9 +727,10 @@ const AdminDashboard = () => {
           .insert(associations);
       }
       
-      setShowProductForm(false);
       setIsEditModalOpen(false);
+      setShowProductForm(false);
       setEditingProduct(null);
+      setSelectedCollections([]);
       loadDashboardData();
     } catch (error: any) {
       toast({
@@ -754,10 +767,10 @@ const AdminDashboard = () => {
       stock_quantity: product.stock_quantity,
       image_url: product.image_url || '',
       image_urls: (product as any).image_urls || [],
-      collection_id: (product as any).collection_id || null,
       preferred_card_tag: (product as any).preferred_card_tag || 'category'
     });
-    setShowProductForm(true);
+    setIsEditModalOpen(true); // Use Dialog instead of inline form
+    setShowProductForm(false); // Hide inline form
   };
 
   const deleteProduct = async (productId: string) => {
@@ -1555,11 +1568,11 @@ const AdminDashboard = () => {
                     stock_quantity: 0,
                     image_url: '',
                     image_urls: [],
-                    collection_id: null,
                     preferred_card_tag: 'category'
                   });
                   setSelectedCollections([]);
-                  setShowProductForm(true);
+                  setIsEditModalOpen(true); // Use Dialog instead of inline form
+                  setShowProductForm(false); // Hide inline form
                 }}>
                   {t('addProduct')}
                 </Button>
@@ -1625,28 +1638,49 @@ const AdminDashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="space-y-2">
-                        <Label>{language === 'pl' ? 'Kolekcja' : 'Collection'}</Label>
-                        <Select
-                          value={productForm.collection_id || 'none'}
-                          onValueChange={(value) => 
-                            setProductForm({ ...productForm, collection_id: value === 'none' ? null : value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder={language === 'pl' ? 'Wybierz kolekcję' : 'Select collection'} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">
-                              {language === 'pl' ? 'Brak kolekcji' : 'No collection'}
-                            </SelectItem>
-                            {collections.map(col => (
-                              <SelectItem key={col.id} value={col.id}>
-                                {language === 'en' ? col.name_en : col.name_pl}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      {/* Multiple Collections Selector */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>{language === 'pl' ? 'Kolekcje' : 'Collections'}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {language === 'pl' 
+                            ? 'Wybierz jedną lub więcej kolekcji dla tego produktu. Produkt może należeć do wielu kolekcji jednocześnie.'
+                            : 'Select one or more collections for this product. A product can belong to multiple collections at the same time.'}
+                        </p>
+                        <div className="flex flex-wrap gap-2 p-3 border rounded-md bg-muted/30 min-h-[60px]">
+                          {collections.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                              {language === 'pl' ? 'Brak dostępnych kolekcji' : 'No collections available'}
+                            </p>
+                          ) : (
+                            collections.map(collection => {
+                              const isSelected = selectedCollections.includes(collection.id);
+                              return (
+                                <Badge
+                                  key={collection.id}
+                                  variant={isSelected ? "default" : "outline"}
+                                  className="cursor-pointer hover:bg-primary/80 transition-colors text-sm py-1.5 px-3"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setSelectedCollections(selectedCollections.filter(id => id !== collection.id));
+                                    } else {
+                                      setSelectedCollections([...selectedCollections, collection.id]);
+                                    }
+                                  }}
+                                >
+                                  {language === 'en' ? collection.name_en : collection.name_pl}
+                                  {isSelected && <X className="ml-1 h-3 w-3" />}
+                                </Badge>
+                              );
+                            })
+                          )}
+                        </div>
+                        {selectedCollections.length > 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            {language === 'pl' 
+                              ? `Wybrano ${selectedCollections.length} kolekcję/kolekcje`
+                              : `Selected ${selectedCollections.length} collection(s)`}
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label>{t('size')}</Label>
@@ -1799,8 +1833,10 @@ const AdminDashboard = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-20"></TableHead>
                       <TableHead>{t('name')}</TableHead>
                       <TableHead>{t('category')}</TableHead>
+                      <TableHead>{language === 'pl' ? 'Kolekcje' : 'Collections'}</TableHead>
                       <TableHead>{t('pricePln')}</TableHead>
                       <TableHead>{t('stock')}</TableHead>
                       <TableHead>{t('size')}</TableHead>
@@ -1809,54 +1845,97 @@ const AdminDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {products.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">
-                          {product.name_en}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="capitalize">
-                            {product.category}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{Number(product.price_pln).toFixed(2)} PLN</TableCell>
-                        <TableCell>
-                          <Badge variant={product.stock_quantity > 0 ? "default" : "destructive"}>
-                            {product.stock_quantity}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{product.size}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                          <div>{new Date(product.updated_at).toLocaleDateString()}</div>
-                          <div className="text-xs">{new Date(product.updated_at).toLocaleTimeString()}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              onClick={() => editProduct(product)}
-                            >
-                              {t('edit')}
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant={product.published ? "secondary" : "default"}
-                              onClick={() => togglePublish(product.id, !product.published)}
-                            >
-                              {product.published ? t('unpublish') : t('publish')}
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive" 
-                              onClick={() => deleteProduct(product.id)}
-                            >
-                              {t('delete')}
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {products.map((product: any) => {
+                      const productCollections = (product.product_collections || []).map((pc: any) => pc.collection).filter(Boolean);
+                      return (
+                        <TableRow key={product.id}>
+                          <TableCell>
+                            {product.image_url ? (
+                              <div className="relative w-16 h-16 rounded-md overflow-hidden border border-border/40 flex-shrink-0">
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name_en}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-16 h-16 rounded-md border border-border/40 flex items-center justify-center bg-muted/30">
+                                <Package className="h-6 w-6 text-muted-foreground" />
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {product.name_en}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className="capitalize">
+                              {product.category}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-1 items-center">
+                              {productCollections.length > 0 ? (
+                                productCollections.map((col: any) => (
+                                  <Badge 
+                                    key={col.id}
+                                    variant="outline"
+                                    className="text-xs px-2 py-0.5 whitespace-nowrap"
+                                    style={{
+                                      borderColor: col.gradient_classes?.includes('primary') ? 'var(--primary)' : undefined
+                                    }}
+                                  >
+                                    {language === 'en' ? col.name_en : col.name_pl}
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-xs text-muted-foreground">
+                                  {language === 'pl' ? 'Brak' : 'None'}
+                                </span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>{Number(product.price_pln).toFixed(2)} PLN</TableCell>
+                          <TableCell>
+                            <Badge variant={product.stock_quantity > 0 ? "default" : "destructive"}>
+                              {product.stock_quantity}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{product.size}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                            <div>{new Date(product.updated_at).toLocaleDateString()}</div>
+                            <div className="text-xs">{new Date(product.updated_at).toLocaleTimeString()}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => editProduct(product)}
+                                title={t('edit')}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant={product.published ? "secondary" : "default"}
+                                onClick={() => togglePublish(product.id, !product.published)}
+                                title={product.published ? t('unpublish') : t('publish')}
+                              >
+                                <Eye className={`h-4 w-4 ${product.published ? 'opacity-50' : ''}`} />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive" 
+                                onClick={() => deleteProduct(product.id)}
+                                title={t('delete')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -2837,12 +2916,18 @@ const AdminDashboard = () => {
           isLoading={creatingShipment}
         />
 
-        {/* Product Edit Modal */}
-        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        {/* Product Edit/Create Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={(open) => {
+          setIsEditModalOpen(open);
+          if (!open) {
+            setEditingProduct(null);
+            setSelectedCollections([]);
+          }
+        }}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="font-playfair text-2xl">
-                {t('editProductTitle')}
+                {editingProduct ? t('editProductTitle') : t('addNewProduct')}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-6 pt-4">
@@ -3067,7 +3152,7 @@ const AdminDashboard = () => {
                   {t('cancel')}
                 </Button>
                 <Button onClick={saveProduct}>
-                  {t('updateProduct')}
+                  {editingProduct ? t('updateProduct') : t('createProduct')}
                 </Button>
               </div>
             </div>

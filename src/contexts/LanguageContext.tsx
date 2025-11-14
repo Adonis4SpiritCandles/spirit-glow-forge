@@ -42,6 +42,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'home') return language === 'pl' ? 'Strona główna' : 'Home';
     if (key === 'shop') return language === 'pl' ? 'Sklep' : 'Shop';
     if (key === 'collections') return language === 'pl' ? 'Kolekcje' : 'Collections';
+    if (key === 'categories') return language === 'pl' ? 'Kategorie' : 'Categories';
     if (key === 'about') return language === 'pl' ? 'O nas' : 'About';
     if (key === 'contact') return language === 'pl' ? 'Kontakt' : 'Contact';
     if (key === 'cart') return language === 'pl' ? 'Koszyk' : 'Cart';

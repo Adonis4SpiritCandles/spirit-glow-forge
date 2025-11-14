@@ -208,77 +208,80 @@ const Auth = () => {
             console.error('Failed to send welcome email:', emailErr);
           }
 
-          // Handle referral confirmation (usa onAuthStateChange invece di setTimeout)
+          // Handle referral confirmation (usa setTimeout con retry migliorato)
           // Il referral_source_id è già stato salvato via metadata in signUp
           // Ma dobbiamo ancora processare il referral (punti, email, etc.) via confirm-referral
           if (validatedReferralId) {
-            // Setup listener per quando l'utente è autenticato
-            const { data: { subscription } } = supabase.auth.onAuthStateChange(
-              async (event, session) => {
-                if (event === 'SIGNED_IN' && session?.user) {
-                  // Rimuovi listener dopo uso
-                  subscription.unsubscribe();
+            // Funzione helper per processare referral con retry
+            const processReferral = async (userId: string, attempts: number = 3): Promise<void> => {
+              for (let attempt = 1; attempt <= attempts; attempt++) {
+                try {
+                  console.log(`Processing referral (attempt ${attempt}/${attempts})...`);
                   
-                  // Retry logic per confirm-referral
-                  let retries = 3;
-                  let success = false;
-                  
-                  while (retries > 0 && !success) {
-                    try {
-                      console.log(`Processing referral (${4 - retries}/3 attempts)...`);
-                      
-                      const { data, error: referralError } = await supabase.functions.invoke('confirm-referral', {
-                        body: {
-                          referee_id: session.user.id,
-                          referral_code_or_id: validatedReferralId,
-                          preferredLanguage,
-                          refereeEmail: emailOrUsername,
-                          refereeName: `${firstName} ${lastName}`
-                        }
-                      });
-                      
-                      if (referralError) {
-                        throw referralError;
-                      }
-                      
-                      console.log('Referral confirmed successfully:', data);
-                      success = true;
-                      clearReferral();
-                      
-                      toast({
-                        title: language === 'pl' ? "Sukces!" : "Success!",
-                        description: language === 'pl' 
-                          ? "Kod polecający został aktywowany. Sprawdź swoją pocztę!"
-                          : "Referral code activated! Check your email!",
-                      });
-                    } catch (err: any) {
-                      retries--;
-                      console.error(`Referral processing error (${3 - retries}/3):`, err);
-                      
-                      if (retries > 0) {
-                        // Aspetta 1 secondo prima di riprovare
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                      } else {
-                        // Ultimo tentativo fallito
-                        console.error('Failed to process referral after 3 attempts:', err);
-                        toast({
-                          title: language === 'pl' ? "Ostrzeżenie" : "Warning",
-                          description: language === 'pl'
-                            ? "Kod polecający został zapisany, ale aktywacja może potrwać chwilę."
-                            : "Referral code saved, but activation may take a moment.",
-                          variant: "default",
-                        });
-                      }
+                  const { data, error: referralError } = await supabase.functions.invoke('confirm-referral', {
+                    body: {
+                      referee_id: userId,
+                      referral_code_or_id: validatedReferralId,
+                      preferredLanguage,
+                      refereeEmail: emailOrUsername,
+                      refereeName: `${firstName} ${lastName}`
                     }
+                  });
+                  
+                  if (referralError) {
+                    throw referralError;
+                  }
+                  
+                  console.log('Referral confirmed successfully:', data);
+                  clearReferral();
+                  
+                  toast({
+                    title: language === 'pl' ? "Sukces!" : "Success!",
+                    description: language === 'pl' 
+                      ? "Kod polecający został aktywowany. Sprawdź swoją pocztę!"
+                      : "Referral code activated! Check your email!",
+                  });
+                  return; // Success, exit
+                } catch (err: any) {
+                  console.error(`Referral processing error (attempt ${attempt}/${attempts}):`, err);
+                  
+                  if (attempt === attempts) {
+                    // Ultimo tentativo fallito
+                    console.error('Failed to process referral after all attempts:', err);
+                    toast({
+                      title: language === 'pl' ? "Ostrzeżenie" : "Warning",
+                      description: language === 'pl'
+                        ? "Kod polecający został zapisany, ale aktywacja może potrwać chwilę."
+                        : "Referral code saved, but activation may take a moment.",
+                      variant: "default",
+                    });
+                  } else {
+                    // Aspetta prima di riprovare
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                   }
                 }
               }
-            );
+            };
             
-            // Timeout di sicurezza: rimuovi listener dopo 30 secondi
-            setTimeout(() => {
-              subscription.unsubscribe();
-            }, 30000);
+            // Prova dopo un breve delay per assicurarsi che l'utente sia autenticato
+            setTimeout(async () => {
+              try {
+                const { data: { user: currentUser } } = await supabase.auth.getUser();
+                if (currentUser) {
+                  await processReferral(currentUser.id);
+                } else {
+                  // Se non c'è ancora utente, aspetta un po' di più e riprova
+                  setTimeout(async () => {
+                    const { data: { user: retryUser } } = await supabase.auth.getUser();
+                    if (retryUser) {
+                      await processReferral(retryUser.id);
+                    }
+                  }, 2000);
+                }
+              } catch (err) {
+                console.error('Error getting user for referral:', err);
+              }
+            }, 1000);
           }
 
           toast({

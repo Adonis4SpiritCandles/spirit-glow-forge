@@ -6,8 +6,9 @@ import { CustomerSegmentation } from './CustomerSegmentation';
 import { CampaignManager } from './CampaignManager';
 import { EmailAnalytics } from './EmailAnalytics';
 import { AutomatedCampaigns } from './AutomatedCampaigns';
+import EmailMarketingSettings from './EmailMarketingSettings';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Mail, Users, Send, BarChart3, Zap } from 'lucide-react';
+import { Mail, Users, Send, BarChart3, Zap, Settings } from 'lucide-react';
 
 export function EmailMarketingHub() {
   const { t } = useLanguage();
@@ -21,7 +22,7 @@ export function EmailMarketingHub() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
             <span className="hidden sm:inline">{t('templates')}</span>
@@ -41,6 +42,10 @@ export function EmailMarketingHub() {
           <TabsTrigger value="automation" className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
             <span className="hidden sm:inline">{t('automation')}</span>
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">{t('settings')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -62,6 +67,10 @@ export function EmailMarketingHub() {
 
         <TabsContent value="automation" className="space-y-4">
           <AutomatedCampaigns />
+        </TabsContent>
+
+        <TabsContent value="settings" className="space-y-4">
+          <EmailMarketingSettings />
         </TabsContent>
       </Tabs>
     </div>

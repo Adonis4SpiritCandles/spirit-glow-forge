@@ -28,10 +28,50 @@ const TestimonialsManager = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [sectionToggle, setSectionToggle] = useState<boolean>(true);
 
   useEffect(() => {
     loadTestimonials();
+    loadSectionToggle();
   }, []);
+
+  const loadSectionToggle = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_sections_toggle')
+        .select('testimonials_section_active')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setSectionToggle(data.testimonials_section_active ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading section toggle:', error);
+    }
+  };
+
+  const handleToggleSection = async (checked: boolean) => {
+    setSectionToggle(checked);
+    try {
+      const { error } = await supabase
+        .from('homepage_sections_toggle')
+        .upsert({
+          id: '00000000-0000-0000-0000-000000000001',
+          testimonials_section_active: checked,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        });
+      
+      if (error) throw error;
+      toast.success(language === 'pl' ? 'Sekcja zaktualizowana' : 'Section updated');
+    } catch (error: any) {
+      console.error('Error updating section toggle:', error);
+      toast.error(language === 'pl' ? 'Nie udało się zaktualizować sekcji' : 'Failed to update section');
+      setSectionToggle(!checked); // Revert on error
+    }
+  };
 
   const loadTestimonials = async () => {
     setIsLoading(true);
@@ -139,6 +179,27 @@ const TestimonialsManager = () => {
               {language === 'pl' ? 'Dodaj, edytuj i usuń opinie klientów' : 'Add, edit, and delete customer testimonials'}
             </CardDescription>
           </div>
+        </div>
+        
+        {/* Section Toggle */}
+        <div className="flex items-center justify-between mt-4 p-4 bg-muted/30 rounded-lg border">
+          <div className="space-y-0.5">
+            <Label htmlFor="testimonials-section-active" className="text-base font-semibold">
+              {language === 'pl' ? 'Aktywna Sekcja Opinii' : 'Testimonials Section Active'}
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              {language === 'pl'
+                ? 'Wyświetl sekcję opinii klientów na stronie głównej'
+                : 'Display testimonials section on the homepage'}
+            </p>
+          </div>
+          <Switch
+            id="testimonials-section-active"
+            checked={sectionToggle}
+            onCheckedChange={handleToggleSection}
+          />
+        </div>
+      </CardHeader>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => setEditingTestimonial({ id: 'new', name: '', avatar: '', rating: 5, comment: '', location: '', product: '', is_featured: false })}>
@@ -154,24 +215,24 @@ const TestimonialsManager = () => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Name</Label>
+                      <Label>{language === 'pl' ? 'Imię' : 'Name'}</Label>
                       <Input value={editingTestimonial.name} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, name: e.target.value })} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Location</Label>
+                      <Label>{language === 'pl' ? 'Lokalizacja' : 'Location'}</Label>
                       <Input value={editingTestimonial.location} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, location: e.target.value })} />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Avatar URL (optional)</Label>
+                    <Label>{language === 'pl' ? 'URL Avatara (opcjonalnie)' : 'Avatar URL (optional)'}</Label>
                     <Input value={editingTestimonial.avatar || ''} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, avatar: e.target.value })} placeholder="https://..." />
                   </div>
                   <div className="space-y-2">
-                    <Label>Product (optional)</Label>
+                    <Label>{language === 'pl' ? 'Produkt (opcjonalnie)' : 'Product (optional)'}</Label>
                     <Input value={editingTestimonial.product || ''} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, product: e.target.value })} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Rating</Label>
+                    <Label>{language === 'pl' ? 'Ocena' : 'Rating'}</Label>
                     <div className="flex gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
@@ -183,11 +244,11 @@ const TestimonialsManager = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Comment</Label>
+                    <Label>{language === 'pl' ? 'Komentarz' : 'Comment'}</Label>
                     <Textarea value={editingTestimonial.comment} onChange={(e) => setEditingTestimonial({ ...editingTestimonial, comment: e.target.value })} rows={4} />
                   </div>
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="featured">Featured on Homepage</Label>
+                    <Label htmlFor="featured">{language === 'pl' ? 'Polecane na stronie głównej' : 'Featured on Homepage'}</Label>
                     <Switch id="featured" checked={editingTestimonial.is_featured} onCheckedChange={(checked) => setEditingTestimonial({ ...editingTestimonial, is_featured: checked })} />
                   </div>
                   <div className="flex justify-end gap-2 pt-4">
@@ -223,7 +284,11 @@ const TestimonialsManager = () => {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mb-2">"{testimonial.comment}"</p>
-              {testimonial.product && <p className="text-xs text-primary/70">Product: {testimonial.product}</p>}
+              {testimonial.product && (
+                <p className="text-xs text-primary/70">
+                  {language === 'pl' ? 'Produkt' : 'Product'}: {testimonial.product}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={testimonial.is_featured} onCheckedChange={(checked) => handleToggleFeatured(testimonial.id, checked)} />

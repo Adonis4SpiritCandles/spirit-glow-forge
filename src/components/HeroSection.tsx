@@ -4,15 +4,36 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import spiritLogo from "@/assets/spirit-logo.png";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const HeroSection = () => {
   const [logoGlow, setLogoGlow] = useState(false);
   const { t } = useLanguage();
+  const [sectionActive, setSectionActive] = useState<boolean>(true);
 
   useEffect(() => {
     // Simple logo glow effect
     setTimeout(() => setLogoGlow(true), 600);
+    loadSectionToggle();
   }, []);
+
+  const loadSectionToggle = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_sections_toggle')
+        .select('hero_section_active')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setSectionActive(data.hero_section_active ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading hero section toggle:', error);
+    }
+  };
+
+  if (!sectionActive) return null;
 
   return (
     <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden">

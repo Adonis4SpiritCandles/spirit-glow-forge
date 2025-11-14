@@ -16,8 +16,10 @@ const ProductCarousel = () => {
   const { t, language } = useLanguage();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sectionActive, setSectionActive] = useState<boolean>(true);
 
   useEffect(() => {
+    loadSectionToggle();
     loadProducts();
 
     // Subscribe to product changes
@@ -32,6 +34,22 @@ const ProductCarousel = () => {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  const loadSectionToggle = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_sections_toggle')
+        .select('product_carousel_active')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setSectionActive(data.product_carousel_active ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading section toggle:', error);
+    }
+  };
 
   const loadProducts = async () => {
     try {
@@ -67,6 +85,8 @@ const ProductCarousel = () => {
       setLoading(false);
     }
   };
+
+  if (!sectionActive) return null;
 
   if (loading) {
     return (

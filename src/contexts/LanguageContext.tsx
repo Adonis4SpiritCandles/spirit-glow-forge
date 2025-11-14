@@ -834,6 +834,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       ? 'Wszystkie produkty są inspirowane popularnymi zapachami znanych marek, ale nie są z nimi powiązane.' 
       : 'All products are inspired by popular fragrances from well-known brands but are not affiliated with them.';
     if (key === 'customerReviews') return language === 'pl' ? 'Opinie klientów' : 'Customer Reviews';
+    if (key === 'customerReviewsSubtitle') return language === 'pl' ? 'Dołącz do tysięcy zadowolonych klientów, którzy odmienili swoje przestrzenie' : 'Join thousands of satisfied customers who have transformed their spaces';
+    if (key === 'purchasedProduct') return language === 'pl' ? 'Zakupiony produkt' : 'Purchased Product';
     if (key === 'reviews') return language === 'pl' ? 'opinie' : 'reviews';
     if (key === 'basedOnReviews') return language === 'pl' ? 'na podstawie {count} opinii' : 'based on {count} reviews';
     if (key === 'writeReview') return language === 'pl' ? 'Napisz opinię' : 'Write Review';

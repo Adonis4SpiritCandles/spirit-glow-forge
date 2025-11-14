@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,28 @@ const Contact = () => {
   });
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [newsletterConsent, setNewsletterConsent] = useState(false);
+  const [showNewsletterCheckbox, setShowNewsletterCheckbox] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    loadEmailMarketingSettings();
+  }, []);
+
+  const loadEmailMarketingSettings = async () => {
+    try {
+      const { data } = await supabase
+        .from('email_marketing_settings')
+        .select('show_newsletter_checkbox_contact')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setShowNewsletterCheckbox(data.show_newsletter_checkbox_contact ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading email marketing settings:', error);
+    }
+  };
 
   const contactInfo = [
     {

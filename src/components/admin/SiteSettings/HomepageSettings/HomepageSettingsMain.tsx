@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Video, Type, Sparkles, MessageSquare, Mail } from "lucide-react";
+import { ArrowLeft, Video, Type, Sparkles, MessageSquare, Mail, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import HeroVideoManager from "./HeroVideoManager";
 import HeroTextEditor from "./HeroTextEditor";
 import FeaturesEditor from "./FeaturesEditor";
 import TestimonialsManager from "./TestimonialsManager";
 import NewsletterManager from "./NewsletterManager";
+import CommunityManager from "./CommunityManager";
 
 interface HomepageSettingsMainProps {
   onBack: () => void;
@@ -44,6 +45,11 @@ const HomepageSettingsMain = ({ onBack }: HomepageSettingsMainProps) => {
       icon: Mail,
       label: 'Newsletter',
     },
+    {
+      id: "community",
+      icon: Globe,
+      label: language === 'pl' ? 'Społeczność' : 'Community',
+    },
   ];
 
   return (
@@ -68,7 +74,7 @@ const HomepageSettingsMain = ({ onBack }: HomepageSettingsMainProps) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto gap-2">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 h-auto gap-2">
           {tabs.map((tab) => {
             const IconComponent = tab.icon;
             return (
@@ -103,6 +109,10 @@ const HomepageSettingsMain = ({ onBack }: HomepageSettingsMainProps) => {
 
           <TabsContent value="newsletter">
             <NewsletterManager />
+          </TabsContent>
+
+          <TabsContent value="community">
+            <CommunityManager />
           </TabsContent>
         </div>
       </Tabs>

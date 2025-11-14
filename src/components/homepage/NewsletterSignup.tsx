@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Mail, CheckCircle2, Loader2 } from "lucide-react";
@@ -19,6 +19,37 @@ const NewsletterSignup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [sectionVisible, setSectionVisible] = useState(true);
+
+  useEffect(() => {
+    loadVisibilitySettings();
+  }, []);
+
+  const loadVisibilitySettings = async () => {
+    try {
+      // Check newsletter_settings.is_active
+      const { data: newsletterSettings } = await supabase
+        .from('newsletter_settings')
+        .select('is_active')
+        .single();
+
+      // Check email_marketing_settings.show_newsletter_section_homepage
+      const { data: emailMarketingSettings } = await supabase
+        .from('email_marketing_settings')
+        .select('show_newsletter_section_homepage')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+
+      const newsletterActive = newsletterSettings?.is_active ?? true;
+      const emailMarketingVisible = emailMarketingSettings?.show_newsletter_section_homepage ?? true;
+      
+      setSectionVisible(newsletterActive && emailMarketingVisible);
+    } catch (error) {
+      console.error('Error loading newsletter visibility settings:', error);
+    }
+  };
+
+  if (!sectionVisible) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

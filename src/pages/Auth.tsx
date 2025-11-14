@@ -29,6 +29,7 @@ const Auth = () => {
   const [termsConsent, setTermsConsent] = useState(false);
   const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showNewsletterCheckbox, setShowNewsletterCheckbox] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,8 +39,25 @@ const Auth = () => {
   const { t, language } = useLanguage();
   const { getReferralId, clearReferral } = useReferral();
 
+  const loadEmailMarketingSettings = async () => {
+    try {
+      const { data } = await supabase
+        .from('email_marketing_settings')
+        .select('show_newsletter_checkbox_registration')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setShowNewsletterCheckbox(data.show_newsletter_checkbox_registration ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading email marketing settings:', error);
+    }
+  };
+
   // Precompile referral code if available and set to Sign Up mode
   useEffect(() => {
+    loadEmailMarketingSettings();
     const refId = getReferralId();
     if (refId) {
       setReferralCode(refId);
@@ -502,16 +520,18 @@ const Auth = () => {
                   </Label>
                 </div>
 
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="newsletter-consent-auth"
-                    checked={newsletterConsent}
-                    onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
-                  />
-                  <Label htmlFor="newsletter-consent-auth" className="text-sm text-muted-foreground leading-tight cursor-pointer">
-                    {t('newsletterOptIn')}
-                  </Label>
-                </div>
+                {showNewsletterCheckbox && (
+                  <div className="flex items-start space-x-2">
+                    <Checkbox 
+                      id="newsletter-consent-auth"
+                      checked={newsletterConsent}
+                      onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
+                    />
+                    <Label htmlFor="newsletter-consent-auth" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                      {t('newsletterOptIn')}
+                    </Label>
+                  </div>
+                )}
               </div>
             )}
             

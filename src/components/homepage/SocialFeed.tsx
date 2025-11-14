@@ -29,10 +29,30 @@ const SocialFeed = () => {
   const [filter, setFilter] = useState<'all' | 'instagram' | 'tiktok'>('all');
   const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<any>(null);
 
   useEffect(() => {
+    loadSettings();
     loadSocialPosts();
   }, []);
+
+  const loadSettings = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_community_settings')
+        .select('*')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .eq('is_active', true)
+        .single();
+      
+      if (data) {
+        setSettings(data);
+      }
+    } catch (error) {
+      console.error('Error loading community settings:', error);
+      // Keep default if error (section will still show)
+    }
+  };
 
   const loadSocialPosts = async () => {
     const { data, error } = await supabase
@@ -51,6 +71,22 @@ const SocialFeed = () => {
     ? socialPosts 
     : socialPosts.filter(post => post.platform === filter);
 
+  // Use settings if available, otherwise fallback to defaults
+  const sectionTitle = settings?.title_en && settings?.title_pl
+    ? (language === 'en' ? settings.title_en : settings.title_pl)
+    : (language === 'pl' ? 'Dołącz Do Społeczności' : 'Join Our Community');
+  
+  const sectionSubtitle = settings?.subtitle_en && settings?.subtitle_pl
+    ? (language === 'en' ? settings.subtitle_en : settings.subtitle_pl)
+    : (language === 'pl'
+      ? 'Zobacz jak nasi klienci tworzą magiczną atmosferę z naszymi świecami'
+      : 'See how our customers create magical ambiance with our candles');
+
+  // Don't render if section is disabled
+  if (settings && !settings.is_active) {
+    return null;
+  }
+
   return (
     <section ref={ref} className="py-20 bg-gradient-to-b from-background/50 to-background">
       <div className="container mx-auto px-4">
@@ -61,12 +97,10 @@ const SocialFeed = () => {
           className="text-center mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            {language === 'pl' ? 'Dołącz Do Społeczności' : 'Join Our Community'}
+            {sectionTitle}
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-            {language === 'pl'
-              ? 'Zobacz jak nasi klienci tworzą magiczną atmosferę z naszymi świecami'
-              : 'See how our customers create magical ambiance with our candles'}
+            {sectionSubtitle}
           </p>
 
           {/* Filter tabs */}

@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
-import { Star } from "lucide-react";
+import { Autoplay, Pagination, Navigation, EffectCoverflow } from "swiper/modules";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useInView } from "react-intersection-observer";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/css/effect-coverflow";
 
 interface Testimonial {
   id: string;
@@ -24,10 +26,28 @@ const TestimonialsCarousel = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { t } = useLanguage();
+  const [sectionActive, setSectionActive] = useState<boolean>(true);
 
   useEffect(() => {
+    loadSectionToggle();
     loadTestimonials();
   }, []);
+
+  const loadSectionToggle = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_sections_toggle')
+        .select('testimonials_section_active')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setSectionActive(data.testimonials_section_active ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading section toggle:', error);
+    }
+  };
 
   const loadTestimonials = async () => {
     const { data, error } = await supabase
@@ -42,7 +62,7 @@ const TestimonialsCarousel = () => {
     }
   };
 
-  if (testimonials.length === 0) return null;
+  if (!sectionActive || testimonials.length === 0) return null;
 
   return (
     <section ref={ref} className="py-20 bg-background/50">
@@ -65,27 +85,67 @@ const TestimonialsCarousel = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
+          className="relative"
         >
           <Swiper
-            modules={[Autoplay, Pagination]}
+            modules={[Autoplay, Pagination, Navigation, EffectCoverflow]}
             spaceBetween={30}
             slidesPerView={1}
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
-            pagination={{ clickable: true }}
-            breakpoints={{
-              640: { slidesPerView: 1 },
-              768: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 },
+            loop={true}
+            autoplay={{ 
+              delay: 5000, 
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true
             }}
-            className="testimonials-swiper pb-12"
+            pagination={{ 
+              clickable: true,
+              dynamicBullets: true,
+              dynamicMainBullets: 3
+            }}
+            navigation={{
+              nextEl: '.swiper-button-next-testimonials',
+              prevEl: '.swiper-button-prev-testimonials',
+            }}
+            effect="coverflow"
+            coverflowEffect={{
+              rotate: 50,
+              stretch: 0,
+              depth: 100,
+              modifier: 1,
+              slideShadows: true,
+            }}
+            breakpoints={{
+              640: { 
+                slidesPerView: 1,
+                effect: 'slide'
+              },
+              768: { 
+                slidesPerView: 2,
+                effect: 'coverflow'
+              },
+              1024: { 
+                slidesPerView: 3,
+                effect: 'coverflow'
+              },
+            }}
+            className="testimonials-swiper pb-16"
           >
             {testimonials.map((testimonial, index) => (
               <SwiperSlide key={testimonial.id}>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.6, delay: 0.1 * index }}
-                  className="bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 h-full flex flex-col"
+                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                  animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: 0.1 * index,
+                    ease: "easeOut"
+                  }}
+                  whileHover={{ 
+                    scale: 1.02,
+                    y: -5,
+                    transition: { duration: 0.3 }
+                  }}
+                  className="bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 h-full flex flex-col cursor-grab active:cursor-grabbing"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     {testimonial.avatar ? (
@@ -137,6 +197,14 @@ const TestimonialsCarousel = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+          
+          {/* Custom Navigation Buttons */}
+          <button className="swiper-button-prev-testimonials absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button className="swiper-button-next-testimonials absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </motion.div>
       </div>
     </section>

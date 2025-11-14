@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Flower2, Heart, TreePine } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,6 +13,29 @@ const ScentJourney = () => {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const lineRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
+  const [sectionActive, setSectionActive] = useState<boolean>(true);
+
+  useEffect(() => {
+    loadSectionToggle();
+  }, []);
+
+  const loadSectionToggle = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_sections_toggle')
+        .select('scent_journey_active')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setSectionActive(data.scent_journey_active ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading section toggle:', error);
+    }
+  };
+
+  if (!sectionActive) return null;
 
   const phases = [
     {

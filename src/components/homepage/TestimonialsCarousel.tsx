@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import { Autoplay, Pagination, Navigation, EffectCoverflow } from "swiper/modules";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +28,7 @@ const TestimonialsCarousel = () => {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { t } = useLanguage();
   const [sectionActive, setSectionActive] = useState<boolean>(true);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
     loadSectionToggle();
@@ -106,6 +108,9 @@ const TestimonialsCarousel = () => {
         @media (min-width: 768px) {
           .testimonials-swiper .testimonial-card {
             transition: all 0.3s ease !important;
+            border-radius: 0.5rem !important;
+            overflow: hidden !important;
+            position: relative !important;
           }
           .testimonials-swiper .testimonial-card:hover {
             box-shadow: 
@@ -116,6 +121,15 @@ const TestimonialsCarousel = () => {
             transform: scale(1.02) translateY(-5px) !important;
             border-radius: 0.5rem !important;
           }
+        }
+        /* Fix angoli card - rimuovi qualsiasi border-radius conflittuale */
+        .testimonials-swiper .swiper-slide {
+          border-radius: 0.5rem !important;
+          overflow: hidden !important;
+        }
+        .testimonials-swiper .swiper-slide .testimonial-card {
+          border-radius: 0.5rem !important;
+          overflow: hidden !important;
         }
       `}</style>
       <div className="container mx-auto px-4">
@@ -145,9 +159,10 @@ const TestimonialsCarousel = () => {
             slidesPerView={1}
             loop={true}
             autoplay={{ 
-              delay: window.innerWidth >= 1024 ? 6000 : 5000,
+              delay: 5000,
               disableOnInteraction: false,
-              pauseOnMouseEnter: true
+              pauseOnMouseEnter: true,
+              stopOnLastSlide: false,
             }}
             pagination={{ 
               clickable: true,
@@ -171,24 +186,45 @@ const TestimonialsCarousel = () => {
               640: { 
                 slidesPerView: 1,
                 effect: 'slide',
-                autoplay: { delay: 5000 }
+                autoplay: { 
+                  delay: 5000,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                }
               },
               768: { 
                 slidesPerView: 2,
                 effect: 'coverflow',
-                autoplay: { delay: 5000 }
+                autoplay: { 
+                  delay: 5000,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                }
               },
               1024: { 
                 slidesPerView: 3,
                 effect: 'coverflow',
-                autoplay: { delay: 6000 }
+                autoplay: { 
+                  delay: 6500,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                }
               },
             }}
             className="testimonials-swiper pb-12 md:pb-16"
             onSwiper={(swiper) => {
-              // Ensure autoplay works on desktop
-              if (swiper.autoplay) {
-                swiper.autoplay.start();
+              swiperRef.current = swiper;
+              // Force autoplay start on desktop
+              setTimeout(() => {
+                if (swiper.autoplay && !swiper.autoplay.running) {
+                  swiper.autoplay.start();
+                }
+              }, 100);
+            }}
+            onSlideChange={() => {
+              // Ensure autoplay continues after navigation
+              if (swiperRef.current?.autoplay && !swiperRef.current.autoplay.running) {
+                swiperRef.current.autoplay.start();
               }
             }}
           >
@@ -202,8 +238,11 @@ const TestimonialsCarousel = () => {
                     delay: 0.1 * index,
                     ease: "easeOut"
                   }}
-                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 h-full flex flex-col cursor-pointer"
-                  style={{ pointerEvents: 'auto' }}
+                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 h-full flex flex-col cursor-pointer relative"
+                  style={{ 
+                    borderRadius: '0.5rem',
+                    overflow: 'hidden',
+                  }}
                 >
                   <div className="flex items-center gap-4 mb-4">
                     {testimonial.avatar ? (
@@ -257,10 +296,26 @@ const TestimonialsCarousel = () => {
           </Swiper>
           
           {/* Custom Navigation Buttons */}
-          <button className="swiper-button-prev-testimonials absolute left-2 md:left-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
+          <button 
+            className="swiper-button-prev-testimonials absolute left-2 md:left-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10 cursor-pointer"
+            onClick={() => {
+              if (swiperRef.current) {
+                swiperRef.current.slidePrev();
+              }
+            }}
+            aria-label="Previous testimonial"
+          >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <button className="swiper-button-next-testimonials absolute right-2 md:right-0 top-1/2 -translate-y-1/2 z-10 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10">
+          <button 
+            className="swiper-button-next-testimonials absolute right-2 md:right-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10 cursor-pointer"
+            onClick={() => {
+              if (swiperRef.current) {
+                swiperRef.current.slideNext();
+              }
+            }}
+            aria-label="Next testimonial"
+          >
             <ChevronRight className="w-5 h-5" />
           </button>
         </motion.div>

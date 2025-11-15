@@ -96,7 +96,7 @@ const TrustBadges = () => {
   ];
 
   return (
-    <section ref={ref} className="py-16 md:py-18 lg:py-20 bg-gradient-to-b from-background to-background/50 relative overflow-hidden w-full">
+    <section ref={ref} className="py-16 md:py-18 lg:py-20 pb-24 md:pb-28 lg:pb-32 bg-gradient-to-b from-background to-background/50 relative w-full overflow-x-hidden overflow-y-visible">
       <style>{`
         .features-section {
           padding-top: 40px !important;
@@ -119,6 +119,67 @@ const TrustBadges = () => {
             height: 200px !important;
           }
         }
+        /* Trust badges container - allow space for hover animations */
+        .trust-badges-grid-container {
+          width: 100%;
+          max-width: 100%;
+          overflow-x: hidden;
+          overflow-y: visible;
+          position: relative;
+          /* Add perspective for 3D transforms */
+          perspective: 1000px;
+          /* Extra padding for hover animations - vertical and horizontal */
+          padding: 30px 15px;
+          /* Ensure container doesn't clip transformed children */
+          isolation: isolate;
+        }
+        /* Trust badge card wrapper - prevent clipping during hover */
+        .trust-badge-card-wrapper {
+          width: 100%;
+          height: 100%;
+          /* Allow overflow for hover animations */
+          overflow: visible;
+          /* Add padding to prevent clipping - enough for scale 1.05 + rotate 2deg */
+          padding: 15px;
+          /* Ensure cards can transform without being clipped */
+          transform-style: preserve-3d;
+          /* Prevent wrapper from creating overflow */
+          box-sizing: border-box;
+        }
+        /* Trust badge card - ensure no clipping */
+        .trust-badge-card {
+          width: 100%;
+          height: 100%;
+          /* Ensure card can be transformed without clipping */
+          transform-origin: center center;
+          will-change: transform;
+          /* Add min-height to prevent layout shift */
+          min-height: 180px;
+          /* Ensure card respects wrapper bounds during transform */
+          box-sizing: border-box;
+          /* Prevent card from creating overflow itself */
+          margin: 0;
+        }
+        /* Ensure grid doesn't cause horizontal overflow */
+        .trust-badges-grid {
+          width: 100%;
+          max-width: 100%;
+          /* Ensure grid respects container padding */
+          box-sizing: border-box;
+        }
+        @media (max-width: 640px) {
+          .trust-badges-grid {
+            gap: 1rem !important;
+          }
+          .trust-badge-card-wrapper {
+            padding: 10px;
+          }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .trust-badge-card-wrapper {
+            padding: 12px;
+          }
+        }
       `}</style>
       {/* Parallax background decoration - reduced intensity, clipped to prevent overflow */}
       <motion.div
@@ -133,7 +194,7 @@ const TrustBadges = () => {
         <div className="absolute bottom-1/3 right-1/4 w-48 md:w-56 lg:w-64 h-48 md:h-56 lg:h-64 bg-accent/25 rounded-full" />
       </motion.div>
 
-      <div className="container mx-auto px-4 relative z-10 max-w-full overflow-x-hidden">
+      <div className="container mx-auto px-4 relative z-10 max-w-full overflow-x-hidden overflow-y-visible">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -150,18 +211,20 @@ const TrustBadges = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-7xl mx-auto">
-          <TooltipProvider>
-            {badges.map((badge, index) => (
-              <Tooltip key={index}>
-                <TooltipTrigger asChild>
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.1 * index }}
-                    whileHover={{ scale: 1.05, rotate: 2 }}
-                    className="flex flex-col items-center text-center p-6 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
-                  >
+        <div className="trust-badges-grid-container">
+          <div className="trust-badges-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-7xl mx-auto">
+            <TooltipProvider>
+              {badges.map((badge, index) => (
+                <Tooltip key={index}>
+                  <TooltipTrigger asChild>
+                    <div className="trust-badge-card-wrapper">
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.1 * index }}
+                        whileHover={{ scale: 1.05, rotate: 2 }}
+                        className="trust-badge-card flex flex-col items-center text-center p-6 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
+                      >
                     <motion.div
                       whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
                       transition={{ duration: 0.5 }}
@@ -169,20 +232,22 @@ const TrustBadges = () => {
                     >
                       <badge.icon className="w-8 h-8 text-primary drop-shadow-[0_0_8px_currentColor]" />
                     </motion.div>
-                    <h3 className="font-semibold text-sm md:text-base text-foreground mb-1">
-                      {badge.title}
-                    </h3>
-                  </motion.div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="bottom"
-                  className="max-w-xs bg-card/95 backdrop-blur-sm border-primary/20"
-                >
-                  <p className="text-sm text-muted-foreground">{badge.description}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </TooltipProvider>
+                        <h3 className="font-semibold text-sm md:text-base text-foreground mb-1">
+                          {badge.title}
+                        </h3>
+                      </motion.div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="max-w-xs bg-card/95 backdrop-blur-sm border-primary/20"
+                  >
+                    <p className="text-sm text-muted-foreground">{badge.description}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </TooltipProvider>
+          </div>
         </div>
       </div>
     </section>

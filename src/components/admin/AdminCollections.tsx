@@ -196,6 +196,29 @@ const AdminCollections = () => {
                 />
                 {uploading && <span className="text-sm text-muted-foreground">{language === 'pl' ? 'Przesyłanie...' : 'Uploading...'}</span>}
               </div>
+              <div className="pt-2 border-t mt-2">
+                <Label htmlFor="collection-image-url">
+                  {language === 'pl' ? 'Lub użyj URL zewnętrznego obrazu' : 'Or use external image URL'}
+                </Label>
+                <Input
+                  id="collection-image-url"
+                  type="url"
+                  value={formData.image_url || ''}
+                  onChange={(e) => {
+                    // Only set if it's a valid URL (not from upload)
+                    if (e.target.value.startsWith('http://') || e.target.value.startsWith('https://') || !e.target.value) {
+                      setFormData({ ...formData, image_url: e.target.value });
+                    }
+                  }}
+                  placeholder={language === 'pl' ? 'https://example.com/image.jpg' : 'https://example.com/image.jpg'}
+                  className="mt-2"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {language === 'pl' 
+                    ? 'Jeśli przesłany obraz istnieje, będzie użyty zamiast URL' 
+                    : 'If uploaded image exists, it will be used instead of URL'}
+                </p>
+              </div>
             </div>
 
             {/* Names */}

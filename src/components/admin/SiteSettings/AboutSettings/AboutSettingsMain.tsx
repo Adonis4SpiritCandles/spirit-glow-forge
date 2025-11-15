@@ -48,6 +48,7 @@ export default function AboutSettingsMain({ onBack }: AboutSettingsMainProps) {
     
     const updateData = {
       hero_image_url: settings?.hero_image_url || null,
+      hero_image_url_external: settings?.hero_image_url_external || null,
       hero_title_en: settings?.hero_title_en || null,
       hero_title_pl: settings?.hero_title_pl || null,
       hero_intro1_en: settings?.hero_intro1_en || null,
@@ -170,10 +171,10 @@ export default function AboutSettingsMain({ onBack }: AboutSettingsMainProps) {
         <CardContent className="space-y-4">
           {/* Hero Image */}
           <div className="space-y-2">
-            {settings?.hero_image_url && (
+            {(settings?.hero_image_url || settings?.hero_image_url_external) && (
               <div className="relative w-full h-64 rounded-lg overflow-hidden">
                 <img 
-                  src={settings.hero_image_url} 
+                  src={settings.hero_image_url || settings.hero_image_url_external} 
                   alt="Hero" 
                   className="w-full h-full object-cover"
                 />
@@ -194,6 +195,24 @@ export default function AboutSettingsMain({ onBack }: AboutSettingsMainProps) {
                 {language === 'pl' 
                   ? 'Zalecany rozmiar: 1200x800px' 
                   : 'Recommended size: 1200x800px'}
+              </p>
+            </div>
+            <div className="pt-2 border-t mt-2">
+              <Label htmlFor="hero-url">
+                {language === 'pl' ? 'Lub użyj URL zewnętrznego obrazu' : 'Or use external image URL'}
+              </Label>
+              <Input 
+                id="hero-url"
+                type="url"
+                value={settings?.hero_image_url_external || ''}
+                onChange={(e) => setSettings({ ...settings, hero_image_url_external: e.target.value })}
+                placeholder={language === 'pl' ? 'https://example.com/image.jpg' : 'https://example.com/image.jpg'}
+                className="mt-2"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                {language === 'pl' 
+                  ? 'Jeśli przesłany obraz istnieje, będzie użyty zamiast URL' 
+                  : 'If uploaded image exists, it will be used instead of URL'}
               </p>
             </div>
           </div>

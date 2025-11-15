@@ -68,8 +68,8 @@ const About = () => {
   const heroButtonText = settings?.hero_button_text_en && settings?.hero_button_text_pl
     ? (language === 'en' ? settings.hero_button_text_en : settings.hero_button_text_pl)
     : t('discoverOurCollection');
-  
-  const heroImageUrl = settings?.hero_image_url || candleWax;
+
+  const heroImageUrl = settings?.hero_image_url || settings?.hero_image_url_external || null;
   
   const featuresSectionTitle = settings?.features_section_title_en && settings?.features_section_title_pl
     ? (language === 'en' ? settings.features_section_title_en : settings.features_section_title_pl)
@@ -166,13 +166,15 @@ const About = () => {
             </div>
             
             <div className="relative">
-              <div className="aspect-square bg-gradient-glow rounded-full p-8">
-                <img 
-                  src={heroImageUrl}
-                  alt="Handcrafted SPIRIT CANDLE"
-                  className="w-full h-full object-cover rounded-full candle-glow"
-                />
-              </div>
+              {heroImageUrl ? (
+                <div className="aspect-square bg-gradient-glow rounded-full p-8">
+                  <img
+                    src={heroImageUrl}
+                    alt="Handcrafted SPIRIT CANDLE"
+                    className="w-full h-full object-cover rounded-full candle-glow"
+                  />
+                </div>
+              ) : null}
               <div className="absolute -bottom-6 -right-6 bg-card border border-border/40 rounded-lg p-4 shadow-elegant">
                 <img 
                   src={spiritLogo}
@@ -180,6 +182,7 @@ const About = () => {
                   className="w-24 h-auto"
                 />
               </div>
+            </div>
             </div>
           </div>
         </div>

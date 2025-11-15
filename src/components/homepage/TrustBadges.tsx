@@ -84,17 +84,29 @@ const TrustBadges = () => {
   ];
 
   return (
-    <section ref={ref} className="py-20 bg-gradient-to-b from-background to-background/50 relative overflow-hidden">
-      {/* Parallax background decoration */}
+    <section ref={ref} className="py-16 md:py-18 lg:py-20 bg-gradient-to-b from-background to-background/50 relative overflow-visible">
+      <style>{`
+        .features-section {
+          padding-top: 40px !important;
+          padding-bottom: 40px !important;
+        }
+        .features-section .glow-bg {
+          opacity: 0.12 !important;
+        }
+        .features-section .glow-bg > div {
+          filter: blur(2.5rem) !important;
+        }
+      `}</style>
+      {/* Parallax background decoration - reduced intensity */}
       <motion.div
         style={{
           transform: inView ? 'translateY(0)' : 'translateY(50px)',
         }}
         transition={{ duration: 1 }}
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 glow-bg pointer-events-none"
       >
-        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-primary/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-accent/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-primary/25 rounded-full" />
+        <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-accent/25 rounded-full" />
       </motion.div>
 
       <div className="container mx-auto px-4 relative z-10">

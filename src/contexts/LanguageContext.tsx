@@ -1159,7 +1159,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'featured') return language === 'pl' ? 'Polecane' : 'Featured';
     if (key === 'ourCollections') return language === 'pl' ? 'Nasze kolekcje' : 'Our Collections';
     if (key === 'discoverCuratedCollections') return language === 'pl' ? 'Odkryj starannie dobrane kolekcje zapachów dla każdej okazji i nastroju' : 'Discover carefully curated fragrance collections for every occasion and mood';
-    if (key === 'exploreCollectionPage') return language === 'pl' ? 'Zobacz kolekcję' : 'Explore Collection';
+    if (key === 'exploreCollectionPage') return language === 'pl' ? 'Zobacz' : 'Explore';
     if (key === 'backToAllCollections') return language === 'pl' ? 'Powrót do wszystkich kolekcji' : 'Back to All Collections';
     if (key === 'moreProductsComingSoon') return language === 'pl' ? 'Wkrótce więcej produktów' : 'More products coming soon';
     if (key === 'cantDecide') return language === 'pl' ? 'Nie możesz się zdecydować?' : 'Can\'t Decide?';

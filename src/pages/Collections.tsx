@@ -301,7 +301,7 @@ const Collections = () => {
                 >
                   <Card 
                     className={`group overflow-hidden bg-gradient-to-br ${collection.gradient} border-border/40 hover:border-primary/60 transition-all duration-500 hover:shadow-luxury cursor-pointer h-full`}
-                    onClick={() => setSelectedCollection(collection.id)}
+                    onClick={() => window.location.href = `/collections/${collection.id}`}
                   >
                     <CardContent className="p-0 h-full">
                       <div className="flex flex-col lg:flex-row h-full">
@@ -349,7 +349,7 @@ const Collections = () => {
                             
                             <Button 
                               variant="ghost" 
-                              className="text-primary hover:text-primary-glow p-0 h-auto group/btn whitespace-nowrap"
+                              className="text-primary hover:text-primary-glow hover:bg-transparent p-0 h-auto group/btn whitespace-nowrap"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.location.href = `/collections/${collection.id}`;

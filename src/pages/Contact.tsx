@@ -311,16 +311,18 @@ const Contact = () => {
                      </Label>
                   </div>
 
-                  <div className="flex items-start space-x-2">
-                    <Checkbox 
-                      id="newsletter-consent"
-                      checked={newsletterConsent}
-                      onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
-                    />
-                    <Label htmlFor="newsletter-consent" className="text-sm text-muted-foreground leading-tight cursor-pointer">
-                      {t('newsletterOptIn')}
-                    </Label>
-                  </div>
+                  {showNewsletterCheckbox && (
+                    <div className="flex items-start space-x-2">
+                      <Checkbox 
+                        id="newsletter-consent"
+                        checked={newsletterConsent}
+                        onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
+                      />
+                      <Label htmlFor="newsletter-consent" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                        {t('newsletterOptIn')}
+                      </Label>
+                    </div>
+                  )}
                 </div>
 
                 <Button 

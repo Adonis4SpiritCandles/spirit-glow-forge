@@ -34,6 +34,7 @@ const FeaturesEditor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [editingFeature, setEditingFeature] = useState<Feature | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [sectionToggle, setSectionToggle] = useState<boolean>(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -42,7 +43,46 @@ const FeaturesEditor = () => {
 
   useEffect(() => {
     loadFeatures();
+    loadSectionToggle();
   }, []);
+
+  const loadSectionToggle = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_sections_toggle')
+        .select('features_section_active')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (data) {
+        setSectionToggle(data.features_section_active ?? true);
+      }
+    } catch (error) {
+      console.error('Error loading section toggle:', error);
+    }
+  };
+
+  const handleToggleSection = async (checked: boolean) => {
+    setSectionToggle(checked);
+    try {
+      const { error } = await supabase
+        .from('homepage_sections_toggle')
+        .upsert({
+          id: '00000000-0000-0000-0000-000000000001',
+          features_section_active: checked,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        });
+      
+      if (error) throw error;
+      toast.success(language === 'pl' ? 'Sekcja zaktualizowana' : 'Section updated');
+    } catch (error: any) {
+      console.error('Error updating section toggle:', error);
+      toast.error(language === 'pl' ? 'Nie udało się zaktualizować sekcji' : 'Failed to update section');
+      setSectionToggle(!checked); // Revert on error
+    }
+  };
 
   const loadFeatures = async () => {
     setIsLoading(true);
@@ -275,14 +315,34 @@ const FeaturesEditor = () => {
           </Dialog>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={features.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-            {features.map((feature) => (
-              <SortableFeature key={feature.id} feature={feature} />
-            ))}
-          </SortableContext>
-        </DndContext>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
+          <div className="space-y-0.5">
+            <Label htmlFor="features-section-active" className="text-base font-semibold">
+              {language === 'pl' ? 'Aktywna Sekcja Funkcji' : 'Features Section Active'}
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              {language === 'pl'
+                ? 'Wyświetl sekcję "Why Spirit Candles?" na stronie głównej'
+                : 'Display the "Why Spirit Candles?" section on the homepage'}
+            </p>
+          </div>
+          <Switch
+            id="features-section-active"
+            checked={sectionToggle}
+            onCheckedChange={handleToggleSection}
+          />
+        </div>
+
+        <div className="space-y-3 pt-4 border-t">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={features.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+              {features.map((feature) => (
+                <SortableFeature key={feature.id} feature={feature} />
+              ))}
+            </SortableContext>
+          </DndContext>
+        </div>
       </CardContent>
     </Card>
   );

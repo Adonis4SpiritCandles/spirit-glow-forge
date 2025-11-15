@@ -3035,6 +3035,29 @@ const AdminDashboard = () => {
                       {t('clear')}
                     </Button>
                   </div>
+                  <div className="pt-2 border-t mt-2">
+                    <Label htmlFor="main-image-url">
+                      {language === 'pl' ? 'Lub użyj URL zewnętrznego obrazu' : 'Or use external image URL'}
+                    </Label>
+                    <Input
+                      id="main-image-url"
+                      type="url"
+                      value={productForm.image_url || ''}
+                      onChange={(e) => {
+                        // Only set if it's a valid URL (not from upload)
+                        if (e.target.value.startsWith('http://') || e.target.value.startsWith('https://')) {
+                          setProductForm({ ...productForm, image_url: e.target.value });
+                        }
+                      }}
+                      placeholder={language === 'pl' ? 'https://example.com/image.jpg' : 'https://example.com/image.jpg'}
+                      className="mt-2"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {language === 'pl' 
+                        ? 'Jeśli przesłany obraz istnieje, będzie użyty zamiast URL' 
+                        : 'If uploaded image exists, it will be used instead of URL'}
+                    </p>
+                  </div>
                   {productForm.image_url && (
                     <div className="mt-2">
                       <img 
@@ -3065,6 +3088,34 @@ const AdminDashboard = () => {
                     >
                       {t('clear')}
                     </Button>
+                  </div>
+                  <div className="pt-2 border-t mt-2 space-y-2">
+                    <Label>
+                      {language === 'pl' ? 'Lub użyj URL zewnętrznych obrazów (do 4)' : 'Or use external image URLs (up to 4)'}
+                    </Label>
+                    {[0, 1, 2, 3].map((idx) => (
+                      <Input
+                        key={idx}
+                        type="url"
+                        value={productForm.image_urls[idx] || ''}
+                        onChange={(e) => {
+                          const newUrls = [...productForm.image_urls];
+                          if (e.target.value && (e.target.value.startsWith('http://') || e.target.value.startsWith('https://'))) {
+                            newUrls[idx] = e.target.value;
+                          } else if (!e.target.value) {
+                            newUrls.splice(idx, 1);
+                          }
+                          // Keep only first 4
+                          setProductForm({ ...productForm, image_urls: newUrls.slice(0, 4) });
+                        }}
+                        placeholder={language === 'pl' ? `URL obrazu ${idx + 1} (opcjonalnie)` : `Image URL ${idx + 1} (optional)`}
+                      />
+                    ))}
+                    <p className="text-xs text-muted-foreground">
+                      {language === 'pl' 
+                        ? 'Jeśli przesłane obrazy istnieją, będą użyte zamiast URL' 
+                        : 'If uploaded images exist, they will be used instead of URLs'}
+                    </p>
                   </div>
                   {productForm.image_urls && productForm.image_urls.length > 0 && (
                     <div className="mt-2 flex gap-2 flex-wrap">

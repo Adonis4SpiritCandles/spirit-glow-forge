@@ -65,8 +65,20 @@ const TestimonialsCarousel = () => {
   if (!sectionActive || testimonials.length === 0) return null;
 
   return (
-    <section ref={ref} className="py-8 md:py-12 lg:py-16 bg-background/50">
+    <section ref={ref} className="py-6 md:py-10 lg:py-12 bg-background/50 overflow-visible">
       <style>{`
+        .testimonials-swiper {
+          overflow: visible !important;
+          padding-top: 20px !important;
+        }
+        .testimonials-swiper .swiper-wrapper {
+          overflow: visible !important;
+          padding-top: 20px !important;
+        }
+        .testimonials-swiper .swiper-slide {
+          overflow: visible !important;
+          height: auto !important;
+        }
         .testimonials-swiper .swiper-pagination-bullet {
           background-color: hsl(var(--primary)) !important;
           opacity: 0.5;
@@ -78,20 +90,31 @@ const TestimonialsCarousel = () => {
           opacity: 1;
           width: 24px !important;
         }
-        /* Fluorescenza gialla sulla card attiva in mobile */
+        /* Fluorescenza gialla sulla card attiva in mobile - border-radius aware */
         @media (max-width: 767px) {
           .testimonials-swiper .swiper-slide-active .testimonial-card {
-            box-shadow: 0 0 25px hsl(var(--primary) / 0.5),
-                        0 0 50px hsl(var(--primary) / 0.3),
-                        0 0 75px hsl(var(--primary) / 0.2) !important;
+            box-shadow: 
+              0 0 20px hsl(var(--primary) / 0.4),
+              0 0 40px hsl(var(--primary) / 0.25),
+              0 0 60px hsl(var(--primary) / 0.15),
+              inset 0 0 20px hsl(var(--primary) / 0.1) !important;
             border-color: hsl(var(--primary) / 0.8) !important;
+            border-radius: 0.5rem !important;
           }
         }
-        /* Fluorescenza su hover desktop */
+        /* Fluorescenza su hover desktop - attiva su tutta la card */
         @media (min-width: 768px) {
+          .testimonials-swiper .testimonial-card {
+            transition: all 0.3s ease !important;
+          }
           .testimonials-swiper .testimonial-card:hover {
-            box-shadow: 0 0 30px hsl(var(--primary) / 0.4),
-                        0 0 60px hsl(var(--primary) / 0.2) !important;
+            box-shadow: 
+              0 0 25px hsl(var(--primary) / 0.35),
+              0 0 50px hsl(var(--primary) / 0.2),
+              0 0 75px hsl(var(--primary) / 0.1),
+              inset 0 0 15px hsl(var(--primary) / 0.05) !important;
+            transform: scale(1.02) translateY(-5px) !important;
+            border-radius: 0.5rem !important;
           }
         }
       `}</style>
@@ -100,7 +123,7 @@ const TestimonialsCarousel = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8 md:mb-12"
+          className="text-center mb-6 md:mb-8"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
             {t('customerReviews') || 'What Our Customers Say'}
@@ -114,7 +137,7 @@ const TestimonialsCarousel = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative pt-8 md:pt-12 px-2 md:px-4"
+          className="relative pt-12 md:pt-16 px-2 md:px-4 overflow-visible"
         >
           <Swiper
             modules={[Autoplay, Pagination, Navigation, EffectCoverflow]}
@@ -122,7 +145,7 @@ const TestimonialsCarousel = () => {
             slidesPerView={1}
             loop={true}
             autoplay={{ 
-              delay: 5000, 
+              delay: window.innerWidth >= 1024 ? 6000 : 5000,
               disableOnInteraction: false,
               pauseOnMouseEnter: true
             }}
@@ -134,6 +157,7 @@ const TestimonialsCarousel = () => {
             navigation={{
               nextEl: '.swiper-button-next-testimonials',
               prevEl: '.swiper-button-prev-testimonials',
+              enabled: true,
             }}
             effect="coverflow"
             coverflowEffect={{
@@ -146,18 +170,27 @@ const TestimonialsCarousel = () => {
             breakpoints={{
               640: { 
                 slidesPerView: 1,
-                effect: 'slide'
+                effect: 'slide',
+                autoplay: { delay: 5000 }
               },
               768: { 
                 slidesPerView: 2,
-                effect: 'coverflow'
+                effect: 'coverflow',
+                autoplay: { delay: 5000 }
               },
               1024: { 
                 slidesPerView: 3,
-                effect: 'coverflow'
+                effect: 'coverflow',
+                autoplay: { delay: 6000 }
               },
             }}
             className="testimonials-swiper pb-12 md:pb-16"
+            onSwiper={(swiper) => {
+              // Ensure autoplay works on desktop
+              if (swiper.autoplay) {
+                swiper.autoplay.start();
+              }
+            }}
           >
             {testimonials.map((testimonial, index) => (
               <SwiperSlide key={testimonial.id}>
@@ -169,12 +202,8 @@ const TestimonialsCarousel = () => {
                     delay: 0.1 * index,
                     ease: "easeOut"
                   }}
-                  whileHover={{ 
-                    scale: 1.02,
-                    y: -5,
-                    transition: { duration: 0.3 }
-                  }}
-                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 md:hover:shadow-[0_0_30px_rgba(255,215,0,0.3)] h-full flex flex-col cursor-grab active:cursor-grabbing"
+                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 h-full flex flex-col cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
                 >
                   <div className="flex items-center gap-4 mb-4">
                     {testimonial.avatar ? (

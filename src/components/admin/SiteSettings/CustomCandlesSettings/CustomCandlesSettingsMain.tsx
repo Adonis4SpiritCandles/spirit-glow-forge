@@ -43,9 +43,10 @@ export default function CustomCandlesSettingsMain({ onBack }: CustomCandlesSetti
   const handleSave = async () => {
     setLoading(true);
     
-    // Ensure hero_image_url is explicitly included in the update
+    // Ensure hero_image_url and hero_image_url_external are explicitly included in the update
     const updateData = {
       hero_image_url: settings?.hero_image_url || null,
+      hero_image_url_external: settings?.hero_image_url_external || null,
       fragrances,
       quality_items_en: qualityItemsEn,
       quality_items_pl: qualityItemsPl,
@@ -134,10 +135,10 @@ export default function CustomCandlesSettingsMain({ onBack }: CustomCandlesSetti
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {settings?.hero_image_url && (
+          {(settings?.hero_image_url || settings?.hero_image_url_external) && (
             <div className="relative w-full h-64 rounded-lg overflow-hidden">
               <img 
-                src={settings.hero_image_url} 
+                src={settings.hero_image_url || settings.hero_image_url_external} 
                 alt="Hero" 
                 className="w-full h-full object-cover"
               />
@@ -158,6 +159,24 @@ export default function CustomCandlesSettingsMain({ onBack }: CustomCandlesSetti
               {language === 'pl' 
                 ? 'Zalecany rozmiar: 1920x1080px' 
                 : 'Recommended size: 1920x1080px'}
+            </p>
+          </div>
+          <div className="pt-4 border-t">
+            <Label htmlFor="hero-url">
+              {language === 'pl' ? 'Lub użyj URL zewnętrznego obrazu' : 'Or use external image URL'}
+            </Label>
+            <Input 
+              id="hero-url"
+              type="url"
+              value={settings?.hero_image_url_external || ''}
+              onChange={(e) => setSettings({ ...settings, hero_image_url_external: e.target.value })}
+              placeholder={language === 'pl' ? 'https://example.com/image.jpg' : 'https://example.com/image.jpg'}
+              className="mt-2"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              {language === 'pl' 
+                ? 'Jeśli przesłany obraz istnieje, będzie użyty zamiast URL' 
+                : 'If uploaded image exists, it will be used instead of URL'}
             </p>
           </div>
         </CardContent>

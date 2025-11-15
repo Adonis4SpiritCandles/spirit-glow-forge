@@ -24,12 +24,12 @@ const TrustBadges = () => {
     try {
       const { data } = await supabase
         .from('homepage_sections_toggle')
-        .select('trust_badges_active')
+        .select('features_section_active')
         .eq('id', '00000000-0000-0000-0000-000000000001')
         .single();
       
       if (data) {
-        setSectionActive(data.trust_badges_active ?? true);
+        setSectionActive(data.features_section_active ?? true);
       }
     } catch (error) {
       console.error('Error loading section toggle:', error);

@@ -1,90 +1,76 @@
-<!-- b135dc99-e66b-469d-ba51-62aad789d608 edcfc624-bac6-43b5-a4c1-2a7da063f3d9 -->
-# Switch Stripe Integration to Production Mode
+<!-- b135dc99-e66b-469d-ba51-62aad789d608 754fdb87-5320-4954-ae40-dead1fd0e433 -->
+# Fix Testimonials Carousel Spacing e Toggle Bugs
 
-## Overview
+## Problemi Identificati
 
-Update Stripe integration from test/sandbox mode to production mode. This involves updating secret keys in Supabase Edge Functions secrets, configuring production webhook endpoint, and verifying Price IDs are production-ready.
+1. **TestimonialsCarousel Desktop**: Card tagliate agli angoli (sopra, sinistra, destra) - serve padding sopra le card per evitare tagli quando hover fa zoom
+2. **TestimonialsCarousel Mobile**: Ridurre spazio sopra/sotto sezione, aggiungere fluorescenza gialla sulla card attiva, cambiare paginazione da blu a giallo
+3. **Spacing generale**: Ridurre padding sezione "Customer Reviews" (desktop e mobile)
+4. **Toggle Community bug**: Il toggle Community disattiva Newsletter invece di Community - verificare SocialFeed.tsx
+5. **Toggle Contact checkbox bug**: Il toggle non funziona quando si prova a disattivarlo
 
-## Files to Update
+## Implementazione
 
-### 1. Supabase Edge Functions Secrets (Dashboard Configuration)
+### 1. Fix Spacing TestimonialsCarousel
 
-- Update `STRIPE_SECRET_KEY` from `sk_test_...` to `sk_live_...`
-- Update `STRIPE_WEBHOOK_SECRET` with production webhook secret
+**File**: `src/components/homepage/TestimonialsCarousel.tsx`
 
-### 2. Code Files to Review (no changes needed, but verify)
+- Aggiungere `pt-8` o `pt-12` al wrapper Swiper per evitare tagli superiori su hover
+- Aggiungere padding laterale (`px-4` o `px-6`) al wrapper per evitare tagli laterali
+- Ridurre padding sezione da `py-20` a `py-12` o `py-16` (desktop) e `py-8` o `py-10` (mobile)
+- Aggiungere fluorescenza gialla sulla card attiva in mobile (box-shadow con primary color)
+- Custom CSS per paginazione Swiper: cambiare colore bullet da blu a giallo/golden (primary color)
 
-**`supabase/functions/create-checkout/index.ts`**
+### 2. Fix Toggle Community
 
-- Currently uses `Deno.env.get("STRIPE_SECRET_KEY")` - will automatically use production key once secret is updated
-- Price IDs hardcoded (lines 57-60):
-- `"281d5900-7df0-4bfe-9d4d-920267df2125": "price_1S971nDllMinRcxPqTG8h1r0"`
-- `"c576eedf-5a2e-4991-bac9-13d1e8160e85": "price_1S974EDllMinRcxPFufkrqc6"`
-- **Action needed**: Verify these Price IDs are production Price IDs in Stripe Dashboard
+**File**: `src/components/homepage/SocialFeed.tsx`
 
-**`supabase/functions/stripe-webhook/index.ts`**
+- Verificare che il toggle controlli solo `homepage_community_settings.is_active`
+- Il problema potrebbe essere che SocialFeed controlla `is_active: true` nella query - rimuovere questo filtro e controllare solo dopo il loadSettings
+- Assicurarsi che il controllo finale `if (settings && !settings.is_active)` funzioni correttamente
 
-- Currently uses `Deno.env.get("STRIPE_SECRET_KEY")` and `Deno.env.get("STRIPE_WEBHOOK_SECRET")`
-- Will automatically use production values once secrets are updated
+**File**: `src/components/admin/SiteSettings/HomepageSettings/CommunityManager.tsx`
 
-## Configuration Steps
+- Verificare che il toggle salvi correttamente in `homepage_community_settings` (già fatto)
+- Assicurarsi che `handleSave` salvi immediatamente quando il toggle cambia (non solo al click su Save)
 
-### Step 1: Get Stripe Production Keys
+### 3. Fix Toggle Contact Checkbox
 
-1. Go to https://dashboard.stripe.com/apikeys
-2. Switch to **"Live mode"** (toggle in top right)
-3. Copy **Secret key** (starts with `sk_live_...`)
+**File**: `src/components/admin/EmailMarketing/EmailMarketingSettings.tsx`
 
-### Step 2: Configure Production Webhook
+- Il toggle Contact potrebbe non salvare immediatamente - aggiungere `handleSave` automatico al cambio toggle o assicurarsi che lo stato locale si aggiorni
+- Verificare che `onCheckedChange` aggiorni correttamente lo stato
 
-1. In Stripe Dashboard (Live mode), go to **Developers** → **Webhooks**
-2. Create new webhook endpoint OR update existing one:
+**File**: `src/pages/Contact.tsx`
 
-- Endpoint URL: `https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/stripe-webhook`
-- Events to listen: `checkout.session.completed` (and any other events needed)
+- Verificare che `loadEmailMarketingSettings` venga chiamato e che lo stato si aggiorni correttamente
+- Potrebbe servire un listener per aggiornamenti real-time o un refresh manuale
 
-3. Copy the **Signing secret** (starts with `whsec_...`)
+## CSS Custom per Paginazione Swiper
 
-### Step 3: Update Supabase Secrets
+Aggiungere CSS personalizzato per cambiare colore paginazione da blu a giallo/golden:
 
-1. Go to **Supabase Dashboard** → **Settings** → **Edge Functions** → **Secrets**
-2. Update or add:
+```css
+.testimonials-swiper .swiper-pagination-bullet {
+  background-color: var(--primary) !important;
+  opacity: 0.5;
+}
 
-- `STRIPE_SECRET_KEY` = `sk_live_...` (your production secret key)
-- `STRIPE_WEBHOOK_SECRET` = `whsec_...` (your production webhook signing secret)
-
-### Step 4: Verify Production Price IDs
-
-1. In Stripe Dashboard (Live mode), go to **Products**
-2. Find the products matching:
-
-- Product ID `281d5900-7df0-4bfe-9d4d-920267df2125` (Mystic Rose)
-- Product ID `c576eedf-5a2e-4991-bac9-13d1e8160e85` (Golden Amber)
-
-3. Copy the **Price IDs** for these products (should start with `price_...`)
-4. If Price IDs differ from test mode, update them in `supabase/functions/create-checkout/index.ts` (lines 57-60)
-
-### Step 5: Test Production Setup
-
-1. Create a test order using Stripe test card: `4242 4242 4242 4242`
-2. Verify payment appears in Stripe Dashboard → **Payments** (Live mode)
-3. Verify webhook events appear in Stripe Dashboard → **Developers** → **Webhooks** → **Events**
-4. Verify order is created in Supabase `orders` table
-
-## Documentation Update
-
-- Update `PRODUCTION_SETUP.md` to include verification checklist for Price IDs
-
-## Notes
-
-- Stripe SDK automatically detects environment from key prefix (`sk_test_...` vs `sk_live_...`)
-- No code changes needed if Price IDs remain the same between test and production
-- Webhook endpoint URL should match exactly: `https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/stripe-webhook`
-- Frontend uses Edge Functions (no direct Stripe SDK), so no frontend changes needed
+.testimonials-swiper .swiper-pagination-bullet-active {
+  background-color: var(--primary) !important;
+  opacity: 1;
+}
+```
 
 ### To-dos
 
-- [ ] Replace country list with all EU/EEA countries (~30) in ShippingAddressForm.tsx
-- [ ] Move Country selector field before Street Address in form layout
-- [ ] Add character counters and visual warnings (yellow/red borders) for all fields with Furgonetka limits
-- [ ] Add submit validation to block form if any field exceeds Furgonetka limits
+- [ ] Creare trigger per generazione automatica referral_short_code alla creazione profilo
+- [ ] Creare migration per backfill referral_short_code per utenti esistenti
+- [ ] Modificare validazione referral code in Auth.tsx per non bloccare se referrer non ha codice
+- [ ] Modificare signUp per salvare referral_source_id durante registrazione
+- [ ] Aggiornare handle_new_user trigger per salvare referral_source_id dai metadata
+- [ ] Migliorare flusso confirm-referral: rimuovere setTimeout, usare onAuthStateChange, aggiungere retry
+- [ ] Migliorare gestione errori in confirm-referral Edge Function
+- [ ] Verificare e fixare RLS policies per referral_source_id e referrals
+- [ ] Testare e verificare email referral in EN/PL
+- [ ] Verificare conteggio referrals in ReferralDashboard

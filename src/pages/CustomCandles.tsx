@@ -13,12 +13,11 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Sparkles, Palette, Tag, Heart, Send } from 'lucide-react';
 import SEOManager from '@/components/SEO/SEOManager';
-import candleWax from '@/assets/candle-wax.png';
 
 const CustomCandles = () => {
   const { t, language } = useLanguage();
   const { user } = useAuth();
-  const [heroImageUrl, setHeroImageUrl] = useState<string>(candleWax);
+  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     fragrance: '',
     customFragrance: '',
@@ -35,17 +34,18 @@ const CustomCandles = () => {
       try {
         const { data } = await supabase
           .from('custom_candles_settings')
-          .select('hero_image_url')
+          .select('hero_image_url, hero_image_url_external')
           .eq('id', '00000000-0000-0000-0000-000000000001')
-          .eq('is_active', true)
           .single();
         
+        // Prioritize uploaded image, fallback to external URL
         if (data?.hero_image_url) {
           setHeroImageUrl(data.hero_image_url);
+        } else if (data?.hero_image_url_external) {
+          setHeroImageUrl(data.hero_image_url_external);
         }
       } catch (error) {
         console.error('Error loading hero image:', error);
-        // Keep default image if loading fails
       }
     };
     
@@ -125,14 +125,15 @@ const CustomCandles = () => {
       />
 
       {/* Hero Section con Parallax */}
-      <Parallax
-        blur={0}
-        bgImage={heroImageUrl}
-        strength={300}
-        className="relative"
-      >
-        <div className="min-h-[50vh] flex items-center justify-center relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background" />
+      {heroImageUrl ? (
+        <Parallax
+          blur={0}
+          bgImage={heroImageUrl}
+          strength={300}
+          className="relative"
+        >
+          <div className="min-h-[50vh] flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background" />
           
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -160,6 +161,34 @@ const CustomCandles = () => {
           </motion.div>
         </div>
       </Parallax>
+      ) : (
+        <div className="min-h-[50vh] flex items-center justify-center relative bg-gradient-to-b from-background via-background/90 to-background">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-10 text-center px-4 max-w-4xl mx-auto"
+          >
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6">
+              {language === 'pl' ? 'Twoja Unikalna Świeca' : 'Your Unique Candle'}
+            </h1>
+            <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-4">
+              {language === 'pl' 
+                ? 'Stwórz świecę idealną dla siebie lub jako wyjątkowy prezent'
+                : 'Create the perfect candle for yourself or as a unique gift'}
+            </p>
+            <div className="flex gap-2 md:gap-3 justify-center items-center text-primary text-[10px] sm:text-xs md:text-sm flex-wrap">
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5 animate-pulse" />
+              <span className="whitespace-nowrap">{language === 'pl' ? '100% Wosk Sojowy' : '100% Soy Wax'}</span>
+              <span>•</span>
+              <span className="whitespace-nowrap">{language === 'pl' ? 'Ręcznie Robione' : 'Handcrafted'}</span>
+              <span>•</span>
+              <span className="whitespace-nowrap">{language === 'pl' ? 'Personalizowane' : 'Personalized'}</span>
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5 animate-pulse" />
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 md:py-16 max-w-6xl">

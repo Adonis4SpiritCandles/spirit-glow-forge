@@ -18,6 +18,7 @@ const CustomCandles = () => {
   const { t, language } = useLanguage();
   const { user } = useAuth();
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
+  const [heroSettings, setHeroSettings] = useState<any>(null);
   const [formData, setFormData] = useState({
     fragrance: '',
     customFragrance: '',
@@ -28,28 +29,39 @@ const CustomCandles = () => {
     name: user ? `${user.user_metadata?.first_name || ''} ${user.user_metadata?.last_name || ''}`.trim() : ''
   });
 
-  // Load hero image from settings
+  // Load hero image and settings from database
   useEffect(() => {
-    const loadHeroImage = async () => {
+    const loadHeroSettings = async () => {
       try {
         const { data } = await supabase
           .from('custom_candles_settings')
-          .select('hero_image_url, hero_image_url_external')
+          .select('hero_image_url, hero_image_url_external, hero_animation_enabled, hero_fluorescent_enabled, hero_fluorescent_intensity, hero_image_size, hero_parallax_strength')
           .eq('id', '00000000-0000-0000-0000-000000000001')
           .single();
         
-        // Prioritize uploaded image, fallback to external URL
-        if (data?.hero_image_url) {
-          setHeroImageUrl(data.hero_image_url);
-        } else if (data?.hero_image_url_external) {
-          setHeroImageUrl(data.hero_image_url_external);
+        if (data) {
+          // Prioritize uploaded image, fallback to external URL
+          if (data.hero_image_url) {
+            setHeroImageUrl(data.hero_image_url);
+          } else if (data.hero_image_url_external) {
+            setHeroImageUrl(data.hero_image_url_external);
+          }
+          
+          // Load settings with defaults
+          setHeroSettings({
+            animationEnabled: data.hero_animation_enabled ?? true,
+            fluorescentEnabled: data.hero_fluorescent_enabled ?? false,
+            fluorescentIntensity: data.hero_fluorescent_intensity ?? 30,
+            imageSize: data.hero_image_size || 'medium',
+            parallaxStrength: data.hero_parallax_strength ?? 300,
+          });
         }
       } catch (error) {
-        console.error('Error loading hero image:', error);
+        console.error('Error loading hero settings:', error);
       }
     };
     
-    loadHeroImage();
+    loadHeroSettings();
   }, []);
 
   const fragrances = [
@@ -114,6 +126,16 @@ const CustomCandles = () => {
 
   return (
     <>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `}</style>
       <SEOManager
         title={language === 'en' ? 'Custom Candles | SPIRIT CANDLES' : 'Personalizowane Świece | SPIRIT CANDLES'}
         description={language === 'en'
@@ -129,17 +151,37 @@ const CustomCandles = () => {
         <Parallax
           blur={0}
           bgImage={heroImageUrl}
-          strength={300}
-          className="relative"
+          strength={heroSettings?.parallaxStrength ?? 300}
+          className="relative overflow-hidden"
         >
-          <div className="min-h-[50vh] flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background" />
+          <div 
+            className={`min-h-[50vh] flex items-center justify-center relative ${
+              heroSettings?.imageSize === 'small' ? 'min-h-[40vh]' : 
+              heroSettings?.imageSize === 'large' ? 'min-h-[60vh]' : 
+              'min-h-[50vh]'
+            }`}
+            style={{
+              animation: heroSettings?.animationEnabled ? 'fadeIn 1s ease-in-out' : 'none',
+            }}
+          >
+            {/* Fluorescent glow effect */}
+            {heroSettings?.fluorescentEnabled && (
+              <div 
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  boxShadow: `0 0 ${(heroSettings?.fluorescentIntensity ?? 30) * 2}px hsl(var(--primary) / ${(heroSettings?.fluorescentIntensity ?? 30) / 100})`,
+                  filter: `blur(${(heroSettings?.fluorescentIntensity ?? 30) / 5}px)`,
+                  zIndex: 1,
+                }}
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent md:to-background z-10" />
           
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative z-10 text-center px-4 max-w-4xl mx-auto"
+            animate={heroSettings?.animationEnabled ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+            transition={{ duration: heroSettings?.animationEnabled ? 0.8 : 0 }}
+            className="relative z-20 text-center px-4 max-w-4xl mx-auto"
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-white mb-6">
               {language === 'pl' ? 'Twoja Unikalna Świeca' : 'Your Unique Candle'}

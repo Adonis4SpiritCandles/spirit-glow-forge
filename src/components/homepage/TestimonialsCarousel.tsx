@@ -35,6 +35,31 @@ const TestimonialsCarousel = () => {
     loadTestimonials();
   }, []);
 
+  // Force autoplay on desktop - periodic check
+  useEffect(() => {
+    if (!swiperRef.current) return;
+    
+    const checkAutoplay = () => {
+      if (window.innerWidth >= 768 && swiperRef.current?.autoplay && !swiperRef.current.autoplay.running) {
+        swiperRef.current.autoplay.start();
+      }
+    };
+
+    // Check immediately
+    checkAutoplay();
+
+    // Check periodically (every 5 seconds)
+    const interval = setInterval(checkAutoplay, 5000);
+
+    // Check on window resize
+    window.addEventListener('resize', checkAutoplay);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', checkAutoplay);
+    };
+  }, [testimonials]);
+
   const loadSectionToggle = async () => {
     try {
       const { data } = await supabase
@@ -67,19 +92,39 @@ const TestimonialsCarousel = () => {
   if (!sectionActive || testimonials.length === 0) return null;
 
   return (
-    <section ref={ref} className="py-6 md:py-10 lg:py-12 bg-background/50 overflow-visible">
+    <section ref={ref} className="py-6 md:py-10 lg:py-12 bg-background/50 overflow-x-hidden md:overflow-visible">
       <style>{`
-        .testimonials-swiper {
-          overflow: visible !important;
-          padding-top: 20px !important;
+        /* Mobile: overflow hidden per prevenire overflow orizzontale */
+        @media (max-width: 767px) {
+          .testimonials-swiper {
+            overflow: hidden !important;
+            padding-top: 20px !important;
+            max-width: 100vw !important;
+          }
+          .testimonials-swiper .swiper-wrapper {
+            overflow: hidden !important;
+            padding-top: 20px !important;
+          }
+          .testimonials-swiper .swiper-slide {
+            overflow: hidden !important;
+            height: auto !important;
+            max-width: 100% !important;
+          }
         }
-        .testimonials-swiper .swiper-wrapper {
-          overflow: visible !important;
-          padding-top: 20px !important;
-        }
-        .testimonials-swiper .swiper-slide {
-          overflow: visible !important;
-          height: auto !important;
+        /* Desktop: overflow visible per effetti coverflow */
+        @media (min-width: 768px) {
+          .testimonials-swiper {
+            overflow: visible !important;
+            padding-top: 20px !important;
+          }
+          .testimonials-swiper .swiper-wrapper {
+            overflow: visible !important;
+            padding-top: 20px !important;
+          }
+          .testimonials-swiper .swiper-slide {
+            overflow: visible !important;
+            height: auto !important;
+          }
         }
         .testimonials-swiper .swiper-pagination-bullet {
           background-color: hsl(var(--primary)) !important;
@@ -111,6 +156,10 @@ const TestimonialsCarousel = () => {
             border-radius: 0.5rem !important;
             overflow: hidden !important;
             position: relative !important;
+            pointer-events: auto !important;
+          }
+          .testimonials-swiper .testimonial-card > * {
+            pointer-events: none !important;
           }
           .testimonials-swiper .testimonial-card:hover {
             box-shadow: 
@@ -120,19 +169,51 @@ const TestimonialsCarousel = () => {
               inset 0 0 15px hsl(var(--primary) / 0.05) !important;
             transform: scale(1.02) translateY(-5px) !important;
             border-radius: 0.5rem !important;
+            z-index: 10 !important;
+          }
+          .testimonials-swiper .testimonial-card:hover::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 0.5rem;
+            padding: 2px;
+            background: linear-gradient(45deg, hsl(var(--primary) / 0.3), hsl(var(--accent) / 0.3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: -1;
           }
         }
         /* Fix angoli card - rimuovi qualsiasi border-radius conflittuale */
         .testimonials-swiper .swiper-slide {
           border-radius: 0.5rem !important;
           overflow: hidden !important;
+          box-sizing: border-box !important;
+          width: 100% !important;
+          max-width: 100% !important;
         }
         .testimonials-swiper .swiper-slide .testimonial-card {
           border-radius: 0.5rem !important;
           overflow: hidden !important;
+          box-sizing: border-box !important;
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        /* Mobile: assicura che le slide rispettino il viewport */
+        @media (max-width: 767px) {
+          .testimonials-swiper .swiper-slide {
+            width: calc(100vw - 1rem) !important;
+            max-width: calc(100vw - 1rem) !important;
+            margin: 0 !important;
+          }
+          .testimonials-swiper .swiper-wrapper {
+            width: 100% !important;
+            max-width: 100vw !important;
+          }
         }
       `}</style>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-2 md:px-4 max-w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -151,11 +232,11 @@ const TestimonialsCarousel = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative pt-12 md:pt-16 px-2 md:px-4 overflow-visible"
+          className="relative pt-12 md:pt-16 px-1 md:px-4 overflow-x-hidden md:overflow-visible max-w-full"
         >
           <Swiper
             modules={[Autoplay, Pagination, Navigation, EffectCoverflow]}
-            spaceBetween={30}
+            spaceBetween={10}
             slidesPerView={1}
             loop={true}
             autoplay={{ 
@@ -185,6 +266,7 @@ const TestimonialsCarousel = () => {
             breakpoints={{
               640: { 
                 slidesPerView: 1,
+                spaceBetween: 15,
                 effect: 'slide',
                 autoplay: { 
                   delay: 5000,
@@ -194,6 +276,7 @@ const TestimonialsCarousel = () => {
               },
               768: { 
                 slidesPerView: 2,
+                spaceBetween: 20,
                 effect: 'coverflow',
                 autoplay: { 
                   delay: 5000,
@@ -203,6 +286,7 @@ const TestimonialsCarousel = () => {
               },
               1024: { 
                 slidesPerView: 3,
+                spaceBetween: 30,
                 effect: 'coverflow',
                 autoplay: { 
                   delay: 6500,
@@ -216,15 +300,23 @@ const TestimonialsCarousel = () => {
               swiperRef.current = swiper;
               // Force autoplay start on desktop
               setTimeout(() => {
-                if (swiper.autoplay && !swiper.autoplay.running) {
-                  swiper.autoplay.start();
+                if (window.innerWidth >= 768 && swiper.autoplay && !swiper.autoplay.running) {
+                  try {
+                    swiper.autoplay.start();
+                  } catch (error) {
+                    console.error('Error starting autoplay:', error);
+                  }
                 }
-              }, 100);
+              }, 200);
             }}
-            onSlideChange={() => {
+            onSlideChange={(swiper) => {
               // Ensure autoplay continues after navigation
-              if (swiperRef.current?.autoplay && !swiperRef.current.autoplay.running) {
-                swiperRef.current.autoplay.start();
+              if (window.innerWidth >= 768 && swiper.autoplay && !swiper.autoplay.running) {
+                try {
+                  swiper.autoplay.start();
+                } catch (error) {
+                  console.error('Error restarting autoplay:', error);
+                }
               }
             }}
           >
@@ -238,10 +330,11 @@ const TestimonialsCarousel = () => {
                     delay: 0.1 * index,
                     ease: "easeOut"
                   }}
-                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 h-full flex flex-col cursor-pointer relative"
+                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 h-full flex flex-col cursor-pointer relative w-full max-w-full"
                   style={{ 
                     borderRadius: '0.5rem',
                     overflow: 'hidden',
+                    boxSizing: 'border-box',
                   }}
                 >
                   <div className="flex items-center gap-4 mb-4">
@@ -298,23 +391,49 @@ const TestimonialsCarousel = () => {
           {/* Custom Navigation Buttons */}
           <button 
             className="swiper-button-prev-testimonials absolute left-2 md:left-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10 cursor-pointer"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               if (swiperRef.current) {
-                swiperRef.current.slidePrev();
+                try {
+                  swiperRef.current.slidePrev();
+                  // Ensure autoplay continues after manual navigation
+                  if (swiperRef.current.autoplay && !swiperRef.current.autoplay.running) {
+                    setTimeout(() => {
+                      swiperRef.current?.autoplay?.start();
+                    }, 100);
+                  }
+                } catch (error) {
+                  console.error('Error navigating previous:', error);
+                }
               }
             }}
             aria-label="Previous testimonial"
+            type="button"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button 
             className="swiper-button-next-testimonials absolute right-2 md:right-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10 cursor-pointer"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               if (swiperRef.current) {
-                swiperRef.current.slideNext();
+                try {
+                  swiperRef.current.slideNext();
+                  // Ensure autoplay continues after manual navigation
+                  if (swiperRef.current.autoplay && !swiperRef.current.autoplay.running) {
+                    setTimeout(() => {
+                      swiperRef.current?.autoplay?.start();
+                    }, 100);
+                  }
+                } catch (error) {
+                  console.error('Error navigating next:', error);
+                }
               }
             }}
             aria-label="Next testimonial"
+            type="button"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

@@ -148,11 +148,11 @@ export default function CollectionDetail() {
           bgImage={collection.image_url || '/assets/collection-bg.jpg'}
           bgImageAlt={language === 'en' ? collection.name_en : collection.name_pl}
           strength={400}
-          className="relative"
+          className="relative overflow-hidden"
         >
           <div className="h-[50vh] flex items-center justify-center relative">
             {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent md:to-background" />
             
             {/* Back button */}
             <div className="absolute top-8 left-8 z-10">

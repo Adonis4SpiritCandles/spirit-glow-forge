@@ -167,11 +167,11 @@ const About = () => {
             
             <div className="relative">
               {heroImageUrl ? (
-                <div className="aspect-square bg-gradient-glow rounded-full p-8">
+                <div className="aspect-square bg-gradient-glow rounded-xl p-8 overflow-hidden">
                   <img
                     src={heroImageUrl}
                     alt="Handcrafted SPIRIT CANDLE"
-                    className="w-full h-full object-cover rounded-full candle-glow"
+                    className="w-full h-full object-contain rounded-xl candle-glow"
                   />
                 </div>
               ) : null}

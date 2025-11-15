@@ -149,19 +149,25 @@ const TrustBadges = () => {
           /* Add margin bottom for tooltip space - increased to ensure tooltip is visible */
           margin-bottom: 70px;
         }
-        /* Trust badge card - ensure no clipping, reduce size */
+        /* Trust badge card - ensure no clipping, improved centering */
         .trust-badge-card {
           width: 100%;
           height: 100%;
           /* Ensure card can be transformed without clipping */
           transform-origin: center center;
           will-change: transform;
-          /* Reduced min-height to fit content better */
-          min-height: 140px;
+          /* Improved min-height to fit content better */
+          min-height: 160px;
           /* Ensure card respects wrapper bounds during transform */
           box-sizing: border-box;
           /* Prevent card from creating overflow itself */
           margin: 0;
+          /* Improve centering of content */
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
         }
         /* Ensure grid doesn't cause horizontal overflow */
         .trust-badges-grid {
@@ -169,6 +175,35 @@ const TrustBadges = () => {
           max-width: 100%;
           /* Ensure grid respects container padding */
           box-sizing: border-box;
+        }
+        /* Icon container - responsive sizes */
+        .icon-container {
+          width: 64px;
+          height: 64px;
+        }
+        .icon-inner {
+          width: 32px;
+          height: 32px;
+        }
+        @media (min-width: 641px) {
+          .icon-container {
+            width: 72px;
+            height: 72px;
+          }
+          .icon-inner {
+            width: 36px;
+            height: 36px;
+          }
+        }
+        @media (min-width: 1025px) {
+          .icon-container {
+            width: 80px;
+            height: 80px;
+          }
+          .icon-inner {
+            width: 40px;
+            height: 40px;
+          }
         }
         @media (max-width: 640px) {
           .trust-badges-grid {
@@ -179,8 +214,17 @@ const TrustBadges = () => {
             margin-bottom: 65px;
           }
           .trust-badge-card {
-            min-height: 110px;
-            padding: 0.75rem !important;
+            min-height: 130px;
+            padding: 1rem !important;
+            gap: 0.5rem;
+          }
+          .icon-container {
+            width: 56px !important;
+            height: 56px !important;
+          }
+          .icon-inner {
+            width: 28px !important;
+            height: 28px !important;
           }
           .trust-badges-grid-container {
             padding: 12px 8px 85px 8px;
@@ -192,10 +236,19 @@ const TrustBadges = () => {
             margin-bottom: 68px;
           }
           .trust-badge-card {
-            min-height: 125px;
+            min-height: 145px;
+            gap: 0.625rem;
+            padding: 1.25rem !important;
           }
           .trust-badges-grid-container {
             padding: 15px 10px 90px 10px;
+          }
+        }
+        @media (min-width: 1025px) {
+          .trust-badge-card {
+            min-height: 160px;
+            gap: 0.75rem;
+            padding: 1.5rem !important;
           }
         }
       `}</style>
@@ -241,16 +294,16 @@ const TrustBadges = () => {
                         animate={inView ? { opacity: 1, y: 0 } : {}}
                         transition={{ duration: 0.6, delay: 0.1 * index }}
                         whileHover={{ scale: 1.05, rotate: 2 }}
-                        className="trust-badge-card flex flex-col items-center text-center p-4 md:p-5 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
+                        className="trust-badge-card bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
                       >
                         <motion.div
                           whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
                           transition={{ duration: 0.5 }}
-                          className="w-12 h-12 md:w-14 md:h-14 mb-3 md:mb-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary/30 transition-shadow"
+                          className="icon-container bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary/30 transition-shadow flex-shrink-0"
                         >
-                          <badge.icon className="w-6 h-6 md:w-7 md:h-7 text-primary drop-shadow-[0_0_8px_currentColor]" />
+                          <badge.icon className="icon-inner text-primary drop-shadow-[0_0_8px_currentColor]" />
                         </motion.div>
-                        <h3 className="font-semibold text-xs md:text-sm text-foreground mb-0 leading-tight">
+                        <h3 className="font-semibold text-sm md:text-base text-foreground leading-tight text-center px-2">
                           {badge.title}
                         </h3>
                       </motion.div>

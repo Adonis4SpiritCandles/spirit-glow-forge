@@ -14,6 +14,7 @@ const About = () => {
   const { t, language } = useLanguage();
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [heroSettings, setHeroSettings] = useState<any>(null);
 
   // Load settings from database
   useEffect(() => {
@@ -21,13 +22,22 @@ const About = () => {
       try {
         const { data } = await supabase
           .from('about_settings')
-          .select('*')
+          .select('*, hero_animation_enabled, hero_fluorescent_enabled, hero_fluorescent_intensity, hero_image_size, hero_parallax_strength')
           .eq('id', '00000000-0000-0000-0000-000000000001')
           .eq('is_active', true)
           .single();
         
         if (data) {
           setSettings(data);
+          
+          // Load hero settings with defaults
+          setHeroSettings({
+            animationEnabled: data.hero_animation_enabled ?? true,
+            fluorescentEnabled: data.hero_fluorescent_enabled ?? false,
+            fluorescentIntensity: data.hero_fluorescent_intensity ?? 30,
+            imageSize: data.hero_image_size || 'medium',
+            parallaxStrength: data.hero_parallax_strength ?? 300,
+          });
         }
       } catch (error) {
         console.error('Error loading about settings:', error);
@@ -140,6 +150,16 @@ const About = () => {
         structuredData={breadcrumbData}
         alternateUrls={generateAlternateUrls('/about')}
       />
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `}</style>
       <main className="min-h-screen bg-gradient-mystical">
       {/* Hero Section */}
       <section className="py-16 lg:py-24">
@@ -167,11 +187,31 @@ const About = () => {
             
             <div className="relative">
               {heroImageUrl ? (
-                <div className="aspect-square bg-gradient-glow rounded-xl p-8 overflow-hidden">
+                <div 
+                  className={`aspect-square bg-gradient-glow rounded-xl p-8 overflow-hidden relative ${
+                    heroSettings?.imageSize === 'small' ? 'max-w-md mx-auto' : 
+                    heroSettings?.imageSize === 'large' ? 'max-w-2xl mx-auto' : 
+                    'max-w-lg mx-auto'
+                  }`}
+                  style={{
+                    animation: heroSettings?.animationEnabled ? 'fadeIn 1s ease-in-out' : 'none',
+                  }}
+                >
+                  {/* Fluorescent glow effect */}
+                  {heroSettings?.fluorescentEnabled && (
+                    <div 
+                      className="absolute inset-0 pointer-events-none rounded-xl"
+                      style={{
+                        boxShadow: `0 0 ${(heroSettings?.fluorescentIntensity ?? 30) * 2}px hsl(var(--primary) / ${(heroSettings?.fluorescentIntensity ?? 30) / 100})`,
+                        filter: `blur(${(heroSettings?.fluorescentIntensity ?? 30) / 5}px)`,
+                        zIndex: 1,
+                      }}
+                    />
+                  )}
                   <img
                     src={heroImageUrl}
                     alt="Handcrafted SPIRIT CANDLE"
-                    className="w-full h-full object-contain rounded-xl candle-glow"
+                    className="w-full h-full object-contain rounded-xl candle-glow relative z-10"
                   />
                 </div>
               ) : null}

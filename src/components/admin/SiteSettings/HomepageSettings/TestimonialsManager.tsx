@@ -29,6 +29,11 @@ const TestimonialsManager = () => {
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [sectionToggle, setSectionToggle] = useState<boolean>(true);
+  const [navigationSettings, setNavigationSettings] = useState({
+    mobile: false,
+    tablet: false,
+    desktop: true,
+  });
 
   useEffect(() => {
     loadTestimonials();
@@ -39,12 +44,17 @@ const TestimonialsManager = () => {
     try {
       const { data } = await supabase
         .from('homepage_sections_toggle')
-        .select('testimonials_section_active')
+        .select('testimonials_section_active, testimonials_navigation_enabled_mobile, testimonials_navigation_enabled_tablet, testimonials_navigation_enabled_desktop')
         .eq('id', '00000000-0000-0000-0000-000000000001')
         .single();
       
       if (data) {
         setSectionToggle(data.testimonials_section_active ?? true);
+        setNavigationSettings({
+          mobile: data.testimonials_navigation_enabled_mobile ?? false,
+          tablet: data.testimonials_navigation_enabled_tablet ?? false,
+          desktop: data.testimonials_navigation_enabled_desktop ?? true,
+        });
       }
     } catch (error) {
       console.error('Error loading section toggle:', error);
@@ -70,6 +80,32 @@ const TestimonialsManager = () => {
       console.error('Error updating section toggle:', error);
       toast.error(language === 'pl' ? 'Nie udało się zaktualizować sekcji' : 'Failed to update section');
       setSectionToggle(!checked); // Revert on error
+    }
+  };
+
+  const handleToggleNavigation = async (device: 'mobile' | 'tablet' | 'desktop', checked: boolean) => {
+    const newSettings = { ...navigationSettings, [device]: checked };
+    setNavigationSettings(newSettings);
+    
+    try {
+      const { error } = await supabase
+        .from('homepage_sections_toggle')
+        .upsert({
+          id: '00000000-0000-0000-0000-000000000001',
+          testimonials_navigation_enabled_mobile: newSettings.mobile,
+          testimonials_navigation_enabled_tablet: newSettings.tablet,
+          testimonials_navigation_enabled_desktop: newSettings.desktop,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        });
+      
+      if (error) throw error;
+      toast.success(language === 'pl' ? 'Ustawienia nawigacji zaktualizowane' : 'Navigation settings updated');
+    } catch (error: any) {
+      console.error('Error updating navigation settings:', error);
+      toast.error(language === 'pl' ? 'Nie udało się zaktualizować ustawień' : 'Failed to update settings');
+      setNavigationSettings({ ...navigationSettings, [device]: !checked }); // Revert on error
     }
   };
 
@@ -198,6 +234,70 @@ const TestimonialsManager = () => {
             checked={sectionToggle}
             onCheckedChange={handleToggleSection}
           />
+        </div>
+
+        {/* Navigation Controls */}
+        <div className="mt-4 p-4 bg-muted/30 rounded-lg border space-y-4">
+          <Label className="text-base font-semibold">
+            {language === 'pl' ? 'Kontrolki Nawigacji (Strzałki)' : 'Navigation Controls (Arrows)'}
+          </Label>
+          <p className="text-sm text-muted-foreground mb-4">
+            {language === 'pl'
+              ? 'Włącz/wyłącz strzałki nawigacyjne w karuzeli opinii dla każdego typu urządzenia'
+              : 'Enable/disable navigation arrows in testimonials carousel for each device type'}
+          </p>
+          
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="nav-mobile" className="text-sm font-medium">
+                  {language === 'pl' ? 'Mobile (Mobilne)' : 'Mobile'}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {language === 'pl' ? 'Strzałki na urządzeniach mobilnych' : 'Arrows on mobile devices'}
+                </p>
+              </div>
+              <Switch
+                id="nav-mobile"
+                checked={navigationSettings.mobile}
+                onCheckedChange={(checked) => handleToggleNavigation('mobile', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="nav-tablet" className="text-sm font-medium">
+                  {language === 'pl' ? 'Tablet' : 'Tablet'}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {language === 'pl' ? 'Strzałki na urządzeniach tabletowych' : 'Arrows on tablet devices'}
+                </p>
+              </div>
+              <Switch
+                id="nav-tablet"
+                checked={navigationSettings.tablet}
+                onCheckedChange={(checked) => handleToggleNavigation('tablet', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="nav-desktop" className="text-sm font-medium">
+                  {language === 'pl' ? 'Desktop' : 'Desktop'}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {language === 'pl' 
+                    ? 'Strzałki na desktop (automatycznie ukryte jeśli testimonials <= 3)' 
+                    : 'Arrows on desktop (automatically hidden if testimonials <= 3)'}
+                </p>
+              </div>
+              <Switch
+                id="nav-desktop"
+                checked={navigationSettings.desktop}
+                onCheckedChange={(checked) => handleToggleNavigation('desktop', checked)}
+              />
+            </div>
+          </div>
         </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

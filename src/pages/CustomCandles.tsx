@@ -175,7 +175,10 @@ const CustomCandles = () => {
                 }}
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent md:to-background z-10" />
+            {/* Gradient overlay - smooth transition to avoid stripe */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 via-black/30 to-black/10 md:via-black/40 md:to-background z-10" />
+            {/* Additional smooth fade layer for tablet/desktop */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/40 hidden md:block z-[11]" style={{ bottom: '-1px', height: '60px' }} />
           
           <motion.div
             initial={{ opacity: 0, y: 30 }}

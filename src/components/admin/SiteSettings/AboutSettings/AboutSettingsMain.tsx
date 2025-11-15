@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Upload, Plus, Trash2, ArrowLeft, Save, Leaf, Heart, Flame, Award } from 'lucide-react';
@@ -38,7 +41,14 @@ export default function AboutSettingsMain({ onBack }: AboutSettingsMainProps) {
       .single();
     
     if (data) {
-      setSettings(data);
+      setSettings({
+        ...data,
+        hero_animation_enabled: data.hero_animation_enabled ?? true,
+        hero_fluorescent_enabled: data.hero_fluorescent_enabled ?? false,
+        hero_fluorescent_intensity: data.hero_fluorescent_intensity ?? 30,
+        hero_image_size: data.hero_image_size || 'medium',
+        hero_parallax_strength: data.hero_parallax_strength ?? 300,
+      });
       setFeatures((data.features as any[]) || []);
     }
   };
@@ -49,6 +59,11 @@ export default function AboutSettingsMain({ onBack }: AboutSettingsMainProps) {
     const updateData = {
       hero_image_url: settings?.hero_image_url || null,
       hero_image_url_external: settings?.hero_image_url_external || null,
+      hero_animation_enabled: settings?.hero_animation_enabled ?? true,
+      hero_fluorescent_enabled: settings?.hero_fluorescent_enabled ?? false,
+      hero_fluorescent_intensity: settings?.hero_fluorescent_intensity ?? 30,
+      hero_image_size: settings?.hero_image_size || 'medium',
+      hero_parallax_strength: settings?.hero_parallax_strength ?? 300,
       hero_title_en: settings?.hero_title_en || null,
       hero_title_pl: settings?.hero_title_pl || null,
       hero_intro1_en: settings?.hero_intro1_en || null,
@@ -213,6 +228,137 @@ export default function AboutSettingsMain({ onBack }: AboutSettingsMainProps) {
                 {language === 'pl' 
                   ? 'Jeśli przesłany obraz istnieje, będzie użyty zamiast URL' 
                   : 'If uploaded image exists, it will be used instead of URL'}
+              </p>
+            </div>
+          </div>
+
+          {/* Advanced Hero Image Settings */}
+          <div className="pt-6 border-t space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="hero-animation">
+                  {language === 'pl' ? 'Animacja Obrazu Hero' : 'Hero Image Animation'}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {language === 'pl' 
+                    ? 'Włącz/wyłącz animację obrazu hero' 
+                    : 'Enable/disable hero image animation'}
+                </p>
+              </div>
+              <Switch
+                id="hero-animation"
+                checked={settings?.hero_animation_enabled ?? true}
+                onCheckedChange={(checked) => 
+                  setSettings({ ...settings, hero_animation_enabled: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="hero-fluorescent">
+                  {language === 'pl' ? 'Efekt Fluorescencyjny' : 'Fluorescent Effect'}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {language === 'pl' 
+                    ? 'Włącz/wyłącz efekt luminescencji wokół obrazu' 
+                    : 'Enable/disable glow effect around the image'}
+                </p>
+              </div>
+              <Switch
+                id="hero-fluorescent"
+                checked={settings?.hero_fluorescent_enabled ?? false}
+                onCheckedChange={(checked) => 
+                  setSettings({ ...settings, hero_fluorescent_enabled: checked })
+                }
+              />
+            </div>
+
+            {settings?.hero_fluorescent_enabled && (
+              <div className="space-y-2 pl-4 border-l-2 border-primary/20">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="fluorescent-intensity">
+                    {language === 'pl' ? 'Intensywność Fluorescencji' : 'Fluorescent Intensity'}
+                  </Label>
+                  <span className="text-sm text-muted-foreground">
+                    {settings?.hero_fluorescent_intensity ?? 30}%
+                  </span>
+                </div>
+                <Slider
+                  id="fluorescent-intensity"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={[settings?.hero_fluorescent_intensity ?? 30]}
+                  onValueChange={(value) => 
+                    setSettings({ ...settings, hero_fluorescent_intensity: value[0] })
+                  }
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {language === 'pl' 
+                    ? 'Kontroluj intensywność efektu luminescencji (0-100%)' 
+                    : 'Control the intensity of the glow effect (0-100%)'}
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="hero-image-size">
+                {language === 'pl' ? 'Rozmiar Obrazu Hero' : 'Hero Image Size'}
+              </Label>
+              <Select
+                value={settings?.hero_image_size || 'medium'}
+                onValueChange={(value) => 
+                  setSettings({ ...settings, hero_image_size: value })
+                }
+              >
+                <SelectTrigger id="hero-image-size">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="small">
+                    {language === 'pl' ? 'Mały' : 'Small'}
+                  </SelectItem>
+                  <SelectItem value="medium">
+                    {language === 'pl' ? 'Średni' : 'Medium'}
+                  </SelectItem>
+                  <SelectItem value="large">
+                    {language === 'pl' ? 'Duży' : 'Large'}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Wybierz rozmiar obrazu hero (mały, średni, duży)' 
+                  : 'Select the hero image size (small, medium, large)'}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="parallax-strength">
+                  {language === 'pl' ? 'Siła Parallax' : 'Parallax Strength'}
+                </Label>
+                <span className="text-sm text-muted-foreground">
+                  {settings?.hero_parallax_strength ?? 300}
+                </span>
+              </div>
+              <Slider
+                id="parallax-strength"
+                min={0}
+                max={500}
+                step={25}
+                value={[settings?.hero_parallax_strength ?? 300]}
+                onValueChange={(value) => 
+                  setSettings({ ...settings, hero_parallax_strength: value[0] })
+                }
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground">
+                {language === 'pl' 
+                  ? 'Kontroluj siłę efektu parallax podczas scrollowania (0-500)' 
+                  : 'Control the parallax scrolling effect strength (0-500)'}
               </p>
             </div>
           </div>

@@ -151,8 +151,10 @@ export default function CollectionDetail() {
           className="relative overflow-hidden"
         >
           <div className="h-[50vh] flex items-center justify-center relative">
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent md:to-background" />
+            {/* Gradient overlay - smooth transition to avoid stripe */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 via-black/30 to-black/10 md:via-black/40 md:to-background" />
+            {/* Additional smooth fade layer for tablet/desktop */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/40 hidden md:block" style={{ bottom: '-1px', height: '60px' }} />
             
             {/* Back button */}
             <div className="absolute top-8 left-8 z-10">

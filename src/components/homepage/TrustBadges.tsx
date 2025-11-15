@@ -84,7 +84,7 @@ const TrustBadges = () => {
   ];
 
   return (
-    <section ref={ref} className="py-16 md:py-18 lg:py-20 bg-gradient-to-b from-background to-background/50 relative overflow-visible">
+    <section ref={ref} className="py-16 md:py-18 lg:py-20 bg-gradient-to-b from-background to-background/50 relative overflow-hidden w-full">
       <style>{`
         .features-section {
           padding-top: 40px !important;
@@ -96,20 +96,32 @@ const TrustBadges = () => {
         .features-section .glow-bg > div {
           filter: blur(2.5rem) !important;
         }
+        /* Prevent horizontal overflow from glow circles */
+        .features-section {
+          max-width: 100vw;
+          overflow-x: hidden;
+        }
+        @media (max-width: 1023px) {
+          .features-section .glow-bg > div {
+            width: 200px !important;
+            height: 200px !important;
+          }
+        }
       `}</style>
-      {/* Parallax background decoration - reduced intensity */}
+      {/* Parallax background decoration - reduced intensity, clipped to prevent overflow */}
       <motion.div
         style={{
           transform: inView ? 'translateY(0)' : 'translateY(50px)',
         }}
         transition={{ duration: 1 }}
-        className="absolute inset-0 glow-bg pointer-events-none"
+        className="absolute inset-0 glow-bg pointer-events-none overflow-hidden"
+        style={{ clipPath: 'inset(0)' }}
       >
-        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-primary/25 rounded-full" />
-        <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-accent/25 rounded-full" />
+        <div className="absolute top-1/4 left-1/3 w-64 md:w-80 lg:w-96 h-64 md:h-80 lg:h-96 bg-primary/25 rounded-full" />
+        <div className="absolute bottom-1/3 right-1/4 w-48 md:w-56 lg:w-64 h-48 md:h-56 lg:h-64 bg-accent/25 rounded-full" />
       </motion.div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-10 max-w-full overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}

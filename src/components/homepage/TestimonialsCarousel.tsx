@@ -28,20 +28,40 @@ const TestimonialsCarousel = () => {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { t } = useLanguage();
   const [sectionActive, setSectionActive] = useState<boolean>(true);
+  const [navigationSettings, setNavigationSettings] = useState({
+    mobile: false,
+    tablet: false,
+    desktop: true,
+  });
+  const [windowWidth, setWindowWidth] = useState<number>(0);
   const swiperRef = useRef<SwiperType | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth);
+      const handleResize = () => setWindowWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     loadSectionToggle();
     loadTestimonials();
   }, []);
 
-  // Force autoplay on desktop - periodic check
+  // Force autoplay on desktop - periodic check (only if testimonials.length > 3)
   useEffect(() => {
     if (!swiperRef.current) return;
     
     const checkAutoplay = () => {
-      if (window.innerWidth >= 768 && swiperRef.current?.autoplay && !swiperRef.current.autoplay.running) {
+      const isDesktop = window.innerWidth >= 1024;
+      const shouldAutoplay = isDesktop && testimonials.length > 3;
+      
+      if (shouldAutoplay && swiperRef.current?.autoplay && !swiperRef.current.autoplay.running) {
         swiperRef.current.autoplay.start();
+      } else if (!shouldAutoplay && swiperRef.current?.autoplay && swiperRef.current.autoplay.running) {
+        swiperRef.current.autoplay.stop();
       }
     };
 
@@ -59,12 +79,17 @@ const TestimonialsCarousel = () => {
     try {
       const { data } = await supabase
         .from('homepage_sections_toggle')
-        .select('testimonials_section_active')
+        .select('testimonials_section_active, testimonials_navigation_enabled_mobile, testimonials_navigation_enabled_tablet, testimonials_navigation_enabled_desktop')
         .eq('id', '00000000-0000-0000-0000-000000000001')
         .single();
       
       if (data) {
         setSectionActive(data.testimonials_section_active ?? true);
+        setNavigationSettings({
+          mobile: data.testimonials_navigation_enabled_mobile ?? false,
+          tablet: data.testimonials_navigation_enabled_tablet ?? false,
+          desktop: data.testimonials_navigation_enabled_desktop ?? true,
+        });
       }
     } catch (error) {
       console.error('Error loading section toggle:', error);
@@ -85,6 +110,24 @@ const TestimonialsCarousel = () => {
   };
 
   if (!sectionActive || testimonials.length === 0) return null;
+
+  // Determine device type and whether to show navigation
+  const getShouldShowNavigation = () => {
+    if (windowWidth === 0) return false; // SSR safe
+    
+    if (windowWidth < 768) {
+      return navigationSettings.mobile;
+    } else if (windowWidth >= 768 && windowWidth < 1024) {
+      return navigationSettings.tablet;
+    } else {
+      // Desktop: show only if enabled AND testimonials.length > 3
+      return navigationSettings.desktop && testimonials.length > 3;
+    }
+  };
+
+  const shouldShowNavigation = getShouldShowNavigation();
+  const shouldAutoplayDesktop = testimonials.length > 3;
+  const isDesktop = windowWidth >= 1024;
 
   return (
     <section ref={ref} className="py-6 md:py-10 lg:py-12 bg-background/50 w-full overflow-hidden">
@@ -125,30 +168,68 @@ const TestimonialsCarousel = () => {
           opacity: 1;
           width: 24px !important;
         }
-        /* Mobile glow effect */
+        /* Mobile glow effect - using pseudo-element for border-radius aware glow */
         @media (max-width: 767px) {
           .testimonials-swiper .swiper-slide-active .testimonial-card {
-            box-shadow: 
-              0 0 20px hsl(var(--primary) / 0.4),
-              0 0 40px hsl(var(--primary) / 0.25),
-              0 0 60px hsl(var(--primary) / 0.15),
-              inset 0 0 20px hsl(var(--primary) / 0.1) !important;
+            position: relative;
             border-color: hsl(var(--primary) / 0.8) !important;
           }
+          .testimonials-swiper .swiper-slide-active .testimonial-card::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: inherit;
+            background: radial-gradient(circle at center, hsl(var(--primary) / 0.4) 0%, hsl(var(--primary) / 0.25) 30%, hsl(var(--primary) / 0.15) 50%, transparent 70%);
+            filter: blur(20px);
+            z-index: -1;
+            pointer-events: none;
+          }
+          .testimonials-swiper .swiper-slide-active .testimonial-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 20px hsl(var(--primary) / 0.1);
+            pointer-events: none;
+          }
         }
-        /* Desktop hover effect */
+        /* Desktop/Tablet hover effect - using pseudo-element for border-radius aware glow */
         @media (min-width: 768px) {
           .testimonials-swiper .testimonial-card {
             transition: all 0.3s ease;
+            position: relative;
           }
           .testimonials-swiper .testimonial-card:hover {
-            box-shadow: 
-              0 0 25px hsl(var(--primary) / 0.35),
-              0 0 50px hsl(var(--primary) / 0.2),
-              0 0 75px hsl(var(--primary) / 0.1),
-              inset 0 0 15px hsl(var(--primary) / 0.05) !important;
             transform: scale(1.02) translateY(-5px) !important;
             z-index: 10 !important;
+          }
+          .testimonials-swiper .testimonial-card:hover::before {
+            content: '';
+            position: absolute;
+            inset: -15px;
+            border-radius: inherit;
+            background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.35) 0%, hsl(var(--primary) / 0.2) 30%, hsl(var(--primary) / 0.1) 50%, transparent 70%);
+            filter: blur(25px);
+            z-index: -1;
+            pointer-events: none;
+          }
+          .testimonials-swiper .testimonial-card:hover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 15px hsl(var(--primary) / 0.05);
+            pointer-events: none;
+          }
+        }
+        /* Ensure cards don't overflow on mobile */
+        @media (max-width: 767px) {
+          .testimonials-swiper .swiper-slide {
+            padding: 0 0.5rem;
+          }
+          .testimonials-swiper .swiper-slide .testimonial-card {
+            max-width: calc(100vw - 2rem);
+            margin: 0 auto;
           }
         }
       `}</style>
@@ -174,12 +255,12 @@ const TestimonialsCarousel = () => {
             spaceBetween={20}
             slidesPerView={1}
             loop={true}
-            autoplay={{ 
+            autoplay={shouldAutoplayDesktop && isDesktop ? { 
               delay: 5000,
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
               stopOnLastSlide: false,
-            }}
+            } : false}
             pagination={{ 
               clickable: true,
               dynamicBullets: true,
@@ -225,7 +306,7 @@ const TestimonialsCarousel = () => {
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
               setTimeout(() => {
-                if (window.innerWidth >= 768 && swiper.autoplay && !swiper.autoplay.running) {
+                if (isDesktop && shouldAutoplayDesktop && swiper.autoplay && !swiper.autoplay.running) {
                   try {
                     swiper.autoplay.start();
                   } catch (error) {
@@ -235,7 +316,7 @@ const TestimonialsCarousel = () => {
               }, 200);
             }}
             onSlideChange={(swiper) => {
-              if (window.innerWidth >= 768 && swiper.autoplay && !swiper.autoplay.running) {
+              if (isDesktop && shouldAutoplayDesktop && swiper.autoplay && !swiper.autoplay.running) {
                 try {
                   swiper.autoplay.start();
                 } catch (error) {
@@ -250,7 +331,8 @@ const TestimonialsCarousel = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
-                  className="testimonial-card bg-card/50 backdrop-blur-sm p-6 rounded-lg border border-border/50 hover:border-primary/50 h-full flex flex-col"
+                  className="testimonial-card bg-card/50 backdrop-blur-sm p-4 md:p-6 rounded-lg border border-border/50 hover:border-primary/50 h-full flex flex-col relative"
+                  style={{ borderRadius: '0.5rem' }}
                 >
                   <div className="flex items-center gap-4 mb-4">
                     {testimonial.avatar ? (
@@ -297,9 +379,13 @@ const TestimonialsCarousel = () => {
             ))}
           </Swiper>
           
-          {/* Custom Navigation Buttons - Desktop only */}
-          <button 
-            className="swiper-button-prev-testimonials absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10 cursor-pointer"
+          {/* Custom Navigation Buttons - Conditional based on settings */}
+          {shouldShowNavigation && (
+            <>
+              <button 
+                className={`swiper-button-prev-testimonials absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 items-center justify-center w-10 h-10 cursor-pointer ${
+                  windowWidth < 768 ? 'flex' : windowWidth < 1024 ? 'md:flex' : 'md:flex'
+                }`}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -319,10 +405,12 @@ const TestimonialsCarousel = () => {
             aria-label="Previous testimonial"
             type="button"
           >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button 
-            className="swiper-button-next-testimonials absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center w-10 h-10 cursor-pointer"
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button 
+                className={`swiper-button-next-testimonials absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 items-center justify-center w-10 h-10 cursor-pointer ${
+                  windowWidth < 768 ? 'flex' : windowWidth < 1024 ? 'md:flex' : 'md:flex'
+                }`}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -342,8 +430,10 @@ const TestimonialsCarousel = () => {
             aria-label="Next testimonial"
             type="button"
           >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+            )}
         </div>
       </div>
     </section>

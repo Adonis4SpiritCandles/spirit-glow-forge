@@ -12,5 +12,5 @@ COMMENT ON COLUMN public.about_settings.hero_animation_enabled IS 'Enable/disabl
 COMMENT ON COLUMN public.about_settings.hero_fluorescent_enabled IS 'Enable/disable fluorescent glow effect around the hero image';
 COMMENT ON COLUMN public.about_settings.hero_fluorescent_intensity IS 'Intensity of the fluorescent effect (0-100)';
 COMMENT ON COLUMN public.about_settings.hero_image_size IS 'Size of the hero image (small, medium, large)';
-COMMENT ON COLUMN public.about_settings.hero_parallax_strength IS 'Parallax scrolling strength (0-500)';
+update alla grande 2.0blic.about_settings.hero_parallax_strength IS 'Parallax scrolling strength (0-500)';
 

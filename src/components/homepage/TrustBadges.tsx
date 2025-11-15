@@ -112,10 +112,10 @@ const TrustBadges = () => {
       <motion.div
         style={{
           transform: inView ? 'translateY(0)' : 'translateY(50px)',
+          clipPath: 'inset(0)'
         }}
         transition={{ duration: 1 }}
         className="absolute inset-0 glow-bg pointer-events-none overflow-hidden"
-        style={{ clipPath: 'inset(0)' }}
       >
         <div className="absolute top-1/4 left-1/3 w-64 md:w-80 lg:w-96 h-64 md:h-80 lg:h-96 bg-primary/25 rounded-full" />
         <div className="absolute bottom-1/3 right-1/4 w-48 md:w-56 lg:w-64 h-48 md:h-56 lg:h-64 bg-accent/25 rounded-full" />

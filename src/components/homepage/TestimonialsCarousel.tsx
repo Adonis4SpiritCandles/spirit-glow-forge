@@ -137,12 +137,36 @@ const TestimonialsCarousel = () => {
           width: 100%;
           max-width: 100%;
           overflow-x: hidden;
+          position: relative;
+          /* Extra padding to prevent glow clipping */
+          padding: 15px 0 30px 0;
         }
         .testimonials-swiper {
           width: 100%;
           max-width: 100%;
           padding-top: 20px;
-          padding-bottom: 20px;
+          padding-bottom: 40px;
+          position: relative;
+        }
+        /* Container for pagination area glow on mobile */
+        .testimonials-swiper::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60%;
+          height: 40px;
+          background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.15) 0%, hsl(var(--primary) / 0.1) 40%, transparent 70%);
+          filter: blur(20px);
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 0;
+        }
+        @media (min-width: 768px) {
+          .testimonials-swiper::after {
+            display: none;
+          }
         }
         .testimonials-swiper .swiper-wrapper {
           width: 100%;
@@ -173,24 +197,38 @@ const TestimonialsCarousel = () => {
           .testimonials-swiper .swiper-slide-active .testimonial-card {
             position: relative;
             border-color: hsl(var(--primary) / 0.8) !important;
+            /* Ensure card has proper z-index for glow */
+            z-index: 1;
           }
           .testimonials-swiper .swiper-slide-active .testimonial-card::before {
             content: '';
             position: absolute;
-            inset: -10px;
+            inset: -12px;
             border-radius: inherit;
-            background: radial-gradient(circle at center, hsl(var(--primary) / 0.4) 0%, hsl(var(--primary) / 0.25) 30%, hsl(var(--primary) / 0.15) 50%, transparent 70%);
-            filter: blur(20px);
+            background: radial-gradient(circle at center, hsl(var(--primary) / 0.35) 0%, hsl(var(--primary) / 0.25) 30%, hsl(var(--primary) / 0.12) 50%, transparent 70%);
+            filter: blur(18px);
             z-index: -1;
             pointer-events: none;
+            /* Ensure glow extends beyond card */
+            overflow: visible;
           }
           .testimonials-swiper .swiper-slide-active .testimonial-card::after {
             content: '';
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            box-shadow: inset 0 0 20px hsl(var(--primary) / 0.1);
+            box-shadow: inset 0 0 15px hsl(var(--primary) / 0.08);
             pointer-events: none;
+            z-index: 0;
+          }
+          /* Prevent glow clipping by parent containers */
+          .testimonials-carousel-container,
+          .testimonials-swiper,
+          .testimonials-swiper .swiper-wrapper {
+            overflow: visible;
+          }
+          .testimonials-swiper .swiper-slide {
+            overflow: visible;
           }
         }
         /* Desktop/Tablet hover effect - using pseudo-element for border-radius aware glow */
@@ -198,28 +236,43 @@ const TestimonialsCarousel = () => {
           .testimonials-swiper .testimonial-card {
             transition: all 0.3s ease;
             position: relative;
+            cursor: pointer;
           }
+          /* Ensure entire card area is hoverable */
           .testimonials-swiper .testimonial-card:hover {
             transform: scale(1.02) translateY(-5px) !important;
             z-index: 10 !important;
+            border-color: hsl(var(--primary) / 0.6) !important;
           }
           .testimonials-swiper .testimonial-card:hover::before {
             content: '';
             position: absolute;
-            inset: -15px;
+            inset: -18px;
             border-radius: inherit;
-            background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.35) 0%, hsl(var(--primary) / 0.2) 30%, hsl(var(--primary) / 0.1) 50%, transparent 70%);
-            filter: blur(25px);
+            background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.3) 0%, hsl(var(--primary) / 0.18) 30%, hsl(var(--primary) / 0.08) 50%, transparent 70%);
+            filter: blur(22px);
             z-index: -1;
             pointer-events: none;
+            /* Ensure glow extends beyond card */
+            overflow: visible;
           }
           .testimonials-swiper .testimonial-card:hover::after {
             content: '';
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            box-shadow: inset 0 0 15px hsl(var(--primary) / 0.05);
+            box-shadow: inset 0 0 12px hsl(var(--primary) / 0.04);
             pointer-events: none;
+            z-index: 0;
+          }
+          /* Prevent glow clipping by parent containers on desktop/tablet */
+          .testimonials-carousel-container,
+          .testimonials-swiper,
+          .testimonials-swiper .swiper-wrapper {
+            overflow: visible;
+          }
+          .testimonials-swiper .swiper-slide {
+            overflow: visible;
           }
         }
         /* Ensure cards don't overflow on mobile */
@@ -249,7 +302,7 @@ const TestimonialsCarousel = () => {
           </p>
         </motion.div>
 
-        <div className="testimonials-carousel-container relative">
+        <div className="testimonials-carousel-container relative overflow-visible">
           <Swiper
             modules={[Autoplay, Pagination, Navigation, EffectCoverflow]}
             spaceBetween={20}

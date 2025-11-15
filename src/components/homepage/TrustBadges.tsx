@@ -76,7 +76,7 @@ const TrustBadges = () => {
       icon: Truck,
       title: language === 'pl' ? 'Wysyłka' : 'Shipping',
       description: language === 'pl'
-        ? 'Spedizione sicura, veloce ed affidabile!'
+        ? 'Bezpieczna, szybka i niezawodna wysyłka!'
         : 'Safe, fast, and reliable shipping!',
     },
     {
@@ -130,7 +130,8 @@ const TrustBadges = () => {
           perspective: 1000px;
           /* Extra padding for hover animations and tooltips - vertical and horizontal */
           /* Increased bottom padding to ensure tooltips are fully visible */
-          padding: 15px 10px 100px 10px;
+          /* Increased horizontal padding to prevent tooltip clipping at edges */
+          padding: 15px 20px 100px 20px;
           /* Ensure container doesn't clip transformed children */
           isolation: isolate;
         }
@@ -227,7 +228,7 @@ const TrustBadges = () => {
             height: 28px !important;
           }
           .trust-badges-grid-container {
-            padding: 12px 8px 85px 8px;
+            padding: 12px 16px 85px 16px;
           }
         }
         @media (min-width: 641px) and (max-width: 1024px) {
@@ -241,7 +242,7 @@ const TrustBadges = () => {
             padding: 1.25rem !important;
           }
           .trust-badges-grid-container {
-            padding: 15px 10px 90px 10px;
+            padding: 15px 18px 90px 18px;
           }
         }
         @media (min-width: 1025px) {
@@ -285,39 +286,50 @@ const TrustBadges = () => {
         <div className="trust-badges-grid-container">
           <div className="trust-badges-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-7xl mx-auto">
             <TooltipProvider>
-              {badges.map((badge, index) => (
-                <Tooltip key={index}>
-                  <TooltipTrigger asChild>
-                    <div className="trust-badge-card-wrapper">
-                      <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={inView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.1 * index }}
-                        whileHover={{ scale: 1.05, rotate: 2 }}
-                        className="trust-badge-card bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
-                      >
+              {badges.map((badge, index) => {
+                // Determine tooltip alignment based on card position
+                // First card: align start (to prevent left clipping)
+                // Last card: align end (to prevent right clipping)
+                // Middle cards: align center
+                const isFirstCard = index === 0;
+                const isLastCard = index === badges.length - 1;
+                const align = isFirstCard ? 'start' : isLastCard ? 'end' : 'center';
+                
+                return (
+                  <Tooltip key={index}>
+                    <TooltipTrigger asChild>
+                      <div className="trust-badge-card-wrapper">
                         <motion.div
-                          whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                          transition={{ duration: 0.5 }}
-                          className="icon-container bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary/30 transition-shadow flex-shrink-0"
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={inView ? { opacity: 1, y: 0 } : {}}
+                          transition={{ duration: 0.6, delay: 0.1 * index }}
+                          whileHover={{ scale: 1.05, rotate: 2 }}
+                          className="trust-badge-card bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
                         >
-                          <badge.icon className="icon-inner text-primary drop-shadow-[0_0_8px_currentColor]" />
+                          <motion.div
+                            whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                            transition={{ duration: 0.5 }}
+                            className="icon-container bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary/30 transition-shadow flex-shrink-0"
+                          >
+                            <badge.icon className="icon-inner text-primary drop-shadow-[0_0_8px_currentColor]" />
+                          </motion.div>
+                          <h3 className="font-semibold text-sm md:text-base text-foreground leading-tight text-center px-2">
+                            {badge.title}
+                          </h3>
                         </motion.div>
-                        <h3 className="font-semibold text-sm md:text-base text-foreground leading-tight text-center px-2">
-                          {badge.title}
-                        </h3>
-                      </motion.div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="bottom"
-                    className="max-w-xs bg-card/95 backdrop-blur-sm border-primary/20 z-50"
-                    sideOffset={8}
-                  >
-                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{badge.description}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      align={align}
+                      className="max-w-xs bg-card/95 backdrop-blur-sm border-primary/20 z-50"
+                      sideOffset={8}
+                    >
+                      <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{badge.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
             </TooltipProvider>
           </div>
         </div>

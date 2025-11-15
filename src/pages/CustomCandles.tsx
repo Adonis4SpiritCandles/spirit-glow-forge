@@ -155,15 +155,26 @@ const CustomCandles = () => {
           className="relative overflow-hidden"
         >
           <div 
-            className={`min-h-[50vh] flex items-center justify-center relative ${
-              heroSettings?.imageSize === 'small' ? 'min-h-[40vh]' : 
-              heroSettings?.imageSize === 'large' ? 'min-h-[60vh]' : 
-              'min-h-[50vh]'
+            className={`min-h-[50vh] md:min-h-[50vh] flex items-center justify-center relative ${
+              heroSettings?.imageSize === 'small' ? 'min-h-[40vh] md:min-h-[40vh]' : 
+              heroSettings?.imageSize === 'large' ? 'min-h-[60vh] md:min-h-[60vh]' : 
+              'min-h-[50vh] md:min-h-[50vh]'
             }`}
             style={{
               animation: heroSettings?.animationEnabled ? 'fadeIn 1s ease-in-out' : 'none',
             }}
           >
+            {/* Ensure image maintains aspect ratio on mobile */}
+            <style>{`
+              @media (max-width: 767px) {
+                .react-parallax-bgimage {
+                  object-fit: cover !important;
+                  width: 100% !important;
+                  height: 100% !important;
+                  min-height: 50vh !important;
+                }
+              }
+            `}</style>
             {/* Fluorescent glow effect */}
             {heroSettings?.fluorescentEnabled && (
               <div 

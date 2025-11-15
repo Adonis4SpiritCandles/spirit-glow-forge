@@ -150,7 +150,18 @@ export default function CollectionDetail() {
           strength={400}
           className="relative overflow-hidden"
         >
-          <div className="h-[50vh] flex items-center justify-center relative">
+          <div className="h-[50vh] md:h-[50vh] flex items-center justify-center relative">
+            {/* Ensure image maintains aspect ratio on mobile */}
+            <style>{`
+              @media (max-width: 767px) {
+                .react-parallax-bgimage {
+                  object-fit: cover !important;
+                  width: 100% !important;
+                  height: 100% !important;
+                  min-height: 50vh !important;
+                }
+              }
+            `}</style>
             {/* Gradient overlay - smooth transition to avoid stripe */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 via-black/30 to-black/10 md:via-black/40 md:to-background" />
             {/* Additional smooth fade layer for tablet/desktop */}

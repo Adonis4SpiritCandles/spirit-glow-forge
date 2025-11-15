@@ -304,9 +304,9 @@ const Collections = () => {
                     onClick={() => setSelectedCollection(collection.id)}
                   >
                     <CardContent className="p-0 h-full">
-                      <div className="flex flex-col md:flex-row h-full">
+                      <div className="flex flex-col lg:flex-row h-full">
                         {/* Collection Image */}
-                        <div className="md:w-1/2 aspect-square md:aspect-auto relative overflow-hidden">
+                        <div className="lg:w-1/2 aspect-square lg:aspect-auto lg:h-auto relative overflow-hidden min-h-[250px] md:min-h-[300px]">
                           <motion.img 
                             src={collection.image}
                             alt={collection.name}
@@ -318,39 +318,42 @@ const Collections = () => {
                         </div>
                         
                         {/* Collection Content */}
-                        <div className="md:w-1/2 p-8 flex flex-col justify-center">
+                        <div className="lg:w-1/2 p-6 md:p-8 flex flex-col justify-center min-h-[200px]">
                           <motion.div 
                             className="flex items-center gap-3 mb-4"
                             whileHover={{ x: 10 }}
                             transition={{ duration: 0.3 }}
                           >
-                            <div className="p-3 bg-primary/20 rounded-full group-hover:bg-primary/30 transition-colors duration-300">
+                            <div className="p-3 bg-primary/20 rounded-full group-hover:bg-primary/30 transition-colors duration-300 flex-shrink-0">
                               <IconComponent className="h-6 w-6 text-primary" />
                             </div>
                             {collection.featured && (
-                              <Badge className="bg-primary text-primary-foreground animate-pulse">
+                              <Badge className="bg-primary text-primary-foreground animate-pulse flex-shrink-0">
                                 {t('featured')}
                               </Badge>
                             )}
                           </motion.div>
                           
-                          <h3 className="font-playfair text-2xl md:text-3xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                          <h3 className="font-playfair text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300 break-words">
                             {collection.name}
                           </h3>
                           
-                          <p className="text-muted-foreground mb-6 leading-relaxed">
+                          <p className="text-muted-foreground mb-6 leading-relaxed text-sm md:text-base break-words">
                             {collection.description}
                           </p>
                           
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-auto">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">
                               {collection.productCount} {t('products')}
                             </span>
                             
                             <Button 
                               variant="ghost" 
-                              className="text-primary hover:text-primary-glow p-0 h-auto group/btn"
-                              onClick={() => window.location.href = `/collections/${collection.id}`}
+                              className="text-primary hover:text-primary-glow p-0 h-auto group/btn whitespace-nowrap"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.location.href = `/collections/${collection.id}`;
+                              }}
                             >
                               {t('exploreCollectionPage')}
                               <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-2 transition-transform duration-300" />

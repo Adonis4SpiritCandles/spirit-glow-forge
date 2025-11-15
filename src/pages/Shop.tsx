@@ -177,7 +177,7 @@ const Shop = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-4xl md:text-6xl font-playfair font-bold text-foreground mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary"
           >
-            {t('ourCollection')}
+            {language === 'pl' ? 'Sklep Spirit Candles' : 'Spirit Candles Shop'}
           </motion.h1>
           <motion.p
             initial={{ y: 20, opacity: 0 }}

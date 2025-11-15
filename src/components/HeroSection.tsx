@@ -76,28 +76,30 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 lg:px-8 text-center relative py-8 md:py-0" style={{ zIndex: 3 }}>
         <div className="max-w-4xl mx-auto">
           {/* Logo with Glow Effect */}
-          <div className="mb-12">
-            <div className="mb-8">
+          <div className="mb-8">
+            <div className="mb-6">
               <img 
                 src={spiritLogo} 
                 alt="SPIRIT CANDLES" 
-                className={`h-64 mx-auto logo-aura transition-all duration-2000 ${logoGlow ? 'candle-glow scale-105 drop-shadow-[0_0_35px_rgba(255,255,255,0.8)]' : 'scale-100'}`}
+                className={`h-48 md:h-64 mx-auto logo-aura transition-all duration-2000 ${logoGlow ? 'candle-glow scale-105 drop-shadow-[0_0_35px_rgba(255,255,255,0.8)]' : 'scale-100'}`}
               />
+            </div>
+            
+            {/* H1 and H2 Text */}
+            <div className="mb-8 animate-fade-in">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-4">
+                <span className="block">SPIRIT</span>
+                <span className="block text-primary">CANDLE</span>
+              </h1>
+              
+              <h2 className="text-xl md:text-2xl text-muted-foreground mb-6 italic">
+                Reborn your nature
+              </h2>
             </div>
           </div>
 
           {/* Text Content */}
           <div className="animate-fade-in">
-          {/* Main Content 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6">
-              <span className="block">SPIRIT</span>
-              <span className="block text-primary">CANDLES</span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-muted-foreground mb-4 italic">
-              {t('rebornYourNature')}
-            </p>
-          */}  
             <p className="text-lg text-foreground/80 mb-8 max-w-2xl mx-auto leading-relaxed">
               {t('heroDescription')}
             </p>

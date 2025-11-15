@@ -1145,7 +1145,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'legalDisclaimerText') return language === 'pl' ? 'Spirit Candle jest niezależną marką. Nasze produkty są inspirowane popularnymi zapachami znanych marek, ale nie są z nimi powiązane. Wszystkie znaki towarowe należą do ich prawnych właścicieli.' : 'Spirit Candle is an independent brand. Our products are inspired by popular fragrances from well-known brands but are not affiliated with them. All trademarks belong to their respective owners.';
 
     // Shop Page
-    if (key === 'ourCollection') return language === 'pl' ? 'Nasza kolekcja' : 'Our Collection';
+    if (key === 'ourCollection') return language === 'pl' ? 'Sklep Spirit Candles' : 'Spirit Candles Shop';
     if (key === 'discoverCompleteRange') return language === 'pl' ? 'Odkryj pełną gamę luksusowych świec sojowych Spirit Candle' : 'Discover the complete range of Spirit Candle luxury soy candles';
 
     // Collections Page

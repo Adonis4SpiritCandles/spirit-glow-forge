@@ -119,7 +119,7 @@ const TrustBadges = () => {
             height: 200px !important;
           }
         }
-        /* Trust badges container - allow space for hover animations */
+        /* Trust badges container - allow space for hover animations and tooltips */
         .trust-badges-grid-container {
           width: 100%;
           max-width: 100%;
@@ -128,33 +128,36 @@ const TrustBadges = () => {
           position: relative;
           /* Add perspective for 3D transforms */
           perspective: 1000px;
-          /* Extra padding for hover animations - vertical and horizontal */
-          padding: 30px 15px;
+          /* Extra padding for hover animations and tooltips - vertical and horizontal */
+          /* Increased bottom padding to ensure tooltips are fully visible */
+          padding: 15px 10px 100px 10px;
           /* Ensure container doesn't clip transformed children */
           isolation: isolate;
         }
-        /* Trust badge card wrapper - prevent clipping during hover */
+        /* Trust badge card wrapper - prevent clipping during hover, allow tooltip space */
         .trust-badge-card-wrapper {
           width: 100%;
           height: 100%;
-          /* Allow overflow for hover animations */
+          /* Allow overflow for hover animations and tooltips */
           overflow: visible;
           /* Add padding to prevent clipping - enough for scale 1.05 + rotate 2deg */
-          padding: 15px;
+          padding: 6px;
           /* Ensure cards can transform without being clipped */
           transform-style: preserve-3d;
           /* Prevent wrapper from creating overflow */
           box-sizing: border-box;
+          /* Add margin bottom for tooltip space - increased to ensure tooltip is visible */
+          margin-bottom: 70px;
         }
-        /* Trust badge card - ensure no clipping */
+        /* Trust badge card - ensure no clipping, reduce size */
         .trust-badge-card {
           width: 100%;
           height: 100%;
           /* Ensure card can be transformed without clipping */
           transform-origin: center center;
           will-change: transform;
-          /* Add min-height to prevent layout shift */
-          min-height: 180px;
+          /* Reduced min-height to fit content better */
+          min-height: 140px;
           /* Ensure card respects wrapper bounds during transform */
           box-sizing: border-box;
           /* Prevent card from creating overflow itself */
@@ -169,15 +172,30 @@ const TrustBadges = () => {
         }
         @media (max-width: 640px) {
           .trust-badges-grid {
-            gap: 1rem !important;
+            gap: 0.75rem !important;
           }
           .trust-badge-card-wrapper {
-            padding: 10px;
+            padding: 5px;
+            margin-bottom: 65px;
+          }
+          .trust-badge-card {
+            min-height: 110px;
+            padding: 0.75rem !important;
+          }
+          .trust-badges-grid-container {
+            padding: 12px 8px 85px 8px;
           }
         }
         @media (min-width: 641px) and (max-width: 1024px) {
           .trust-badge-card-wrapper {
-            padding: 12px;
+            padding: 6px;
+            margin-bottom: 68px;
+          }
+          .trust-badge-card {
+            min-height: 125px;
+          }
+          .trust-badges-grid-container {
+            padding: 15px 10px 90px 10px;
           }
         }
       `}</style>
@@ -223,16 +241,16 @@ const TrustBadges = () => {
                         animate={inView ? { opacity: 1, y: 0 } : {}}
                         transition={{ duration: 0.6, delay: 0.1 * index }}
                         whileHover={{ scale: 1.05, rotate: 2 }}
-                        className="trust-badge-card flex flex-col items-center text-center p-6 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
+                        className="trust-badge-card flex flex-col items-center text-center p-4 md:p-5 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 cursor-pointer group"
                       >
-                    <motion.div
-                      whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                      transition={{ duration: 0.5 }}
-                      className="w-16 h-16 mb-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary/30 transition-shadow"
-                    >
-                      <badge.icon className="w-8 h-8 text-primary drop-shadow-[0_0_8px_currentColor]" />
-                    </motion.div>
-                        <h3 className="font-semibold text-sm md:text-base text-foreground mb-1">
+                        <motion.div
+                          whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
+                          className="w-12 h-12 md:w-14 md:h-14 mb-3 md:mb-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary/30 transition-shadow"
+                        >
+                          <badge.icon className="w-6 h-6 md:w-7 md:h-7 text-primary drop-shadow-[0_0_8px_currentColor]" />
+                        </motion.div>
+                        <h3 className="font-semibold text-xs md:text-sm text-foreground mb-0 leading-tight">
                           {badge.title}
                         </h3>
                       </motion.div>
@@ -240,9 +258,10 @@ const TrustBadges = () => {
                   </TooltipTrigger>
                   <TooltipContent
                     side="bottom"
-                    className="max-w-xs bg-card/95 backdrop-blur-sm border-primary/20"
+                    className="max-w-xs bg-card/95 backdrop-blur-sm border-primary/20 z-50"
+                    sideOffset={8}
                   >
-                    <p className="text-sm text-muted-foreground">{badge.description}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{badge.description}</p>
                   </TooltipContent>
                 </Tooltip>
               ))}

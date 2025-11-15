@@ -77,11 +77,23 @@ const TestimonialsCarousel = () => {
 
   const loadSectionToggle = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('homepage_sections_toggle')
         .select('testimonials_section_active, testimonials_navigation_enabled_mobile, testimonials_navigation_enabled_tablet, testimonials_navigation_enabled_desktop')
         .eq('id', '00000000-0000-0000-0000-000000000001')
         .single();
+      
+      if (error) {
+        // If error (e.g., no row found), default to true
+        console.warn('Error loading testimonials section toggle:', error);
+        setSectionActive(true);
+        setNavigationSettings({
+          mobile: false,
+          tablet: false,
+          desktop: true,
+        });
+        return;
+      }
       
       if (data) {
         setSectionActive(data.testimonials_section_active ?? true);
@@ -90,9 +102,24 @@ const TestimonialsCarousel = () => {
           tablet: data.testimonials_navigation_enabled_tablet ?? false,
           desktop: data.testimonials_navigation_enabled_desktop ?? true,
         });
+      } else {
+        // No data found, use defaults
+        setSectionActive(true);
+        setNavigationSettings({
+          mobile: false,
+          tablet: false,
+          desktop: true,
+        });
       }
     } catch (error) {
       console.error('Error loading section toggle:', error);
+      // Default to true if error (section will show)
+      setSectionActive(true);
+      setNavigationSettings({
+        mobile: false,
+        tablet: false,
+        desktop: true,
+      });
     }
   };
 

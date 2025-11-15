@@ -139,13 +139,14 @@ export default function CommunityManager() {
           </div>
           <Switch
             id="community-active"
-            checked={settings.is_active}
+            checked={settings.is_active ?? true}
             onCheckedChange={async (checked) => {
               const newSettings = { ...settings, is_active: checked };
               setSettings(newSettings);
-              // Save immediately when toggle changes
+              // Save immediately when toggle changes - update both tables
               try {
-                const { error } = await supabase
+                // Update homepage_community_settings
+                const { error: settingsError } = await supabase
                   .from('homepage_community_settings')
                   .upsert({
                     ...newSettings,
@@ -154,7 +155,20 @@ export default function CommunityManager() {
                     onConflict: 'id'
                   });
                 
-                if (error) throw error;
+                if (settingsError) throw settingsError;
+                
+                // Update homepage_sections_toggle
+                const { error: toggleError } = await supabase
+                  .from('homepage_sections_toggle')
+                  .upsert({
+                    id: '00000000-0000-0000-0000-000000000001',
+                    community_section_active: checked,
+                    updated_at: new Date().toISOString()
+                  }, {
+                    onConflict: 'id'
+                  });
+                
+                if (toggleError) throw toggleError;
                 
                 toast({
                   title: language === 'pl' ? 'Zaktualizowano' : 'Updated',

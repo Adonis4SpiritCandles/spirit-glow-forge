@@ -37,17 +37,29 @@ const ProductCarousel = () => {
 
   const loadSectionToggle = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('homepage_sections_toggle')
         .select('product_carousel_active')
         .eq('id', '00000000-0000-0000-0000-000000000001')
         .single();
       
+      if (error) {
+        // If error (e.g., no row found), default to true
+        console.warn('Error loading product carousel section toggle:', error);
+        setSectionActive(true);
+        return;
+      }
+      
       if (data) {
         setSectionActive(data.product_carousel_active ?? true);
+      } else {
+        // No data found, default to true
+        setSectionActive(true);
       }
     } catch (error) {
       console.error('Error loading section toggle:', error);
+      // Default to true if error (section will show)
+      setSectionActive(true);
     }
   };
 

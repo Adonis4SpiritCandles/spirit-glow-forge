@@ -30,16 +30,46 @@ const SocialFeed = () => {
   const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<any>(null);
+  const [sectionActive, setSectionActive] = useState<boolean>(true);
 
   useEffect(() => {
+    loadSectionToggle();
     loadSettings();
     loadSocialPosts();
   }, []);
 
+  const loadSectionToggle = async () => {
+    try {
+      // Load toggle from homepage_sections_toggle - accessible to all users (guests, users, admins)
+      const { data, error } = await supabase
+        .from('homepage_sections_toggle')
+        .select('community_section_active')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .single();
+      
+      if (error) {
+        // If error (e.g., no row found), default to true
+        console.warn('Error loading community section toggle:', error);
+        setSectionActive(true);
+        return;
+      }
+      
+      if (data) {
+        setSectionActive(data.community_section_active ?? true);
+      } else {
+        // No data found, default to true
+        setSectionActive(true);
+      }
+    } catch (error) {
+      console.error('Error loading section toggle:', error);
+      // Default to true if error (section will show)
+      setSectionActive(true);
+    }
+  };
+
   const loadSettings = async () => {
     try {
-      // Remove is_active filter from query - we need to load settings regardless of active status
-      // to properly check if section should be displayed
+      // Load content settings regardless of active status
       const { data } = await supabase
         .from('homepage_community_settings')
         .select('*')
@@ -83,8 +113,8 @@ const SocialFeed = () => {
       ? 'Zobacz jak nasi klienci tworzą magiczną atmosferę z naszymi świecami'
       : 'See how our customers create magical ambiance with our candles');
 
-  // Don't render if section is disabled
-  if (settings && !settings.is_active) {
+  // Don't render if section is disabled - check toggle from homepage_sections_toggle
+  if (!sectionActive) {
     return null;
   }
 

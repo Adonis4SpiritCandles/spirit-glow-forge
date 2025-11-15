@@ -19,17 +19,29 @@ const HeroSection = () => {
 
   const loadSectionToggle = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('homepage_sections_toggle')
         .select('hero_section_active')
         .eq('id', '00000000-0000-0000-0000-000000000001')
         .single();
       
+      if (error) {
+        // If error (e.g., no row found), default to true
+        console.warn('Error loading hero section toggle:', error);
+        setSectionActive(true);
+        return;
+      }
+      
       if (data) {
         setSectionActive(data.hero_section_active ?? true);
+      } else {
+        // No data found, default to true
+        setSectionActive(true);
       }
     } catch (error) {
       console.error('Error loading hero section toggle:', error);
+      // Default to true if error (section will show)
+      setSectionActive(true);
     }
   };
 

@@ -265,7 +265,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'paid') return language === 'pl' ? 'Opłacone' : 'Paid';
     if (key === 'pending') return language === 'pl' ? 'Oczekujące' : 'Pending';
     if (key === 'awaitingConfirm') return language === 'pl' ? 'Oczekuje na Potwierdzenie' : 'Awaiting Confirm';
-    if (key === 'complete') return language === 'pl' ? 'Ukończone' : 'Complete';
+    if (key === 'complete') return language === 'pl' ? 'Complete' : 'Complete';
     if (key === 'awaitingShipping') return language === 'pl' ? 'Oczekuje na Wysyłkę' : 'Awaiting Shipping';
     if (key === 'shipped') return language === 'pl' ? 'Wysłane' : 'Shipped';
     if (key === 'inTransit') return language === 'pl' ? 'W Drodze' : 'In Transit';
@@ -602,7 +602,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'complete') return language === 'pl' ? 'Zakończ' : 'Complete';
     if (key === 'createShipment') return language === 'pl' ? 'Utwórz przesyłkę' : 'Create Shipment';
     if (key === 'noShipment') return language === 'pl' ? 'Brak przesyłki' : 'No shipment';
-    if (key === 'viewDetails') return language === 'pl' ? 'Zobacz szczegóły' : 'View Details';
+    if (key === 'viewDetails') return language === 'pl' ? 'Zobacz więcej' : 'View Details';
 
     // Auth page
     if (key === 'signIn') return language === 'pl' ? 'Zaloguj się' : 'Sign In';
@@ -735,7 +735,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // Reviews  
     if (key === 'anonymous') return language === 'pl' ? 'Anonimowy' : 'Anonymous';
     if (key === 'complete') return language === 'pl' ? 'Zakończ' : 'Complete';
-    if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'Brak płatności FURGONETKA' : 'FURGONETKA Pay Miss';
+    if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'FURGONETKA Pay Miss' : 'FURGONETKA Pay Miss';
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'czekam na ZAKOŃCZENIE' : 'Awaiting for data COMPLETE';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped Successfully';

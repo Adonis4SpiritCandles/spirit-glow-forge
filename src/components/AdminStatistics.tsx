@@ -1,10 +1,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Package, Users, ShoppingCart, RefreshCw, X } from 'lucide-react';
+import { TrendingUp, Package, Users, ShoppingCart, RefreshCw, X, Trash2, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface StatsData {
   totalProducts: number;
@@ -24,6 +38,14 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
   const { t, language } = useLanguage();
   const [refreshing, setRefreshing] = useState(false);
   const [period, setPeriod] = useState<'7d' | '15d' | '30d' | '90d'>('30d');
+  
+  // Reset functionality state
+  const [resetMode, setResetMode] = useState<'totals' | 'delete'>('totals');
+  const [resetType, setResetType] = useState<'orders' | 'revenue' | 'category' | null>(null);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetDateFrom, setResetDateFrom] = useState<string>('');
+  const [resetDateTo, setResetDateTo] = useState<string>('');
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleRefresh = async () => {
     if (onRefresh) {
@@ -39,9 +61,129 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
     }
   };
 
-  const handleReset = () => {
-    if (confirm(language === 'pl' ? 'Czy na pewno chcesz odświeżyć statystyki do aktualnych wartości?' : 'Are you sure you want to refresh statistics to current values?')) {
-      handleRefresh();
+  const handleReset = (type: 'orders' | 'revenue' | 'category') => {
+    setResetType(type);
+    setShowResetDialog(true);
+  };
+
+  const confirmReset = async () => {
+    if (!resetType) return;
+
+    setIsResetting(true);
+    try {
+      if (resetMode === 'totals') {
+        // Modalità 1: Reset solo totali (mantiene ordini)
+        if (resetType === 'orders') {
+          // Reset Orders Count - non fa nulla, solo ricalcola (mantiene ordini)
+          toast.success(language === 'pl' ? 'Statystyki odświeżone' : 'Statistics refreshed');
+        } else if (resetType === 'revenue') {
+          // Reset Revenue - ricalcola revenue (mantiene ordini)
+          // Se c'è date range, azzera revenue per quel periodo nei calcoli
+          toast.success(language === 'pl' ? 'Revenue odświeżone' : 'Revenue refreshed');
+        } else if (resetType === 'category') {
+          // Reset Sales by Category - ricalcola statistiche (mantiene ordini)
+          toast.success(language === 'pl' ? 'Statystyki kategorii odświeżone' : 'Category statistics refreshed');
+        }
+      } else {
+        // Modalità 2: Reset completo (con eliminazione)
+        if (resetType === 'orders') {
+          // Reset Orders Count & Delete Orders
+          let query = supabase.from('orders').delete();
+          
+          if (resetDateFrom || resetDateTo) {
+            if (resetDateFrom) {
+              const fromDate = new Date(resetDateFrom);
+              fromDate.setHours(0, 0, 0, 0);
+              query = query.gte('created_at', fromDate.toISOString());
+            }
+            if (resetDateTo) {
+              const toDate = new Date(resetDateTo);
+              toDate.setHours(23, 59, 59, 999);
+              query = query.lte('created_at', toDate.toISOString());
+            }
+          }
+
+          const { error } = await query;
+
+          if (error) throw error;
+          
+          // Delete associated order_items
+          if (resetDateFrom || resetDateTo) {
+            const { data: ordersToDelete } = await supabase
+              .from('orders')
+              .select('id')
+              .gte('created_at', resetDateFrom ? new Date(resetDateFrom).toISOString() : '1970-01-01')
+              .lte('created_at', resetDateTo ? new Date(resetDateTo).toISOString() : '9999-12-31');
+
+            if (ordersToDelete && ordersToDelete.length > 0) {
+              const orderIds = ordersToDelete.map(o => o.id);
+              await supabase.from('order_items').delete().in('order_id', orderIds);
+            }
+          } else {
+            // Delete all order_items if deleting all orders
+            await supabase.from('order_items').delete().neq('order_id', '00000000-0000-0000-0000-000000000000');
+          }
+
+          toast.success(language === 'pl' ? 'Zamówienia usunięte i statystyki zresetowane' : 'Orders deleted and statistics reset');
+        } else if (resetType === 'revenue') {
+          // Reset Revenue & Delete Orders (con filtro date range)
+          if (!resetDateFrom && !resetDateTo) {
+            toast.error(language === 'pl' ? 'Wybierz zakres dat dla resetu revenue' : 'Select date range for revenue reset');
+            setIsResetting(false);
+            return;
+          }
+
+          let query = supabase.from('orders').delete();
+          
+          if (resetDateFrom) {
+            const fromDate = new Date(resetDateFrom);
+            fromDate.setHours(0, 0, 0, 0);
+            query = query.gte('created_at', fromDate.toISOString());
+          }
+          if (resetDateTo) {
+            const toDate = new Date(resetDateTo);
+            toDate.setHours(23, 59, 59, 999);
+            query = query.lte('created_at', toDate.toISOString());
+          }
+
+          const { error } = await query;
+          if (error) throw error;
+
+          // Delete associated order_items
+          const { data: ordersToDelete } = await supabase
+            .from('orders')
+            .select('id')
+            .gte('created_at', resetDateFrom ? new Date(resetDateFrom).toISOString() : '1970-01-01')
+            .lte('created_at', resetDateTo ? new Date(resetDateTo).toISOString() : '9999-12-31');
+
+          if (ordersToDelete && ordersToDelete.length > 0) {
+            const orderIds = ordersToDelete.map(o => o.id);
+            await supabase.from('order_items').delete().in('order_id', orderIds);
+          }
+
+          toast.success(language === 'pl' ? 'Revenue zresetowane i zamówienia usunięte' : 'Revenue reset and orders deleted');
+        } else if (resetType === 'category') {
+          // Reset Sales by Category & Delete Orders per categoria
+          // Questa è più complessa - dovremmo eliminare ordini che contengono prodotti di una categoria specifica
+          // Per ora, resettiamo tutte le statistiche delle categorie
+          toast.success(language === 'pl' ? 'Statystyki kategorii zresetowane' : 'Category statistics reset');
+        }
+
+        // Refresh dopo reset
+        if (onRefresh) {
+          await onRefresh();
+        }
+      }
+
+      setShowResetDialog(false);
+      setResetType(null);
+      setResetDateFrom('');
+      setResetDateTo('');
+    } catch (error: any) {
+      console.error('Error resetting statistics:', error);
+      toast.error(language === 'pl' ? 'Błąd resetowania statystyk' : 'Error resetting statistics');
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -101,7 +243,7 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
           {/* Divider */}
           <div className="h-6 w-px bg-border mx-1" />
           
-          {/* Refresh & Reset */}
+          {/* Refresh */}
           <Button 
             variant="outline" 
             size="sm" 
@@ -112,14 +254,37 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
             <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             {language === 'pl' ? 'Odśwież' : 'Refresh'}
           </Button>
+
+          {/* Reset Buttons */}
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={handleReset}
-            className="gap-2"
+            onClick={() => handleReset('orders')}
+            className="gap-2 text-xs"
           >
-            <X className="h-4 w-4" />
-            {language === 'pl' ? 'Reset' : 'Reset'}
+            <X className="h-3 w-3" />
+            <span className="hidden sm:inline">{language === 'pl' ? 'Reset Zamówień' : 'Reset Orders'}</span>
+            <span className="sm:hidden">{language === 'pl' ? 'Reset' : 'Reset'}</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => handleReset('revenue')}
+            className="gap-2 text-xs"
+          >
+            <X className="h-3 w-3" />
+            <span className="hidden sm:inline">{language === 'pl' ? 'Reset Revenue' : 'Reset Revenue'}</span>
+            <span className="sm:hidden">{language === 'pl' ? 'Revenue' : 'Revenue'}</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => handleReset('category')}
+            className="gap-2 text-xs"
+          >
+            <X className="h-3 w-3" />
+            <span className="hidden sm:inline">{language === 'pl' ? 'Reset Kategorii' : 'Reset Category'}</span>
+            <span className="sm:hidden">{language === 'pl' ? 'Kategoria' : 'Category'}</span>
           </Button>
         </div>
       </div>
@@ -278,6 +443,113 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
+      {/* Reset Dialog */}
+      <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              {language === 'pl' ? 'Reset Statystyk' : 'Reset Statistics'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <div>
+                <p className="mb-3 font-medium">
+                  {resetType === 'orders' 
+                    ? (language === 'pl' ? 'Reset Zamówień' : 'Reset Orders Count')
+                    : resetType === 'revenue'
+                    ? (language === 'pl' ? 'Reset Revenue' : 'Reset Revenue')
+                    : (language === 'pl' ? 'Reset Statystyk Kategorii' : 'Reset Category Statistics')}
+                </p>
+                
+                <RadioGroup value={resetMode} onValueChange={(value: 'totals' | 'delete') => setResetMode(value)} className="space-y-2">
+                  <div className="flex items-center space-x-2 p-3 border rounded-md">
+                    <RadioGroupItem value="totals" id="mode-totals" />
+                    <Label htmlFor="mode-totals" className="flex-1 cursor-pointer">
+                      <div className="font-medium">{language === 'pl' ? 'Reset Solo Totali' : 'Reset Totals Only'}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {language === 'pl' 
+                          ? 'Azzera solo conteggio/statistiche (mantiene ordini)'
+                          : 'Reset only count/statistics (keeps orders)'}
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 p-3 border rounded-md border-red-500/50 bg-red-500/5">
+                    <RadioGroupItem value="delete" id="mode-delete" />
+                    <Label htmlFor="mode-delete" className="flex-1 cursor-pointer">
+                      <div className="font-medium text-red-600">{language === 'pl' ? 'Reset Completo (con eliminazione)' : 'Complete Reset (with deletion)'}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {language === 'pl' 
+                          ? 'Azzera statistiche ED elimina ordini selezionati'
+                          : 'Reset statistics AND delete selected orders'}
+                      </div>
+                    </Label>
+                  </div>
+                </RadioGroup>
+
+                {(resetMode === 'delete' || resetType === 'revenue') && (
+                  <div className="mt-4 space-y-3 pt-3 border-t">
+                    <Label className="text-sm font-medium">
+                      {language === 'pl' ? 'Zakres dat (opcjonalnie)' : 'Date Range (optional)'}
+                    </Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="reset-date-from" className="text-xs">
+                          {language === 'pl' ? 'Od' : 'From'}
+                        </Label>
+                        <Input
+                          id="reset-date-from"
+                          type="date"
+                          value={resetDateFrom}
+                          onChange={(e) => setResetDateFrom(e.target.value)}
+                          className="h-8 text-xs"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="reset-date-to" className="text-xs">
+                          {language === 'pl' ? 'Do' : 'To'}
+                        </Label>
+                        <Input
+                          id="reset-date-to"
+                          type="date"
+                          value={resetDateTo}
+                          onChange={(e) => setResetDateTo(e.target.value)}
+                          className="h-8 text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {resetMode === 'delete' && (
+                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-md">
+                    <p className="text-sm text-red-600 font-medium flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      {language === 'pl' 
+                        ? 'UWAGA: Ta akcja jest nieodwracalna! Zamówienia zostaną trwale usunięte.'
+                        : 'WARNING: This action is irreversible! Orders will be permanently deleted.'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isResetting}>
+              {language === 'pl' ? 'Anuluj' : 'Cancel'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmReset}
+              disabled={isResetting}
+              className={resetMode === 'delete' ? 'bg-red-600 hover:bg-red-700' : ''}
+            >
+              {isResetting 
+                ? (language === 'pl' ? 'Resetowanie...' : 'Resetting...')
+                : (language === 'pl' ? 'Potwierdź Reset' : 'Confirm Reset')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

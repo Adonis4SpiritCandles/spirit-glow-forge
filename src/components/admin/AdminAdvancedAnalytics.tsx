@@ -7,9 +7,22 @@ import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
 } from 'recharts';
-import { TrendingUp, Users, ShoppingCart, DollarSign, RefreshCw } from 'lucide-react';
+import { TrendingUp, Users, ShoppingCart, DollarSign, RefreshCw, X, AlertTriangle } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface AnalyticsData {
   salesByPeriod: Array<{ date: string; sales: number; revenue: number }>;
@@ -26,6 +39,14 @@ export default function AdminAdvancedAnalytics() {
   const { language } = useLanguage();
   const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d');
   const [loading, setLoading] = useState(true);
+  
+  // Reset functionality state
+  const [resetMode, setResetMode] = useState<'totals' | 'delete'>('totals');
+  const [resetType, setResetType] = useState<'orders' | 'revenue' | null>(null);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetDateFrom, setResetDateFrom] = useState<string>('');
+  const [resetDateTo, setResetDateTo] = useState<string>('');
+  const [isResetting, setIsResetting] = useState(false);
   const [data, setData] = useState<AnalyticsData>({
     salesByPeriod: [],
     topProducts: [],
@@ -179,6 +200,35 @@ export default function AdminAdvancedAnalytics() {
           </Button>
           <Button variant="outline" size="sm" onClick={loadAnalytics}>
             <RefreshCw className="h-4 w-4" />
+          </Button>
+          
+          {/* Reset Buttons */}
+          <div className="h-6 w-px bg-border mx-1" />
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              setResetType('orders');
+              setShowResetDialog(true);
+            }}
+            className="gap-2 text-xs"
+          >
+            <X className="h-3 w-3" />
+            <span className="hidden sm:inline">{language === 'pl' ? 'Reset Zamówień' : 'Reset Orders'}</span>
+            <span className="sm:hidden">{language === 'pl' ? 'Reset' : 'Reset'}</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              setResetType('revenue');
+              setShowResetDialog(true);
+            }}
+            className="gap-2 text-xs"
+          >
+            <X className="h-3 w-3" />
+            <span className="hidden sm:inline">{language === 'pl' ? 'Reset Revenue' : 'Reset Revenue'}</span>
+            <span className="sm:hidden">{language === 'pl' ? 'Revenue' : 'Revenue'}</span>
           </Button>
         </div>
       </div>
@@ -347,6 +397,112 @@ export default function AdminAdvancedAnalytics() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Reset Dialog */}
+      <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              {language === 'pl' ? 'Reset Analytics' : 'Reset Analytics'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <div>
+                <p className="mb-3 font-medium">
+                  {resetType === 'orders' 
+                    ? (language === 'pl' ? 'Reset Zamówień' : 'Reset Total Orders')
+                    : (language === 'pl' ? 'Reset Revenue' : 'Reset Total Revenue')}
+                </p>
+                
+                <RadioGroup value={resetMode} onValueChange={(value: 'totals' | 'delete') => setResetMode(value)} className="space-y-2">
+                  <div className="flex items-center space-x-2 p-3 border rounded-md">
+                    <RadioGroupItem value="totals" id="analytics-mode-totals" />
+                    <Label htmlFor="analytics-mode-totals" className="flex-1 cursor-pointer">
+                      <div className="font-medium">{language === 'pl' ? 'Reset Solo Totali' : 'Reset Totals Only'}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {language === 'pl' 
+                          ? 'Azzera solo conteggio/statistiche (mantiene ordini)'
+                          : 'Reset only count/statistics (keeps orders)'}
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 p-3 border rounded-md border-red-500/50 bg-red-500/5">
+                    <RadioGroupItem value="delete" id="analytics-mode-delete" />
+                    <Label htmlFor="analytics-mode-delete" className="flex-1 cursor-pointer">
+                      <div className="font-medium text-red-600">{language === 'pl' ? 'Reset Completo (con eliminazione)' : 'Complete Reset (with deletion)'}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {language === 'pl' 
+                          ? 'Azzera statistiche ED elimina ordini selezionati'
+                          : 'Reset statistics AND delete selected orders'}
+                      </div>
+                    </Label>
+                  </div>
+                </RadioGroup>
+
+                {(resetMode === 'delete' || resetType === 'revenue') && (
+                  <div className="mt-4 space-y-3 pt-3 border-t">
+                    <Label className="text-sm font-medium">
+                      {language === 'pl' ? 'Zakres dat' : 'Date Range'}
+                      {resetType === 'revenue' && <span className="text-red-500 ml-1">*</span>}
+                    </Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="analytics-reset-date-from" className="text-xs">
+                          {language === 'pl' ? 'Od' : 'From'}
+                        </Label>
+                        <Input
+                          id="analytics-reset-date-from"
+                          type="date"
+                          value={resetDateFrom}
+                          onChange={(e) => setResetDateFrom(e.target.value)}
+                          className="h-8 text-xs"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="analytics-reset-date-to" className="text-xs">
+                          {language === 'pl' ? 'Do' : 'To'}
+                        </Label>
+                        <Input
+                          id="analytics-reset-date-to"
+                          type="date"
+                          value={resetDateTo}
+                          onChange={(e) => setResetDateTo(e.target.value)}
+                          className="h-8 text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {resetMode === 'delete' && (
+                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-md">
+                    <p className="text-sm text-red-600 font-medium flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      {language === 'pl' 
+                        ? 'UWAGA: Ta akcja jest nieodwracalna! Zamówienia zostaną trwale usunięte.'
+                        : 'WARNING: This action is irreversible! Orders will be permanently deleted.'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isResetting}>
+              {language === 'pl' ? 'Anuluj' : 'Cancel'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmReset}
+              disabled={isResetting}
+              className={resetMode === 'delete' ? 'bg-red-600 hover:bg-red-700' : ''}
+            >
+              {isResetting 
+                ? (language === 'pl' ? 'Resetowanie...' : 'Resetting...')
+                : (language === 'pl' ? 'Potwierdź Reset' : 'Confirm Reset')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

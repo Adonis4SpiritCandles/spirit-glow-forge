@@ -187,6 +187,20 @@ const AdminDashboard = () => {
   const [orderDateFrom, setOrderDateFrom] = useState<string>('');
   const [orderDateTo, setOrderDateTo] = useState<string>('');
 
+  // Products filtering and sorting state
+  const [productFilterName, setProductFilterName] = useState<string>('');
+  const [productFilterCategory, setProductFilterCategory] = useState<string>('all');
+  const [productFilterCollections, setProductFilterCollections] = useState<string[]>([]);
+  const [productFilterPriceMin, setProductFilterPriceMin] = useState<string>('');
+  const [productFilterPriceMax, setProductFilterPriceMax] = useState<string>('');
+  const [productFilterStockMin, setProductFilterStockMin] = useState<string>('');
+  const [productFilterStockMax, setProductFilterStockMax] = useState<string>('');
+  const [productFilterSize, setProductFilterSize] = useState<string>('all');
+  const [productSortBy, setProductSortBy] = useState<'name' | 'category' | 'price' | 'stock' | 'updated_at'>('updated_at');
+  const [productSortOrder, setProductSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [productDateFrom, setProductDateFrom] = useState<string>('');
+  const [productDateTo, setProductDateTo] = useState<string>('');
+
   // Tabs state (controlled for mobile select) - expanded to include all tabs
   const [activeTab, setActiveTab] = useState<'products' | 'collections' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'coupons' | 'rewards' | 'statistics' | 'export' | 'settings' | 'social'>('orders');
   
@@ -655,6 +669,102 @@ const AdminDashboard = () => {
       }
       
       return orderSortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  };
+
+  // Filter and sort products
+  const getFilteredAndSortedProducts = () => {
+    let filtered = [...products];
+
+    // Filter by name
+    if (productFilterName) {
+      filtered = filtered.filter(product => 
+        (product.name_en?.toLowerCase().includes(productFilterName.toLowerCase()) || 
+         product.name_pl?.toLowerCase().includes(productFilterName.toLowerCase()))
+      );
+    }
+
+    // Filter by category
+    if (productFilterCategory !== 'all') {
+      filtered = filtered.filter(product => product.category === productFilterCategory);
+    }
+
+    // Filter by collections
+    if (productFilterCollections.length > 0) {
+      filtered = filtered.filter(product => {
+        const productCollectionIds = (product.product_collections || [])
+          .map((pc: any) => pc.collection?.id)
+          .filter(Boolean);
+        return productFilterCollections.some(colId => productCollectionIds.includes(colId));
+      });
+    }
+
+    // Filter by price range
+    if (productFilterPriceMin) {
+      const minPrice = parseFloat(productFilterPriceMin);
+      if (!isNaN(minPrice)) {
+        filtered = filtered.filter(product => Number(product.price_pln) >= minPrice);
+      }
+    }
+    if (productFilterPriceMax) {
+      const maxPrice = parseFloat(productFilterPriceMax);
+      if (!isNaN(maxPrice)) {
+        filtered = filtered.filter(product => Number(product.price_pln) <= maxPrice);
+      }
+    }
+
+    // Filter by stock range
+    if (productFilterStockMin) {
+      const minStock = parseInt(productFilterStockMin);
+      if (!isNaN(minStock)) {
+        filtered = filtered.filter(product => product.stock_quantity >= minStock);
+      }
+    }
+    if (productFilterStockMax) {
+      const maxStock = parseInt(productFilterStockMax);
+      if (!isNaN(maxStock)) {
+        filtered = filtered.filter(product => product.stock_quantity <= maxStock);
+      }
+    }
+
+    // Filter by size
+    if (productFilterSize !== 'all') {
+      filtered = filtered.filter(product => product.size === productFilterSize);
+    }
+
+    // Filter by date range (updated_at)
+    if (productDateFrom) {
+      const fromDate = new Date(productDateFrom);
+      fromDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(product => new Date(product.updated_at) >= fromDate);
+    }
+    if (productDateTo) {
+      const toDate = new Date(productDateTo);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(product => new Date(product.updated_at) <= toDate);
+    }
+
+    // Sort products
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      if (productSortBy === 'name') {
+        const nameA = (a.name_en || '').toLowerCase();
+        const nameB = (b.name_en || '').toLowerCase();
+        comparison = nameA.localeCompare(nameB);
+      } else if (productSortBy === 'category') {
+        comparison = (a.category || '').localeCompare(b.category || '');
+      } else if (productSortBy === 'price') {
+        comparison = Number(a.price_pln) - Number(b.price_pln);
+      } else if (productSortBy === 'stock') {
+        comparison = (a.stock_quantity || 0) - (b.stock_quantity || 0);
+      } else if (productSortBy === 'updated_at') {
+        comparison = new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
+      }
+      
+      return productSortOrder === 'asc' ? comparison : -comparison;
     });
 
     return filtered;
@@ -1645,6 +1755,329 @@ const AdminDashboard = () => {
                 </Button>
               </CardHeader>
               <CardContent>
+                {/* Products Filters */}
+                <div className="mb-6 p-4 bg-muted/30 rounded-lg border">
+                  <div className="flex flex-col gap-4">
+                    {/* Desktop/Tablet: Inline filters */}
+                    <div className="hidden md:flex flex-wrap items-center gap-3">
+                      {/* Product Name Filter */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="filter-product-name" className="text-xs whitespace-nowrap">
+                          {language === 'pl' ? 'Nazwa' : 'Name'}:
+                        </Label>
+                        <Input
+                          id="filter-product-name"
+                          type="text"
+                          placeholder={language === 'pl' ? 'Szukaj produktu...' : 'Search product...'}
+                          value={productFilterName}
+                          onChange={(e) => setProductFilterName(e.target.value)}
+                          className="h-8 text-xs w-[150px]"
+                        />
+                      </div>
+
+                      {/* Category Filter */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="filter-product-category" className="text-xs whitespace-nowrap">
+                          {t('category')}:
+                        </Label>
+                        <Select value={productFilterCategory} onValueChange={setProductFilterCategory}>
+                          <SelectTrigger id="filter-product-category" className="h-8 text-xs w-[120px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                            <SelectItem value="luxury">{t('luxury')}</SelectItem>
+                            <SelectItem value="nature">{t('nature')}</SelectItem>
+                            <SelectItem value="fresh">{t('fresh')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Collections Filter */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="filter-product-collections" className="text-xs whitespace-nowrap">
+                          {language === 'pl' ? 'Kolekcje' : 'Collections'}:
+                        </Label>
+                        <Select 
+                          value={productFilterCollections.length > 0 ? productFilterCollections[0] : 'all'} 
+                          onValueChange={(value) => {
+                            if (value === 'all') {
+                              setProductFilterCollections([]);
+                            } else if (!productFilterCollections.includes(value)) {
+                              setProductFilterCollections([...productFilterCollections, value]);
+                            }
+                          }}
+                        >
+                          <SelectTrigger id="filter-product-collections" className="h-8 text-xs w-[140px]">
+                            <SelectValue placeholder={language === 'pl' ? 'Wszystkie' : 'All'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                            {collections.map((col) => (
+                              <SelectItem key={col.id} value={col.id}>
+                                {language === 'en' ? col.name_en : col.name_pl}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {productFilterCollections.length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setProductFilterCollections([])}
+                            className="h-8 text-xs px-2"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Price Range */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="filter-price-min" className="text-xs whitespace-nowrap">
+                          {language === 'pl' ? 'Cena' : 'Price'}:
+                        </Label>
+                        <Input
+                          id="filter-price-min"
+                          type="number"
+                          placeholder={language === 'pl' ? 'Min' : 'Min'}
+                          value={productFilterPriceMin}
+                          onChange={(e) => setProductFilterPriceMin(e.target.value)}
+                          className="h-8 text-xs w-[80px]"
+                        />
+                        <span className="text-xs">-</span>
+                        <Input
+                          id="filter-price-max"
+                          type="number"
+                          placeholder={language === 'pl' ? 'Max' : 'Max'}
+                          value={productFilterPriceMax}
+                          onChange={(e) => setProductFilterPriceMax(e.target.value)}
+                          className="h-8 text-xs w-[80px]"
+                        />
+                      </div>
+
+                      {/* Stock Range */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="filter-stock-min" className="text-xs whitespace-nowrap">
+                          {t('stock')}:
+                        </Label>
+                        <Input
+                          id="filter-stock-min"
+                          type="number"
+                          placeholder={language === 'pl' ? 'Min' : 'Min'}
+                          value={productFilterStockMin}
+                          onChange={(e) => setProductFilterStockMin(e.target.value)}
+                          className="h-8 text-xs w-[80px]"
+                        />
+                        <span className="text-xs">-</span>
+                        <Input
+                          id="filter-stock-max"
+                          type="number"
+                          placeholder={language === 'pl' ? 'Max' : 'Max'}
+                          value={productFilterStockMax}
+                          onChange={(e) => setProductFilterStockMax(e.target.value)}
+                          className="h-8 text-xs w-[80px]"
+                        />
+                      </div>
+
+                      {/* Size Filter */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="filter-product-size" className="text-xs whitespace-nowrap">
+                          {t('size')}:
+                        </Label>
+                        <Select value={productFilterSize} onValueChange={setProductFilterSize}>
+                          <SelectTrigger id="filter-product-size" className="h-8 text-xs w-[120px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                            <SelectItem value="180g">180g</SelectItem>
+                            <SelectItem value="320g">320g</SelectItem>
+                            <SelectItem value="180g + 320g">180g + 320g</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Sort By */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="sort-product-by" className="text-xs whitespace-nowrap">
+                          {language === 'pl' ? 'Sortuj według' : 'Sort by'}:
+                        </Label>
+                        <Select value={productSortBy} onValueChange={(value: 'name' | 'category' | 'price' | 'stock' | 'updated_at') => setProductSortBy(value)}>
+                          <SelectTrigger id="sort-product-by" className="h-8 text-xs w-[140px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="name">{t('name')}</SelectItem>
+                            <SelectItem value="category">{t('category')}</SelectItem>
+                            <SelectItem value="price">{language === 'pl' ? 'Cena' : 'Price'}</SelectItem>
+                            <SelectItem value="stock">{t('stock')}</SelectItem>
+                            <SelectItem value="updated_at">{t('lastModified')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Sort Order */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="sort-product-order" className="text-xs whitespace-nowrap">
+                          {language === 'pl' ? 'Kolejność' : 'Order'}:
+                        </Label>
+                        <Select value={productSortOrder} onValueChange={(value: 'asc' | 'desc') => setProductSortOrder(value)}>
+                          <SelectTrigger id="sort-product-order" className="h-8 text-xs w-[100px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Descending'}</SelectItem>
+                            <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Ascending'}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Date From */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="product-date-from" className="text-xs whitespace-nowrap">
+                          {language === 'pl' ? 'Od' : 'From'}:
+                        </Label>
+                        <Input
+                          id="product-date-from"
+                          type="date"
+                          value={productDateFrom}
+                          onChange={(e) => setProductDateFrom(e.target.value)}
+                          className="h-8 text-xs w-[140px]"
+                        />
+                      </div>
+
+                      {/* Date To */}
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="product-date-to" className="text-xs whitespace-nowrap">
+                          {language === 'pl' ? 'Do' : 'To'}:
+                        </Label>
+                        <Input
+                          id="product-date-to"
+                          type="date"
+                          value={productDateTo}
+                          onChange={(e) => setProductDateTo(e.target.value)}
+                          className="h-8 text-xs w-[140px]"
+                        />
+                      </div>
+
+                      {/* Clear Filters Button */}
+                      {(productFilterName || productFilterCategory !== 'all' || productFilterCollections.length > 0 || 
+                        productFilterPriceMin || productFilterPriceMax || productFilterStockMin || productFilterStockMax ||
+                        productFilterSize !== 'all' || productDateFrom || productDateTo) && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setProductFilterName('');
+                            setProductFilterCategory('all');
+                            setProductFilterCollections([]);
+                            setProductFilterPriceMin('');
+                            setProductFilterPriceMax('');
+                            setProductFilterStockMin('');
+                            setProductFilterStockMax('');
+                            setProductFilterSize('all');
+                            setProductDateFrom('');
+                            setProductDateTo('');
+                          }}
+                          className="h-8 text-xs"
+                        >
+                          <X className="h-3 w-3 mr-1" />
+                          {language === 'pl' ? 'Wyczyść' : 'Clear'}
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Mobile: Stacked filters */}
+                    <div className="md:hidden space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="filter-product-name-mobile" className="text-xs">
+                            {language === 'pl' ? 'Nazwa' : 'Name'}
+                          </Label>
+                          <Input
+                            id="filter-product-name-mobile"
+                            type="text"
+                            placeholder={language === 'pl' ? 'Szukaj...' : 'Search...'}
+                            value={productFilterName}
+                            onChange={(e) => setProductFilterName(e.target.value)}
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="filter-product-category-mobile" className="text-xs">
+                            {t('category')}
+                          </Label>
+                          <Select value={productFilterCategory} onValueChange={setProductFilterCategory}>
+                            <SelectTrigger id="filter-product-category-mobile" className="h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                              <SelectItem value="luxury">{t('luxury')}</SelectItem>
+                              <SelectItem value="nature">{t('nature')}</SelectItem>
+                              <SelectItem value="fresh">{t('fresh')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="sort-product-by-mobile" className="text-xs">
+                            {language === 'pl' ? 'Sortuj' : 'Sort by'}
+                          </Label>
+                          <Select value={productSortBy} onValueChange={(value: 'name' | 'category' | 'price' | 'stock' | 'updated_at') => setProductSortBy(value)}>
+                            <SelectTrigger id="sort-product-by-mobile" className="h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="name">{t('name')}</SelectItem>
+                              <SelectItem value="category">{t('category')}</SelectItem>
+                              <SelectItem value="price">{language === 'pl' ? 'Cena' : 'Price'}</SelectItem>
+                              <SelectItem value="stock">{t('stock')}</SelectItem>
+                              <SelectItem value="updated_at">{t('lastModified')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="sort-product-order-mobile" className="text-xs">
+                            {language === 'pl' ? 'Kolejność' : 'Order'}
+                          </Label>
+                          <Select value={productSortOrder} onValueChange={(value: 'asc' | 'desc') => setProductSortOrder(value)}>
+                            <SelectTrigger id="sort-product-order-mobile" className="h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Desc'}</SelectItem>
+                              <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Asc'}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      {(productFilterName || productFilterCategory !== 'all' || productDateFrom || productDateTo) && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setProductFilterName('');
+                            setProductFilterCategory('all');
+                            setProductFilterCollections([]);
+                            setProductFilterPriceMin('');
+                            setProductFilterPriceMax('');
+                            setProductFilterStockMin('');
+                            setProductFilterStockMax('');
+                            setProductFilterSize('all');
+                            setProductDateFrom('');
+                            setProductDateTo('');
+                          }}
+                          className="w-full h-8 text-xs"
+                        >
+                          <X className="h-3 w-3 mr-1" />
+                          {language === 'pl' ? 'Wyczyść filtry' : 'Clear filters'}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {showProductForm && (
                   <div className="border rounded-lg p-6 mb-6 space-y-6 bg-muted/30">
                     <h3 className="font-playfair font-semibold text-lg">
@@ -1904,7 +2337,7 @@ const AdminDashboard = () => {
                       <TableHead>{t('name')}</TableHead>
                       <TableHead>{t('category')}</TableHead>
                       <TableHead>{language === 'pl' ? 'Kolekcje' : 'Collections'}</TableHead>
-                      <TableHead>{t('pricePln')}</TableHead>
+                      <TableHead>{language === 'pl' ? 'Cena' : 'Price'}</TableHead>
                       <TableHead>{t('stock')}</TableHead>
                       <TableHead>{t('size')}</TableHead>
                       <TableHead>{t('lastModified')}</TableHead>
@@ -1912,7 +2345,7 @@ const AdminDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {products.map((product: any) => {
+                    {getFilteredAndSortedProducts().map((product: any) => {
                       const productCollections = (product.product_collections || []).map((pc: any) => pc.collection).filter(Boolean);
                       return (
                         <TableRow key={product.id}>
@@ -1961,7 +2394,14 @@ const AdminDashboard = () => {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>{Number(product.price_pln).toFixed(2)} PLN</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="font-semibold">{Number(product.price_pln).toFixed(2)} PLN</span>
+                              <span className="text-xs text-muted-foreground">
+                                (≈ {Number(product.price_eur || 0).toFixed(2)} EUR)
+                              </span>
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <Badge variant={product.stock_quantity > 0 ? "default" : "destructive"}>
                               {product.stock_quantity}
@@ -3248,14 +3688,17 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="statistics" className="space-y-4">
-            <AdminStatistics stats={{
-              totalProducts: stats.totalProducts,
-              totalOrders: stats.totalOrders,
-              totalCustomers: stats.totalCustomers,
-              revenue: stats.revenue,
-              monthlyOrders: [],
-              categoryBreakdown: []
-            }} />
+            <AdminStatistics 
+              stats={{
+                totalProducts: stats.totalProducts,
+                totalOrders: stats.totalOrders,
+                totalCustomers: stats.totalCustomers,
+                revenue: stats.revenue,
+                monthlyOrders: stats.monthlyOrders,
+                categoryBreakdown: stats.categoryBreakdown
+              }}
+              onRefresh={loadDashboardData}
+            />
           </TabsContent>
 
           <TabsContent value="coupons" className="space-y-4">

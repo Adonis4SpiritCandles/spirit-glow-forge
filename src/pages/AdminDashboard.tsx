@@ -179,6 +179,14 @@ const AdminDashboard = () => {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isBulkOperating, setIsBulkOperating] = useState(false);
 
+  // Orders filtering and sorting state
+  const [orderFilterStatus, setOrderFilterStatus] = useState<string>('all');
+  const [orderFilterShipping, setOrderFilterShipping] = useState<string>('all');
+  const [orderSortBy, setOrderSortBy] = useState<'created_at' | 'order_number' | 'customer'>('created_at');
+  const [orderSortOrder, setOrderSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [orderDateFrom, setOrderDateFrom] = useState<string>('');
+  const [orderDateTo, setOrderDateTo] = useState<string>('');
+
   // Tabs state (controlled for mobile select) - expanded to include all tabs
   const [activeTab, setActiveTab] = useState<'products' | 'collections' | 'orders' | 'trash' | 'customers' | 'warehouse' | 'coupons' | 'rewards' | 'statistics' | 'export' | 'settings' | 'social'>('orders');
   
@@ -598,6 +606,58 @@ const AdminDashboard = () => {
   // Get order badges matching User Dashboard style - use shared utility
   const getOrderBadges = (order: Order) => {
     return getOrderBadgesUtil(order, t);
+  };
+
+  // Filter and sort orders
+  const getFilteredAndSortedOrders = () => {
+    let filtered = [...orders];
+
+    // Filter by status
+    if (orderFilterStatus !== 'all') {
+      filtered = filtered.filter(order => order.status === orderFilterStatus);
+    }
+
+    // Filter by shipping status
+    if (orderFilterShipping !== 'all') {
+      if (orderFilterShipping === 'tracking') {
+        filtered = filtered.filter(order => !!order.tracking_number);
+      } else if (orderFilterShipping === 'furgonetka') {
+        filtered = filtered.filter(order => !!order.furgonetka_package_id && !order.tracking_number);
+      } else if (orderFilterShipping === 'awaiting') {
+        filtered = filtered.filter(order => order.status === 'completed' && !order.furgonetka_package_id);
+      }
+    }
+
+    // Filter by date range
+    if (orderDateFrom) {
+      const fromDate = new Date(orderDateFrom);
+      fromDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(order => new Date(order.created_at) >= fromDate);
+    }
+    if (orderDateTo) {
+      const toDate = new Date(orderDateTo);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(order => new Date(order.created_at) <= toDate);
+    }
+
+    // Sort orders
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      if (orderSortBy === 'created_at') {
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      } else if (orderSortBy === 'order_number') {
+        comparison = (a.order_number || 0) - (b.order_number || 0);
+      } else if (orderSortBy === 'customer') {
+        const nameA = `${a.profiles?.first_name || ''} ${a.profiles?.last_name || ''}`.toLowerCase();
+        const nameB = `${b.profiles?.first_name || ''} ${b.profiles?.last_name || ''}`.toLowerCase();
+        comparison = nameA.localeCompare(nameB);
+      }
+      
+      return orderSortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
   };
 
   // Get intelligent shipping status display
@@ -1124,10 +1184,11 @@ const AdminDashboard = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedOrders.length === orders.length) {
+    const filtered = getFilteredAndSortedOrders();
+    if (selectedOrders.length === filtered.length && filtered.length > 0) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(orders.map(o => o.id));
+      setSelectedOrders(filtered.map(o => o.id));
     }
   };
 
@@ -2030,6 +2091,112 @@ const AdminDashboard = () => {
                       </AlertDescription>
                     </Alert>
                   )}
+
+                  {/* Filters and Sorting */}
+                  <div className="mb-4 flex flex-wrap items-center justify-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/50">
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="filter-status" className="text-xs whitespace-nowrap">{t('status')}:</Label>
+                      <Select value={orderFilterStatus} onValueChange={setOrderFilterStatus}>
+                        <SelectTrigger id="filter-status" className="h-8 text-xs w-[120px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                          <SelectItem value="pending">{t('pending')}</SelectItem>
+                          <SelectItem value="paid">{t('paid')}</SelectItem>
+                          <SelectItem value="completed">{t('complete')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Shipping Filter */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="filter-shipping" className="text-xs whitespace-nowrap">{t('shipping')}:</Label>
+                      <Select value={orderFilterShipping} onValueChange={setOrderFilterShipping}>
+                        <SelectTrigger id="filter-shipping" className="h-8 text-xs w-[140px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                          <SelectItem value="tracking">{language === 'pl' ? 'Z numerem śledzenia' : 'With Tracking'}</SelectItem>
+                          <SelectItem value="furgonetka">{language === 'pl' ? 'Furgonetka' : 'Furgonetka'}</SelectItem>
+                          <SelectItem value="awaiting">{language === 'pl' ? 'Oczekuje na wysyłkę' : 'Awaiting Shipping'}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="sort-by" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Sortuj według' : 'Sort by'}:</Label>
+                      <Select value={orderSortBy} onValueChange={(value: 'created_at' | 'order_number' | 'customer') => setOrderSortBy(value)}>
+                        <SelectTrigger id="sort-by" className="h-8 text-xs w-[140px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="created_at">{language === 'pl' ? 'Data utworzenia' : 'Created Date'}</SelectItem>
+                          <SelectItem value="order_number">{language === 'pl' ? 'Numer zamówienia' : 'Order Number'}</SelectItem>
+                          <SelectItem value="customer">{language === 'pl' ? 'Klient' : 'Customer'}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sort Order */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="sort-order" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Kolejność' : 'Order'}:</Label>
+                      <Select value={orderSortOrder} onValueChange={(value: 'asc' | 'desc') => setOrderSortOrder(value)}>
+                        <SelectTrigger id="sort-order" className="h-8 text-xs w-[100px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Descending'}</SelectItem>
+                          <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Ascending'}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Date From */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="date-from" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Od' : 'From'}:</Label>
+                      <Input
+                        id="date-from"
+                        type="date"
+                        value={orderDateFrom}
+                        onChange={(e) => setOrderDateFrom(e.target.value)}
+                        className="h-8 text-xs w-[140px]"
+                      />
+                    </div>
+
+                    {/* Date To */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="date-to" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Do' : 'To'}:</Label>
+                      <Input
+                        id="date-to"
+                        type="date"
+                        value={orderDateTo}
+                        onChange={(e) => setOrderDateTo(e.target.value)}
+                        className="h-8 text-xs w-[140px]"
+                      />
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {(orderFilterStatus !== 'all' || orderFilterShipping !== 'all' || orderDateFrom || orderDateTo) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setOrderFilterStatus('all');
+                          setOrderFilterShipping('all');
+                          setOrderDateFrom('');
+                          setOrderDateTo('');
+                        }}
+                        className="h-8 text-xs"
+                      >
+                        <X className="h-3 w-3 mr-1" />
+                        {language === 'pl' ? 'Wyczyść' : 'Clear'}
+                      </Button>
+                    )}
+                  </div>
                   
                   {/* Desktop Table View */}
                   <div className="hidden md:block overflow-x-auto">
@@ -2047,8 +2214,17 @@ const AdminDashboard = () => {
                             <TableHead className="text-xs min-w-[130px] w-[140px]">
                               <div className="flex items-center gap-2">
                                 <Checkbox
-                                  checked={selectedOrders.length === orders.length && orders.length > 0}
-                                  onCheckedChange={handleSelectAll}
+                                  checked={(() => {
+                                    const filtered = getFilteredAndSortedOrders();
+                                    return selectedOrders.length === filtered.length && filtered.length > 0;
+                                  })()}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setSelectedOrders(getFilteredAndSortedOrders().map(o => o.id));
+                                    } else {
+                                      setSelectedOrders([]);
+                                    }
+                                  }}
                                 />
                                 <span>{t('actions')}</span>
                               </div>
@@ -2056,7 +2232,7 @@ const AdminDashboard = () => {
                           </TableRow>
                         </TableHeader>
                       <TableBody>
-                        {orders.map((order) => {
+                        {getFilteredAndSortedOrders().map((order) => {
                           const shippingStatus = getShippingStatusDisplay(order);
                           const orderBadges = getOrderBadges(order);
                           const totalPLN = order.total_pln;
@@ -2147,18 +2323,71 @@ const AdminDashboard = () => {
                                     </div>
                                     {/* Shipping recipient name */}
                                     <div className="font-medium">
-                                      {order.shipping_address.first_name} {order.shipping_address.last_name}
+                                      {order.shipping_address.name || 
+                                       (order.shipping_address.first_name && order.shipping_address.last_name 
+                                         ? `${order.shipping_address.first_name} ${order.shipping_address.last_name}`
+                                         : order.shipping_address.first_name || order.shipping_address.last_name || '')}
                                     </div>
                                     {/* Full address */}
                                     <div className="text-muted-foreground break-words">
-                                      {order.shipping_address.street && order.shipping_address.street_number && (
-                                        <>
-                                          {order.shipping_address.street} {order.shipping_address.street_number}
-                                          {order.shipping_address.apartment && `/${order.shipping_address.apartment}`}
-                                          <br />
-                                        </>
-                                      )}
-                                      {order.shipping_address.city} {order.shipping_address.postal_code}
+                                      {/* Street address - check if street already contains number/apartment to avoid duplication */}
+                                      {(() => {
+                                        const street = order.shipping_address.street || order.shipping_address.line1 || '';
+                                        const streetNum = order.shipping_address.street_number || order.shipping_address.streetNumber || '';
+                                        const apt = order.shipping_address.apartment || order.shipping_address.apartmentNumber || order.shipping_address.apartment_number || '';
+                                        
+                                        // Check if street already contains the number and apartment
+                                        const streetHasNumber = streetNum ? new RegExp(`\\b${streetNum.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(street) : false;
+                                        const streetHasApt = apt ? new RegExp(`[\\\/]${apt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\b|$)`).test(street) : false;
+                                        
+                                        if (street) {
+                                          // If street already contains number and apartment, use it as is
+                                          if (streetHasNumber && streetHasApt) {
+                                            return (
+                                              <>
+                                                {street}
+                                                <br />
+                                              </>
+                                            );
+                                          }
+                                      // If street contains number but not apartment, add apartment if exists
+                                      if (streetHasNumber && apt && !streetHasApt) {
+                                        return (
+                                          <>
+                                            {`${street}${street.includes('/') ? '' : '/'}${apt}`}
+                                            <br />
+                                          </>
+                                        );
+                                      }
+                                          // If street doesn't contain number, combine everything
+                                          if (!streetHasNumber && (streetNum || apt)) {
+                                            return (
+                                              <>
+                                                {street} {streetNum || ''}{apt ? `/${apt}` : ''}
+                                                <br />
+                                              </>
+                                            );
+                                          }
+                                          // Just street
+                                          return (
+                                            <>
+                                              {street}
+                                              <br />
+                                            </>
+                                          );
+                                        } else if (streetNum) {
+                                          // Only number, no street
+                                          return (
+                                            <>
+                                              {streetNum}{apt ? `/${apt}` : ''}
+                                              <br />
+                                            </>
+                                          );
+                                        }
+                                        return null;
+                                      })()}
+                                      {/* City and postal code */}
+                                      {order.shipping_address.city || order.shipping_address.City || ''} {order.shipping_address.postal_code || order.shipping_address.postalCode || order.shipping_address.postCode || ''}
                                     </div>
                                     {order.shipping_address.phone && (
                                       <div className="text-muted-foreground">
@@ -2289,7 +2518,113 @@ const AdminDashboard = () => {
 
             {/* Mobile Card-Based View */}
             <div className="md:hidden space-y-4">
-                  {orders.map((order) => {
+                  {/* Filters and Sorting for Mobile */}
+                  <div className="mb-4 space-y-3 p-3 bg-muted/30 rounded-lg border border-border/50">
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="filter-status-mobile" className="text-xs whitespace-nowrap">{t('status')}:</Label>
+                      <Select value={orderFilterStatus} onValueChange={setOrderFilterStatus}>
+                        <SelectTrigger id="filter-status-mobile" className="h-8 text-xs flex-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                          <SelectItem value="pending">{t('pending')}</SelectItem>
+                          <SelectItem value="paid">{t('paid')}</SelectItem>
+                          <SelectItem value="completed">{t('complete')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Shipping Filter */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="filter-shipping-mobile" className="text-xs whitespace-nowrap">{t('shipping')}:</Label>
+                      <Select value={orderFilterShipping} onValueChange={setOrderFilterShipping}>
+                        <SelectTrigger id="filter-shipping-mobile" className="h-8 text-xs flex-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                          <SelectItem value="tracking">{language === 'pl' ? 'Z numerem śledzenia' : 'With Tracking'}</SelectItem>
+                          <SelectItem value="furgonetka">{language === 'pl' ? 'Furgonetka' : 'Furgonetka'}</SelectItem>
+                          <SelectItem value="awaiting">{language === 'pl' ? 'Oczekuje na wysyłkę' : 'Awaiting Shipping'}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="sort-by-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Sortuj według' : 'Sort by'}:</Label>
+                      <Select value={orderSortBy} onValueChange={(value: 'created_at' | 'order_number' | 'customer') => setOrderSortBy(value)}>
+                        <SelectTrigger id="sort-by-mobile" className="h-8 text-xs flex-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="created_at">{language === 'pl' ? 'Data utworzenia' : 'Created Date'}</SelectItem>
+                          <SelectItem value="order_number">{language === 'pl' ? 'Numer zamówienia' : 'Order Number'}</SelectItem>
+                          <SelectItem value="customer">{language === 'pl' ? 'Klient' : 'Customer'}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sort Order */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="sort-order-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Kolejność' : 'Order'}:</Label>
+                      <Select value={orderSortOrder} onValueChange={(value: 'asc' | 'desc') => setOrderSortOrder(value)}>
+                        <SelectTrigger id="sort-order-mobile" className="h-8 text-xs flex-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Descending'}</SelectItem>
+                          <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Ascending'}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Date From */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="date-from-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Od' : 'From'}:</Label>
+                      <Input
+                        id="date-from-mobile"
+                        type="date"
+                        value={orderDateFrom}
+                        onChange={(e) => setOrderDateFrom(e.target.value)}
+                        className="h-8 text-xs flex-1"
+                      />
+                    </div>
+
+                    {/* Date To */}
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="date-to-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Do' : 'To'}:</Label>
+                      <Input
+                        id="date-to-mobile"
+                        type="date"
+                        value={orderDateTo}
+                        onChange={(e) => setOrderDateTo(e.target.value)}
+                        className="h-8 text-xs flex-1"
+                      />
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {(orderFilterStatus !== 'all' || orderFilterShipping !== 'all' || orderDateFrom || orderDateTo) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setOrderFilterStatus('all');
+                          setOrderFilterShipping('all');
+                          setOrderDateFrom('');
+                          setOrderDateTo('');
+                        }}
+                        className="h-8 text-xs w-full"
+                      >
+                        <X className="h-3 w-3 mr-1" />
+                        {language === 'pl' ? 'Wyczyść filtry' : 'Clear Filters'}
+                      </Button>
+                    )}
+                  </div>
+
+                  {getFilteredAndSortedOrders().map((order) => {
                     const shippingStatus = getShippingStatusDisplay(order);
                     const orderBadges = getOrderBadges(order);
                     const totalPLN = order.total_pln;
@@ -2384,18 +2719,71 @@ const AdminDashboard = () => {
                                 </div>
                                 {/* Shipping recipient name */}
                                 <div className="font-medium">
-                                  {order.shipping_address.first_name} {order.shipping_address.last_name}
+                                  {order.shipping_address.name || 
+                                   (order.shipping_address.first_name && order.shipping_address.last_name 
+                                     ? `${order.shipping_address.first_name} ${order.shipping_address.last_name}`
+                                     : order.shipping_address.first_name || order.shipping_address.last_name || '')}
                                 </div>
                                 {/* Full address */}
                                 <div className="text-muted-foreground break-words">
-                                  {order.shipping_address.street && order.shipping_address.street_number && (
-                                    <>
-                                      {order.shipping_address.street} {order.shipping_address.street_number}
-                                      {order.shipping_address.apartment && `/${order.shipping_address.apartment}`}
-                                      <br />
-                                    </>
-                                  )}
-                                  {order.shipping_address.city} {order.shipping_address.postal_code}
+                                  {/* Street address - check if street already contains number/apartment to avoid duplication */}
+                                  {(() => {
+                                    const street = order.shipping_address.street || order.shipping_address.line1 || '';
+                                    const streetNum = order.shipping_address.street_number || order.shipping_address.streetNumber || '';
+                                    const apt = order.shipping_address.apartment || order.shipping_address.apartmentNumber || order.shipping_address.apartment_number || '';
+                                    
+                                    // Check if street already contains the number and apartment
+                                    const streetHasNumber = streetNum ? new RegExp(`\\b${streetNum.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(street) : false;
+                                    const streetHasApt = apt ? new RegExp(`[\\\/]${apt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\b|$)`).test(street) : false;
+                                    
+                                    if (street) {
+                                      // If street already contains number and apartment, use it as is
+                                      if (streetHasNumber && streetHasApt) {
+                                        return (
+                                          <>
+                                            {street}
+                                            <br />
+                                          </>
+                                        );
+                                      }
+                                      // If street contains number but not apartment, add apartment if exists
+                                      if (streetHasNumber && apt && !streetHasApt) {
+                                        return (
+                                          <>
+                                            {`${street}${street.includes('/') ? '' : '/'}${apt}`}
+                                            <br />
+                                          </>
+                                        );
+                                      }
+                                      // If street doesn't contain number, combine everything
+                                      if (!streetHasNumber && (streetNum || apt)) {
+                                        return (
+                                          <>
+                                            {street} {streetNum || ''}{apt ? `/${apt}` : ''}
+                                            <br />
+                                          </>
+                                        );
+                                      }
+                                      // Just street
+                                      return (
+                                        <>
+                                          {street}
+                                          <br />
+                                        </>
+                                      );
+                                    } else if (streetNum) {
+                                      // Only number, no street
+                                      return (
+                                        <>
+                                          {streetNum}{apt ? `/${apt}` : ''}
+                                          <br />
+                                        </>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
+                                  {/* City and postal code */}
+                                  {order.shipping_address.city || order.shipping_address.City || ''} {order.shipping_address.postal_code || order.shipping_address.postalCode || order.shipping_address.postCode || ''}
                                 </div>
                                 {order.shipping_address.phone && (
                                   <div className="text-muted-foreground">

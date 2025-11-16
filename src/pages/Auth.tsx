@@ -178,48 +178,80 @@ const Auth = () => {
           return;
         }
         
-        // Validate referral code if provided (NON blocca registrazione se referrer non ha codice)
+        // Validate referral code if provided - BLOCKS registration if invalid
         let validatedReferralId: string | null = null;
         const referralInput = referralCode || getReferralId();
         
-        // Only use referral code if it's been validated as valid
-        if (referralInput && referralCodeValid === true) {
-          // Check if it's a short code (8 chars) or UUID
-          if (referralInput.match(/^[A-Za-z0-9]{8}$/)) {
-            // Cerca per referral_short_code
-            const { data: profileData, error: codeError } = await supabase
-              .from('profiles')
-              .select('user_id')
-              .eq('referral_short_code', referralInput.toUpperCase())
-              .single();
-            
-            if (profileData && !codeError) {
-              validatedReferralId = profileData.user_id;
+        if (referralInput && referralInput.trim() !== '') {
+          // If referral code was entered, it MUST be valid to proceed
+          if (referralCodeValid === false) {
+            // Code was entered but is invalid - BLOCK registration
+            toast({
+              title: t('error') || "Error",
+              description: language === 'pl'
+                ? 'Kod polecający jest nieprawidłowy. Usuń kod lub wprowadź prawidłowy kod, aby kontynuować.'
+                : 'Referral code is invalid. Please remove the code or enter a valid code to continue.',
+              variant: "destructive",
+            });
+            setLoading(false);
+            return; // Block registration
+          }
+          
+          // Wait for validation to complete if still validating
+          if (referralCodeValidating) {
+            toast({
+              title: language === 'pl' ? 'Czekanie...' : 'Please wait...',
+              description: language === 'pl'
+                ? 'Sprawdzanie kodu polecającego...'
+                : 'Validating referral code...',
+              variant: "default",
+            });
+            setLoading(false);
+            return; // Wait for validation
+          }
+          
+          // Only use referral code if it's been validated as valid
+          if (referralCodeValid === true) {
+            // Check if it's a short code (8 chars) or UUID
+            if (referralInput.match(/^[A-Za-z0-9]{8}$/)) {
+              // Cerca per referral_short_code
+              const { data: profileData, error: codeError } = await supabase
+                .from('profiles')
+                .select('user_id')
+                .eq('referral_short_code', referralInput.toUpperCase())
+                .single();
+              
+              if (profileData && !codeError) {
+                validatedReferralId = profileData.user_id;
+              }
+            } else if (referralInput.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+              // UUID: verifica che l'utente esista
+              const { data: profileData, error: uuidError } = await supabase
+                .from('profiles')
+                .select('user_id')
+                .eq('user_id', referralInput)
+                .single();
+              
+              if (profileData && !uuidError) {
+                validatedReferralId = referralInput;
+              }
             }
-          } else if (referralInput.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-            // UUID: verifica che l'utente esista
-            const { data: profileData, error: uuidError } = await supabase
-              .from('profiles')
-              .select('user_id')
-              .eq('user_id', referralInput)
-              .single();
             
-            if (profileData && !uuidError) {
-              validatedReferralId = referralInput;
+            // If code was entered but couldn't be validated, block registration
+            if (!validatedReferralId) {
+              toast({
+                title: t('error') || "Error",
+                description: language === 'pl'
+                  ? 'Nie można zweryfikować kodu polecającego. Usuń kod lub spróbuj ponownie.'
+                  : 'Unable to verify referral code. Please remove the code or try again.',
+                variant: "destructive",
+              });
+              setLoading(false);
+              return; // Block registration
             }
           }
-          // If format is invalid or code is not valid, validatedReferralId remains null
-          // Registration continues without referral (field is optional)
-        } else if (referralInput && referralCodeValid === false) {
-          // Code was entered but is invalid - show warning but don't block registration
-          toast({
-            title: language === 'pl' ? 'Ostrzeżenie' : 'Warning',
-            description: language === 'pl'
-              ? 'Kod polecający jest nieprawidłowy. Rejestracja kontynuowana bez kodu polecającego.'
-              : 'Referral code is invalid. Registration will continue without referral code.',
-            variant: "default",
-          });
         }
+        // If referralInput is empty, validatedReferralId remains null and registration proceeds normally
         
         // Pass referral_source_id nei metadata se validato (per handle_new_user trigger)
         const { error } = await signUp(
@@ -563,7 +595,7 @@ const Auth = () => {
                 {!referralCodeValidating && referralCode.trim() && referralCodeValid === false && (
                   <div className="space-y-1 p-2 bg-red-500/10 border border-red-500/20 rounded">
                     <p className="text-xs text-red-600 font-semibold">
-                      {language === 'pl' ? 'REFERRAL NON VALIDO' : 'INVALID REFERRAL'}
+                      {language === 'pl' ? 'NIEPRAWIDŁOWY REFERRAL' : 'INVALID REFERRAL'}
                     </p>
                     <p className="text-xs text-red-600">
                       {language === 'pl' 

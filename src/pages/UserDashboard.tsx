@@ -91,6 +91,43 @@ const UserDashboard = () => {
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam || 'orders'); // Changed default to 'orders'
+
+  // Add styles for luminescence and candle-flicker animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes candleFlicker {
+        0%, 100% { 
+          opacity: 1;
+          filter: brightness(1);
+        }
+        25% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+        50% { 
+          opacity: 0.96;
+          filter: brightness(0.92);
+        }
+        75% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+      }
+      .title-candle-flicker {
+        animation: candleFlicker 6s ease-in-out infinite;
+      }
+      .title-luminescent {
+        text-shadow: 
+          0 0 20px hsl(var(--primary) / 0.4),
+          0 0 40px hsl(var(--primary) / 0.3),
+          0 0 60px hsl(var(--primary) / 0.2);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -263,9 +300,14 @@ const UserDashboard = () => {
       <div className="min-h-screen bg-background py-8">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="mb-8">
-            <h1 className="font-playfair text-3xl font-bold text-foreground mb-2">
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
               {t('dashboard') || 'Dashboard'}
-            </h1>
+            </h2>
+            <p className="text-lg text-muted-foreground title-candle-flicker mb-2">
+              {language === 'pl' 
+                ? 'Zarządzaj swoim profilem, zamówieniami i nagrodami' 
+                : 'Manage your profile, orders & rewards'}
+            </p>
             <p className="text-muted-foreground">
               {t('welcomeBackUser')}, {profile?.first_name || profile?.username}!
             </p>

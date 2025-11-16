@@ -109,6 +109,43 @@ const AdminDashboard = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const { unseenCount, markOrdersAsSeen, loadUnseenCount } = useAdminNotifications();
+
+  // Add styles for luminescence and candle-flicker animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes candleFlicker {
+        0%, 100% { 
+          opacity: 1;
+          filter: brightness(1);
+        }
+        25% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+        50% { 
+          opacity: 0.96;
+          filter: brightness(0.92);
+        }
+        75% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+      }
+      .title-candle-flicker {
+        animation: candleFlicker 6s ease-in-out infinite;
+      }
+      .title-luminescent {
+        text-shadow: 
+          0 0 20px hsl(var(--primary) / 0.4),
+          0 0 40px hsl(var(--primary) / 0.3),
+          0 0 60px hsl(var(--primary) / 0.2);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
@@ -1626,7 +1663,16 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <h1 className="font-playfair text-3xl font-semibold mb-8">{t('adminDashboard')}</h1>
+        <div className="mb-8">
+          <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
+            {t('adminDashboard')}
+          </h2>
+          <p className="text-lg text-muted-foreground title-candle-flicker">
+            {language === 'pl' 
+              ? 'Ustawienia, Zarządzanie Zamówieniami & Spirit Tools' 
+              : 'Settings, Order Management & Spirit Tools'}
+          </p>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">

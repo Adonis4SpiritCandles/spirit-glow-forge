@@ -23,6 +23,42 @@ import { Slider } from "@/components/ui/slider";
 
 const Shop = () => {
   const { t, language } = useLanguage();
+
+  // Add styles for luminescence and candle-flicker animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes candleFlicker {
+        0%, 100% { 
+          opacity: 1;
+          filter: brightness(1);
+        }
+        25% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+        50% { 
+          opacity: 0.96;
+          filter: brightness(0.92);
+        }
+        75% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+      }
+      .title-candle-flicker {
+        animation: candleFlicker 4s ease-in-out infinite;
+      }
+      .title-luminescent {
+        text-shadow: 
+          0 0 20px hsl(var(--primary) / 0.4),
+          0 0 40px hsl(var(--primary) / 0.3),
+          0 0 60px hsl(var(--primary) / 0.2);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [filterBy, setFilterBy] = useState("all");
@@ -175,7 +211,7 @@ const Shop = () => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={headerInView ? { scale: 1, opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl md:text-6xl font-playfair font-bold text-foreground mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary"
+            className="text-4xl md:text-6xl font-playfair font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker"
           >
             {language === 'pl' ? 'Sklep Spirit Candles' : 'Spirit Candles Shop'}
           </motion.h1>

@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-export type ExportFormat = 'csv' | 'xlsx' | 'json';
+export type ExportFormat = 'csv' | 'xlsx' | 'json' | 'txt';
 
 export interface ExportData {
   headers: string[];
@@ -85,6 +85,23 @@ const downloadBlob = (blob: Blob, filename: string) => {
 };
 
 /**
+ * Export data to TXT format
+ */
+export const exportToTXT = (data: ExportData) => {
+  const { headers, rows, filename } = data;
+  
+  // Create TXT content (tab-separated)
+  const txtContent = [
+    headers.join('\t'),
+    ...rows.map(row => row.join('\t'))
+  ].join('\n');
+  
+  // Create blob and download
+  const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+  downloadBlob(blob, `${filename}.txt`);
+};
+
+/**
  * Main export function
  */
 export const exportData = (data: ExportData, format: ExportFormat) => {
@@ -97,6 +114,9 @@ export const exportData = (data: ExportData, format: ExportFormat) => {
       break;
     case 'json':
       exportToJSON(data);
+      break;
+    case 'txt':
+      exportToTXT(data);
       break;
     default:
       throw new Error(`Unsupported format: ${format}`);

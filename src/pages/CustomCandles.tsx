@@ -17,6 +17,42 @@ import SEOManager from '@/components/SEO/SEOManager';
 const CustomCandles = () => {
   const { t, language } = useLanguage();
   const { user } = useAuth();
+
+  // Add styles for luminescence and candle-flicker animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes candleFlicker {
+        0%, 100% { 
+          opacity: 1;
+          filter: brightness(1);
+        }
+        25% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+        50% { 
+          opacity: 0.96;
+          filter: brightness(0.92);
+        }
+        75% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+      }
+      .title-candle-flicker {
+        animation: candleFlicker 4s ease-in-out infinite;
+      }
+      .title-luminescent {
+        text-shadow: 
+          0 0 20px hsl(var(--primary) / 0.4),
+          0 0 40px hsl(var(--primary) / 0.3),
+          0 0 60px hsl(var(--primary) / 0.2);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const [heroSettings, setHeroSettings] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -197,7 +233,7 @@ const CustomCandles = () => {
             transition={{ duration: heroSettings?.animationEnabled ? 0.8 : 0 }}
             className="relative z-20 text-center px-4 max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-white mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
               {language === 'pl' ? 'Twoja Unikalna Świeca' : 'Your Unique Candle'}
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-4">
@@ -225,7 +261,7 @@ const CustomCandles = () => {
             transition={{ duration: 0.8 }}
             className="relative z-10 text-center px-4 max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
               {language === 'pl' ? 'Twoja Unikalna Świeca' : 'Your Unique Candle'}
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-4">

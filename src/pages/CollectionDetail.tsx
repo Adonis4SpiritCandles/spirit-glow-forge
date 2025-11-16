@@ -10,6 +10,41 @@ import SEOManager from "@/components/SEO/SEOManager";
 import { Parallax } from "react-parallax";
 
 export default function CollectionDetail() {
+  // Add styles for luminescence and candle-flicker animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes candleFlicker {
+        0%, 100% { 
+          opacity: 1;
+          filter: brightness(1);
+        }
+        25% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+        50% { 
+          opacity: 0.96;
+          filter: brightness(0.92);
+        }
+        75% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+      }
+      .title-candle-flicker {
+        animation: candleFlicker 4s ease-in-out infinite;
+      }
+      .title-luminescent {
+        text-shadow: 
+          0 0 20px hsl(var(--primary) / 0.4),
+          0 0 40px hsl(var(--primary) / 0.3),
+          0 0 60px hsl(var(--primary) / 0.2);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const [collection, setCollection] = useState<any>(null);
@@ -187,7 +222,9 @@ export default function CollectionDetail() {
                 <div className="flex justify-center gap-2 mb-6">
                   <Sparkles className="w-8 h-8 text-primary animate-pulse" />
                 </div>
-                <h1 className="text-5xl md:text-7xl font-playfair font-bold text-white mb-6 drop-shadow-2xl">
+                <h1 
+                  className="text-5xl md:text-7xl font-playfair font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker"
+                >
                   {language === 'en' ? collection.name_en : collection.name_pl}
                 </h1>
                 <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto mb-4 drop-shadow-lg">

@@ -16,6 +16,42 @@ import { generateBreadcrumbStructuredData, getFullUrl, generateAlternateUrls } f
 
 const Contact = () => {
   const { t, language } = useLanguage();
+
+  // Add styles for luminescence and candle-flicker animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes candleFlicker {
+        0%, 100% { 
+          opacity: 1;
+          filter: brightness(1);
+        }
+        25% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+        50% { 
+          opacity: 0.96;
+          filter: brightness(0.92);
+        }
+        75% { 
+          opacity: 0.98;
+          filter: brightness(0.95);
+        }
+      }
+      .title-candle-flicker {
+        animation: candleFlicker 4s ease-in-out infinite;
+      }
+      .title-luminescent {
+        text-shadow: 
+          0 0 20px hsl(var(--primary) / 0.4),
+          0 0 40px hsl(var(--primary) / 0.3),
+          0 0 60px hsl(var(--primary) / 0.2);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -199,10 +235,10 @@ const Contact = () => {
       <div className="container mx-auto px-4 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-16">
-              <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
-                {t('getInTouch')}
-              </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
+            {t('getInTouch')}
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto title-candle-flicker">
             {t('contactIntro')}
           </p>
         </div>

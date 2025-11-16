@@ -242,17 +242,37 @@ const Checkout = () => {
         return;
       }
 
-      // Check redemption limit
+      // Check Max Redemptions (Total) - FIRST
       if (data.max_redemptions && data.redemptions_count >= data.max_redemptions) {
         toast({
           title: t('error'),
-          description: t('couponMaxRedemptions') || 'This coupon has reached its usage limit',
+          description: t('couponMaxRedemptionsReached') || 'Coupon has reached maximum redemptions',
           variant: 'destructive',
         });
         return;
       }
 
-      // Check referral_only flag
+      // Check User Limits - SECOND (only if user is logged in)
+      if (user && data.per_user_limit) {
+        const { data: userRedemptions, error: redemptionError } = await supabase
+          .from('coupon_redemptions')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('coupon_id', data.id);
+
+        if (!redemptionError && userRedemptions && userRedemptions.length >= data.per_user_limit) {
+          toast({
+            title: t('error'),
+            description: language === 'pl'
+              ? `Ten kupon został już użyty maksymalną liczbę razy (${data.per_user_limit})`
+              : `This coupon has already been used the maximum number of times (${data.per_user_limit})`,
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+
+      // Check referral_only flag - THIRD
       if ((data as any).referral_only) {
         if (!user) {
           toast({
@@ -265,14 +285,14 @@ const Checkout = () => {
           return;
         }
 
-        // Check if user was referred
-        const { data: referralData } = await supabase
-          .from('referrals')
-          .select('id')
-          .eq('referee_id', user.id)
-          .maybeSingle();
+        // Check if user has referral_source_id in their profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('referral_source_id')
+          .eq('user_id', user.id)
+          .single();
 
-        if (!referralData) {
+        if (!profileData || !profileData.referral_source_id) {
           toast({
             title: t('error'),
             description: language === 'pl'

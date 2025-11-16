@@ -416,7 +416,7 @@ const AdminCoupons = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="per_user_limit">{language === 'pl' ? 'Limit Na Użytkownika' : 'Per User Limit'}</Label>
+                  <Label htmlFor="per_user_limit">{language === 'pl' ? 'Limity użytkownika' : 'User Limits'}</Label>
                   <Input
                     id="per_user_limit"
                     type="number"

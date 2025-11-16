@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Check, Clock, Truck, Package, CheckCircle2, AlertCircle } from 'lucide-react';
 import { CarrierBadge } from '@/utils/carrierStyles';
+import { OrderBadgesDisplay } from '@/utils/orderBadges';
 
 interface Order {
   id: string;
@@ -132,9 +133,9 @@ export default function UserOrderDetailsModal({ order, isOpen, onClose }: UserOr
                 <p className="mt-1">{new Date(order.created_at).toLocaleString()}</p>
               </div>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-2">
                   <span className="text-muted-foreground">Status:</span>
-                  <Badge variant="default">{order.status}</Badge>
+                  <OrderBadgesDisplay order={order} />
                 </div>
               </div>
             </div>

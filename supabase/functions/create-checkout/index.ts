@@ -115,12 +115,39 @@ serve(async (req) => {
 
         if (coupon && !couponError) {
           const now = new Date();
-          let isValid = 
-            (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
-            (!coupon.valid_to || new Date(coupon.valid_to) >= now) &&
-            (!coupon.max_redemptions || coupon.redemptions_count < coupon.max_redemptions);
+          let isValid = true;
 
-          // Additional validation for referral-only coupons (e.g., REFERRAL10)
+          // Step 1: Check date validity
+          if (coupon.valid_from && new Date(coupon.valid_from) > now) {
+            console.log(`Coupon ${code} is not yet valid`);
+            isValid = false;
+          }
+          if (coupon.valid_to && new Date(coupon.valid_to) < now) {
+            console.log(`Coupon ${code} has expired`);
+            isValid = false;
+          }
+
+          // Step 2: Check Max Redemptions (Total) - BEFORE user limit check
+          if (isValid && coupon.max_redemptions && coupon.redemptions_count >= coupon.max_redemptions) {
+            console.log(`Coupon ${code} has reached maximum redemptions (${coupon.redemptions_count}/${coupon.max_redemptions})`);
+            isValid = false;
+          }
+
+          // Step 3: Check per-user limit
+          if (isValid && coupon.per_user_limit) {
+            const { data: userRedemptions, error: redemptionError } = await supabaseClient
+              .from('coupon_redemptions')
+              .select('id')
+              .eq('user_id', user.id)
+              .eq('coupon_id', coupon.id);
+
+            if (!redemptionError && userRedemptions && userRedemptions.length >= coupon.per_user_limit) {
+              console.log(`User ${user.id} exceeded per_user_limit for coupon ${code} (${userRedemptions.length}/${coupon.per_user_limit})`);
+              isValid = false;
+            }
+          }
+
+          // Step 4: Check referral_only flag
           if (isValid && coupon.referral_only) {
             console.log(`Checking referral_only status for coupon ${code}`);
             const { data: profile } = await supabaseClient
@@ -130,21 +157,7 @@ serve(async (req) => {
               .single();
             
             if (!profile || !profile.referral_source_id) {
-              console.log(`User ${user.id} not eligible for referral-only coupon ${code}`);
-              isValid = false;
-            }
-          }
-
-          // Check per-user limit
-          if (isValid && coupon.per_user_limit) {
-            const { data: userRedemptions, error: redemptionError } = await supabaseClient
-              .from('coupon_redemptions')
-              .select('id')
-              .eq('user_id', user.id)
-              .eq('coupon_id', coupon.id);
-
-            if (!redemptionError && userRedemptions && userRedemptions.length >= coupon.per_user_limit) {
-              console.log(`User ${user.id} exceeded per_user_limit for coupon ${code}`);
+              console.log(`User ${user.id} not eligible for referral-only coupon ${code} - no referral_source_id`);
               isValid = false;
             }
           }

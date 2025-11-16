@@ -495,7 +495,10 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'couponNotYetValid') return language === 'pl' ? 'Ten kupon nie jest jeszcze ważny' : 'This coupon is not yet valid';
     if (key === 'couponExpired') return language === 'pl' ? 'Ten kupon wygasł' : 'This coupon has expired';
     if (key === 'couponMaxRedemptions') return language === 'pl' ? 'Ten kupon osiągnął limit użycia' : 'This coupon has reached its usage limit';
+    if (key === 'couponMaxRedemptionsReached') return language === 'pl' ? 'Kupon osiągnął maksymalną liczbę realizacji' : 'Coupon has reached maximum redemptions';
     if (key === 'couponError') return language === 'pl' ? 'Błąd podczas stosowania kuponu' : 'Error applying coupon';
+    if (key === 'userLimits') return language === 'pl' ? 'Limity użytkownika' : 'User Limits';
+    if (key === 'invalidReferral') return language === 'pl' ? 'REFERRAL NON VALIDO' : 'INVALID REFERRAL';
     if (key === 'checkoutError') return language === 'pl' ? 'Błąd podczas tworzenia sesji zakupu. Spróbuj ponownie.' : 'Error creating checkout session. Please try again.';
     if (key === 'discount') return language === 'pl' ? 'Zniżka' : 'Discount';
     if (key === 'success') return language === 'pl' ? 'Sukces' : 'Success';

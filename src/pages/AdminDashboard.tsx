@@ -14,7 +14,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3, X, Bell, Settings, Database, Tags, Gift, FileText, Globe } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, Eye, Edit, Trash2, Truck, Download, ExternalLink, Copy, RefreshCw, BarChart3, X, Bell, Settings, Database, Tags, Gift, FileText, Globe, CreditCard, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { getOrderBadges as getOrderBadgesUtil } from '@/utils/orderBadges';
 import furgonetkaIco from '@/assets/furgonetka-logo-ico.png';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
@@ -594,6 +595,11 @@ const AdminDashboard = () => {
     }
   };
 
+  // Get order badges matching User Dashboard style - use shared utility
+  const getOrderBadges = (order: Order) => {
+    return getOrderBadgesUtil(order, t);
+  };
+
   // Get intelligent shipping status display
   const getShippingStatusDisplay = (order: Order) => {
     const { t } = useLanguage();
@@ -601,15 +607,15 @@ const AdminDashboard = () => {
     // Stage 4: Tracking available - Show "Tracking Number" badge and tracking details
     if (order.tracking_number && order.carrier) {
       return {
-        badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-xs drop-shadow-md flex items-center gap-1">
-          <Truck className="h-3 w-3" />
+        badge: <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-[9px] drop-shadow-md flex items-center gap-1">
+          <Truck className="h-2.5 w-2.5" />
           {t('trackingNumber')}
         </Badge>,
         details: (
-          <div className="space-y-1 text-xs mt-1">
-            <div className="font-mono text-xs md:text-sm font-semibold">{order.tracking_number}</div>
-            <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-800 flex items-center gap-1">
-              <Truck className="h-3 w-3" />
+          <div className="space-y-1 text-[10px] mt-1">
+            <div className="font-mono text-[10px] font-semibold break-all">{order.tracking_number}</div>
+            <Badge variant="secondary" className="text-[9px] bg-green-100 text-green-800 flex items-center gap-1">
+              <Truck className="h-2.5 w-2.5" />
               {t('shipped')}
             </Badge>
           </div>
@@ -620,7 +626,7 @@ const AdminDashboard = () => {
     // Stage 3: Shipment created but no tracking yet
     if (order.furgonetka_package_id && !order.tracking_number) {
       return {
-        badge: <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('furgonetkaPayMiss')}</Badge>,
+        badge: <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 text-[9px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('furgonetkaPayMiss')}</Badge>,
         details: null
       };
     }
@@ -628,7 +634,7 @@ const AdminDashboard = () => {
     // Stage 2: Order completed but no shipment created
     if (order.status === 'completed' && !order.furgonetka_package_id) {
       return {
-        badge: <Badge variant="default" className="bg-cyan-400 hover:bg-cyan-500 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto text-black font-semibold shadow">{t('awaitingFurgonetkaSubmission')}</Badge>,
+        badge: <Badge variant="default" className="bg-cyan-400 hover:bg-cyan-500 text-[9px] px-1.5 py-0.5 whitespace-nowrap h-auto text-black font-semibold shadow">{t('awaitingFurgonetkaSubmission')}</Badge>,
         details: null
       };
     }
@@ -636,14 +642,14 @@ const AdminDashboard = () => {
     // Stage 1: Order paid but not completed
     if (order.status === 'paid' || (order.status !== 'pending' && order.status !== 'completed')) {
       return {
-        badge: <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 text-[10px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('awaitingShipmentConfirmation')}</Badge>,
+        badge: <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 text-[9px] px-1.5 py-0.5 whitespace-nowrap h-auto">{t('awaitingShipmentConfirmation')}</Badge>,
         details: null
       };
     }
 
     // Default: No shipment
     return {
-      badge: <Badge variant="outline" className="text-[10px]">{t('noShipmentCreated')}</Badge>,
+      badge: <Badge variant="outline" className="text-[9px]">{t('noShipmentCreated')}</Badge>,
       details: null
     };
   };
@@ -2026,19 +2032,19 @@ const AdminDashboard = () => {
                   )}
                   
                   {/* Desktop Table View */}
-                  <div className="hidden md:block">
+                  <div className="hidden md:block overflow-x-auto">
                     <TooltipProvider>
-                      <Table>
+                      <Table className="min-w-full">
                         <TableHeader>
                           <TableRow>
                             <TableHead className="text-[11px] w-[110px]">Order #</TableHead>
-                            <TableHead className="text-xs">Order ID</TableHead>
-                            <TableHead className="text-xs min-w-[200px] max-w-[250px]">{t('customer')}</TableHead>
-                            <TableHead className="text-xs">{t('total')}</TableHead>
-                            <TableHead className="text-xs">{t('status')}</TableHead>
-                            <TableHead className="text-xs min-w-[180px]">{t('shipping')}</TableHead>
-                            <TableHead className="text-xs">{t('created')}</TableHead>
-                            <TableHead className="text-xs min-w-[140px]">
+                            <TableHead className="text-xs w-[120px]">Order ID</TableHead>
+                            <TableHead className="text-xs min-w-[180px] max-w-[220px]">{t('customer')}</TableHead>
+                            <TableHead className="text-xs w-[100px]">{t('total')}</TableHead>
+                            <TableHead className="text-xs w-[120px]">{t('status')}</TableHead>
+                            <TableHead className="text-xs min-w-[140px] max-w-[160px]">{t('shipping')}</TableHead>
+                            <TableHead className="text-xs w-[90px]">{t('created')}</TableHead>
+                            <TableHead className="text-xs min-w-[130px] w-[140px]">
                               <div className="flex items-center gap-2">
                                 <Checkbox
                                   checked={selectedOrders.length === orders.length && orders.length > 0}
@@ -2052,6 +2058,7 @@ const AdminDashboard = () => {
                       <TableBody>
                         {orders.map((order) => {
                           const shippingStatus = getShippingStatusDisplay(order);
+                          const orderBadges = getOrderBadges(order);
                           const totalPLN = order.total_pln;
                           const shippingCostPLN = order.shipping_cost_pln || 0;
                           const productsPLN = totalPLN - shippingCostPLN;
@@ -2125,23 +2132,32 @@ const AdminDashboard = () => {
                               </TableCell>
 
                             {/* Customer with Shipping Info */}
-                            <TableCell className="max-w-[250px]">
+                            <TableCell className="max-w-[220px]">
                               <div className="space-y-1">
-                                <div className="font-medium text-sm">
+                                <div className="font-medium text-xs">
                                   {order.profiles?.first_name} {order.profiles?.last_name}
                                 </div>
-                                <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                <div className="text-[10px] text-muted-foreground truncate max-w-[200px]">
                                   {order.profiles?.email}
                                 </div>
                                 {order.shipping_address && (
-                                  <div className="mt-2 p-2 bg-muted/50 rounded text-xs space-y-0.5">
-                                    <div className="font-semibold text-[10px] text-muted-foreground uppercase">
+                                  <div className="mt-2 p-1.5 bg-muted/50 rounded text-[10px] space-y-0.5">
+                                    <div className="font-semibold text-[9px] text-muted-foreground uppercase">
                                       {t('shippingInfo')}
                                     </div>
+                                    {/* Shipping recipient name */}
                                     <div className="font-medium">
                                       {order.shipping_address.first_name} {order.shipping_address.last_name}
                                     </div>
-                                    <div className="text-muted-foreground">
+                                    {/* Full address */}
+                                    <div className="text-muted-foreground break-words">
+                                      {order.shipping_address.street && order.shipping_address.street_number && (
+                                        <>
+                                          {order.shipping_address.street} {order.shipping_address.street_number}
+                                          {order.shipping_address.apartment && `/${order.shipping_address.apartment}`}
+                                          <br />
+                                        </>
+                                      )}
                                       {order.shipping_address.city} {order.shipping_address.postal_code}
                                     </div>
                                     {order.shipping_address.phone && (
@@ -2165,27 +2181,23 @@ const AdminDashboard = () => {
                             </TableCell>
 
                             {/* Status */}
-                            <TableCell>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-muted-foreground whitespace-nowrap mr-1">Status:</span>
-                                <Badge 
-                                  variant={
-                                    order.status === 'completed' ? 'default' :
-                                    order.status === 'paid' ? 'secondary' :
-                                    order.status === 'pending' ? 'outline' : 'destructive'
-                                  }
-                                  className={`text-[9px] px-1.5 py-0.5 h-auto ${
-                                    order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
-                                    order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
-                                  }`}
-                                >
-                                  {order.status === 'completed' ? t('complete') : order.status}
-                                </Badge>
+                            <TableCell className="w-[120px]">
+                              <div className="flex flex-wrap gap-1">
+                                {orderBadges.map((badge, idx) => (
+                                  <Badge
+                                    key={idx}
+                                    variant="outline"
+                                    className={`text-[9px] px-1.5 py-0.5 h-auto ${badge.variant} flex items-center gap-1`}
+                                  >
+                                    {badge.icon}
+                                    <span className="whitespace-nowrap">{badge.label}</span>
+                                  </Badge>
+                                ))}
                               </div>
                             </TableCell>
 
                             {/* Shipping Status */}
-                            <TableCell className="min-w-[180px]">
+                            <TableCell className="min-w-[140px] max-w-[160px]">
                               <div className="space-y-1">
                                 {shippingStatus.badge}
                                 {shippingStatus.details}
@@ -2193,12 +2205,12 @@ const AdminDashboard = () => {
                             </TableCell>
 
                             {/* Creation Date */}
-                            <TableCell className="text-sm">
+                            <TableCell className="text-xs w-[90px]">
                               {new Date(order.created_at).toLocaleDateString()}
                             </TableCell>
 
                               {/* Actions with Checkbox */}
-                            <TableCell>
+                            <TableCell className="min-w-[130px] w-[140px]">
                               <div className="flex flex-col items-center gap-2">
                                 <Checkbox
                                   checked={selectedOrders.includes(order.id)}
@@ -2211,7 +2223,7 @@ const AdminDashboard = () => {
                                      <Button
                                        size="sm"
                                        variant="ghost"
-                                       className="h-7 text-[10px] px-2"
+                                       className="h-7 text-[10px] px-2 flex-shrink-0"
                                        onClick={() => {
                                          setSelectedOrder(order);
                                          setIsOrderDetailsOpen(true);
@@ -2223,7 +2235,7 @@ const AdminDashboard = () => {
                                      <Button
                                        size="sm"
                                        variant="outline"
-                                       className="h-7 text-[9px] px-1.5"
+                                       className="h-7 text-[9px] px-1.5 flex-shrink-0"
                                        onClick={() => updateOrderStatus(order.id, 'completed')}
                                        disabled={order.status === 'completed'}
                                      >
@@ -2237,28 +2249,28 @@ const AdminDashboard = () => {
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        className="h-7 text-[10px] px-1.5 flex items-center gap-1 bg-white hover:bg-gray-100 text-black border-gray-300"
+                                        className="h-7 text-[10px] px-1.5 flex items-center gap-1 bg-white hover:bg-gray-100 text-black border-gray-300 flex-shrink-0"
                                         disabled
                                       >
                                         <img src={furgonetkaIco} alt="Furgonetka" className="h-4 w-4" />
-                                        <span>{t('doneButton')}</span>
+                                        <span className="truncate">{t('doneButton')}</span>
                                       </Button>
                                     ) : (
                                       <Button
                                         size="sm"
                                         variant="default"
-                                        className="h-7 text-[9px] px-1 whitespace-nowrap flex items-center gap-0.5 bg-white hover:bg-gray-100 text-black"
+                                        className="h-7 text-[9px] px-1 whitespace-nowrap flex items-center gap-0.5 bg-white hover:bg-gray-100 text-black flex-shrink-0"
                                         onClick={() => openShipmentModal(order)}
                                         disabled={order.status !== 'completed'}
                                       >
-                                        <span className="order-1">{t('sendTo')}</span>
+                                        <span className="order-1 truncate">{t('sendTo')}</span>
                                         <img src={furgonetkaIco} alt="Furgonetka" className="h-3.5 w-3.5 order-2" />
                                       </Button>
                                     )}
                                     <Button
                                       size="sm"
                                       variant="destructive"
-                                      className="h-7 text-[10px] px-2"
+                                      className="h-7 text-[10px] px-2 flex-shrink-0"
                                       onClick={() => handleDeleteOrder(order)}
                                     >
                                       <Trash2 className="h-3 w-3" />
@@ -2279,6 +2291,7 @@ const AdminDashboard = () => {
             <div className="md:hidden space-y-4">
                   {orders.map((order) => {
                     const shippingStatus = getShippingStatusDisplay(order);
+                    const orderBadges = getOrderBadges(order);
                     const totalPLN = order.total_pln;
                     const shippingCostPLN = order.shipping_cost_pln || 0;
                     const productsPLN = totalPLN - shippingCostPLN;
@@ -2339,19 +2352,18 @@ const AdminDashboard = () => {
                                 {order.has_issue ? t('removeIssue') : t('markIssue')}
                               </Button>
                               
-                              <Badge 
-                                variant={
-                                  order.status === 'completed' ? 'default' :
-                                  order.status === 'paid' ? 'secondary' :
-                                  order.status === 'pending' ? 'outline' : 'destructive'
-                                }
-                                className={
-                                  order.status === 'paid' ? 'bg-red-500 hover:bg-red-600 text-white drop-shadow-md' :
-                                  order.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white drop-shadow-md' : ''
-                                }
-                              >
-                                {order.status === 'completed' ? t('complete') : order.status}
-                              </Badge>
+                              <div className="flex flex-wrap gap-1">
+                                {orderBadges.map((badge, idx) => (
+                                  <Badge
+                                    key={idx}
+                                    variant="outline"
+                                    className={`text-[9px] px-1.5 py-0.5 h-auto ${badge.variant} flex items-center gap-1`}
+                                  >
+                                    {badge.icon}
+                                    <span className="whitespace-nowrap">{badge.label}</span>
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
                           </div>
 
@@ -2370,10 +2382,19 @@ const AdminDashboard = () => {
                                 <div className="font-semibold text-[10px] text-muted-foreground uppercase">
                                   {t('shippingInfo')}
                                 </div>
+                                {/* Shipping recipient name */}
                                 <div className="font-medium">
                                   {order.shipping_address.first_name} {order.shipping_address.last_name}
                                 </div>
-                                <div className="text-muted-foreground">
+                                {/* Full address */}
+                                <div className="text-muted-foreground break-words">
+                                  {order.shipping_address.street && order.shipping_address.street_number && (
+                                    <>
+                                      {order.shipping_address.street} {order.shipping_address.street_number}
+                                      {order.shipping_address.apartment && `/${order.shipping_address.apartment}`}
+                                      <br />
+                                    </>
+                                  )}
                                   {order.shipping_address.city} {order.shipping_address.postal_code}
                                 </div>
                                 {order.shipping_address.phone && (

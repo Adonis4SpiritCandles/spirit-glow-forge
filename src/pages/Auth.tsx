@@ -26,6 +26,8 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState('en');
   const [referralCode, setReferralCode] = useState('');
+  const [referralCodeValid, setReferralCodeValid] = useState<boolean | null>(null);
+  const [referralCodeValidating, setReferralCodeValidating] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
   const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -54,6 +56,64 @@ const Auth = () => {
       console.error('Error loading email marketing settings:', error);
     }
   };
+
+  // Validate referral code when it changes
+  useEffect(() => {
+    const validateReferralCode = async () => {
+      const codeToValidate = referralCode.trim();
+      
+      // Reset validation if code is empty
+      if (!codeToValidate) {
+        setReferralCodeValid(null);
+        setReferralCodeValidating(false);
+        return;
+      }
+
+      setReferralCodeValidating(true);
+
+      try {
+        // Check if it's a short code (8 chars) or UUID
+        let isValid = false;
+        
+        if (codeToValidate.match(/^[A-Za-z0-9]{8}$/)) {
+          // Check short code
+          const { data: profileData, error: codeError } = await supabase
+            .from('profiles')
+            .select('user_id')
+            .eq('referral_short_code', codeToValidate.toUpperCase())
+            .single();
+          
+          isValid = !!profileData && !codeError;
+        } else if (codeToValidate.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+          // Check UUID
+          const { data: profileData, error: uuidError } = await supabase
+            .from('profiles')
+            .select('user_id')
+            .eq('user_id', codeToValidate)
+            .single();
+          
+          isValid = !!profileData && !uuidError;
+        } else {
+          // Invalid format
+          isValid = false;
+        }
+
+        setReferralCodeValid(isValid);
+      } catch (error) {
+        console.error('Error validating referral code:', error);
+        setReferralCodeValid(false);
+      } finally {
+        setReferralCodeValidating(false);
+      }
+    };
+
+    // Debounce validation
+    const timeoutId = setTimeout(() => {
+      validateReferralCode();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [referralCode]);
 
   // Precompile referral code if available and set to Sign Up mode
   useEffect(() => {
@@ -122,7 +182,8 @@ const Auth = () => {
         let validatedReferralId: string | null = null;
         const referralInput = referralCode || getReferralId();
         
-        if (referralInput) {
+        // Only use referral code if it's been validated as valid
+        if (referralInput && referralCodeValid === true) {
           // Check if it's a short code (8 chars) or UUID
           if (referralInput.match(/^[A-Za-z0-9]{8}$/)) {
             // Cerca per referral_short_code
@@ -132,13 +193,7 @@ const Auth = () => {
               .eq('referral_short_code', referralInput.toUpperCase())
               .single();
             
-            if (!profileData && codeError) {
-              // Se non trova il codice, potrebbe essere che il referrer non abbia ancora generato il codice
-              // NON blocchiamo la registrazione, ma loggiamo l'errore
-              console.warn('Referral code not found:', referralInput, codeError);
-              // Non bloccare, lasciamo validatedReferralId null per ora
-              // Il codice potrebbe essere generato automaticamente dopo
-            } else if (profileData) {
+            if (profileData && !codeError) {
               validatedReferralId = profileData.user_id;
             }
           } else if (referralInput.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
@@ -149,30 +204,21 @@ const Auth = () => {
               .eq('user_id', referralInput)
               .single();
             
-            if (!profileData && uuidError) {
-              // UUID non valido
-              toast({
-                title: t('error') || "Error",
-                description: language === 'pl'
-                  ? 'Nieprawidłowy link polecający. Sprawdź link i spróbuj ponownie.'
-                  : 'Invalid referral link. Please check the link and try again.',
-                variant: "destructive",
-              });
-              return;
-            } else if (profileData) {
+            if (profileData && !uuidError) {
               validatedReferralId = referralInput;
             }
-          } else if (referralInput.trim() !== '') {
-            // Invalid format
-            toast({
-              title: t('error') || "Error",
-              description: language === 'pl'
-                ? 'Nieprawidłowy format kodu polecającego.'
-                : 'Invalid referral code format.',
-              variant: "destructive",
-            });
-            return;
           }
+          // If format is invalid or code is not valid, validatedReferralId remains null
+          // Registration continues without referral (field is optional)
+        } else if (referralInput && referralCodeValid === false) {
+          // Code was entered but is invalid - show warning but don't block registration
+          toast({
+            title: language === 'pl' ? 'Ostrzeżenie' : 'Warning',
+            description: language === 'pl'
+              ? 'Kod polecający jest nieprawidłowy. Rejestracja kontynuowana bez kodu polecającego.'
+              : 'Referral code is invalid. Registration will continue without referral code.',
+            variant: "default",
+          });
         }
         
         // Pass referral_source_id nei metadata se validato (per handle_new_user trigger)
@@ -490,16 +536,39 @@ const Auth = () => {
                   type="text"
                   placeholder={language === 'pl' ? 'Wprowadź kod linku lub krótki kod' : 'Enter link code or short code'}
                   value={referralCode}
-                  onChange={(e) => setReferralCode(e.target.value)}
-                  className="bg-background/50 border-border/40"
+                  onChange={(e) => {
+                    setReferralCode(e.target.value);
+                    setReferralCodeValid(null); // Reset validation on change
+                  }}
+                  className={`bg-background/50 border-border/40 ${
+                    referralCodeValid === false ? 'border-red-500' : 
+                    referralCodeValid === true ? 'border-green-500' : ''
+                  }`}
                 />
-                {referralCode && (
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">
+                {referralCodeValidating && (
+                  <p className="text-xs text-muted-foreground">
+                    {language === 'pl' ? 'Sprawdzanie kodu...' : 'Validating code...'}
+                  </p>
+                )}
+                {!referralCodeValidating && referralCode.trim() && referralCodeValid === true && (
+                  <div className="space-y-1 p-2 bg-green-500/10 border border-green-500/20 rounded">
+                    <p className="text-xs text-green-600 font-semibold">
                       🎁 {language === 'pl' ? 'Otrzymasz 100 Bonus SpiritPoints!' : 'You\'ll receive 100 Bonus SpiritPoints!'}
                     </p>
-                    <p className="text-xs text-primary font-semibold">
+                    <p className="text-xs text-green-600">
                       {language === 'pl' ? 'Plus 10% zniżki na pierwsze zamówienie!' : 'Plus 10% discount on your first order!'}
+                    </p>
+                  </div>
+                )}
+                {!referralCodeValidating && referralCode.trim() && referralCodeValid === false && (
+                  <div className="space-y-1 p-2 bg-red-500/10 border border-red-500/20 rounded">
+                    <p className="text-xs text-red-600 font-semibold">
+                      {language === 'pl' ? 'REFERRAL NON VALIDO' : 'INVALID REFERRAL'}
+                    </p>
+                    <p className="text-xs text-red-600">
+                      {language === 'pl' 
+                        ? 'Kod polecający nie istnieje. Sprawdź kod i spróbuj ponownie.' 
+                        : 'Referral code does not exist. Please check the code and try again.'}
                     </p>
                   </div>
                 )}

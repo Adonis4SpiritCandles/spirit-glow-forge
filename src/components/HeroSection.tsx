@@ -32,7 +32,7 @@ const HeroSection = () => {
           if (entry.isIntersecting && !animationTriggered.current) {
             animationTriggered.current = true;
             
-            // Wait a bit for DOM to be ready
+            // Wait longer for more dramatic delay before animation starts
             setTimeout(() => {
               if (!h1Ref.current || !h2Ref.current) return;
               
@@ -40,24 +40,32 @@ const HeroSection = () => {
               const h1Spans = Array.from(h1Ref.current.querySelectorAll('span'));
               
               h1Spans.forEach((originalSpan, index) => {
-                // Set initial state
+                // Set initial state - much more dramatic for maximum visibility
                 gsap.set(originalSpan, {
                   opacity: 0,
-                  rotationX: 90,
-                  transformOrigin: '50% 50%'
+                  rotationX: 270,
+                  scale: 0.5,
+                  transformOrigin: '50% 50%',
+                  y: 60,
+                  x: index % 2 === 0 ? -30 : 30
                 });
                 
-                // Animate each word with rotate-in effect
+                // Animate each word with rotate-in effect - very visible and dramatic
                 gsap.to(originalSpan, {
                   opacity: 1,
                   rotationX: 0,
-                  duration: 0.6,
-                  delay: index * 0.15,
-                  ease: 'power3.out',
+                  scale: 1,
+                  y: 0,
+                  x: 0,
+                  duration: 1.8,
+                  delay: 0.5 + (index * 0.3),
+                  ease: 'elastic.out(1, 0.5)',
                   onComplete: () => {
                     if (index === h1Spans.length - 1) {
-                      // Start floating animation for H1 after all words are animated
-                      startFloatingAnimation(h1Ref.current!);
+                      // Wait a bit before starting floating
+                      setTimeout(() => {
+                        startFloatingAnimation(h1Ref.current!);
+                      }, 300);
                     }
                   }
                 });
@@ -65,29 +73,41 @@ const HeroSection = () => {
               
               // Wrap H2 text for animation
               const h2Text = h2Ref.current.textContent || '';
-              const h2OriginalHTML = h2Ref.current.innerHTML;
               h2Ref.current.innerHTML = '';
               
               const h2Wrapper = document.createElement('span');
               h2Wrapper.textContent = h2Text;
               h2Wrapper.style.display = 'inline-block';
-              h2Wrapper.style.opacity = '0';
-              h2Wrapper.style.transform = 'rotateX(90deg)';
-              h2Wrapper.style.transformOrigin = '50% 50%';
               h2Ref.current.appendChild(h2Wrapper);
               
-              // Animate H2
+              // Set initial state for H2 - very dramatic
+              gsap.set(h2Wrapper, {
+                opacity: 0,
+                rotationX: 270,
+                scale: 0.5,
+                transformOrigin: '50% 50%',
+                y: 60,
+                x: 20
+              });
+              
+              // Animate H2 - very visible and dramatic
               gsap.to(h2Wrapper, {
                 opacity: 1,
                 rotationX: 0,
-                duration: 0.6,
-                delay: h1Spans.length * 0.15 + 0.3,
-                ease: 'power3.out',
+                scale: 1,
+                y: 0,
+                x: 0,
+                duration: 1.8,
+                delay: 0.5 + (h1Spans.length * 0.3) + 0.5,
+                ease: 'elastic.out(1, 0.5)',
                 onComplete: () => {
-                  startFloatingAnimation(h2Ref.current!);
+                  // Wait a bit before starting floating
+                  setTimeout(() => {
+                    startFloatingAnimation(h2Ref.current!);
+                  }, 300);
                 }
               });
-            }, 100);
+            }, 800);
           }
         });
       },
@@ -101,23 +121,38 @@ const HeroSection = () => {
     };
   }, []);
 
-  // Floating animation loop
+  // Floating animation loop - fast, smooth and fluid using GSAP timeline
   const startFloatingAnimation = (element: HTMLElement) => {
-    gsap.to(element, {
-      y: -8,
-      duration: 3,
-      ease: 'sine.inOut',
-      repeat: -1,
-      yoyo: true
-    });
+    // Kill any existing animations on this element to avoid conflicts
+    gsap.killTweensOf(element);
     
-    gsap.to(element, {
-      x: 4,
-      duration: 4,
-      ease: 'sine.inOut',
-      repeat: -1,
-      yoyo: true,
-      delay: 0.5
+    // Create smooth, fast, continuous floating motion using timeline
+    const tl = gsap.timeline({ repeat: -1 });
+    
+    // Smooth elliptical floating motion - fast and fluid
+    tl.to(element, {
+      y: -8,
+      x: 5,
+      duration: 1.2,
+      ease: 'sine.inOut'
+    })
+    .to(element, {
+      y: 0,
+      x: -5,
+      duration: 1.2,
+      ease: 'sine.inOut'
+    })
+    .to(element, {
+      y: 8,
+      x: 0,
+      duration: 1.2,
+      ease: 'sine.inOut'
+    })
+    .to(element, {
+      y: 0,
+      x: 0,
+      duration: 1.2,
+      ease: 'sine.inOut'
     });
   };
 
@@ -181,11 +216,12 @@ const HeroSection = () => {
         <div className="max-w-4xl mx-auto">
           {/* Logo with Glow Effect */}
           <div className="mb-8">
-            <div className="mb-6">
+            <div className="mb-6" style={{ willChange: 'transform', isolation: 'isolate' }}>
               <img 
                 src={spiritLogo} 
                 alt="SPIRIT CANDLES" 
-                className={`h-48 md:h-64 mx-auto logo-aura transition-all duration-2000 ${logoGlow ? 'candle-glow scale-105 drop-shadow-[0_0_35px_rgba(255,255,255,0.8)]' : 'scale-100'}`}
+                className={`h-48 md:h-64 mx-auto logo-aura transition-all duration-1500 ${logoGlow ? 'candle-glow scale-105 drop-shadow-[0_0_35px_rgba(255,255,255,0.8)]' : 'scale-100'}`}
+                style={{ willChange: 'transform, filter' }}
               />
             </div>
             

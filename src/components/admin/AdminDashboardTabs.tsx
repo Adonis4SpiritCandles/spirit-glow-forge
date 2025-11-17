@@ -26,7 +26,7 @@ const AdminDashboardTabs = ({ activeTab, setActiveTab }: AdminDashboardTabsProps
     { value: 'statistics', icon: <BarChart3 className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('statistics') },
     { value: 'analytics', icon: <TrendingUp className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: language === 'pl' ? 'Analytics' : 'Analytics' },
     { value: 'referrals', icon: <Gift className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: language === 'pl' ? 'Referral' : 'Referral' },
-    { value: 'export', icon: <FileText className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('export') },
+    { value: 'export', icon: <FileText className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('exportAndBackup') },
     { value: 'email', icon: <Mail className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />, label: t('emailMarketing') },
   ];
 

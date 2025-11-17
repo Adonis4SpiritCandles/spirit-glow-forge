@@ -364,7 +364,7 @@ export default function AdminAdvancedExport() {
           ]),
           filename: `full_backup_${format(new Date(), 'yyyy-MM-dd')}`
         };
-        exportData(exportData, format as ExportFormat);
+        exportData(exportDataResult, format as ExportFormat);
         toast.success(language === 'pl' ? 'Backup completo esportato' : 'Full backup exported');
       }
     } catch (error) {
@@ -384,20 +384,57 @@ export default function AdminAdvancedExport() {
         return;
       }
 
+      setLoading(true);
+      toast.info(language === 'pl' ? 'Przywracanie backupu...' : 'Restoring backup...');
+
       // Restore each category
-      if (backup.products) {
-        // Note: In production, you'd want to use upsert or handle conflicts better
-        toast.info(language === 'pl' ? 'Przywracanie produktów...' : 'Restoring products...');
+      if (backup.products && Array.isArray(backup.products)) {
+        const { error } = await supabase.from('products').upsert(backup.products, { onConflict: 'id' });
+        if (error) throw error;
       }
-      if (backup.contacts) {
-        toast.info(language === 'pl' ? 'Przywracanie kontaktów...' : 'Restoring contacts...');
+      
+      if (backup.contacts && Array.isArray(backup.contacts)) {
+        const { error } = await supabase.from('newsletter_subscribers').upsert(backup.contacts, { onConflict: 'id' });
+        if (error) throw error;
       }
-      // Add more restore logic for each category
+      
+      if (backup.categories && Array.isArray(backup.categories)) {
+        const { error } = await supabase.from('collections').upsert(backup.categories, { onConflict: 'id' });
+        if (error) throw error;
+      }
+      
+      if (backup.social && Array.isArray(backup.social)) {
+        const { error } = await supabase.from('social_media').upsert(backup.social, { onConflict: 'id' });
+        if (error) throw error;
+      }
+      
+      if (backup.coupons && Array.isArray(backup.coupons)) {
+        const { error } = await supabase.from('coupons').upsert(backup.coupons, { onConflict: 'id' });
+        if (error) throw error;
+      }
+      
+      if (backup.emails && typeof backup.emails === 'object') {
+        const { error } = await supabase.from('newsletter_settings').upsert(backup.emails, { onConflict: 'id' });
+        if (error) throw error;
+      }
+      
+      if (backup.chat && Array.isArray(backup.chat)) {
+        const { error } = await supabase.from('chat_responses').upsert(backup.chat, { onConflict: 'id' });
+        if (error) throw error;
+      }
+      
+      if (backup.orders && Array.isArray(backup.orders)) {
+        const { error } = await supabase.from('orders').upsert(backup.orders, { onConflict: 'id' });
+        if (error) throw error;
+      }
 
       toast.success(language === 'pl' ? 'Backup przywrócony pomyślnie' : 'Backup restored successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Restore full backup error:', error);
+      toast.error(language === 'pl' ? `Błąd przywracania: ${error.message}` : `Restore error: ${error.message}`);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -490,16 +527,86 @@ export default function AdminAdvancedExport() {
         return;
       }
 
-      // Basic restore logic - in production, you'd want more sophisticated conflict handling
+      setLoading(true);
       toast.info(language === 'pl' ? `Przywracanie ${category}...` : `Restoring ${category}...`);
       
-      // Note: Actual restore would require upsert operations based on category
-      // This is a simplified version - full implementation would handle each category differently
+      let error: any = null;
+      
+      switch (category) {
+        case 'statistics':
+          // Statistics are calculated from orders, so restore orders if present
+          if (data.orders && Array.isArray(data.orders)) {
+            const result = await supabase.from('orders').upsert(data.orders, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'contacts':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('newsletter_subscribers').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'products':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('products').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'categories':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('collections').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'social':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('social_media').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'coupons':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('coupons').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'emails':
+          if (typeof data === 'object') {
+            const result = await supabase.from('newsletter_settings').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'chat':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('chat_responses').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'orders':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('orders').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        case 'collections':
+          if (Array.isArray(data)) {
+            const result = await supabase.from('collections').upsert(data, { onConflict: 'id' });
+            error = result.error;
+          }
+          break;
+        default:
+          throw new Error(`Unknown category: ${category}`);
+      }
+      
+      if (error) throw error;
       
       toast.success(language === 'pl' ? `${category} przywrócony pomyślnie` : `${category} restored successfully`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Restore ${category} backup error:`, error);
+      toast.error(language === 'pl' ? `Błąd przywracania: ${error.message}` : `Restore error: ${error.message}`);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -786,29 +893,81 @@ export default function AdminAdvancedExport() {
         {/* Category Backups */}
         <div className="grid md:grid-cols-2 gap-4">
           {[
-            { key: 'statistics', label: language === 'pl' ? 'Statystyki' : 'Statistics', icon: Database },
-            { key: 'contacts', label: language === 'pl' ? 'Kontakty' : 'Contacts', icon: Users },
-            { key: 'products', label: language === 'pl' ? 'Produkty' : 'Products', icon: Package },
-            { key: 'categories', label: language === 'pl' ? 'Kategorie' : 'Categories', icon: FileText },
-            { key: 'social', label: language === 'pl' ? 'Social Media' : 'Social Media', icon: Users },
-            { key: 'coupons', label: language === 'pl' ? 'Kupony' : 'Coupons', icon: FileText },
-            { key: 'emails', label: language === 'pl' ? 'Emaile' : 'Emails', icon: FileText },
-            { key: 'chat', label: language === 'pl' ? 'Odpowiedzi Chat' : 'Chat Responses', icon: FileText },
-            { key: 'orders', label: language === 'pl' ? 'Zamówienia' : 'Orders', icon: ShoppingCart },
-            { key: 'collections', label: language === 'pl' ? 'Kolekcje' : 'Collections', icon: Archive },
-          ].map(({ key, label, icon: Icon }) => (
+            { 
+              key: 'statistics', 
+              label: language === 'pl' ? 'Statystyki' : 'Statistics', 
+              icon: Database,
+              description: language === 'pl' ? 'Eksportuj lub przywróć dane statystyczne' : 'Export or restore statistics data'
+            },
+            { 
+              key: 'contacts', 
+              label: language === 'pl' ? 'Kontakty' : 'Contacts', 
+              icon: Users,
+              description: language === 'pl' ? 'Eksportuj lub przywróć subskrybentów newslettera' : 'Export or restore newsletter subscribers'
+            },
+            { 
+              key: 'products', 
+              label: language === 'pl' ? 'Produkty' : 'Products', 
+              icon: Package,
+              description: language === 'pl' ? 'Eksportuj lub przywróć katalog produktów' : 'Export or restore product catalog'
+            },
+            { 
+              key: 'categories', 
+              label: language === 'pl' ? 'Kategorie' : 'Categories', 
+              icon: FileText,
+              description: language === 'pl' ? 'Eksportuj lub przywróć kategorie produktów' : 'Export or restore product categories'
+            },
+            { 
+              key: 'social', 
+              label: language === 'pl' ? 'Social Media' : 'Social Media', 
+              icon: Users,
+              description: language === 'pl' ? 'Eksportuj lub przywróć ustawienia mediów społecznościowych' : 'Export or restore social media settings'
+            },
+            { 
+              key: 'coupons', 
+              label: language === 'pl' ? 'Kupony' : 'Coupons', 
+              icon: FileText,
+              description: language === 'pl' ? 'Eksportuj lub przywróć kody kuponów' : 'Export or restore coupon codes'
+            },
+            { 
+              key: 'emails', 
+              label: language === 'pl' ? 'Emaile' : 'Emails', 
+              icon: FileText,
+              description: language === 'pl' ? 'Eksportuj lub przywróć ustawienia email' : 'Export or restore email settings'
+            },
+            { 
+              key: 'chat', 
+              label: language === 'pl' ? 'Odpowiedzi Chat' : 'Chat Responses', 
+              icon: FileText,
+              description: language === 'pl' ? 'Eksportuj lub przywróć zapisane odpowiedzi czatu' : 'Export or restore saved chat responses'
+            },
+            { 
+              key: 'orders', 
+              label: language === 'pl' ? 'Zamówienia' : 'Orders', 
+              icon: ShoppingCart,
+              description: language === 'pl' ? 'Eksportuj lub przywróć historię zamówień' : 'Export or restore order history'
+            },
+            { 
+              key: 'collections', 
+              label: language === 'pl' ? 'Kolekcje' : 'Collections', 
+              icon: Archive,
+              description: language === 'pl' ? 'Eksportuj lub przywróć kolekcje produktów' : 'Export or restore product collections'
+            },
+          ].map(({ key, label, icon: Icon, description }) => (
             <Card key={key}>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Icon className="h-4 w-4" />
+                <CardTitle className="flex items-center gap-2">
+                  <Icon className="h-5 w-5" />
                   {label}
                 </CardTitle>
+                <CardDescription>
+                  {description}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-4 gap-2">
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={async () => {
                       setLoading(true);
                       try {
@@ -821,13 +980,12 @@ export default function AdminAdvancedExport() {
                       }
                     }}
                     disabled={loading}
-                    className="text-xs"
                   >
+                    <Download className="h-4 w-4 mr-2" />
                     Excel
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={async () => {
                       setLoading(true);
                       try {
@@ -840,13 +998,12 @@ export default function AdminAdvancedExport() {
                       }
                     }}
                     disabled={loading}
-                    className="text-xs"
                   >
+                    <Download className="h-4 w-4 mr-2" />
                     CSV
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={async () => {
                       setLoading(true);
                       try {
@@ -859,13 +1016,12 @@ export default function AdminAdvancedExport() {
                       }
                     }}
                     disabled={loading}
-                    className="text-xs"
                   >
+                    <Download className="h-4 w-4 mr-2" />
                     TXT
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={async () => {
                       setLoading(true);
                       try {
@@ -878,33 +1034,42 @@ export default function AdminAdvancedExport() {
                       }
                     }}
                     disabled={loading}
-                    className="text-xs"
                   >
+                    <Download className="h-4 w-4 mr-2" />
                     JSON
                   </Button>
                 </div>
-                <div className="pt-2 border-t">
-                  <Input
-                    type="file"
-                    accept=".json"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      setLoading(true);
-                      try {
-                        await restoreCategoryBackup(key, file);
-                      } catch (error) {
-                        console.error('Restore error:', error);
-                        toast.error(language === 'pl' ? 'Błąd przywracania' : 'Restore error');
-                      } finally {
-                        setLoading(false);
-                        e.target.value = '';
-                      }
-                    }}
-                    disabled={loading}
-                    className="text-xs h-8"
-                    placeholder={language === 'pl' ? 'Wybierz plik JSON...' : 'Select JSON file...'}
-                  />
+                <div className="pt-4 border-t">
+                  <Label className="mb-2 block">
+                    {language === 'pl' ? `Przywróć Backup ${label} (JSON)` : `Restore ${label} Backup (JSON)`}
+                  </Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {language === 'pl' 
+                      ? `Wybierz plik JSON z backupem ${label.toLowerCase()} aby przywrócić dane`
+                      : `Select a JSON backup file for ${label.toLowerCase()} to restore data`}
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      type="file"
+                      accept=".json"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setLoading(true);
+                        try {
+                          await restoreCategoryBackup(key, file);
+                        } catch (error) {
+                          console.error('Restore error:', error);
+                          toast.error(language === 'pl' ? 'Błąd przywracania' : 'Restore error');
+                        } finally {
+                          setLoading(false);
+                          e.target.value = '';
+                        }
+                      }}
+                      disabled={loading}
+                      className="flex-1"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>

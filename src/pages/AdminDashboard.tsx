@@ -41,6 +41,9 @@ import { EmailMarketingHub } from '@/components/admin/EmailMarketing/EmailMarket
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarIcon } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -1820,7 +1823,7 @@ const AdminDashboard = () => {
                     <div className="hidden md:flex flex-wrap items-center gap-3">
                       {/* Product Name Filter */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="filter-product-name" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="filter-product-name" className="text-xs whitespace-nowrap font-medium">
                           {language === 'pl' ? 'Nazwa' : 'Name'}:
                         </Label>
                         <Input
@@ -1829,17 +1832,17 @@ const AdminDashboard = () => {
                           placeholder={language === 'pl' ? 'Szukaj produktu...' : 'Search product...'}
                           value={productFilterName}
                           onChange={(e) => setProductFilterName(e.target.value)}
-                          className="h-8 text-xs w-[150px]"
+                          className="h-9 text-xs w-[150px]"
                         />
                       </div>
 
                       {/* Category Filter */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="filter-product-category" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="filter-product-category" className="text-xs whitespace-nowrap font-medium">
                           {t('category')}:
                         </Label>
                         <Select value={productFilterCategory} onValueChange={setProductFilterCategory}>
-                          <SelectTrigger id="filter-product-category" className="h-8 text-xs w-[120px]">
+                          <SelectTrigger id="filter-product-category" className="h-9 text-xs w-[130px]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1866,7 +1869,7 @@ const AdminDashboard = () => {
                             }
                           }}
                         >
-                          <SelectTrigger id="filter-product-collections" className="h-8 text-xs w-[140px]">
+                          <SelectTrigger id="filter-product-collections" className="h-9 text-xs w-[150px]">
                             <SelectValue placeholder={language === 'pl' ? 'Wszystkie' : 'All'} />
                           </SelectTrigger>
                           <SelectContent>
@@ -1892,7 +1895,7 @@ const AdminDashboard = () => {
 
                       {/* Price Range */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="filter-price-min" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="filter-price-min" className="text-xs whitespace-nowrap font-medium">
                           {language === 'pl' ? 'Cena' : 'Price'}:
                         </Label>
                         <Input
@@ -1901,7 +1904,7 @@ const AdminDashboard = () => {
                           placeholder={language === 'pl' ? 'Min' : 'Min'}
                           value={productFilterPriceMin}
                           onChange={(e) => setProductFilterPriceMin(e.target.value)}
-                          className="h-8 text-xs w-[80px]"
+                          className="h-9 text-xs w-[85px]"
                         />
                         <span className="text-xs">-</span>
                         <Input
@@ -1910,13 +1913,13 @@ const AdminDashboard = () => {
                           placeholder={language === 'pl' ? 'Max' : 'Max'}
                           value={productFilterPriceMax}
                           onChange={(e) => setProductFilterPriceMax(e.target.value)}
-                          className="h-8 text-xs w-[80px]"
+                          className="h-9 text-xs w-[85px]"
                         />
                       </div>
 
                       {/* Stock Range */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="filter-stock-min" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="filter-stock-min" className="text-xs whitespace-nowrap font-medium">
                           {t('stock')}:
                         </Label>
                         <Input
@@ -1925,7 +1928,7 @@ const AdminDashboard = () => {
                           placeholder={language === 'pl' ? 'Min' : 'Min'}
                           value={productFilterStockMin}
                           onChange={(e) => setProductFilterStockMin(e.target.value)}
-                          className="h-8 text-xs w-[80px]"
+                          className="h-9 text-xs w-[85px]"
                         />
                         <span className="text-xs">-</span>
                         <Input
@@ -1934,17 +1937,17 @@ const AdminDashboard = () => {
                           placeholder={language === 'pl' ? 'Max' : 'Max'}
                           value={productFilterStockMax}
                           onChange={(e) => setProductFilterStockMax(e.target.value)}
-                          className="h-8 text-xs w-[80px]"
+                          className="h-9 text-xs w-[85px]"
                         />
                       </div>
 
                       {/* Size Filter */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="filter-product-size" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="filter-product-size" className="text-xs whitespace-nowrap font-medium">
                           {t('size')}:
                         </Label>
                         <Select value={productFilterSize} onValueChange={setProductFilterSize}>
-                          <SelectTrigger id="filter-product-size" className="h-8 text-xs w-[120px]">
+                          <SelectTrigger id="filter-product-size" className="h-9 text-xs w-[130px]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1958,11 +1961,11 @@ const AdminDashboard = () => {
 
                       {/* Sort By */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="sort-product-by" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="sort-product-by" className="text-xs whitespace-nowrap font-medium">
                           {language === 'pl' ? 'Sortuj według' : 'Sort by'}:
                         </Label>
                         <Select value={productSortBy} onValueChange={(value: 'name' | 'category' | 'price' | 'stock' | 'updated_at') => setProductSortBy(value)}>
-                          <SelectTrigger id="sort-product-by" className="h-8 text-xs w-[140px]">
+                          <SelectTrigger id="sort-product-by" className="h-9 text-xs w-[150px]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1977,11 +1980,11 @@ const AdminDashboard = () => {
 
                       {/* Sort Order */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="sort-product-order" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="sort-product-order" className="text-xs whitespace-nowrap font-medium">
                           {language === 'pl' ? 'Kolejność' : 'Order'}:
                         </Label>
                         <Select value={productSortOrder} onValueChange={(value: 'asc' | 'desc') => setProductSortOrder(value)}>
-                          <SelectTrigger id="sort-product-order" className="h-8 text-xs w-[100px]">
+                          <SelectTrigger id="sort-product-order" className="h-9 text-xs w-[110px]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1993,30 +1996,56 @@ const AdminDashboard = () => {
 
                       {/* Date From */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="product-date-from" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="product-date-from" className="text-xs whitespace-nowrap font-medium">
                           {language === 'pl' ? 'Od' : 'From'}:
                         </Label>
-                        <Input
-                          id="product-date-from"
-                          type="date"
-                          value={productDateFrom}
-                          onChange={(e) => setProductDateFrom(e.target.value)}
-                          className="h-8 text-xs w-[140px]"
-                        />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              id="product-date-from"
+                              variant="outline"
+                              className="h-9 text-xs w-[150px] justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {productDateFrom ? format(new Date(productDateFrom), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={productDateFrom ? new Date(productDateFrom) : undefined}
+                              onSelect={(date) => setProductDateFrom(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
 
                       {/* Date To */}
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="product-date-to" className="text-xs whitespace-nowrap">
+                        <Label htmlFor="product-date-to" className="text-xs whitespace-nowrap font-medium">
                           {language === 'pl' ? 'Do' : 'To'}:
                         </Label>
-                        <Input
-                          id="product-date-to"
-                          type="date"
-                          value={productDateTo}
-                          onChange={(e) => setProductDateTo(e.target.value)}
-                          className="h-8 text-xs w-[140px]"
-                        />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              id="product-date-to"
+                              variant="outline"
+                              className="h-9 text-xs w-[150px] justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {productDateTo ? format(new Date(productDateTo), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={productDateTo ? new Date(productDateTo) : undefined}
+                              onSelect={(date) => setProductDateTo(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
 
                       {/* Clear Filters Button */}
@@ -2038,7 +2067,7 @@ const AdminDashboard = () => {
                             setProductDateFrom('');
                             setProductDateTo('');
                           }}
-                          className="h-8 text-xs"
+                          className="h-9 text-xs"
                         >
                           <X className="h-3 w-3 mr-1" />
                           {language === 'pl' ? 'Wyczyść' : 'Clear'}
@@ -2047,27 +2076,30 @@ const AdminDashboard = () => {
                     </div>
 
                     {/* Mobile: Stacked filters */}
-                    <div className="md:hidden space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <Label htmlFor="filter-product-name-mobile" className="text-xs">
+                    <Card className="md:hidden">
+                      <CardContent className="pt-4 space-y-3">
+                        {/* Name Filter */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="filter-product-name-mobile" className="text-xs font-medium">
                             {language === 'pl' ? 'Nazwa' : 'Name'}
                           </Label>
                           <Input
                             id="filter-product-name-mobile"
                             type="text"
-                            placeholder={language === 'pl' ? 'Szukaj...' : 'Search...'}
+                            placeholder={language === 'pl' ? 'Szukaj produktu...' : 'Search product...'}
                             value={productFilterName}
                             onChange={(e) => setProductFilterName(e.target.value)}
-                            className="h-8 text-xs"
+                            className="h-9 text-xs"
                           />
                         </div>
-                        <div className="space-y-1">
-                          <Label htmlFor="filter-product-category-mobile" className="text-xs">
+
+                        {/* Category Filter */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="filter-product-category-mobile" className="text-xs font-medium">
                             {t('category')}
                           </Label>
                           <Select value={productFilterCategory} onValueChange={setProductFilterCategory}>
-                            <SelectTrigger id="filter-product-category-mobile" className="h-8 text-xs">
+                            <SelectTrigger id="filter-product-category-mobile" className="h-9 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -2078,12 +2110,129 @@ const AdminDashboard = () => {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="space-y-1">
-                          <Label htmlFor="sort-product-by-mobile" className="text-xs">
-                            {language === 'pl' ? 'Sortuj' : 'Sort by'}
+
+                        {/* Collections Filter */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="filter-product-collections-mobile" className="text-xs font-medium">
+                            {language === 'pl' ? 'Kolekcje' : 'Collections'}
+                          </Label>
+                          <Select 
+                            value={productFilterCollections.length > 0 ? productFilterCollections[0] : 'all'} 
+                            onValueChange={(value) => {
+                              if (value === 'all') {
+                                setProductFilterCollections([]);
+                              } else if (!productFilterCollections.includes(value)) {
+                                setProductFilterCollections([...productFilterCollections, value]);
+                              }
+                            }}
+                          >
+                            <SelectTrigger id="filter-product-collections-mobile" className="h-9 text-xs">
+                              <SelectValue placeholder={language === 'pl' ? 'Wszystkie' : 'All'} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                              {collections.map((col) => (
+                                <SelectItem key={col.id} value={col.id}>
+                                  {language === 'en' ? col.name_en : col.name_pl}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {productFilterCollections.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {productFilterCollections.map((colId) => {
+                                const col = collections.find(c => c.id === colId);
+                                return col ? (
+                                  <Badge key={colId} variant="secondary" className="text-[10px]">
+                                    {language === 'en' ? col.name_en : col.name_pl}
+                                    <X 
+                                      className="h-2.5 w-2.5 ml-1 cursor-pointer" 
+                                      onClick={() => setProductFilterCollections(productFilterCollections.filter(id => id !== colId))}
+                                    />
+                                  </Badge>
+                                ) : null;
+                              })}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Price Range */}
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-medium">
+                            {language === 'pl' ? 'Cena' : 'Price'}
+                          </Label>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              id="filter-price-min-mobile"
+                              type="number"
+                              placeholder={language === 'pl' ? 'Min' : 'Min'}
+                              value={productFilterPriceMin}
+                              onChange={(e) => setProductFilterPriceMin(e.target.value)}
+                              className="h-9 text-xs flex-1"
+                            />
+                            <span className="text-xs">-</span>
+                            <Input
+                              id="filter-price-max-mobile"
+                              type="number"
+                              placeholder={language === 'pl' ? 'Max' : 'Max'}
+                              value={productFilterPriceMax}
+                              onChange={(e) => setProductFilterPriceMax(e.target.value)}
+                              className="h-9 text-xs flex-1"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Stock Range */}
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-medium">
+                            {t('stock')}
+                          </Label>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              id="filter-stock-min-mobile"
+                              type="number"
+                              placeholder={language === 'pl' ? 'Min' : 'Min'}
+                              value={productFilterStockMin}
+                              onChange={(e) => setProductFilterStockMin(e.target.value)}
+                              className="h-9 text-xs flex-1"
+                            />
+                            <span className="text-xs">-</span>
+                            <Input
+                              id="filter-stock-max-mobile"
+                              type="number"
+                              placeholder={language === 'pl' ? 'Max' : 'Max'}
+                              value={productFilterStockMax}
+                              onChange={(e) => setProductFilterStockMax(e.target.value)}
+                              className="h-9 text-xs flex-1"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Size Filter */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="filter-product-size-mobile" className="text-xs font-medium">
+                            {t('size')}
+                          </Label>
+                          <Select value={productFilterSize} onValueChange={setProductFilterSize}>
+                            <SelectTrigger id="filter-product-size-mobile" className="h-9 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                              <SelectItem value="180g">180g</SelectItem>
+                              <SelectItem value="320g">320g</SelectItem>
+                              <SelectItem value="180g + 320g">180g + 320g</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Sort By */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="sort-product-by-mobile" className="text-xs font-medium">
+                            {language === 'pl' ? 'Sortuj według' : 'Sort by'}
                           </Label>
                           <Select value={productSortBy} onValueChange={(value: 'name' | 'category' | 'price' | 'stock' | 'updated_at') => setProductSortBy(value)}>
-                            <SelectTrigger id="sort-product-by-mobile" className="h-8 text-xs">
+                            <SelectTrigger id="sort-product-by-mobile" className="h-9 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -2095,44 +2244,104 @@ const AdminDashboard = () => {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="space-y-1">
-                          <Label htmlFor="sort-product-order-mobile" className="text-xs">
+
+                        {/* Sort Order */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="sort-product-order-mobile" className="text-xs font-medium">
                             {language === 'pl' ? 'Kolejność' : 'Order'}
                           </Label>
                           <Select value={productSortOrder} onValueChange={(value: 'asc' | 'desc') => setProductSortOrder(value)}>
-                            <SelectTrigger id="sort-product-order-mobile" className="h-8 text-xs">
+                            <SelectTrigger id="sort-product-order-mobile" className="h-9 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Desc'}</SelectItem>
-                              <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Asc'}</SelectItem>
+                              <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Descending'}</SelectItem>
+                              <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Ascending'}</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-                      </div>
-                      {(productFilterName || productFilterCategory !== 'all' || productDateFrom || productDateTo) && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setProductFilterName('');
-                            setProductFilterCategory('all');
-                            setProductFilterCollections([]);
-                            setProductFilterPriceMin('');
-                            setProductFilterPriceMax('');
-                            setProductFilterStockMin('');
-                            setProductFilterStockMax('');
-                            setProductFilterSize('all');
-                            setProductDateFrom('');
-                            setProductDateTo('');
-                          }}
-                          className="w-full h-8 text-xs"
-                        >
-                          <X className="h-3 w-3 mr-1" />
-                          {language === 'pl' ? 'Wyczyść filtry' : 'Clear filters'}
-                        </Button>
-                      )}
-                    </div>
+
+                        {/* Date From */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="product-date-from-mobile" className="text-xs font-medium">
+                            {language === 'pl' ? 'Od' : 'From'}
+                          </Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                id="product-date-from-mobile"
+                                variant="outline"
+                                className="h-9 text-xs w-full justify-start text-left font-normal"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {productDateFrom ? format(new Date(productDateFrom), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={productDateFrom ? new Date(productDateFrom) : undefined}
+                                onSelect={(date) => setProductDateFrom(date ? format(date, 'yyyy-MM-dd') : '')}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+
+                        {/* Date To */}
+                        <div className="space-y-1.5">
+                          <Label htmlFor="product-date-to-mobile" className="text-xs font-medium">
+                            {language === 'pl' ? 'Do' : 'To'}
+                          </Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                id="product-date-to-mobile"
+                                variant="outline"
+                                className="h-9 text-xs w-full justify-start text-left font-normal"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {productDateTo ? format(new Date(productDateTo), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={productDateTo ? new Date(productDateTo) : undefined}
+                                onSelect={(date) => setProductDateTo(date ? format(date, 'yyyy-MM-dd') : '')}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+
+                        {/* Clear Filters Button */}
+                        {(productFilterName || productFilterCategory !== 'all' || productFilterCollections.length > 0 || 
+                          productFilterPriceMin || productFilterPriceMax || productFilterStockMin || productFilterStockMax ||
+                          productFilterSize !== 'all' || productDateFrom || productDateTo) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setProductFilterName('');
+                              setProductFilterCategory('all');
+                              setProductFilterCollections([]);
+                              setProductFilterPriceMin('');
+                              setProductFilterPriceMax('');
+                              setProductFilterStockMin('');
+                              setProductFilterStockMax('');
+                              setProductFilterSize('all');
+                              setProductDateFrom('');
+                              setProductDateTo('');
+                            }}
+                            className="w-full h-9 text-xs"
+                          >
+                            <X className="h-3 w-3 mr-1" />
+                            {language === 'pl' ? 'Wyczyść filtry' : 'Clear Filters'}
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
 
@@ -2590,13 +2799,13 @@ const AdminDashboard = () => {
                     </Alert>
                   )}
 
-                  {/* Filters and Sorting */}
-                  <div className="mb-4 flex flex-wrap items-center justify-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/50">
+                  {/* Filters and Sorting - Desktop */}
+                  <div className="hidden md:flex flex-wrap items-center justify-center gap-3 p-4 bg-muted/30 rounded-lg border border-border/50 mb-4">
                     {/* Status Filter */}
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="filter-status" className="text-xs whitespace-nowrap">{t('status')}:</Label>
+                      <Label htmlFor="filter-status" className="text-xs whitespace-nowrap font-medium">{t('status')}:</Label>
                       <Select value={orderFilterStatus} onValueChange={setOrderFilterStatus}>
-                        <SelectTrigger id="filter-status" className="h-8 text-xs w-[120px]">
+                        <SelectTrigger id="filter-status" className="h-9 text-xs w-[130px]">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -2610,9 +2819,9 @@ const AdminDashboard = () => {
 
                     {/* Shipping Filter */}
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="filter-shipping" className="text-xs whitespace-nowrap">{t('shipping')}:</Label>
+                      <Label htmlFor="filter-shipping" className="text-xs whitespace-nowrap font-medium">{t('shipping')}:</Label>
                       <Select value={orderFilterShipping} onValueChange={setOrderFilterShipping}>
-                        <SelectTrigger id="filter-shipping" className="h-8 text-xs w-[140px]">
+                        <SelectTrigger id="filter-shipping" className="h-9 text-xs w-[150px]">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -2626,9 +2835,9 @@ const AdminDashboard = () => {
 
                     {/* Sort By */}
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="sort-by" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Sortuj według' : 'Sort by'}:</Label>
+                      <Label htmlFor="sort-by" className="text-xs whitespace-nowrap font-medium">{language === 'pl' ? 'Sortuj według' : 'Sort by'}:</Label>
                       <Select value={orderSortBy} onValueChange={(value: 'created_at' | 'order_number' | 'customer') => setOrderSortBy(value)}>
-                        <SelectTrigger id="sort-by" className="h-8 text-xs w-[140px]">
+                        <SelectTrigger id="sort-by" className="h-9 text-xs w-[150px]">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -2641,9 +2850,9 @@ const AdminDashboard = () => {
 
                     {/* Sort Order */}
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="sort-order" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Kolejność' : 'Order'}:</Label>
+                      <Label htmlFor="sort-order" className="text-xs whitespace-nowrap font-medium">{language === 'pl' ? 'Kolejność' : 'Order'}:</Label>
                       <Select value={orderSortOrder} onValueChange={(value: 'asc' | 'desc') => setOrderSortOrder(value)}>
-                        <SelectTrigger id="sort-order" className="h-8 text-xs w-[100px]">
+                        <SelectTrigger id="sort-order" className="h-9 text-xs w-[110px]">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -2655,26 +2864,52 @@ const AdminDashboard = () => {
 
                     {/* Date From */}
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="date-from" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Od' : 'From'}:</Label>
-                      <Input
-                        id="date-from"
-                        type="date"
-                        value={orderDateFrom}
-                        onChange={(e) => setOrderDateFrom(e.target.value)}
-                        className="h-8 text-xs w-[140px]"
-                      />
+                      <Label htmlFor="date-from" className="text-xs whitespace-nowrap font-medium">{language === 'pl' ? 'Od' : 'From'}:</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date-from"
+                            variant="outline"
+                            className="h-9 text-xs w-[150px] justify-start text-left font-normal"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {orderDateFrom ? format(new Date(orderDateFrom), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={orderDateFrom ? new Date(orderDateFrom) : undefined}
+                            onSelect={(date) => setOrderDateFrom(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
 
                     {/* Date To */}
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="date-to" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Do' : 'To'}:</Label>
-                      <Input
-                        id="date-to"
-                        type="date"
-                        value={orderDateTo}
-                        onChange={(e) => setOrderDateTo(e.target.value)}
-                        className="h-8 text-xs w-[140px]"
-                      />
+                      <Label htmlFor="date-to" className="text-xs whitespace-nowrap font-medium">{language === 'pl' ? 'Do' : 'To'}:</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date-to"
+                            variant="outline"
+                            className="h-9 text-xs w-[150px] justify-start text-left font-normal"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {orderDateTo ? format(new Date(orderDateTo), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={orderDateTo ? new Date(orderDateTo) : undefined}
+                            onSelect={(date) => setOrderDateTo(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
 
                     {/* Clear Filters Button */}
@@ -2688,7 +2923,7 @@ const AdminDashboard = () => {
                           setOrderDateFrom('');
                           setOrderDateTo('');
                         }}
-                        className="h-8 text-xs"
+                        className="h-9 text-xs"
                       >
                         <X className="h-3 w-3 mr-1" />
                         {language === 'pl' ? 'Wyczyść' : 'Clear'}
@@ -3017,110 +3252,138 @@ const AdminDashboard = () => {
             {/* Mobile Card-Based View */}
             <div className="md:hidden space-y-4">
                   {/* Filters and Sorting for Mobile */}
-                  <div className="mb-4 space-y-3 p-3 bg-muted/30 rounded-lg border border-border/50">
-                    {/* Status Filter */}
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="filter-status-mobile" className="text-xs whitespace-nowrap">{t('status')}:</Label>
-                      <Select value={orderFilterStatus} onValueChange={setOrderFilterStatus}>
-                        <SelectTrigger id="filter-status-mobile" className="h-8 text-xs flex-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
-                          <SelectItem value="pending">{t('pending')}</SelectItem>
-                          <SelectItem value="paid">{t('paid')}</SelectItem>
-                          <SelectItem value="completed">{t('complete')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <Card className="mb-4">
+                    <CardContent className="pt-4 space-y-3">
+                      {/* Status Filter */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="filter-status-mobile" className="text-xs font-medium">{t('status')}:</Label>
+                        <Select value={orderFilterStatus} onValueChange={setOrderFilterStatus}>
+                          <SelectTrigger id="filter-status-mobile" className="h-9 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                            <SelectItem value="pending">{t('pending')}</SelectItem>
+                            <SelectItem value="paid">{t('paid')}</SelectItem>
+                            <SelectItem value="completed">{t('complete')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    {/* Shipping Filter */}
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="filter-shipping-mobile" className="text-xs whitespace-nowrap">{t('shipping')}:</Label>
-                      <Select value={orderFilterShipping} onValueChange={setOrderFilterShipping}>
-                        <SelectTrigger id="filter-shipping-mobile" className="h-8 text-xs flex-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
-                          <SelectItem value="tracking">{language === 'pl' ? 'Z numerem śledzenia' : 'With Tracking'}</SelectItem>
-                          <SelectItem value="furgonetka">{language === 'pl' ? 'Furgonetka' : 'Furgonetka'}</SelectItem>
-                          <SelectItem value="awaiting">{language === 'pl' ? 'Oczekuje na wysyłkę' : 'Awaiting Shipping'}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                      {/* Shipping Filter */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="filter-shipping-mobile" className="text-xs font-medium">{t('shipping')}:</Label>
+                        <Select value={orderFilterShipping} onValueChange={setOrderFilterShipping}>
+                          <SelectTrigger id="filter-shipping-mobile" className="h-9 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</SelectItem>
+                            <SelectItem value="tracking">{language === 'pl' ? 'Z numerem śledzenia' : 'With Tracking'}</SelectItem>
+                            <SelectItem value="furgonetka">{language === 'pl' ? 'Furgonetka' : 'Furgonetka'}</SelectItem>
+                            <SelectItem value="awaiting">{language === 'pl' ? 'Oczekuje na wysyłkę' : 'Awaiting Shipping'}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    {/* Sort By */}
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="sort-by-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Sortuj według' : 'Sort by'}:</Label>
-                      <Select value={orderSortBy} onValueChange={(value: 'created_at' | 'order_number' | 'customer') => setOrderSortBy(value)}>
-                        <SelectTrigger id="sort-by-mobile" className="h-8 text-xs flex-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="created_at">{language === 'pl' ? 'Data utworzenia' : 'Created Date'}</SelectItem>
-                          <SelectItem value="order_number">{language === 'pl' ? 'Numer zamówienia' : 'Order Number'}</SelectItem>
-                          <SelectItem value="customer">{language === 'pl' ? 'Klient' : 'Customer'}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                      {/* Sort By */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="sort-by-mobile" className="text-xs font-medium">{language === 'pl' ? 'Sortuj według' : 'Sort by'}:</Label>
+                        <Select value={orderSortBy} onValueChange={(value: 'created_at' | 'order_number' | 'customer') => setOrderSortBy(value)}>
+                          <SelectTrigger id="sort-by-mobile" className="h-9 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="created_at">{language === 'pl' ? 'Data utworzenia' : 'Created Date'}</SelectItem>
+                            <SelectItem value="order_number">{language === 'pl' ? 'Numer zamówienia' : 'Order Number'}</SelectItem>
+                            <SelectItem value="customer">{language === 'pl' ? 'Klient' : 'Customer'}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    {/* Sort Order */}
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="sort-order-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Kolejność' : 'Order'}:</Label>
-                      <Select value={orderSortOrder} onValueChange={(value: 'asc' | 'desc') => setOrderSortOrder(value)}>
-                        <SelectTrigger id="sort-order-mobile" className="h-8 text-xs flex-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Descending'}</SelectItem>
-                          <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Ascending'}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                      {/* Sort Order */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="sort-order-mobile" className="text-xs font-medium">{language === 'pl' ? 'Kolejność' : 'Order'}:</Label>
+                        <Select value={orderSortOrder} onValueChange={(value: 'asc' | 'desc') => setOrderSortOrder(value)}>
+                          <SelectTrigger id="sort-order-mobile" className="h-9 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="desc">{language === 'pl' ? 'Malejąco' : 'Descending'}</SelectItem>
+                            <SelectItem value="asc">{language === 'pl' ? 'Rosnąco' : 'Ascending'}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    {/* Date From */}
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="date-from-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Od' : 'From'}:</Label>
-                      <Input
-                        id="date-from-mobile"
-                        type="date"
-                        value={orderDateFrom}
-                        onChange={(e) => setOrderDateFrom(e.target.value)}
-                        className="h-8 text-xs flex-1"
-                      />
-                    </div>
+                      {/* Date From */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="date-from-mobile" className="text-xs font-medium">{language === 'pl' ? 'Od' : 'From'}:</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              id="date-from-mobile"
+                              variant="outline"
+                              className="h-9 text-xs w-full justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {orderDateFrom ? format(new Date(orderDateFrom), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={orderDateFrom ? new Date(orderDateFrom) : undefined}
+                              onSelect={(date) => setOrderDateFrom(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
 
-                    {/* Date To */}
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="date-to-mobile" className="text-xs whitespace-nowrap">{language === 'pl' ? 'Do' : 'To'}:</Label>
-                      <Input
-                        id="date-to-mobile"
-                        type="date"
-                        value={orderDateTo}
-                        onChange={(e) => setOrderDateTo(e.target.value)}
-                        className="h-8 text-xs flex-1"
-                      />
-                    </div>
+                      {/* Date To */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="date-to-mobile" className="text-xs font-medium">{language === 'pl' ? 'Do' : 'To'}:</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              id="date-to-mobile"
+                              variant="outline"
+                              className="h-9 text-xs w-full justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {orderDateTo ? format(new Date(orderDateTo), 'dd/MM/yyyy') : <span className="text-muted-foreground">{language === 'pl' ? 'Wybierz datę' : 'Pick a date'}</span>}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={orderDateTo ? new Date(orderDateTo) : undefined}
+                              onSelect={(date) => setOrderDateTo(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
 
-                    {/* Clear Filters Button */}
-                    {(orderFilterStatus !== 'all' || orderFilterShipping !== 'all' || orderDateFrom || orderDateTo) && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setOrderFilterStatus('all');
-                          setOrderFilterShipping('all');
-                          setOrderDateFrom('');
-                          setOrderDateTo('');
-                        }}
-                        className="h-8 text-xs w-full"
-                      >
-                        <X className="h-3 w-3 mr-1" />
-                        {language === 'pl' ? 'Wyczyść filtry' : 'Clear Filters'}
-                      </Button>
-                    )}
-                  </div>
+                      {/* Clear Filters Button */}
+                      {(orderFilterStatus !== 'all' || orderFilterShipping !== 'all' || orderDateFrom || orderDateTo) && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setOrderFilterStatus('all');
+                            setOrderFilterShipping('all');
+                            setOrderDateFrom('');
+                            setOrderDateTo('');
+                          }}
+                          className="h-9 text-xs w-full"
+                        >
+                          <X className="h-3 w-3 mr-1" />
+                          {language === 'pl' ? 'Wyczyść filtry' : 'Clear Filters'}
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
 
                   {getFilteredAndSortedOrders().map((order) => {
                     const shippingStatus = getShippingStatusDisplay(order);

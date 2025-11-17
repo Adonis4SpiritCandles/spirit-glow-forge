@@ -219,6 +219,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'redemptions') return language === 'pl' ? 'Realizacje' : 'Redemptions';
     if (key === 'amountSaved') return language === 'pl' ? 'Zaoszczędzona Kwota' : 'Amount Saved';
     if (key === 'export') return language === 'pl' ? 'Eksport' : 'Export';
+    if (key === 'exportAndBackup') return language === 'pl' ? 'Eksport & Kopia zapasowa' : 'Export & Backup';
     if (key === 'spiritToolsAndSite') return language === 'pl' ? 'Narzędzia Spirit i Strona' : 'Spirit Tools & Site';
     if (key === 'spiritToolsAndSiteDesc') return language === 'pl' ? 'Uzyskaj dostęp do narzędzi Spirit Candles i konfiguracji strony z jednego miejsca' : 'Access Spirit Candles tools and site configuration from one place';
     if (key === 'spiritTools') return language === 'pl' ? 'Narzędzia Spirit' : 'Spirit Tools';

@@ -2397,7 +2397,7 @@ const AdminDashboard = () => {
                         />
                       </div>
                       <div className="space-y-2">
-<Label>{t('pricePln')}</Label>
+                        <Label>{t('pricePln')}</Label>
                         <Input
                           type="text"
                           value={productForm.price_pln}
@@ -2644,7 +2644,8 @@ const AdminDashboard = () => {
                   <TableBody>
                     {getFilteredAndSortedProducts().map((product: any) => {
                       const productCollections = (product.product_collections || []).map((pc: any) => pc.collection).filter(Boolean);
-                      return <TableRow key={product.id}>
+                      return (
+                        <TableRow key={product.id}>
                           <TableCell>
                             {product.image_url ? (
                               <div className="relative w-16 h-16 rounded-md overflow-hidden border border-border/40 flex-shrink-0">
@@ -2694,7 +2695,7 @@ const AdminDashboard = () => {
                             <div className="flex flex-col">
                               <span className="font-semibold">{Number(product.price_pln).toFixed(2)} PLN</span>
                               <span className="text-xs text-muted-foreground">
-                                {'\u2248'} {Number(product.price_eur || 0).toFixed(2)} EUR
+                                {'≈'} {Number(product.price_eur || 0).toFixed(2)} EUR
                               </span>
                             </div>
                           </TableCell>
@@ -2736,7 +2737,8 @@ const AdminDashboard = () => {
                               </Button>
                             </div>
                           </TableCell>
-                        </TableRow>;
+                        </TableRow>
+                      );
                     })}
                   </TableBody>
                 </Table>

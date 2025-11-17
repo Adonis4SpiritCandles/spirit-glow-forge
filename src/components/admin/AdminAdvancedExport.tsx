@@ -355,7 +355,7 @@ export default function AdminAdvancedExport() {
         toast.success(language === 'pl' ? 'Backup completo esportato' : 'Full backup exported');
       } else {
         // For other formats, export as structured data
-        const exportData: ExportData = {
+        const exportDataResult: ExportData = {
           headers: ['Category', 'Count', 'Data'],
           rows: Object.entries(backup).map(([key, value]: [string, any]) => [
             key,
@@ -688,14 +688,14 @@ export default function AdminAdvancedExport() {
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{language === 'pl' ? 'Data od' : 'Date From'}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(dateFrom, 'PPP')}
+                    <Button variant="outline" className="w-full sm:w-[150px] justify-start text-xs sm:text-sm truncate">
+                      <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                      <span className="truncate">{format(dateFrom, 'PPP')}</span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -708,9 +708,9 @@ export default function AdminAdvancedExport() {
                 <Label>{language === 'pl' ? 'Data do' : 'Date To'}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(dateTo, 'PPP')}
+                    <Button variant="outline" className="w-full sm:w-[150px] justify-start text-xs sm:text-sm truncate">
+                      <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                      <span className="truncate">{format(dateTo, 'PPP')}</span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">

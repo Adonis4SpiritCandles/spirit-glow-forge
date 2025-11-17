@@ -739,7 +739,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     // Reviews  
     if (key === 'anonymous') return language === 'pl' ? 'Anonimowy' : 'Anonymous';
     if (key === 'complete') return language === 'pl' ? 'Zakończ' : 'Complete';
-    if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'FURGONETKA Pay Miss' : 'FURGONETKA Pay Miss';
+    if (key === 'furgonetkaPayMiss') return language === 'pl' ? 'Furgonetka PAY Miss' : 'Furgonetka PAY Miss';
     if (key === 'trackingNumb') return language === 'pl' ? 'Numer śledzenia' : 'Tracking Numb.';
     if (key === 'awaitingShipmentConfirmation') return language === 'pl' ? 'czekam na ZAKOŃCZENIE' : 'Awaiting for data COMPLETE';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped Successfully';
@@ -770,8 +770,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'statusCollectProblem') return language === 'pl' ? 'Problem z Odbiorem - Problem z odbiorem paczki' : 'Collection Issue - Problem with package collection';
     if (key === 'statusPending') return language === 'pl' ? 'Oczekujące - Zamówienie jest przygotowywane' : 'Pending - Order is being prepared';
     if (key === 'statusProcessing') return language === 'pl' ? 'Przetwarzanie - Zamówienie jest przetwarzane' : 'Processing - Order is being processed';
-    if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Oczekiwanie na przesłanie FURKONEKTA' : 'Awaiting FURKONEKTA submission';
-    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment CREATED!';
+    if (key === 'awaitingFurgonetkaSubmission') return language === 'pl' ? 'Pani Furgonetka Wyślij' : 'Miss Furgonetka Send';
+    if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment created';
     if (key === 'shipped') return language === 'pl' ? 'WYSŁANY' : 'SHIPPED';
     if (key === 'shippedSuccessfully') return language === 'pl' ? 'Wysłano pomyślnie' : 'Shipped successfully';
     if (key === 'spiritPointsLeaderboard') return language === 'pl' ? 'Ranking Punktów Spirit' : 'Spirit Points Leaderboard';
@@ -1090,7 +1090,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     if (key === 'paymentConfirmed') return language === 'pl' ? 'Płatność potwierdzona' : 'Payment Confirmed';
     if (key === 'adminConfirmed') return language === 'pl' ? 'Zamówienie potwierdzone' : 'Order Confirmed';
     if (key === 'shipmentCreated') return language === 'pl' ? 'Przesyłka utworzona' : 'Shipment Created';
-    if (key === 'inTransit') return language === 'pl' ? 'W tranzycie' : 'In Transit';
+    if (key === 'inTransit') return language === 'pl' ? 'W transporcie do dostarczenia' : 'In Transit for Delivered';
     if (key === 'delivered') return language === 'pl' ? 'Dostarczone' : 'Delivered';
     
     // Bulk Actions

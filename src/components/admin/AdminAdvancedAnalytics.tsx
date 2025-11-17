@@ -62,6 +62,32 @@ export default function AdminAdvancedAnalytics() {
     loadAnalytics();
   }, [period]);
 
+  const confirmReset = async () => {
+    setIsResetting(true);
+    try {
+      if (resetMode === 'delete' && resetType) {
+        // Delete orders in date range
+        let query = supabase.from('orders').delete();
+        if (resetDateFrom) {
+          query = query.gte('created_at', resetDateFrom);
+        }
+        if (resetDateTo) {
+          query = query.lte('created_at', resetDateTo);
+        }
+        const { error } = await query;
+        if (error) throw error;
+      }
+      // Reload analytics (will recalculate)
+      await loadAnalytics();
+      setShowResetDialog(false);
+      toast.success(language === 'pl' ? 'Reset zakończony' : 'Reset completed');
+    } catch (error: any) {
+      toast.error(language === 'pl' ? `Błąd: ${error.message}` : `Error: ${error.message}`);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const loadAnalytics = async () => {
     setLoading(true);
     try {

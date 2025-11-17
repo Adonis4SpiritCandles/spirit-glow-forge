@@ -2620,6 +2620,7 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                 )}
+                
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -2688,7 +2689,7 @@ const AdminDashboard = () => {
                             <div className="flex flex-col">
                               <span className="font-semibold">{Number(product.price_pln).toFixed(2)} PLN</span>
                               <span className="text-xs text-muted-foreground">
-                                (≈ {Number(product.price_eur || 0).toFixed(2)} EUR)
+                                {'('}≈ {Number(product.price_eur || 0).toFixed(2)} EUR{')'}
                               </span>
                             </div>
                           </TableCell>

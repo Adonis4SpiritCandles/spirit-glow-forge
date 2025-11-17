@@ -198,11 +198,12 @@ export default function AdminAdvancedAnalytics() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">
           {language === 'pl' ? 'Zaawansowana analityka' : 'Advanced Analytics'}
         </h2>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Period Filters */}
           <Button
             variant={period === '7d' ? 'default' : 'outline'}
             size="sm"
@@ -224,12 +225,13 @@ export default function AdminAdvancedAnalytics() {
           >
             {language === 'pl' ? '90 dni' : '90 Days'}
           </Button>
+          
+          {/* Refresh */}
           <Button variant="outline" size="sm" onClick={loadAnalytics}>
             <RefreshCw className="h-4 w-4" />
           </Button>
-          
+
           {/* Reset Buttons */}
-          <div className="h-6 w-px bg-border mx-1" />
           <Button 
             variant="outline" 
             size="sm" 

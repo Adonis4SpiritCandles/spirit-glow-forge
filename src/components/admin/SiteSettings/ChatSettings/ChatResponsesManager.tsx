@@ -460,8 +460,8 @@ const ChatResponsesManager = () => {
         {responses.map((response) => (
           <Card key={response.id}>
             <CardContent className="pt-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                <div className="flex-1 w-full space-y-3 sm:space-y-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant={response.is_default ? "default" : "secondary"}>
                       {response.category}
@@ -478,40 +478,42 @@ const ChatResponsesManager = () => {
                     </Badge>
                   </div>
 
-                  <div className="text-sm">
+                  <div className="text-sm w-full">
                     <p className="font-medium text-muted-foreground mb-1">
                       {language === 'pl' ? 'Słowa kluczowe:' : 'Keywords:'}
                     </p>
-                    <p className="text-xs">
-                      EN: {response.trigger_keywords_en.join(', ') || '-'}
-                    </p>
-                    <p className="text-xs">
-                      PL: {response.trigger_keywords_pl.join(', ') || '-'}
-                    </p>
+                    <div className="px-2 sm:px-0">
+                      <p className="text-xs break-words">
+                        EN: {response.trigger_keywords_en.join(', ') || '-'}
+                      </p>
+                      <p className="text-xs break-words">
+                        PL: {response.trigger_keywords_pl.join(', ') || '-'}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="text-sm space-y-3">
+                  <div className="text-sm space-y-3 w-full">
                     <div>
                       <p className="font-medium text-muted-foreground mb-1">
                         {language === 'pl' ? 'Odpowiedź:' : 'Response:'}
                       </p>
                       
                       {/* English Response Preview */}
-                      <div className="mb-3">
+                      <div className="mb-3 px-2 sm:px-0">
                         <Label className="text-xs font-semibold text-muted-foreground mb-1 block">
                           {language === 'pl' ? 'Odpowiedź angielska' : 'English Response'}
                         </Label>
-                        <p className="text-xs whitespace-pre-wrap bg-muted/50 p-3 rounded-md border border-border/50">
+                        <p className="text-xs whitespace-pre-wrap bg-muted/50 p-3 rounded-md border border-border/50 break-words">
                           {response.response_en || '-'}
                         </p>
                       </div>
 
                       {/* Polish Response Preview */}
-                      <div>
+                      <div className="px-2 sm:px-0">
                         <Label className="text-xs font-semibold text-muted-foreground mb-1 block">
                           {language === 'pl' ? 'Odpowiedź polska' : 'Polish Response'}
                         </Label>
-                        <p className="text-xs whitespace-pre-wrap bg-muted/50 p-3 rounded-md border border-border/50">
+                        <p className="text-xs whitespace-pre-wrap bg-muted/50 p-3 rounded-md border border-border/50 break-words">
                           {response.response_pl || '-'}
                         </p>
                       </div>
@@ -519,7 +521,7 @@ const ChatResponsesManager = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-shrink-0">
                   <Button
                     size="sm"
                     variant="outline"

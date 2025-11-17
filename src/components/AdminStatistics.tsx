@@ -240,9 +240,6 @@ const AdminStatistics = ({ stats, onRefresh }: AdminStatisticsProps) => {
             {language === 'pl' ? '90 dni' : '90 Days'}
           </Button>
           
-          {/* Divider */}
-          <div className="h-6 w-px bg-border mx-1" />
-          
           {/* Refresh */}
           <Button 
             variant="outline" 

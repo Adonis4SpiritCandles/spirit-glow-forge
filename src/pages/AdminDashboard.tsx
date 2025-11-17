@@ -3492,24 +3492,27 @@ const AdminDashboard = () => {
                           </div>
 
                           {/* Order Info */}
-                          <div className="flex justify-between items-start">
-                            <div className="flex-1 min-w-0">
-                              <div className="font-semibold text-sm whitespace-nowrap">
-                                SPIRIT-{String(order.order_number).padStart(5, '0')}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {new Date(order.created_at).toLocaleDateString()}
+                          <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-start gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="font-semibold text-sm whitespace-nowrap">
+                                  SPIRIT-{String(order.order_number).padStart(5, '0')}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {new Date(order.created_at).toLocaleDateString()}
+                                </div>
                               </div>
                             </div>
-                            <div className="flex flex-wrap gap-1 justify-end ml-2">
+                            <div className="flex flex-wrap gap-1 justify-end max-w-full">
                               {orderBadges.map((badge, idx) => (
                                 <Badge
                                   key={idx}
                                   variant="outline"
-                                  className={`text-[9px] px-1.5 py-0.5 h-auto ${badge.variant} flex items-center gap-1`}
+                                  className={`text-[9px] px-1.5 py-0.5 h-auto ${badge.variant} flex items-center gap-1 flex-shrink-0`}
+                                  style={{ maxWidth: 'calc(50% - 0.125rem)' }}
                                 >
                                   {badge.icon}
-                                  <span className="whitespace-nowrap">{badge.label}</span>
+                                  <span className="whitespace-nowrap truncate">{badge.label}</span>
                                 </Badge>
                               ))}
                             </div>

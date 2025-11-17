@@ -2056,30 +2056,33 @@ const AdminDashboard = () => {
                       </div>
 
                       {/* Clear Filters Button */}
-                      {(productFilterName || productFilterCategory !== 'all' || productFilterCollections.length > 0 || 
-                        productFilterPriceMin || productFilterPriceMax || productFilterStockMin || productFilterStockMax ||
-                        productFilterSize !== 'all' || productDateFrom || productDateTo) && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setProductFilterName('');
-                            setProductFilterCategory('all');
-                            setProductFilterCollections([]);
-                            setProductFilterPriceMin('');
-                            setProductFilterPriceMax('');
-                            setProductFilterStockMin('');
-                            setProductFilterStockMax('');
-                            setProductFilterSize('all');
-                            setProductDateFrom('');
-                            setProductDateTo('');
-                          }}
-                          className="h-9 text-xs"
-                        >
-                          <X className="h-3 w-3 mr-1" />
-                          {language === 'pl' ? 'Wyczyść' : 'Clear'}
-                        </Button>
-                      )}
+                      {(() => {
+                        const hasFilters = productFilterName || productFilterCategory !== 'all' || productFilterCollections.length > 0 || 
+                          productFilterPriceMin || productFilterPriceMax || productFilterStockMin || productFilterStockMax ||
+                          productFilterSize !== 'all' || productDateFrom || productDateTo;
+                        return hasFilters ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setProductFilterName('');
+                              setProductFilterCategory('all');
+                              setProductFilterCollections([]);
+                              setProductFilterPriceMin('');
+                              setProductFilterPriceMax('');
+                              setProductFilterStockMin('');
+                              setProductFilterStockMax('');
+                              setProductFilterSize('all');
+                              setProductDateFrom('');
+                              setProductDateTo('');
+                            }}
+                            className="h-9 text-xs"
+                          >
+                            <X className="h-3 w-3 mr-1" />
+                            {language === 'pl' ? 'Wyczyść' : 'Clear'}
+                          </Button>
+                        ) : null;
+                      })()}
                     </div>
                   </div>
 
@@ -2338,30 +2341,33 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* Clear Filters Button */}
-                        {(productFilterName || productFilterCategory !== 'all' || productFilterCollections.length > 0 || 
-                          productFilterPriceMin || productFilterPriceMax || productFilterStockMin || productFilterStockMax ||
-                          productFilterSize !== 'all' || productDateFrom || productDateTo) && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setProductFilterName('');
-                              setProductFilterCategory('all');
-                              setProductFilterCollections([]);
-                              setProductFilterPriceMin('');
-                              setProductFilterPriceMax('');
-                              setProductFilterStockMin('');
-                              setProductFilterStockMax('');
-                              setProductFilterSize('all');
-                              setProductDateFrom('');
-                              setProductDateTo('');
-                            }}
-                            className="w-full h-9 text-xs"
-                          >
-                            <X className="h-3 w-3 mr-1" />
-                            {language === 'pl' ? 'Wyczyść filtry' : 'Clear Filters'}
-                          </Button>
-                        )}
+                        {(() => {
+                          const hasFilters = productFilterName || productFilterCategory !== 'all' || productFilterCollections.length > 0 || 
+                            productFilterPriceMin || productFilterPriceMax || productFilterStockMin || productFilterStockMax ||
+                            productFilterSize !== 'all' || productDateFrom || productDateTo;
+                          return hasFilters ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setProductFilterName('');
+                                setProductFilterCategory('all');
+                                setProductFilterCollections([]);
+                                setProductFilterPriceMin('');
+                                setProductFilterPriceMax('');
+                                setProductFilterStockMin('');
+                                setProductFilterStockMax('');
+                                setProductFilterSize('all');
+                                setProductDateFrom('');
+                                setProductDateTo('');
+                              }}
+                              className="w-full h-9 text-xs"
+                            >
+                              <X className="h-3 w-3 mr-1" />
+                              {language === 'pl' ? 'Wyczyść filtry' : 'Clear Filters'}
+                            </Button>
+                          ) : null;
+                        })()}
                         </CardContent>
                       </CollapsibleContent>
                     </Card>
@@ -2638,8 +2644,7 @@ const AdminDashboard = () => {
                   <TableBody>
                     {getFilteredAndSortedProducts().map((product: any) => {
                       const productCollections = (product.product_collections || []).map((pc: any) => pc.collection).filter(Boolean);
-                      return (
-                        <TableRow key={product.id}>
+                      return <TableRow key={product.id}>
                           <TableCell>
                             {product.image_url ? (
                               <div className="relative w-16 h-16 rounded-md overflow-hidden border border-border/40 flex-shrink-0">
@@ -2689,7 +2694,7 @@ const AdminDashboard = () => {
                             <div className="flex flex-col">
                               <span className="font-semibold">{Number(product.price_pln).toFixed(2)} PLN</span>
                               <span className="text-xs text-muted-foreground">
-                                {`(≈ ${Number(product.price_eur || 0).toFixed(2)} EUR)`}
+                                {'\u2248'} {Number(product.price_eur || 0).toFixed(2)} EUR
                               </span>
                             </div>
                           </TableCell>
@@ -2731,8 +2736,7 @@ const AdminDashboard = () => {
                               </Button>
                             </div>
                           </TableCell>
-                        </TableRow>
-                      );
+                        </TableRow>;
                     })}
                   </TableBody>
                 </Table>

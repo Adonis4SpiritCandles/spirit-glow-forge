@@ -99,23 +99,35 @@ const UserDashboard = () => {
       @keyframes candleFlicker {
         0%, 100% { 
           opacity: 1;
-          filter: brightness(1);
+          filter: brightness(1) drop-shadow(0 0 10px hsl(var(--primary) / 0.5));
         }
-        25% { 
+        15% { 
+          opacity: 0.95;
+          filter: brightness(0.90) drop-shadow(0 0 15px hsl(var(--primary) / 0.6));
+        }
+        30% { 
           opacity: 0.98;
-          filter: brightness(0.95);
+          filter: brightness(0.95) drop-shadow(0 0 12px hsl(var(--primary) / 0.55));
         }
-        50% { 
+        45% { 
+          opacity: 0.92;
+          filter: brightness(0.88) drop-shadow(0 0 18px hsl(var(--primary) / 0.65));
+        }
+        60% { 
           opacity: 0.96;
-          filter: brightness(0.92);
+          filter: brightness(0.93) drop-shadow(0 0 14px hsl(var(--primary) / 0.58));
         }
         75% { 
-          opacity: 0.98;
-          filter: brightness(0.95);
+          opacity: 0.94;
+          filter: brightness(0.91) drop-shadow(0 0 16px hsl(var(--primary) / 0.62));
+        }
+        90% { 
+          opacity: 0.97;
+          filter: brightness(0.96) drop-shadow(0 0 11px hsl(var(--primary) / 0.52));
         }
       }
       .title-candle-flicker {
-        animation: candleFlicker 6s ease-in-out infinite;
+        animation: candleFlicker 8s ease-in-out infinite;
       }
       .title-luminescent {
         text-shadow: 

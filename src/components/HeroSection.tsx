@@ -1,21 +1,125 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import spiritLogo from "@/assets/spirit-logo.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { gsap } from "gsap";
 
 const HeroSection = () => {
   const [logoGlow, setLogoGlow] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [sectionActive, setSectionActive] = useState<boolean>(true);
+  const h1Ref = useRef<HTMLHeadingElement>(null);
+  const h2Ref = useRef<HTMLHeadingElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const animationTriggered = useRef(false);
 
   useEffect(() => {
     // Simple logo glow effect
     setTimeout(() => setLogoGlow(true), 600);
     loadSectionToggle();
   }, []);
+
+  // GSAP Animation with IntersectionObserver
+  useEffect(() => {
+    if (!textContainerRef.current || !h1Ref.current || !h2Ref.current || animationTriggered.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !animationTriggered.current) {
+            animationTriggered.current = true;
+            
+            // Wait a bit for DOM to be ready
+            setTimeout(() => {
+              if (!h1Ref.current || !h2Ref.current) return;
+              
+              // Animate H1 existing spans
+              const h1Spans = Array.from(h1Ref.current.querySelectorAll('span'));
+              
+              h1Spans.forEach((originalSpan, index) => {
+                // Set initial state
+                gsap.set(originalSpan, {
+                  opacity: 0,
+                  rotationX: 90,
+                  transformOrigin: '50% 50%'
+                });
+                
+                // Animate each word with rotate-in effect
+                gsap.to(originalSpan, {
+                  opacity: 1,
+                  rotationX: 0,
+                  duration: 0.6,
+                  delay: index * 0.15,
+                  ease: 'power3.out',
+                  onComplete: () => {
+                    if (index === h1Spans.length - 1) {
+                      // Start floating animation for H1 after all words are animated
+                      startFloatingAnimation(h1Ref.current!);
+                    }
+                  }
+                });
+              });
+              
+              // Wrap H2 text for animation
+              const h2Text = h2Ref.current.textContent || '';
+              const h2OriginalHTML = h2Ref.current.innerHTML;
+              h2Ref.current.innerHTML = '';
+              
+              const h2Wrapper = document.createElement('span');
+              h2Wrapper.textContent = h2Text;
+              h2Wrapper.style.display = 'inline-block';
+              h2Wrapper.style.opacity = '0';
+              h2Wrapper.style.transform = 'rotateX(90deg)';
+              h2Wrapper.style.transformOrigin = '50% 50%';
+              h2Ref.current.appendChild(h2Wrapper);
+              
+              // Animate H2
+              gsap.to(h2Wrapper, {
+                opacity: 1,
+                rotationX: 0,
+                duration: 0.6,
+                delay: h1Spans.length * 0.15 + 0.3,
+                ease: 'power3.out',
+                onComplete: () => {
+                  startFloatingAnimation(h2Ref.current!);
+                }
+              });
+            }, 100);
+          }
+        });
+      },
+      { threshold: 0.2, triggerOnce: true }
+    );
+
+    observer.observe(textContainerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // Floating animation loop
+  const startFloatingAnimation = (element: HTMLElement) => {
+    gsap.to(element, {
+      y: -8,
+      duration: 3,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true
+    });
+    
+    gsap.to(element, {
+      x: 4,
+      duration: 4,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true,
+      delay: 0.5
+    });
+  };
 
   const loadSectionToggle = async () => {
     try {
@@ -86,14 +190,21 @@ const HeroSection = () => {
             </div>
             
             {/* H1 and H2 Text */}
-            <div className="mb-8 animate-fade-in">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-4">
+            <div ref={textContainerRef} className="mb-8">
+              <h1 
+                ref={h1Ref}
+                className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-4"
+                style={{ perspective: '1000px' }}
+              >
                 <span className="block">SPIRIT</span>
                 <span className="block text-primary">CANDLE</span>
               </h1>
               
-              <h2 className="text-xl md:text-2xl text-muted-foreground mb-6 italic">
-                Reborn your nature
+              <h2 
+                ref={h2Ref}
+                className="text-xl md:text-2xl text-muted-foreground mb-6 italic"
+              >
+                {language === 'pl' ? 'Odnów swoją naturę' : 'Reborn your nature'}
               </h2>
             </div>
           </div>

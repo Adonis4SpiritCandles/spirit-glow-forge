@@ -237,7 +237,7 @@ export const generateAboutPageStructuredData = (aboutInfo?: {
       url: 'https://spirit-candle.com',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://spirit-candle.com/spirit-logo.png',
+        url: 'https://spirit-candle.com/spiritcandles/spirit-logo.png',
         width: 512,
         height: 512
       },
@@ -342,7 +342,7 @@ export const generateArticleStructuredData = (article: {
       name: 'SPIRIT CANDLES',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://spirit-candle.com/spirit-logo.png'
+        url: 'https://spirit-candle.com/spiritcandles/spirit-logo.png'
       }
     },
     mainEntityOfPage: {

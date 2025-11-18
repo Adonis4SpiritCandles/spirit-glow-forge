@@ -7,6 +7,7 @@ interface SEOProps {
   description?: string;
   keywords?: string;
   image?: string;
+  imageAlt?: string;
   url?: string;
   type?: 'website' | 'product' | 'article';
   noindex?: boolean;
@@ -18,6 +19,8 @@ interface SEOProps {
     en?: string;
     pl?: string;
   };
+  twitterCreator?: string;
+  twitterSite?: string;
 }
 
 const SEOManager = ({
@@ -26,6 +29,7 @@ const SEOManager = ({
   description,
   keywords,
   image = 'https://spirit-candle.com/spirit-logo.png',
+  imageAlt,
   url,
   type = 'website',
   noindex = false,
@@ -34,6 +38,8 @@ const SEOManager = ({
   structuredData,
   locale,
   alternateUrls,
+  twitterCreator = '@spiritcandles',
+  twitterSite = '@spiritcandles',
 }: SEOProps) => {
   const { language } = useLanguage();
   const currentLocale = locale || language;
@@ -58,6 +64,7 @@ const SEOManager = ({
   const finalKeywords = keywords || defaultKeywords;
   const finalUrl = url || `https://spirit-candle.com/${currentLocale}`;
   const finalCanonical = canonical || finalUrl;
+  const finalImageAlt = imageAlt || finalTitle;
 
   // Clean URL from tracking parameters
   const cleanCanonical = finalCanonical.split('?')[0];
@@ -113,6 +120,8 @@ const SEOManager = ({
       <meta property="og:image" content={image} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={finalImageAlt} />
+      <meta property="og:image:secure_url" content={image} />
       <meta property="og:site_name" content="SPIRIT CANDLES" />
       <meta property="og:locale" content={ogLocale} />
       <meta property="og:locale:alternate" content={alternateLocale} />
@@ -123,6 +132,13 @@ const SEOManager = ({
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={finalDescription} />
       <meta name="twitter:image" content={image} />
+      <meta name="twitter:image:alt" content={finalImageAlt} />
+      {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
+      {twitterSite && <meta name="twitter:site" content={twitterSite} />}
+
+      {/* TikTok */}
+      <meta name="tiktok:domain" content="spirit-candle.com" />
+      <meta name="tiktok:app_id" content="spiritcandles" />
 
       {/* hreflang tags for bilingual support */}
       {alternateUrls?.en && (

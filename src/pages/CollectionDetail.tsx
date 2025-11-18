@@ -8,6 +8,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCard from "@/components/ProductCard";
 import SEOManager from "@/components/SEO/SEOManager";
 import { Parallax } from "react-parallax";
+import { 
+  generateCollectionStructuredData, 
+  generateBreadcrumbStructuredData,
+  getFullUrl,
+  generateAlternateUrls,
+  truncateDescription,
+  generateSlug
+} from "@/utils/seoUtils";
 
 export default function CollectionDetail() {
   // Add styles for luminescence and candle-flicker animation
@@ -181,11 +189,47 @@ export default function CollectionDetail() {
     );
   }
 
+  // SEO Data
+  const collectionName = language === 'en' ? collection.name_en : collection.name_pl;
+  const collectionDescription = language === 'en' ? collection.description_en : collection.description_pl;
+  const collectionSlug = generateSlug(collectionName);
+  const collectionUrl = getFullUrl(`/collections/${collection.id}`, language);
+  const alternateUrls = generateAlternateUrls(`/collections/${collection.id}`);
+
+  // Breadcrumb
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: getFullUrl('/', language) },
+    { name: language === 'en' ? 'Collections' : 'Kolekcje', url: getFullUrl('/collections', language) },
+    { name: collectionName, url: collectionUrl }
+  ]);
+
+  // Collection structured data
+  const collectionStructuredData = generateCollectionStructuredData({
+    name: collectionName,
+    description: collectionDescription || '',
+    url: collectionUrl,
+    image: collection.image_url || collection.cover_image_url,
+    numberOfItems: products.length
+  });
+
+  // Keywords
+  const keywords = language === 'en'
+    ? `${collectionName}, luxury candles, soy candles, ${collectionName} collection, handcrafted candles`
+    : `${collectionName}, luksusowe świece, świece sojowe, kolekcja ${collectionName}, ręcznie robione świece`;
+
   return (
     <>
       <SEOManager
-        title={language === 'en' ? collection.name_en : collection.name_pl}
-        description={language === 'en' ? collection.description_en : collection.description_pl}
+        title={collectionName}
+        description={truncateDescription(collectionDescription || '', 160)}
+        keywords={keywords}
+        type="website"
+        image={collection.image_url || collection.cover_image_url || 'https://spirit-candle.com/spirit-logo.png'}
+        imageAlt={collectionName}
+        url={collectionUrl}
+        canonical={collectionUrl}
+        structuredData={[collectionStructuredData, breadcrumbData]}
+        alternateUrls={alternateUrls}
       />
       
       <div className="min-h-screen bg-background">

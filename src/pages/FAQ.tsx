@@ -7,16 +7,17 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import SEOManager from "@/components/SEO/SEOManager";
-import { generateBreadcrumbStructuredData, getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
+import { 
+  generateFAQPageStructuredData,
+  generateBreadcrumbStructuredData,
+  getFullUrl,
+  generateAlternateUrls,
+  truncateDescription
+} from "@/utils/seoUtils";
 
 const FAQ = () => {
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
-
-  const breadcrumbData = generateBreadcrumbStructuredData([
-    { name: 'Home', url: getFullUrl('/', language) },
-    { name: 'FAQ', url: getFullUrl('/faq', language) }
-  ]);
 
   const faqCategories = [
     {
@@ -213,6 +214,32 @@ const FAQ = () => {
     }
   ];
 
+  // Collect all FAQs for structured data
+  const allFAQs = faqCategories.flatMap(category => 
+    category.faqs.map(faq => ({
+      question: faq.question,
+      answer: faq.answer
+    }))
+  );
+
+  // SEO Data
+  const faqUrl = getFullUrl('/faq', language);
+  const alternateUrls = generateAlternateUrls('/faq');
+
+  // Breadcrumb
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: getFullUrl('/', language) },
+    { name: 'FAQ', url: faqUrl }
+  ]);
+
+  // FAQ structured data
+  const faqStructuredData = generateFAQPageStructuredData(allFAQs);
+
+  // Keywords
+  const keywords = language === 'en'
+    ? 'faq, frequently asked questions, candle help, shipping info, returns policy, candle care'
+    : 'faq, najczęściej zadawane pytania, pomoc świece, informacje wysyłka, polityka zwrotów, pielęgnacja świec';
+
   // Filter FAQs based on search query
   const filteredCategories = faqCategories.map(category => ({
     ...category,
@@ -226,15 +253,17 @@ const FAQ = () => {
     <>
       <SEOManager
         title="FAQ"
-        description={language === 'en'
+        description={truncateDescription(language === 'en'
           ? 'Find answers to frequently asked questions about SPIRIT CANDLES products, shipping, returns, and more.'
-          : 'Znajdź odpowiedzi na najczęściej zadawane pytania o produkty SPIRIT CANDLES, wysyłkę, zwroty i więcej.'}
-        keywords={language === 'en'
-          ? 'faq, frequently asked questions, candle help, shipping info, returns policy'
-          : 'faq, najczęściej zadawane pytania, pomoc świece, informacje wysyłka, polityka zwrotów'}
-        url={getFullUrl('/faq', language)}
-        structuredData={breadcrumbData}
-        alternateUrls={generateAlternateUrls('/faq')}
+          : 'Znajdź odpowiedzi na najczęściej zadawane pytania o produkty SPIRIT CANDLES, wysyłkę, zwroty i więcej.', 160)}
+        keywords={keywords}
+        type="website"
+        image="https://spirit-candle.com/spirit-logo.png"
+        imageAlt="FAQ - SPIRIT CANDLES"
+        url={faqUrl}
+        canonical={faqUrl}
+        structuredData={faqStructuredData ? [faqStructuredData, breadcrumbData] : [breadcrumbData]}
+        alternateUrls={alternateUrls}
       />
       <main className="min-h-screen bg-gradient-mystical">
       <div className="container mx-auto px-4 lg:px-8 py-16">

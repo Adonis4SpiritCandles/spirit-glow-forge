@@ -3,7 +3,13 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import SEOManager from '@/components/SEO/SEOManager';
-import { getFullUrl, generateAlternateUrls } from '@/utils/seoUtils';
+import { 
+  generateWebPageStructuredData,
+  generateBreadcrumbStructuredData,
+  getFullUrl,
+  generateAlternateUrls,
+  truncateDescription
+} from '@/utils/seoUtils';
 
 const LegalNotice = () => {
   const { t, language } = useLanguage();
@@ -11,15 +17,45 @@ const LegalNotice = () => {
     ? '/documents/nota-prawna-pl.pdf' 
     : '/documents/legal-notice-en.pdf';
 
+  // SEO Data
+  const legalUrl = getFullUrl('/legal-notice', language);
+  const alternateUrls = generateAlternateUrls('/legal-notice');
+
+  // Breadcrumb
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: getFullUrl('/', language) },
+    { name: language === 'en' ? 'Legal Notice' : 'Informacje prawne', url: legalUrl }
+  ]);
+
+  // WebPage structured data
+  const webPageStructuredData = generateWebPageStructuredData({
+    name: language === 'en' ? 'Legal Notice' : 'Informacje prawne',
+    description: language === 'en'
+      ? 'Legal notice and company information for SPIRIT CANDLES.'
+      : 'Informacje prawne i dane firmy SPIRIT CANDLES.',
+    url: legalUrl
+  });
+
+  // Keywords
+  const keywords = language === 'en'
+    ? 'legal notice, company information, terms, spirit candles legal'
+    : 'informacje prawne, dane firmy, warunki, spirit candles prawo';
+
   return (
     <>
       <SEOManager
-        title={t('legalNotice')}
-        description={language === 'en'
-          ? 'SPIRIT CANDLES Legal Notice. Information about the website operator, intellectual property rights and disclaimers.'
-          : 'Nota Prawna SPIRIT CANDLES. Informacje o operatorze strony, prawach własności intelektualnej i zastrzeżeniach.'}
-        url={getFullUrl('/legal-notice', language)}
-        alternateUrls={generateAlternateUrls('/legal-notice')}
+        title={language === 'en' ? 'Legal Notice' : 'Informacje prawne'}
+        description={truncateDescription(language === 'en'
+          ? 'Legal notice and company information for SPIRIT CANDLES.'
+          : 'Informacje prawne i dane firmy SPIRIT CANDLES.', 160)}
+        keywords={keywords}
+        type="website"
+        image="https://spirit-candle.com/spirit-logo.png"
+        imageAlt={language === 'en' ? 'Legal Notice' : 'Informacje prawne'}
+        url={legalUrl}
+        canonical={legalUrl}
+        structuredData={[webPageStructuredData, breadcrumbData]}
+        alternateUrls={alternateUrls}
       />
       <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">

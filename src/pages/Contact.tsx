@@ -12,7 +12,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 import SEOManager from "@/components/SEO/SEOManager";
-import { generateBreadcrumbStructuredData, getFullUrl, generateAlternateUrls } from "@/utils/seoUtils";
+import { 
+  generateContactPageStructuredData,
+  generateBreadcrumbStructuredData,
+  getFullUrl,
+  generateAlternateUrls,
+  truncateDescription
+} from "@/utils/seoUtils";
 
 const Contact = () => {
   const { t, language } = useLanguage();
@@ -131,11 +137,6 @@ const Contact = () => {
     }));
   };
 
-  const breadcrumbData = generateBreadcrumbStructuredData([
-    { name: 'Home', url: getFullUrl('/', language) },
-    { name: language === 'en' ? 'Contact' : 'Kontakt', url: getFullUrl('/contact', language) }
-  ]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -229,19 +230,42 @@ const Contact = () => {
     }
   };
 
+  // SEO Data
+  const contactUrl = getFullUrl('/contact', language);
+  const alternateUrls = generateAlternateUrls('/contact');
+
+  // Breadcrumb
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: getFullUrl('/', language) },
+    { name: language === 'en' ? 'Contact' : 'Kontakt', url: contactUrl }
+  ]);
+
+  // Contact structured data
+  const contactStructuredData = generateContactPageStructuredData({
+    email: 'm5moffice@proton.me',
+    phone: '+48 729877557'
+  });
+
+  // Keywords
+  const keywords = language === 'en'
+    ? 'contact spirit candles, customer service, candle inquiries, support, help'
+    : 'kontakt spirit candles, obsługa klienta, zapytania świece, wsparcie, pomoc';
+
   return (
     <>
       <SEOManager
         title={language === 'en' ? 'Contact Us' : 'Kontakt'}
-        description={language === 'en'
-          ? 'Get in touch with SPIRIT CANDLES. We are here to help with your questions about our luxury soy candles.'
-          : 'Skontaktuj się z SPIRIT CANDLES. Jesteśmy tu, aby pomóc z pytaniami dotyczącymi naszych luksusowych świec sojowych.'}
-        keywords={language === 'en'
-          ? 'contact spirit candles, customer service, candle support, email contact'
-          : 'kontakt spirit candles, obsługa klienta, wsparcie świec, kontakt email'}
-        url={getFullUrl('/contact', language)}
-        structuredData={breadcrumbData}
-        alternateUrls={generateAlternateUrls('/contact')}
+        description={truncateDescription(language === 'en'
+          ? 'Get in touch with SPIRIT CANDLES. We are here to help with your questions about our luxury soy candles, orders, and shipping.'
+          : 'Skontaktuj się z SPIRIT CANDLES. Jesteśmy tutaj, aby pomóc w pytaniach dotyczących naszych luksusowych świec sojowych, zamówień i wysyłki.', 160)}
+        keywords={keywords}
+        type="website"
+        image="https://spirit-candle.com/spirit-logo.png"
+        imageAlt={language === 'en' ? 'Contact SPIRIT CANDLES' : 'Kontakt SPIRIT CANDLES'}
+        url={contactUrl}
+        canonical={contactUrl}
+        structuredData={[contactStructuredData, breadcrumbData]}
+        alternateUrls={alternateUrls}
       />
       <main className="min-h-screen bg-gradient-mystical">
       <div className="container mx-auto px-4 lg:px-8 py-16">

@@ -90,7 +90,7 @@ jobs:
           cls -l /public_html/.htaccess
           bye
           LFTP_CMDS
-  
+
       - name: Upload spiritcandles .htaccess in /spiritcandles/
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}

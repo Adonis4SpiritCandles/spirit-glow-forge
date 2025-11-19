@@ -156,13 +156,24 @@ serve(async (req) => {
       }
     } else {
       // For other pages (home, shop, about, contact, custom_candles)
+      console.log('[serve-seo-meta] Fetching SEO settings for page type:', parsed.pageType, 'language:', parsed.language);
       const pageSettings = await fetchSEOSettings(supabaseUrl, supabaseKey, parsed.pageType, parsed.language);
+      console.log('[serve-seo-meta] SEO settings retrieved:', pageSettings ? {
+        title: pageSettings.title || '(empty)',
+        description: pageSettings.description ? pageSettings.description.substring(0, 50) + '...' : '(empty)',
+        hasImage: !!pageSettings.og_image_url,
+        image: pageSettings.og_image_url || '(empty)'
+      } : 'null - no settings found in database');
+      
       if (pageSettings) {
         title = pageSettings.title;
         description = pageSettings.description;
         keywords = pageSettings.keywords;
         image = pageSettings.og_image_url;
         noindex = pageSettings.noindex;
+        console.log('[serve-seo-meta] Using SEO settings:', { title, description: description?.substring(0, 50) + '...', image });
+      } else {
+        console.warn('[serve-seo-meta] No SEO settings found for page type:', parsed.pageType, '- will use fallback defaults');
       }
     }
     
@@ -183,6 +194,16 @@ serve(async (req) => {
     const baseUrl = 'https://spirit-candle.com';
     const fullUrl = `${baseUrl}${actualPath}`;
     const canonicalUrl = fullUrl;
+    
+    // Final values being used
+    console.log('[serve-seo-meta] Final values being used:', {
+      title: title || '(empty - using fallback)',
+      description: description ? description.substring(0, 50) + '...' : '(empty - using fallback)',
+      image: image || '(empty - using default)',
+      url: fullUrl,
+      pageType: parsed.pageType,
+      language: parsed.language
+    });
     
     // Generate HTML with meta tags
     const html = generateHTML({

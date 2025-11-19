@@ -13,6 +13,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to add timeout to promises
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => {
+      setTimeout(() => {
+        console.warn(`[serve-seo-meta] Operation timed out after ${timeoutMs}ms, using fallback`);
+        resolve(fallback);
+      }, timeoutMs);
+    })
+  ]);
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -79,17 +92,19 @@ serve(async (req) => {
       }
     }
     
+    const isCrawlerRequest = isCrawler(userAgent);
     console.log('[serve-seo-meta] Request:', { 
       pathname: actualPath,
       queryPath: queryPath,
       originalPathname: url.pathname,
       userAgent: userAgent, // Log completo per vedere User-Agent di WhatsApp
       detectedLanguage,
-      acceptLanguage: acceptLanguage.substring(0, 50)
+      acceptLanguage: acceptLanguage.substring(0, 50),
+      isCrawler: isCrawlerRequest
     });
     
     // Check if request is from a crawler
-    if (!isCrawler(userAgent)) {
+    if (!isCrawlerRequest) {
       console.log('[serve-seo-meta] Not a crawler, proxying to SPA');
       // For non-crawlers, return a simple response that tells them to access the main site
       // In production, this would be handled by the hosting platform (Netlify/Vercel redirects)
@@ -120,24 +135,56 @@ serve(async (req) => {
     
     // Fetch SEO settings for the page type
     if (parsed.pageType === 'product' && parsed.id) {
-      // Check if we should use specific meta for products
-      const productSettings = await fetchSEOSettings(supabaseUrl, supabaseKey, 'product_default', parsed.language);
-      
-      if (productSettings && productSettings.use_specific_meta) {
-        // Use specific product data
-        console.log('[serve-seo-meta] Using specific product data for product ID:', parsed.id);
-        const productData = await fetchProductData(supabaseUrl, supabaseKey, parsed.id, parsed.language);
-        if (productData) {
-          title = productData.title;
-          description = productData.description;
-          image = productData.image;
-          price = productData.price;
-          currency = productData.currency;
-          ogType = 'product';
-          console.log('[serve-seo-meta] Product data retrieved successfully');
+      try {
+        // Check if we should use specific meta for products
+        const productSettings = await withTimeout(
+          fetchSEOSettings(supabaseUrl, supabaseKey, 'product_default', parsed.language),
+          5000,
+          null
+        );
+        
+        if (productSettings && productSettings.use_specific_meta) {
+          // Use specific product data
+          console.log('[serve-seo-meta] Using specific product data for product ID:', parsed.id);
+          try {
+            const productData = await withTimeout(
+              fetchProductData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
+              5000,
+              null
+            );
+            if (productData) {
+              title = productData.title;
+              description = productData.description;
+              image = productData.image;
+              price = productData.price;
+              currency = productData.currency;
+              ogType = 'product';
+              console.log('[serve-seo-meta] Product data retrieved successfully');
+            } else {
+              console.warn('[serve-seo-meta] Product data not found for ID:', parsed.id, '- falling back to generic settings');
+              // Fallback to generic product_default settings
+              if (productSettings) {
+                title = productSettings.title;
+                description = productSettings.description;
+                keywords = productSettings.keywords;
+                image = productSettings.og_image_url;
+                noindex = productSettings.noindex;
+              }
+            }
+          } catch (productError) {
+            console.error('[serve-seo-meta] Error fetching product data:', productError);
+            // Fallback to generic settings
+            if (productSettings) {
+              title = productSettings.title;
+              description = productSettings.description;
+              keywords = productSettings.keywords;
+              image = productSettings.og_image_url;
+              noindex = productSettings.noindex;
+            }
+          }
         } else {
-          console.warn('[serve-seo-meta] Product data not found for ID:', parsed.id, '- falling back to generic settings');
-          // Fallback to generic product_default settings
+          // Use generic product_default settings
+          console.log('[serve-seo-meta] Using generic product_default settings');
           if (productSettings) {
             title = productSettings.title;
             description = productSettings.description;
@@ -146,33 +193,58 @@ serve(async (req) => {
             noindex = productSettings.noindex;
           }
         }
-      } else {
-        // Use generic product_default settings
-        console.log('[serve-seo-meta] Using generic product_default settings');
-        if (productSettings) {
-          title = productSettings.title;
-          description = productSettings.description;
-          keywords = productSettings.keywords;
-          image = productSettings.og_image_url;
-          noindex = productSettings.noindex;
-        }
+      } catch (error) {
+        console.error('[serve-seo-meta] Error in product handling:', error);
+        // Continue with fallback defaults - will be handled below
       }
     } else if (parsed.pageType === 'collection' && parsed.id) {
-      // Check if we should use specific meta for collections
-      const collectionSettings = await fetchSEOSettings(supabaseUrl, supabaseKey, 'collection_default', parsed.language);
-      
-      if (collectionSettings && collectionSettings.use_specific_meta) {
-        // Use specific collection data
-        console.log('[serve-seo-meta] Using specific collection data for collection ID:', parsed.id);
-        const collectionData = await fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language);
-        if (collectionData) {
-          title = collectionData.title;
-          description = collectionData.description;
-          image = collectionData.image;
-          console.log('[serve-seo-meta] Collection data retrieved successfully');
+      try {
+        // Check if we should use specific meta for collections
+        const collectionSettings = await withTimeout(
+          fetchSEOSettings(supabaseUrl, supabaseKey, 'collection_default', parsed.language),
+          5000,
+          null
+        );
+        
+        if (collectionSettings && collectionSettings.use_specific_meta) {
+          // Use specific collection data
+          console.log('[serve-seo-meta] Using specific collection data for collection ID:', parsed.id);
+          try {
+            const collectionData = await withTimeout(
+              fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
+              5000,
+              null
+            );
+            if (collectionData) {
+              title = collectionData.title;
+              description = collectionData.description;
+              image = collectionData.image;
+              console.log('[serve-seo-meta] Collection data retrieved successfully');
+            } else {
+              console.warn('[serve-seo-meta] Collection data not found for ID:', parsed.id, '- falling back to generic settings');
+              // Fallback to generic collection_default settings
+              if (collectionSettings) {
+                title = collectionSettings.title;
+                description = collectionSettings.description;
+                keywords = collectionSettings.keywords;
+                image = collectionSettings.og_image_url;
+                noindex = collectionSettings.noindex;
+              }
+            }
+          } catch (collectionError) {
+            console.error('[serve-seo-meta] Error fetching collection data:', collectionError);
+            // Fallback to generic settings
+            if (collectionSettings) {
+              title = collectionSettings.title;
+              description = collectionSettings.description;
+              keywords = collectionSettings.keywords;
+              image = collectionSettings.og_image_url;
+              noindex = collectionSettings.noindex;
+            }
+          }
         } else {
-          console.warn('[serve-seo-meta] Collection data not found for ID:', parsed.id, '- falling back to generic settings');
-          // Fallback to generic collection_default settings
+          // Use generic collection_default settings
+          console.log('[serve-seo-meta] Using generic collection_default settings');
           if (collectionSettings) {
             title = collectionSettings.title;
             description = collectionSettings.description;
@@ -181,37 +253,39 @@ serve(async (req) => {
             noindex = collectionSettings.noindex;
           }
         }
-      } else {
-        // Use generic collection_default settings
-        console.log('[serve-seo-meta] Using generic collection_default settings');
-        if (collectionSettings) {
-          title = collectionSettings.title;
-          description = collectionSettings.description;
-          keywords = collectionSettings.keywords;
-          image = collectionSettings.og_image_url;
-          noindex = collectionSettings.noindex;
-        }
+      } catch (error) {
+        console.error('[serve-seo-meta] Error in collection handling:', error);
+        // Continue with fallback defaults - will be handled below
       }
     } else {
       // For other pages (home, shop, about, contact, custom_candles)
       console.log('[serve-seo-meta] Fetching SEO settings for page type:', parsed.pageType, 'language:', parsed.language);
-      const pageSettings = await fetchSEOSettings(supabaseUrl, supabaseKey, parsed.pageType, parsed.language);
-      console.log('[serve-seo-meta] SEO settings retrieved:', pageSettings ? {
-        title: pageSettings.title || '(empty)',
-        description: pageSettings.description ? pageSettings.description.substring(0, 50) + '...' : '(empty)',
-        hasImage: !!pageSettings.og_image_url,
-        image: pageSettings.og_image_url || '(empty)'
-      } : 'null - no settings found in database');
-      
-      if (pageSettings) {
-        title = pageSettings.title;
-        description = pageSettings.description;
-        keywords = pageSettings.keywords;
-        image = pageSettings.og_image_url;
-        noindex = pageSettings.noindex;
-        console.log('[serve-seo-meta] Using SEO settings:', { title, description: description?.substring(0, 50) + '...', image });
-      } else {
-        console.warn('[serve-seo-meta] No SEO settings found for page type:', parsed.pageType, '- will use fallback defaults');
+      try {
+        const pageSettings = await withTimeout(
+          fetchSEOSettings(supabaseUrl, supabaseKey, parsed.pageType, parsed.language),
+          5000,
+          null
+        );
+        console.log('[serve-seo-meta] SEO settings retrieved:', pageSettings ? {
+          title: pageSettings.title || '(empty)',
+          description: pageSettings.description ? pageSettings.description.substring(0, 50) + '...' : '(empty)',
+          hasImage: !!pageSettings.og_image_url,
+          image: pageSettings.og_image_url || '(empty)'
+        } : 'null - no settings found in database');
+        
+        if (pageSettings) {
+          title = pageSettings.title;
+          description = pageSettings.description;
+          keywords = pageSettings.keywords;
+          image = pageSettings.og_image_url;
+          noindex = pageSettings.noindex;
+          console.log('[serve-seo-meta] Using SEO settings:', { title, description: description?.substring(0, 50) + '...', image });
+        } else {
+          console.warn('[serve-seo-meta] No SEO settings found for page type:', parsed.pageType, '- will use fallback defaults');
+        }
+      } catch (error) {
+        console.error('[serve-seo-meta] Error fetching page settings:', error);
+        // Continue with fallback defaults - will be handled below
       }
     }
     
@@ -281,8 +355,14 @@ serve(async (req) => {
       message: error instanceof Error ? error.message : String(error),
       url: req.url,
       method: req.method,
-      userAgent: req.headers.get('user-agent')?.substring(0, 50)
+      userAgent: req.headers.get('user-agent'),
+      actualPath: actualPath || '/'
     });
+    
+    // Construct the correct URL even on error
+    const baseUrl = 'https://spirit-candle.com';
+    const errorPath = actualPath || '/';
+    const errorUrl = `${baseUrl}${errorPath}`;
     
     // Return a proper HTML response even on error, so crawlers can still see something
     const errorHtml = `<!DOCTYPE html>
@@ -295,7 +375,7 @@ serve(async (req) => {
   <meta property="og:title" content="SPIRIT CANDLES — Reborn Your Nature">
   <meta property="og:description" content="Discover SPIRIT CANDLES luxury soy candles inspired by iconic fragrances and handcrafted with natural soy wax.">
   <meta property="og:image" content="https://spirit-candle.com/spiritcandles/og-image-default.jpg">
-  <meta property="og:url" content="https://spirit-candle.com${actualPath || '/'}">
+  <meta property="og:url" content="${errorUrl}">
   <meta property="og:type" content="website">
 </head>
 <body>

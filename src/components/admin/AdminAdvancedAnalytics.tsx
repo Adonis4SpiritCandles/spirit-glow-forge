@@ -69,10 +69,14 @@ export default function AdminAdvancedAnalytics() {
         // Delete orders in date range
         let query = supabase.from('orders').delete();
         if (resetDateFrom) {
-          query = query.gte('created_at', resetDateFrom);
+          const fromDate = new Date(resetDateFrom);
+          fromDate.setHours(0, 0, 0, 0);
+          query = query.gte('created_at', fromDate.toISOString());
         }
         if (resetDateTo) {
-          query = query.lte('created_at', resetDateTo);
+          const toDate = new Date(resetDateTo);
+          toDate.setHours(23, 59, 59, 999);
+          query = query.lte('created_at', toDate.toISOString());
         }
         const { error } = await query;
         if (error) throw error;

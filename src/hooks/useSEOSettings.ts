@@ -37,7 +37,7 @@ export function useSEOSettings(pageType: string): SEOSettings {
           .single();
 
         if (error) {
-          console.error('Error fetching SEO settings:', error);
+          console.error('[useSEOSettings] Error fetching SEO settings:', error);
           // Keep default/fallback values
           setSettings(prev => ({ ...prev, loading: false }));
           return;
@@ -48,24 +48,47 @@ export function useSEOSettings(pageType: string): SEOSettings {
           const descField = language === 'en' ? 'description_en' : 'description_pl';
           const keywordsField = language === 'en' ? 'keywords_en' : 'keywords_pl';
 
-          setSettings({
+          const newSettings = {
             title: data[titleField] || '',
             description: data[descField] || '',
             keywords: data[keywordsField] || '',
             og_image_url: data.og_image_url || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg',
             noindex: data.noindex || false,
             loading: false,
-          });
+          };
+          
+          setSettings(newSettings);
         } else {
           setSettings(prev => ({ ...prev, loading: false }));
         }
       } catch (err) {
-        console.error('Unexpected error fetching SEO settings:', err);
+        console.error('[useSEOSettings] Unexpected error fetching SEO settings:', err);
         setSettings(prev => ({ ...prev, loading: false }));
       }
     };
 
     fetchSEOSettings();
+
+    // Subscribe to real-time updates for this page_type
+    const channel = supabase
+      .channel(`seo-settings-${pageType}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'seo_settings',
+          filter: `page_type=eq.${pageType}`,
+        },
+        () => {
+          fetchSEOSettings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [pageType, language]);
 
   return settings;

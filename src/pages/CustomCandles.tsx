@@ -186,22 +186,25 @@ const CustomCandles = () => {
           }
         }
       `}</style>
-      <SEOManager
-        title={seoSettings.title || (language === 'en' ? 'Custom Candles | SPIRIT CANDLES' : 'Personalizowane Świece | SPIRIT CANDLES')}
-        description={seoSettings.description || (language === 'en'
-          ? 'Create your own personalized candle with custom label and fragrance of your choice. Perfect as a unique gift or for yourself.'
-          : 'Stwórz swoją własną spersonalizowaną świecę z niestandardową etykietą i wybranym zapachem. Idealna jako unikalny prezent lub dla siebie.')}
-        keywords={seoSettings.keywords || (language === 'en'
-          ? 'custom candles, personalized candles, custom fragrance candles, custom label candles, personalized gifts'
-          : 'personalizowane świece, świece na zamówienie, świece z własnym zapachem, świece z własną etykietą, spersonalizowane prezenty')}
-        image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
-        url={`https://spirit-candle.com/${language}/custom-candles`}
-        noindex={seoSettings.noindex}
-        alternateUrls={{
-          en: 'https://spirit-candle.com/en/custom-candles',
-          pl: 'https://spirit-candle.com/pl/custom-candles'
-        }}
-      />
+      {/* Only render SEOManager after data is loaded */}
+      {!seoSettings.loading && (
+        <SEOManager
+          title={seoSettings.title || (language === 'en' ? 'Custom Candles | SPIRIT CANDLES' : 'Personalizowane Świece | SPIRIT CANDLES')}
+          description={seoSettings.description || (language === 'en'
+            ? 'Create your own personalized candle with custom label and fragrance of your choice. Perfect as a unique gift or for yourself.'
+            : 'Stwórz swoją własną spersonalizowaną świecę z niestandardową etykietą i wybranym zapachem. Idealna jako unikalny prezent lub dla siebie.')}
+          keywords={seoSettings.keywords || (language === 'en'
+            ? 'custom candles, personalized candles, custom fragrance candles, custom label candles, personalized gifts'
+            : 'personalizowane świece, świece na zamówienie, świece z własnym zapachem, świece z własną etykietą, spersonalizowane prezenty')}
+          image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
+          url={`https://spirit-candle.com/${language}/custom-candles`}
+          noindex={seoSettings.noindex}
+          alternateUrls={{
+            en: 'https://spirit-candle.com/en/custom-candles',
+            pl: 'https://spirit-candle.com/pl/custom-candles'
+          }}
+        />
+      )}
 
       {/* Hero Section con Parallax */}
       {heroImageUrl ? (

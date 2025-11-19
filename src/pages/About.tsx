@@ -221,19 +221,22 @@ const About = () => {
 
   return (
     <>
-      <SEOManager
-        title={seoTitle}
-        description={seoDescription}
-        keywords={seoSettings.keywords || keywords}
-        type="website"
-        image={seoSettings.og_image_url || heroImage || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg'}
-        imageAlt={language === 'en' ? 'About SPIRIT CANDLES' : 'O SPIRIT CANDLES'}
-        url={aboutUrl}
-        canonical={aboutUrl}
-        noindex={seoSettings.noindex}
-        structuredData={[aboutStructuredData, breadcrumbData]}
-        alternateUrls={alternateUrls}
-      />
+      {/* Only render SEOManager after data is loaded */}
+      {!seoSettings.loading && (
+        <SEOManager
+          title={seoTitle}
+          description={seoDescription}
+          keywords={seoSettings.keywords || keywords}
+          type="website"
+          image={seoSettings.og_image_url || heroImage || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg'}
+          imageAlt={language === 'en' ? 'About SPIRIT CANDLES' : 'O SPIRIT CANDLES'}
+          url={aboutUrl}
+          canonical={aboutUrl}
+          noindex={seoSettings.noindex}
+          structuredData={[aboutStructuredData, breadcrumbData]}
+          alternateUrls={alternateUrls}
+        />
+      )}
       <main className="min-h-screen bg-gradient-mystical">
         {/* Hero Section */}
         <section className="py-16 lg:py-24">

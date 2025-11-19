@@ -228,20 +228,23 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <SEOManager
-        title={product.name}
-        description={truncateDescription(product.summary || product.description || product.fragrance)}
-        keywords={seoSettings.keywords}
-        type="product"
-        image={product.image || seoSettings.og_image_url}
-        url={`https://spirit-candle.com/${language}/product/${id}`}
-        noindex={seoSettings.noindex}
-        structuredData={[productStructuredData, breadcrumbData]}
-        alternateUrls={{
-          en: `https://spirit-candle.com/en/product/${id}`,
-          pl: `https://spirit-candle.com/pl/product/${id}`
-        }}
-      />
+      {/* Only render SEOManager after data is loaded */}
+      {!seoSettings.loading && (
+        <SEOManager
+          title={product.name}
+          description={truncateDescription(product.summary || product.description || product.fragrance)}
+          keywords={seoSettings.keywords}
+          type="product"
+          image={product.image || seoSettings.og_image_url}
+          url={`https://spirit-candle.com/${language}/product/${id}`}
+          noindex={seoSettings.noindex}
+          structuredData={[productStructuredData, breadcrumbData]}
+          alternateUrls={{
+            en: `https://spirit-candle.com/en/product/${id}`,
+            pl: `https://spirit-candle.com/pl/product/${id}`
+          }}
+        />
+      )}
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 lg:px-8 py-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">

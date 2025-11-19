@@ -78,11 +78,13 @@ const SEOSettingsManager = () => {
         og_image_url: currentSetting.og_image_url,
         noindex: currentSetting.noindex
       })
-      .eq('page_type', currentSetting.page_type);
+      .eq('page_type', currentSetting.page_type)
+      .select();
 
     setIsSaving(false);
 
     if (error) {
+      console.error('[SEOSettingsManager] Error saving:', error);
       toast({
         title: language === 'en' ? 'Error saving SEO settings' : 'Błąd zapisywania ustawień SEO',
         description: error.message,

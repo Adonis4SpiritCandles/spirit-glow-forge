@@ -221,19 +221,22 @@ export default function CollectionDetail() {
 
   return (
     <>
-      <SEOManager
-        title={collectionName}
-        description={truncateDescription(collectionDescription || '', 160)}
-        keywords={seoSettings.keywords || keywords}
-        type="website"
-        image={collection.image_url || collection.cover_image_url || seoSettings.og_image_url || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg'}
-        imageAlt={collectionName}
-        url={collectionUrl}
-        canonical={collectionUrl}
-        noindex={seoSettings.noindex}
-        structuredData={[collectionStructuredData, breadcrumbData]}
-        alternateUrls={alternateUrls}
-      />
+      {/* Only render SEOManager after data is loaded */}
+      {!seoSettings.loading && (
+        <SEOManager
+          title={collectionName}
+          description={truncateDescription(collectionDescription || '', 160)}
+          keywords={seoSettings.keywords || keywords}
+          type="website"
+          image={collection.image_url || collection.cover_image_url || seoSettings.og_image_url || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg'}
+          imageAlt={collectionName}
+          url={collectionUrl}
+          canonical={collectionUrl}
+          noindex={seoSettings.noindex}
+          structuredData={[collectionStructuredData, breadcrumbData]}
+          alternateUrls={alternateUrls}
+        />
+      )}
       
       <div className="min-h-screen bg-background">
         {/* Hero Section with Parallax */}

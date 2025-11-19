@@ -72,20 +72,23 @@ const Index = () => {
 
   return (
     <main>
-      <SEOManager
-        title={title}
-        description={description}
-        keywords={seoSettings.keywords}
-        type="website"
-        image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-home.jpg"}
-        url={`https://spirit-candle.com/${language}`}
-        noindex={seoSettings.noindex}
-        structuredData={generateWebSiteStructuredData()}
-        alternateUrls={{
-          en: 'https://spirit-candle.com/en',
-          pl: 'https://spirit-candle.com/pl'
-        }}
-      />
+      {/* Only render SEOManager after data is loaded to ensure crawlers get correct meta tags */}
+      {!seoSettings.loading && (
+        <SEOManager
+          title={title}
+          description={description}
+          keywords={seoSettings.keywords}
+          type="website"
+          image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
+          url={`https://spirit-candle.com/${language}`}
+          noindex={seoSettings.noindex}
+          structuredData={generateWebSiteStructuredData()}
+          alternateUrls={{
+            en: 'https://spirit-candle.com/en',
+            pl: 'https://spirit-candle.com/pl'
+          }}
+        />
+      )}
       {/* Referral Banner - Fixed Overlay */}
       {showReferralBanner && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-start justify-center pt-20 px-4 animate-fade-in">

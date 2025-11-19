@@ -203,19 +203,22 @@ const Shop = () => {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <SEOManager
-        title={title}
-        description={description}
-        keywords={seoSettings.keywords}
-        image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
-        url={`https://spirit-candle.com/${language}/shop`}
-        noindex={seoSettings.noindex}
-        structuredData={breadcrumbData}
-        alternateUrls={{
-          en: 'https://spirit-candle.com/en/shop',
-          pl: 'https://spirit-candle.com/pl/shop'
-        }}
-      />
+      {/* Only render SEOManager after data is loaded */}
+      {!seoSettings.loading && (
+        <SEOManager
+          title={title}
+          description={description}
+          keywords={seoSettings.keywords}
+          image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
+          url={`https://spirit-candle.com/${language}/shop`}
+          noindex={seoSettings.noindex}
+          structuredData={breadcrumbData}
+          alternateUrls={{
+            en: 'https://spirit-candle.com/en/shop',
+            pl: 'https://spirit-candle.com/pl/shop'
+          }}
+        />
+      )}
       <div className="container mx-auto px-4 lg:px-8 py-8">
         {/* Animated Header */}
         <motion.div

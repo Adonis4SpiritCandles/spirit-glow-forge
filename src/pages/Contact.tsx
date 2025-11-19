@@ -261,19 +261,22 @@ const Contact = () => {
 
   return (
     <>
-      <SEOManager
-        title={seoTitle}
-        description={seoDescription}
-        keywords={seoSettings.keywords || keywords}
-        type="website"
-        image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
-        imageAlt={language === 'en' ? 'Contact SPIRIT CANDLES' : 'Kontakt SPIRIT CANDLES'}
-        url={contactUrl}
-        canonical={contactUrl}
-        noindex={seoSettings.noindex}
-        structuredData={[contactStructuredData, breadcrumbData]}
-        alternateUrls={alternateUrls}
-      />
+      {/* Only render SEOManager after data is loaded */}
+      {!seoSettings.loading && (
+        <SEOManager
+          title={seoTitle}
+          description={seoDescription}
+          keywords={seoSettings.keywords || keywords}
+          type="website"
+          image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
+          imageAlt={language === 'en' ? 'Contact SPIRIT CANDLES' : 'Kontakt SPIRIT CANDLES'}
+          url={contactUrl}
+          canonical={contactUrl}
+          noindex={seoSettings.noindex}
+          structuredData={[contactStructuredData, breadcrumbData]}
+          alternateUrls={alternateUrls}
+        />
+      )}
       <main className="min-h-screen bg-gradient-mystical">
       <div className="container mx-auto px-4 lg:px-8 py-16">
         {/* Header */}

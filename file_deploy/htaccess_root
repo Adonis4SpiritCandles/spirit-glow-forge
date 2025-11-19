@@ -30,7 +30,22 @@ Options -MultiViews
   # 5) Blog WP sotto /blog/ (se lo usi)
   RewriteRule ^blog/ - [L]
 
-  # 6) CATCH-ALL SPA (URL belli: nessun /spiritcandles visibile)
+  # 6) INTERCETTA CRAWLER SOCIAL MEDIA per SEO Meta Tags dinamici
+  # Reindirizza i crawler all'Edge Function Supabase per meta tags dinamici
+  # Questa regola deve essere PRIMA del catch-all SPA
+  # Nota: REQUEST_URI per https://spirit-candle.com/about è /about (non /spiritcandles/about)
+  # Per LiteSpeed/Hostinger, usa redirect 302 (i crawler lo seguono e ottengono l'HTML corretto)
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|slackbot|telegrambot|whatsapp|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot) [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/(spiritcandles|wordpress|wp-admin|wp-includes|wp-content|ImageFiles|OLD_spirit-candle_OLD) [NC]
+  RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|json|xml|txt)$ [NC]
+  # Redirect 302 temporaneo: i crawler seguiranno il redirect e otterranno l'HTML dall'Edge Function
+  # L'Edge Function genererà HTML con meta tags corretti per il path richiesto
+  RewriteRule ^(.*)$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=$1 [R=302,L]
+
+  # 7) CATCH-ALL SPA (URL belli: nessun /spiritcandles visibile)
+  # Solo per utenti normali (non crawler)
   RewriteRule ^$                 /spiritcandles/index.html [L]
   RewriteRule ^(?!blog/).+       /spiritcandles/index.html [L]
 </IfModule>

@@ -35,16 +35,23 @@ Options -MultiViews
   # Questa regola deve essere PRIMA del catch-all SPA
   # Nota: REQUEST_URI per https://spirit-candle.com/about è /about (non /spiritcandles/about)
   # Per LiteSpeed/Hostinger, usa redirect 302 (i crawler lo seguono e ottengono l'HTML corretto)
+  # IMPORTANTE: Tutte le RewriteCond devono essere ripetute per ogni RewriteRule!
+  
+  # Homepage per crawler
   RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|slackbot|telegrambot|whatsapp|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot) [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_URI} !^/(spiritcandles|wordpress|wp-admin|wp-includes|wp-content|ImageFiles|OLD_spirit-candle_OLD) [NC]
   RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|json|xml|txt)$ [NC]
-  # Redirect 302: usa REQUEST_URI per mantenere lo slash iniziale
-  # Se è homepage, usa /, altrimenti usa REQUEST_URI (che ha già lo slash)
   RewriteCond %{REQUEST_URI} ^/$
   RewriteRule ^$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=/ [R=302,L]
-  # Per tutti gli altri path, REQUEST_URI ha già lo slash iniziale
+  
+  # Altri path per crawler (deve avere TUTTE le condizioni, incluso User-Agent!)
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|slackbot|telegrambot|whatsapp|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot) [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/(spiritcandles|wordpress|wp-admin|wp-includes|wp-content|ImageFiles|OLD_spirit-candle_OLD) [NC]
+  RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|json|xml|txt)$ [NC]
   RewriteCond %{REQUEST_URI} !^/$
   RewriteRule ^(.*)$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=%{REQUEST_URI} [R=302,L]
 

@@ -27,7 +27,15 @@ serve(async (req) => {
     // Get request URL and user agent
     const url = new URL(req.url);
     const userAgent = req.headers.get('user-agent') || '';
-    const pathname = url.pathname;
+    
+    // IMPORTANT: Get path from query parameter (passed by Vercel/Netlify rewrite)
+    // When Vercel/Netlify rewrites, they pass the original path as ?path=/about
+    // If not present (direct call), fallback to pathname
+    const queryPath = url.searchParams.get('path');
+    const pathname = queryPath || url.pathname;
+    
+    // If pathname is the Edge Function path itself (direct call), default to homepage
+    const actualPath = pathname === '/functions/v1/serve-seo-meta' ? '/' : pathname;
     
     // Detect language from Accept-Language header
     // Since the site doesn't use /en or /pl in URLs, we detect from browser preferences
@@ -44,7 +52,9 @@ serve(async (req) => {
     }
     
     console.log('[serve-seo-meta] Request:', { 
-      pathname, 
+      pathname: actualPath,
+      queryPath: queryPath,
+      originalPathname: url.pathname,
       userAgent: userAgent.substring(0, 50),
       detectedLanguage,
       acceptLanguage: acceptLanguage.substring(0, 50)
@@ -67,8 +77,8 @@ serve(async (req) => {
     }
     
     // Parse URL to get page type, language, and IDs
-    // Pass detected language to parseUrl (site doesn't use /en or /pl in URLs)
-    const parsed = parseUrl(pathname, detectedLanguage);
+    // Pass actualPath instead of pathname (site doesn't use /en or /pl in URLs)
+    const parsed = parseUrl(actualPath, detectedLanguage);
     console.log('[serve-seo-meta] Parsed URL:', parsed);
     
     let title = '';
@@ -159,7 +169,7 @@ serve(async (req) => {
     
     // Construct full URL
     const baseUrl = 'https://spirit-candle.com';
-    const fullUrl = `${baseUrl}${pathname}`;
+    const fullUrl = `${baseUrl}${actualPath}`;
     const canonicalUrl = fullUrl;
     
     // Generate HTML with meta tags

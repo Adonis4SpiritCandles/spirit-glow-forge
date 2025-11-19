@@ -1,0 +1,50 @@
+# Netlify Configuration for Spirit Candles
+# This configuration routes social media crawlers to the Supabase Edge Function
+# that serves dynamic SEO meta tags
+
+# Build settings
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# Redirect crawlers to Edge Function for dynamic meta tags
+[[redirects]]
+  from = "/*"
+  to = "https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=:splat"
+  status = 200
+  force = false
+  conditions = {User-Agent = ["facebookexternalhit", "Facebot", "twitterbot", "linkedinbot", "slackbot", "telegrambot", "whatsapp", "pinterest", "discordbot"]}
+
+# SPA fallback for regular users
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and caching
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# IMPORTANT: Replace YOUR_SUPABASE_PROJECT with your actual Supabase project reference
+# Example: https://abcdefghijklmno.supabase.co/functions/v1/serve-seo-meta?path=:splat
+

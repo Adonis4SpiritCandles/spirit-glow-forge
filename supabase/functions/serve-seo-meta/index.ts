@@ -1,0 +1,187 @@
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import {
+  isCrawler,
+  parseUrl,
+  fetchSEOSettings,
+  fetchProductData,
+  fetchCollectionData,
+  generateHTML
+} from './helpers.ts';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    // Get environment variables
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    
+    // Get request URL and user agent
+    const url = new URL(req.url);
+    const userAgent = req.headers.get('user-agent') || '';
+    const pathname = url.pathname;
+    
+    console.log('[serve-seo-meta] Request:', { pathname, userAgent: userAgent.substring(0, 50) });
+    
+    // Check if request is from a crawler
+    if (!isCrawler(userAgent)) {
+      console.log('[serve-seo-meta] Not a crawler, proxying to SPA');
+      // For non-crawlers, return a simple response that tells them to access the main site
+      // In production, this would be handled by the hosting platform (Netlify/Vercel redirects)
+      return new Response(
+        JSON.stringify({ 
+          message: 'This endpoint is for crawlers only. Please visit https://spirit-candle.com' 
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+    
+    // Parse URL to get page type, language, and IDs
+    const parsed = parseUrl(pathname);
+    console.log('[serve-seo-meta] Parsed URL:', parsed);
+    
+    let title = '';
+    let description = '';
+    let keywords = '';
+    let image = 'https://spirit-candle.com/spiritcandles/og-image-default.jpg';
+    let ogType = 'website';
+    let noindex = false;
+    let price: number | undefined;
+    let currency: string | undefined;
+    
+    // Fetch SEO settings for the page type
+    if (parsed.pageType === 'product' && parsed.id) {
+      // Check if we should use specific meta for products
+      const productSettings = await fetchSEOSettings(supabaseUrl, supabaseKey, 'product_default', parsed.language);
+      
+      if (productSettings && productSettings.use_specific_meta) {
+        // Use specific product data
+        console.log('[serve-seo-meta] Using specific product data');
+        const productData = await fetchProductData(supabaseUrl, supabaseKey, parsed.id, parsed.language);
+        if (productData) {
+          title = productData.title;
+          description = productData.description;
+          image = productData.image;
+          price = productData.price;
+          currency = productData.currency;
+          ogType = 'product';
+        }
+      } else {
+        // Use generic product_default settings
+        console.log('[serve-seo-meta] Using generic product_default settings');
+        if (productSettings) {
+          title = productSettings.title;
+          description = productSettings.description;
+          keywords = productSettings.keywords;
+          image = productSettings.og_image_url;
+          noindex = productSettings.noindex;
+        }
+      }
+    } else if (parsed.pageType === 'collection' && parsed.id) {
+      // Check if we should use specific meta for collections
+      const collectionSettings = await fetchSEOSettings(supabaseUrl, supabaseKey, 'collection_default', parsed.language);
+      
+      if (collectionSettings && collectionSettings.use_specific_meta) {
+        // Use specific collection data
+        console.log('[serve-seo-meta] Using specific collection data');
+        const collectionData = await fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language);
+        if (collectionData) {
+          title = collectionData.title;
+          description = collectionData.description;
+          image = collectionData.image;
+        }
+      } else {
+        // Use generic collection_default settings
+        console.log('[serve-seo-meta] Using generic collection_default settings');
+        if (collectionSettings) {
+          title = collectionSettings.title;
+          description = collectionSettings.description;
+          keywords = collectionSettings.keywords;
+          image = collectionSettings.og_image_url;
+          noindex = collectionSettings.noindex;
+        }
+      }
+    } else {
+      // For other pages (home, shop, about, contact, custom_candles)
+      const pageSettings = await fetchSEOSettings(supabaseUrl, supabaseKey, parsed.pageType, parsed.language);
+      if (pageSettings) {
+        title = pageSettings.title;
+        description = pageSettings.description;
+        keywords = pageSettings.keywords;
+        image = pageSettings.og_image_url;
+        noindex = pageSettings.noindex;
+      }
+    }
+    
+    // Fallback to defaults if no settings found
+    if (!title) {
+      title = parsed.language === 'en' 
+        ? 'SPIRIT CANDLES — Reborn Your Nature'
+        : 'SPIRIT CANDLES — Odrodź Swoją Naturę';
+    }
+    
+    if (!description) {
+      description = parsed.language === 'en'
+        ? 'Discover SPIRIT CANDLES luxury soy candles inspired by iconic fragrances and handcrafted with natural soy wax.'
+        : 'Odkryj luksusowe świece sojowe SPIRIT CANDLES inspirowane kultowymi zapachami i ręcznie robione z naturalnego wosku sojowego.';
+    }
+    
+    // Construct full URL
+    const baseUrl = 'https://spirit-candle.com';
+    const fullUrl = `${baseUrl}${pathname}`;
+    const canonicalUrl = fullUrl;
+    
+    // Generate HTML with meta tags
+    const html = generateHTML({
+      title,
+      description,
+      keywords,
+      image,
+      url: fullUrl,
+      type: ogType,
+      locale: parsed.language,
+      alternateLocale: parsed.language === 'en' ? 'pl' : 'en',
+      canonicalUrl,
+      noindex,
+      price,
+      currency
+    });
+    
+    console.log('[serve-seo-meta] Returning HTML with meta tags');
+    
+    return new Response(html, {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600'
+      }
+    });
+    
+  } catch (error) {
+    console.error('[serve-seo-meta] Error:', error);
+    
+    return new Response(
+      JSON.stringify({ 
+        error: error.message,
+        details: 'Failed to generate SEO meta tags'
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
+  }
+});
+

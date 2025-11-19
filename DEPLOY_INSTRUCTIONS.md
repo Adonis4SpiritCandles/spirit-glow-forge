@@ -1,6 +1,103 @@
 # 🚀 Istruzioni per Deploy di Edge Functions su Supabase
 
-## ⚠️ PROBLEMA ATTuale
+## 🆕 DYNAMIC SEO META TAGS EDGE FUNCTION
+
+### Panoramica
+
+La funzione `serve-seo-meta` intercetta i crawler dei social media (Facebook, Twitter, LinkedIn, ecc.) e serve HTML con meta tags dinamici dal database, risolvendo il problema in cui tutti gli URL mostrano i meta tags della homepage.
+
+### Deploy della Funzione
+
+```bash
+# Deploy della funzione serve-seo-meta
+supabase functions deploy serve-seo-meta
+
+# Verifica che sia stata deployata correttamente
+supabase functions list
+```
+
+### Configurazione Hosting
+
+**Dopo aver deployato la funzione**, devi configurare il tuo hosting per reindirizzare i crawler all'Edge Function.
+
+#### Opzione A: Netlify
+
+1. Il file `netlify.toml` è già presente nella root del progetto
+2. **IMPORTANTE**: Modifica la URL della funzione sostituendo `YOUR_SUPABASE_PROJECT` con il tuo project reference:
+   ```toml
+   to = "https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=:splat"
+   ```
+3. Fai commit e push del file `netlify.toml`
+4. Netlify applicherà automaticamente le regole al prossimo deploy
+
+#### Opzione B: Vercel
+
+1. Il file `vercel.json` è già presente nella root del progetto
+2. **IMPORTANTE**: Modifica la URL della funzione sostituendo `YOUR_SUPABASE_PROJECT`:
+   ```json
+   "destination": "https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=$1"
+   ```
+3. Fai commit e push del file `vercel.json`
+4. Vercel applicherà le regole al prossimo deploy
+
+### Testing
+
+#### Test con Facebook Debugger
+
+1. Vai su https://developers.facebook.com/tools/debug/
+2. Inserisci un URL del tuo sito: `https://spirit-candle.com/about`
+3. Clicca **"Scrape Again"** più volte (2-3 volte)
+4. Dovresti vedere i meta tags corretti per quella pagina
+
+#### Test con Twitter Card Validator
+
+1. Vai su https://cards-dev.twitter.com/validator
+2. Inserisci l'URL
+3. Verifica che la card mostri i meta tags corretti
+
+#### Test con curl (simula un crawler)
+
+```bash
+# Simula Facebook crawler
+curl -H "User-Agent: facebookexternalhit/1.0" https://spirit-candle.com/about
+
+# Dovresti vedere HTML con meta tags specifici per /about
+```
+
+### Cache Management
+
+**Facebook e Twitter cachano i meta tags pesantemente!**
+
+- **Facebook**: Usa "Scrape Again" 2-3 volte per forzare il refresh
+- **Twitter**: La cache scade dopo ~7 giorni, oppure aggiungi `?v=2` all'URL per forzare un nuovo scrape
+- **Google**: Indicizza dinamicamente, nessuna azione necessaria
+
+### SEO Settings Manager
+
+Gli admin possono ora gestire la strategia di generazione meta tags:
+
+1. Vai su **Admin Dashboard → Spirit Tools & Site → SEO Settings**
+2. Seleziona **Product Pages** o **Collections**
+3. Vedrai un nuovo toggle: **"Use Specific Meta Tags"**
+   - **OFF** (default): Usa meta tags generici da `product_default`/`collection_default`
+   - **ON**: Genera meta tags specifici dai dati prodotto/collezione (nome, descrizione, immagine)
+
+### Troubleshooting
+
+**I crawler vedono ancora i vecchi meta tags:**
+- Forza il refresh della cache (vedi sopra)
+- Verifica che la funzione sia deployata: `supabase functions list`
+- Controlla i logs: `supabase functions logs serve-seo-meta`
+- Verifica che `netlify.toml` o `vercel.json` abbiano l'URL corretta
+
+**La funzione restituisce errori:**
+- Controlla i logs: `supabase functions logs serve-seo-meta`
+- Verifica che le variabili d'ambiente `SUPABASE_URL` e `SUPABASE_ANON_KEY` siano configurate
+- Testa la funzione direttamente: `curl -H "User-Agent: facebookexternalhit" https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=/about`
+
+---
+
+## ⚠️ PROBLEMA PRECEDENTE (RISOLTO)
 
 I log di Supabase mostrano solo metadati HTTP (status 500), ma **NON mostrano i `console.log`** che abbiamo aggiunto nel codice. Questo significa che **la funzione deployata è probabilmente una versione vecchia**.
 

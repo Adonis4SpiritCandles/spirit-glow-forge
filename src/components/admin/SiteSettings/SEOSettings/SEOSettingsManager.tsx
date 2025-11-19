@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Globe, Eye, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -23,6 +24,7 @@ interface SEOSetting {
   keywords_pl: string | null;
   og_image_url: string | null;
   noindex: boolean;
+  use_specific_meta?: boolean;
 }
 
 const SEOSettingsManager = () => {
@@ -76,7 +78,8 @@ const SEOSettingsManager = () => {
         keywords_en: currentSetting.keywords_en,
         keywords_pl: currentSetting.keywords_pl,
         og_image_url: currentSetting.og_image_url,
-        noindex: currentSetting.noindex
+        noindex: currentSetting.noindex,
+        use_specific_meta: currentSetting.use_specific_meta || false
       })
       .eq('page_type', currentSetting.page_type)
       .select();
@@ -305,6 +308,49 @@ const SEOSettingsManager = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Meta Tag Generation Strategy (only for products/collections) */}
+      {(selectedPageType === 'product_default' || selectedPageType === 'collection_default') && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {language === 'en' ? 'Meta Tag Generation Strategy' : 'Strategia generowania meta tagów'}
+            </CardTitle>
+            <CardDescription>
+              {language === 'en'
+                ? 'Choose how meta tags are generated for individual products/collections'
+                : 'Wybierz sposób generowania meta tagów dla poszczególnych produktów/kolekcji'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between space-x-4">
+              <div className="flex-1 space-y-1">
+                <Label htmlFor="use-specific-meta" className="text-sm font-medium">
+                  {language === 'en' ? 'Use Specific Meta Tags' : 'Użyj specyficznych meta tagów'}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {language === 'en'
+                    ? 'When enabled, meta tags will be generated from actual product/collection data (name, description, image). When disabled, the default values above will be used.'
+                    : 'Gdy włączone, meta tagi będą generowane z rzeczywistych danych produktu/kolekcji (nazwa, opis, obraz). Gdy wyłączone, zostaną użyte domyślne wartości powyżej.'}
+                </p>
+              </div>
+              <Switch
+                id="use-specific-meta"
+                checked={currentSetting.use_specific_meta || false}
+                onCheckedChange={(checked) => updateField('use_specific_meta', checked)}
+              />
+            </div>
+            <Alert className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {language === 'en'
+                  ? 'This setting affects how social media crawlers (Facebook, Twitter, etc.) see your products/collections. The values above serve as fallbacks when specific data is not available.'
+                  : 'To ustawienie wpływa na to, jak crawlery mediów społecznościowych (Facebook, Twitter itp.) widzą Twoje produkty/kolekcje. Powyższe wartości służą jako zapasowe, gdy konkretne dane nie są dostępne.'}
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
+      )}
 
       {/* SEO Preview */}
       <Card>

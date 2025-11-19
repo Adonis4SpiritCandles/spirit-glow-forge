@@ -83,7 +83,7 @@ serve(async (req) => {
       pathname: actualPath,
       queryPath: queryPath,
       originalPathname: url.pathname,
-      userAgent: userAgent.substring(0, 50),
+      userAgent: userAgent, // Log completo per vedere User-Agent di WhatsApp
       detectedLanguage,
       acceptLanguage: acceptLanguage.substring(0, 50)
     });
@@ -125,7 +125,7 @@ serve(async (req) => {
       
       if (productSettings && productSettings.use_specific_meta) {
         // Use specific product data
-        console.log('[serve-seo-meta] Using specific product data');
+        console.log('[serve-seo-meta] Using specific product data for product ID:', parsed.id);
         const productData = await fetchProductData(supabaseUrl, supabaseKey, parsed.id, parsed.language);
         if (productData) {
           title = productData.title;
@@ -134,6 +134,17 @@ serve(async (req) => {
           price = productData.price;
           currency = productData.currency;
           ogType = 'product';
+          console.log('[serve-seo-meta] Product data retrieved successfully');
+        } else {
+          console.warn('[serve-seo-meta] Product data not found for ID:', parsed.id, '- falling back to generic settings');
+          // Fallback to generic product_default settings
+          if (productSettings) {
+            title = productSettings.title;
+            description = productSettings.description;
+            keywords = productSettings.keywords;
+            image = productSettings.og_image_url;
+            noindex = productSettings.noindex;
+          }
         }
       } else {
         // Use generic product_default settings
@@ -152,12 +163,23 @@ serve(async (req) => {
       
       if (collectionSettings && collectionSettings.use_specific_meta) {
         // Use specific collection data
-        console.log('[serve-seo-meta] Using specific collection data');
+        console.log('[serve-seo-meta] Using specific collection data for collection ID:', parsed.id);
         const collectionData = await fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language);
         if (collectionData) {
           title = collectionData.title;
           description = collectionData.description;
           image = collectionData.image;
+          console.log('[serve-seo-meta] Collection data retrieved successfully');
+        } else {
+          console.warn('[serve-seo-meta] Collection data not found for ID:', parsed.id, '- falling back to generic settings');
+          // Fallback to generic collection_default settings
+          if (collectionSettings) {
+            title = collectionSettings.title;
+            description = collectionSettings.description;
+            keywords = collectionSettings.keywords;
+            image = collectionSettings.og_image_url;
+            noindex = collectionSettings.noindex;
+          }
         }
       } else {
         // Use generic collection_default settings

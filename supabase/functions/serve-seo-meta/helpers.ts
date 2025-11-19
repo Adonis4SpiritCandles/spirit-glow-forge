@@ -7,15 +7,22 @@ export function isCrawler(userAgent: string): boolean {
     'Facebot',
     'twitterbot',
     'linkedinbot',
+    'LinkedInBot',
     'slackbot',
+    'Slackbot',
     'telegrambot',
     'whatsapp',
+    'WhatsApp',
+    'WhatsAppBot',
     'pinterest',
     'discordbot',
     'googlebot',
     'bingbot',
     'baiduspider',
-    'yandexbot'
+    'yandexbot',
+    'SkypeUriPreview',
+    'Applebot',
+    'ia_archiver'
   ];
   
   const lowerUA = userAgent.toLowerCase();

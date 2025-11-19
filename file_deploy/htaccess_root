@@ -48,7 +48,8 @@ Options -MultiViews
   
   # Homepage per crawler - PROXY PASS (mantiene URL originale)
   # Se mod_proxy non è disponibile, fallback a redirect 302
-  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|slackbot|telegrambot|whatsapp|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot) [NC]
+  # Aggiunti più User-Agent per WhatsApp e altri servizi
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|LinkedInBot|slackbot|Slackbot|telegrambot|whatsapp|WhatsApp|WhatsAppBot|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot|SkypeUriPreview|Applebot|ia_archiver) [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_URI} !^/(spiritcandles|wordpress|wp-admin|wp-includes|wp-content|ImageFiles|OLD_spirit-candle_OLD) [NC]
@@ -58,7 +59,8 @@ Options -MultiViews
   
   # Altri path per crawler - PROXY PASS (mantiene URL originale)
   # Se mod_proxy non è disponibile, fallback a redirect 302
-  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|slackbot|telegrambot|whatsapp|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot) [NC]
+  # Aggiunti più User-Agent per WhatsApp e altri servizi
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|LinkedInBot|slackbot|Slackbot|telegrambot|whatsapp|WhatsApp|WhatsAppBot|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot|SkypeUriPreview|Applebot|ia_archiver) [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_URI} !^/(spiritcandles|wordpress|wp-admin|wp-includes|wp-content|ImageFiles|OLD_spirit-candle_OLD) [NC]

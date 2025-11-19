@@ -5,7 +5,8 @@ import {
   fetchSEOSettings,
   fetchProductData,
   fetchCollectionData,
-  generateHTML
+  generateHTML,
+  replacePlaceholders
 } from './helpers.ts';
 
 const corsHeaders = {
@@ -189,8 +190,26 @@ serve(async (req) => {
           // Use generic product_default settings
           console.log('[serve-seo-meta] Using generic product_default settings');
           if (productSettings) {
-            title = productSettings.title;
-            description = productSettings.description;
+            // Fetch product name to replace {product_name} placeholder
+            let productName = '';
+            try {
+              const productData = await withTimeout(
+                fetchProductData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
+                DB_TIMEOUT_MS,
+                null
+              );
+              if (productData) {
+                // Extract product name from title (format: "Product Name | SPIRIT CANDLES")
+                productName = productData.title.replace(' | SPIRIT CANDLES', '').trim();
+              }
+            } catch (nameError) {
+              console.warn('[serve-seo-meta] Could not fetch product name for placeholder replacement:', nameError);
+            }
+            
+            // Replace placeholders in title and description
+            const replacements = { product_name: productName || 'Product' };
+            title = replacePlaceholders(productSettings.title, replacements);
+            description = replacePlaceholders(productSettings.description, replacements);
             keywords = productSettings.keywords;
             image = productSettings.og_image_url;
             noindex = productSettings.noindex;
@@ -227,8 +246,26 @@ serve(async (req) => {
               console.warn('[serve-seo-meta] Collection data not found for ID:', parsed.id, '- falling back to generic settings');
               // Fallback to generic collection_default settings
               if (collectionSettings) {
-                title = collectionSettings.title;
-                description = collectionSettings.description;
+                // Fetch collection name to replace {collection_name} placeholder
+                let collectionName = '';
+                try {
+                  const fallbackCollectionData = await withTimeout(
+                    fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
+                    DB_TIMEOUT_MS,
+                    null
+                  );
+                  if (fallbackCollectionData) {
+                    // Extract collection name from title (format: "Collection Name Collection | SPIRIT CANDLES")
+                    collectionName = fallbackCollectionData.title.replace(' Collection | SPIRIT CANDLES', '').trim();
+                  }
+                } catch (nameError) {
+                  console.warn('[serve-seo-meta] Could not fetch collection name for placeholder replacement:', nameError);
+                }
+                
+                // Replace placeholders in title and description
+                const replacements = { collection_name: collectionName || 'Collection' };
+                title = replacePlaceholders(collectionSettings.title, replacements);
+                description = replacePlaceholders(collectionSettings.description, replacements);
                 keywords = collectionSettings.keywords;
                 image = collectionSettings.og_image_url;
                 noindex = collectionSettings.noindex;
@@ -238,8 +275,25 @@ serve(async (req) => {
             console.error('[serve-seo-meta] Error fetching collection data:', collectionError);
             // Fallback to generic settings
             if (collectionSettings) {
-              title = collectionSettings.title;
-              description = collectionSettings.description;
+              // Try to fetch collection name for placeholder replacement
+              let collectionName = '';
+              try {
+                const errorCollectionData = await withTimeout(
+                  fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
+                  DB_TIMEOUT_MS,
+                  null
+                );
+                if (errorCollectionData) {
+                  collectionName = errorCollectionData.title.replace(' Collection | SPIRIT CANDLES', '').trim();
+                }
+              } catch (nameError) {
+                console.warn('[serve-seo-meta] Could not fetch collection name for placeholder replacement:', nameError);
+              }
+              
+              // Replace placeholders in title and description
+              const replacements = { collection_name: collectionName || 'Collection' };
+              title = replacePlaceholders(collectionSettings.title, replacements);
+              description = replacePlaceholders(collectionSettings.description, replacements);
               keywords = collectionSettings.keywords;
               image = collectionSettings.og_image_url;
               noindex = collectionSettings.noindex;
@@ -249,8 +303,26 @@ serve(async (req) => {
           // Use generic collection_default settings
           console.log('[serve-seo-meta] Using generic collection_default settings');
           if (collectionSettings) {
-            title = collectionSettings.title;
-            description = collectionSettings.description;
+            // Fetch collection name to replace {collection_name} placeholder
+            let collectionName = '';
+            try {
+              const collectionData = await withTimeout(
+                fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
+                DB_TIMEOUT_MS,
+                null
+              );
+              if (collectionData) {
+                // Extract collection name from title (format: "Collection Name Collection | SPIRIT CANDLES")
+                collectionName = collectionData.title.replace(' Collection | SPIRIT CANDLES', '').trim();
+              }
+            } catch (nameError) {
+              console.warn('[serve-seo-meta] Could not fetch collection name for placeholder replacement:', nameError);
+            }
+            
+            // Replace placeholders in title and description
+            const replacements = { collection_name: collectionName || 'Collection' };
+            title = replacePlaceholders(collectionSettings.title, replacements);
+            description = replacePlaceholders(collectionSettings.description, replacements);
             keywords = collectionSettings.keywords;
             image = collectionSettings.og_image_url;
             noindex = collectionSettings.noindex;
@@ -331,9 +403,10 @@ serve(async (req) => {
     
     // Construct full URL - IMPORTANT: Use the original domain, not Supabase URL
     // This ensures og:url points to the actual site URL, not the Edge Function URL
+    // Always use the original domain, never the Supabase function URL
     const baseUrl = 'https://spirit-candle.com';
     const fullUrl = `${baseUrl}${actualPath}`;
-    const canonicalUrl = fullUrl;
+    const canonicalUrl = fullUrl; // Always use the original site URL, not the redirect URL
     
     // Final values being used
     console.log('[serve-seo-meta] Final values being used:', {
@@ -345,20 +418,22 @@ serve(async (req) => {
       actualPath: actualPath,
       pageType: parsed.pageType,
       language: parsed.language,
-      requestUrl: req.url
+      requestUrl: req.url,
+      note: 'URLs always use original domain, not Supabase function URL'
     });
     
     // Generate HTML with meta tags
+    // IMPORTANT: url and canonicalUrl must always be the original site URL, not the Supabase function URL
     const html = generateHTML({
       title,
       description,
       keywords,
       image,
-      url: fullUrl,
+      url: fullUrl, // Original site URL
       type: ogType,
       locale: parsed.language,
       alternateLocale: parsed.language === 'en' ? 'pl' : 'en',
-      canonicalUrl,
+      canonicalUrl: canonicalUrl, // Original site URL
       noindex,
       price,
       currency

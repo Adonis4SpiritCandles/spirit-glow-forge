@@ -319,6 +319,16 @@ export async function fetchCollectionData(supabaseUrl: string, supabaseKey: stri
   };
 }
 
+// Helper function to replace placeholders in text
+export function replacePlaceholders(text: string, replacements: Record<string, string>): string {
+  let result = text;
+  for (const [placeholder, value] of Object.entries(replacements)) {
+    const regex = new RegExp(`\\{${placeholder}\\}`, 'g');
+    result = result.replace(regex, value);
+  }
+  return result;
+}
+
 // Generate HTML with meta tags
 export function generateHTML(metaTags: {
   title: string;

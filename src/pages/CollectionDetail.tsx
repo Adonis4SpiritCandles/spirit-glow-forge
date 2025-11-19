@@ -224,7 +224,7 @@ export default function CollectionDetail() {
         description={truncateDescription(collectionDescription || '', 160)}
         keywords={keywords}
         type="website"
-        image={collection.image_url || collection.cover_image_url || 'https://spirit-candle.com/spirit-logo.png'}
+        image={collection.image_url || collection.cover_image_url || 'https://spirit-candle.com/spiritcandles/spirit-logo.png'}
         imageAlt={collectionName}
         url={collectionUrl}
         canonical={collectionUrl}

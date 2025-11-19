@@ -44,7 +44,7 @@ INSERT INTO public.seo_settings (page_type, title_en, title_pl, description_en, 
  'Odkryj luksusowe świece sojowe SPIRIT CANDLES inspirowane kultowymi zapachami. Ręcznie robione z naturalnego wosku sojowego i drewnianymi knotami.',
  'luxury candles, soy candles, wooden wick, natural candles, home fragrance',
  'luksusowe świece, świece sojowe, drewniany knot, naturalne świece',
- 'https://spirit-candle.com/spirit-logo.png'),
+ 'https://spirit-candle.com/spiritcandles/spirit-logo.png'),
  
 ('shop',
  'Shop Luxury Candles | SPIRIT CANDLES',
@@ -53,7 +53,7 @@ INSERT INTO public.seo_settings (page_type, title_en, title_pl, description_en, 
  'Przeglądaj naszą kolekcję luksusowych świec sojowych. Darmowa wysyłka od 200 PLN.',
  'buy candles, luxury candles online, soy candles shop',
  'kup świece, luksusowe świece online, sklep ze świecami',
- 'https://spirit-candle.com/spirit-logo.png'),
+ 'https://spirit-candle.com/spiritcandles/spirit-logo.png'),
  
 ('product_default',
  '{product_name} | SPIRIT CANDLES',
@@ -62,7 +62,7 @@ INSERT INTO public.seo_settings (page_type, title_en, title_pl, description_en, 
  'Luksusowa świeca sojowa inspirowana kultowymi zapachami. Naturalne składniki, drewniany knot.',
  'soy candle, luxury candle, wooden wick candle',
  'świeca sojowa, luksusowa świeca, świeca z drewnianym knotem',
- 'https://spirit-candle.com/spirit-logo.png'),
+ 'https://spirit-candle.com/spiritcandles/spirit-logo.png'),
  
 ('collection_default',
  '{collection_name} Collection | SPIRIT CANDLES',
@@ -71,7 +71,7 @@ INSERT INTO public.seo_settings (page_type, title_en, title_pl, description_en, 
  'Odkryj naszą kolekcję {collection_name} luksusowych świec sojowych.',
  'candle collection, luxury candles',
  'kolekcja świec, luksusowe świece',
- 'https://spirit-candle.com/spirit-logo.png'),
+ 'https://spirit-candle.com/spiritcandles/spirit-logo.png'),
  
 ('about',
  'About Us | SPIRIT CANDLES',
@@ -80,7 +80,7 @@ INSERT INTO public.seo_settings (page_type, title_en, title_pl, description_en, 
  'Poznaj SPIRIT CANDLES - naszą historię, wartości i zaangażowanie w jakość.',
  'about spirit candles, candle brand story',
  'o spirit candles, historia marki świec',
- 'https://spirit-candle.com/spirit-logo.png'),
+ 'https://spirit-candle.com/spiritcandles/spirit-logo.png'),
  
 ('contact',
  'Contact Us | SPIRIT CANDLES',
@@ -89,7 +89,7 @@ INSERT INTO public.seo_settings (page_type, title_en, title_pl, description_en, 
  'Skontaktuj się z SPIRIT CANDLES. Jesteśmy tu, aby pomóc.',
  'contact spirit candles, customer service',
  'kontakt spirit candles, obsługa klienta',
- 'https://spirit-candle.com/spirit-logo.png');
+ 'https://spirit-candle.com/spiritcandles/spirit-logo.png');
 
 -- Trigger for updated_at
 CREATE TRIGGER update_seo_settings_updated_at

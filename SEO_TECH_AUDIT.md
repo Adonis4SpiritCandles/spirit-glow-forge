@@ -162,7 +162,7 @@ This document audits the **SEO implementation** for Spirit Candles e-commerce pl
   "@type": "Organization",
   "name": "SPIRIT CANDLES",
   "url": "https://spirit-candle.com",
-  "logo": "https://spirit-candle.com/spirit-logo.png",
+  "logo": "https://spirit-candle.com/spiritcandles/spirit-logo.png",
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+48 729877557",

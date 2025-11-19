@@ -260,7 +260,7 @@ const Contact = () => {
           : 'Skontaktuj się z SPIRIT CANDLES. Jesteśmy tutaj, aby pomóc w pytaniach dotyczących naszych luksusowych świec sojowych, zamówień i wysyłki.', 160)}
         keywords={keywords}
         type="website"
-        image="https://spirit-candle.com/spirit-logo.png"
+        image="https://spirit-candle.com/spiritcandles/spirit-logo.png"
         imageAlt={language === 'en' ? 'Contact SPIRIT CANDLES' : 'Kontakt SPIRIT CANDLES'}
         url={contactUrl}
         canonical={contactUrl}

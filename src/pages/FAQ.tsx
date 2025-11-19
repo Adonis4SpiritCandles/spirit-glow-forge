@@ -258,7 +258,7 @@ const FAQ = () => {
           : 'Znajdź odpowiedzi na najczęściej zadawane pytania o produkty SPIRIT CANDLES, wysyłkę, zwroty i więcej.', 160)}
         keywords={keywords}
         type="website"
-        image="https://spirit-candle.com/spirit-logo.png"
+        image="https://spirit-candle.com/spiritcandles/spirit-logo.png"
         imageAlt="FAQ - SPIRIT CANDLES"
         url={faqUrl}
         canonical={faqUrl}

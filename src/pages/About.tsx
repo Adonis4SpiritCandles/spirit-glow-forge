@@ -217,7 +217,7 @@ const About = () => {
           : 'Dowiedz się więcej o SPIRIT CANDLES – naszej historii, wartościach i zaangażowaniu w tworzenie luksusowych świec sojowych.'), 160)}
         keywords={keywords}
         type="website"
-        image={heroImage || 'https://spirit-candle.com/spirit-logo.png'}
+        image={heroImage || 'https://spirit-candle.com/spiritcandles/spirit-logo.png'}
         imageAlt={language === 'en' ? 'About SPIRIT CANDLES' : 'O SPIRIT CANDLES'}
         url={aboutUrl}
         canonical={aboutUrl}

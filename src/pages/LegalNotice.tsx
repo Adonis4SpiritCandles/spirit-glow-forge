@@ -50,7 +50,7 @@ const LegalNotice = () => {
           : 'Informacje prawne i dane firmy SPIRIT CANDLES.', 160)}
         keywords={keywords}
         type="website"
-        image="https://spirit-candle.com/spirit-logo.png"
+        image="https://spirit-candle.com/spiritcandles/spirit-logo.png"
         imageAlt={language === 'en' ? 'Legal Notice' : 'Informacje prawne'}
         url={legalUrl}
         canonical={legalUrl}

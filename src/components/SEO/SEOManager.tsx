@@ -28,7 +28,7 @@ const SEOManager = ({
   titleTemplate = '%s | SPIRIT CANDLES',
   description,
   keywords,
-  image = 'https://spirit-candle.com/spirit-logo.png',
+  image = 'https://spirit-candle.com/spiritcandles/spirit-logo.png',
   imageAlt,
   url,
   type = 'website',
@@ -81,7 +81,7 @@ const SEOManager = ({
     '@type': 'Organization',
     name: 'SPIRIT CANDLES',
     url: 'https://spirit-candle.com',
-    logo: 'https://spirit-candle.com/spirit-logo.png',
+    logo: 'https://spirit-candle.com/spiritcandles/spirit-logo.png',
     sameAs: [
       'https://www.instagram.com/spiritcandles',
       'https://www.tiktok.com/@spiritcandles'

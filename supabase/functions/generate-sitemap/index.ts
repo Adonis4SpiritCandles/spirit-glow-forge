@@ -105,7 +105,7 @@ serve(async (req) => {
     };
 
     // Homepage
-    addUrl('/', '1.0', 'daily', currentDate, 'https://spirit-candle.com/spirit-logo.png', 'SPIRIT CANDLES Homepage');
+    addUrl('/', '1.0', 'daily', currentDate, 'https://spirit-candle.com/spiritcandles/spirit-logo.png', 'SPIRIT CANDLES Homepage');
 
     // Main pages
     addUrl('/shop', '0.9', 'daily', currentDate);

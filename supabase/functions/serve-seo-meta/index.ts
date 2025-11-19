@@ -28,14 +28,26 @@ serve(async (req) => {
     const url = new URL(req.url);
     const userAgent = req.headers.get('user-agent') || '';
     
-    // IMPORTANT: Get path from query parameter (passed by Vercel/Netlify rewrite)
-    // When Vercel/Netlify rewrites, they pass the original path as ?path=/about
+    // IMPORTANT: Get path from query parameter (passed by .htaccess redirect)
+    // When .htaccess redirects, it passes the original path as ?path=/about
     // If not present (direct call), fallback to pathname
     const queryPath = url.searchParams.get('path');
     const pathname = queryPath || url.pathname;
     
+    // Normalize path: ensure it starts with / and remove trailing slash
+    let actualPath = pathname;
+    if (!actualPath.startsWith('/')) {
+      actualPath = '/' + actualPath;
+    }
+    // Remove trailing slash (except for homepage)
+    if (actualPath !== '/' && actualPath.endsWith('/')) {
+      actualPath = actualPath.slice(0, -1);
+    }
+    
     // If pathname is the Edge Function path itself (direct call), default to homepage
-    const actualPath = pathname === '/functions/v1/serve-seo-meta' ? '/' : pathname;
+    if (actualPath === '/functions/v1/serve-seo-meta') {
+      actualPath = '/';
+    }
     
     // Detect language from Accept-Language header
     // Since the site doesn't use /en or /pl in URLs, we detect from browser preferences

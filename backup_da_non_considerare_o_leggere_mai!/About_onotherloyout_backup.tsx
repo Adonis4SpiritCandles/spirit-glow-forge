@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 import candleWax from "@/assets/candle-wax.png";
 import spiritLogo from "@/assets/spirit-logo.png";
+import { Parallax } from "react-parallax";
 import SEOManager from "@/components/SEO/SEOManager";
 import { 
   generateAboutPageStructuredData,
@@ -67,18 +68,14 @@ const About = () => {
       }
     `;
     document.head.appendChild(style);
-    return () => {
-      if (style.parentNode) {
-        document.head.removeChild(style);
-      }
-    };
+    return () => document.head.removeChild(style);
   }, []);
 
   // Load settings from database
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const { data } = await (supabase as any)
+        const { data } = await supabase
           .from('about_settings')
           .select('*, hero_animation_enabled, hero_fluorescent_enabled, hero_fluorescent_intensity, hero_image_size, hero_parallax_strength')
           .eq('id', '00000000-0000-0000-0000-000000000001')
@@ -227,159 +224,109 @@ const About = () => {
         structuredData={[aboutStructuredData, breadcrumbData]}
         alternateUrls={alternateUrls}
       />
-      <main className="min-h-screen bg-gradient-mystical">
+      <main>
         {/* Hero Section */}
-        <section className="py-16 lg:py-24">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-foreground leading-tight">
-                  {heroTitle}
-                </h1>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  {heroIntro1}
-                </p>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  {heroIntro2}
-                </p>
-                <Link to={settings?.hero_button_link || '/shop'}>
-                  <Button 
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-luxury hover:scale-105 transition-all duration-300"
-                  >
-                    {heroButtonText}
-                  </Button>
-                </Link>
-              </div>
-              
-              <div className="relative">
-                {heroImageUrl ? (
-                  <div 
-                    className={`aspect-square bg-gradient-glow rounded-xl p-8 overflow-hidden relative ${
-                      heroSettings?.imageSize === 'small' ? 'max-w-md mx-auto' : 
-                      heroSettings?.imageSize === 'large' ? 'max-w-2xl mx-auto' : 
-                      'max-w-lg mx-auto'
-                    }`}
-                    style={{
-                      animation: heroSettings?.animationEnabled ? 'fadeIn 1s ease-in-out' : 'none',
-                    }}
-                  >
-                    {/* Fluorescent glow effect */}
-                    {heroSettings?.fluorescentEnabled && (
-                      <div 
-                        className="absolute inset-0 pointer-events-none rounded-xl"
-                        style={{
-                          boxShadow: `0 0 ${(heroSettings?.fluorescentIntensity ?? 30) * 2}px hsl(var(--primary) / ${(heroSettings?.fluorescentIntensity ?? 30) / 100})`,
-                          filter: `blur(${(heroSettings?.fluorescentIntensity ?? 30) / 5}px)`,
-                          zIndex: 1,
-                        }}
-                      />
-                    )}
-                    <img
-                      src={heroImageUrl}
-                      alt="Handcrafted SPIRIT CANDLE"
-                      className="w-full h-full object-contain rounded-xl candle-glow relative z-10"
-                    />
-                  </div>
-                ) : null}
-                <div className="absolute -bottom-6 -right-6 bg-card border border-border/40 rounded-lg p-4 shadow-elegant">
-                  <img 
-                    src={spiritLogo}
-                    alt="SPIRIT CANDLES Logo"
-                    className="w-24 h-auto"
-                  />
-                </div>
-              </div>
-            </div>
+        <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-background via-background/95 to-background">
+          {heroImageUrl ? (
+            <Parallax
+              blur={0}
+              bgImage={heroImageUrl}
+              bgImageAlt={heroTitle}
+              strength={heroSettings?.parallaxStrength || 300}
+              className="absolute inset-0"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
+            </Parallax>
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
+          )}
+          
+          <div className="relative z-10 container mx-auto px-4 lg:px-8 py-20 text-center">
+            <h1 className={`text-4xl md:text-6xl font-playfair font-bold mb-6 title-luminescent ${heroSettings?.animationEnabled ? 'title-candle-flicker' : ''}`}>
+              {heroTitle}
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+              {heroIntro1}
+            </p>
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+              {heroIntro2}
+            </p>
+            {settings?.hero_button_link && (
+              <Link to={settings.hero_button_link}>
+                <Button size="lg" className="mt-4">
+                  {heroButtonText}
+                </Button>
+              </Link>
+            )}
           </div>
-        </section>
+        </div>
 
         {/* Features Section */}
-        <section className="py-16 bg-gradient-secondary">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-playfair font-bold text-foreground mb-4">
-                {featuresSectionTitle}
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {featuresSectionDescription}
-              </p>
-            </div>
+        <div className="container mx-auto px-4 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4">
+              {featuresSectionTitle}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {featuresSectionDescription}
+            </p>
+          </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {features.map((feature, index) => (
-                <Card 
-                  key={index}
-                  className="bg-card border-border/40 hover:border-primary/40 transition-all duration-300 hover:shadow-luxury hover:scale-105"
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className="mb-4 flex justify-center">
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        {feature.icon}
-                      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      {feature.icon}
                     </div>
-                    <h3 className="text-lg font-playfair font-semibold text-foreground mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {feature.description}
-                    </p>
-                    {feature.link && (
-                      <Link to={feature.link}>
-                        <Button className="mt-4 w-full">
-                          {language === 'pl' ? 'Dowiedz się więcej' : 'Learn More'}
-                        </Button>
-                      </Link>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                      {feature.link && (
+                        <Link to={feature.link}>
+                          <Button variant="link" className="mt-2 p-0 h-auto">
+                            {language === 'en' ? 'Learn more' : 'Dowiedz się więcej'} →
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </section>
+        </div>
 
-        {/* Story Section */}
-        <section className="py-16">
+        {/* Brand Story Section */}
+        <div className="bg-muted/30 py-16">
           <div className="container mx-auto px-4 lg:px-8">
-            <div className="max-w-4xl mx-auto text-center space-y-8">
-              <h2 className="text-3xl md:text-4xl font-playfair font-bold text-foreground">
-                {t('ourStory')}
-              </h2>
-              
-              <div className="space-y-6 text-lg text-foreground/80 leading-relaxed">
-                <p>
-                  {t('storyPara1')}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-6">
+                  {language === 'en' ? 'Our Story' : 'Nasza Historia'}
+                </h2>
+                <p className="text-lg text-muted-foreground mb-4">
+                  {language === 'en'
+                    ? 'SPIRIT CANDLES was born from a passion for creating moments of tranquility and connection. Each candle is handcrafted with care, using only the finest natural soy wax and wooden wicks that create a soothing crackling sound.'
+                    : 'SPIRIT CANDLES narodziło się z pasji do tworzenia chwil spokoju i połączenia. Każda świeca jest ręcznie robiona z troską, używając tylko najwyższej jakości naturalnego wosku sojowego i drewnianych knotów, które tworzą kojący trzaskający dźwięk.'}
                 </p>
-                
-                <p>
-                  {t('storyPara2')}
-                </p>
-                
-                <p>
-                  {t('storyPara3')}
+                <p className="text-lg text-muted-foreground">
+                  {language === 'en'
+                    ? 'We believe that every candle tells a story and brings warmth to your home. Our fragrances are inspired by iconic scents, carefully selected to evoke emotions and memories.'
+                    : 'Wierzymy, że każda świeca opowiada historię i wnosi ciepło do Twojego domu. Nasze zapachy są inspirowane kultowymi aromatami, starannie wybrane, aby wywołać emocje i wspomnienia.'}
                 </p>
               </div>
-
-              <div className="bg-card border border-border/40 rounded-lg p-8 shadow-elegant">
-                <blockquote className="text-xl font-playfair italic text-foreground mb-4">
-                  {t('philosophyQuote')}
-                </blockquote>
-                <cite className="text-sm text-muted-foreground">— {t('philosophyCite')}</cite>
+              <div className="flex justify-center">
+                <img 
+                  src={spiritLogo} 
+                  alt="SPIRIT CANDLES Logo" 
+                  className="w-64 h-64 object-contain"
+                />
               </div>
             </div>
           </div>
-        </section>
-
-        {/* Legal Disclaimer */}
-        <section className="py-8 bg-muted/30">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="text-center text-sm text-muted-foreground">
-              <p>
-                <strong>{t('legalDisclaimer')}</strong> {t('legalDisclaimerText')}
-              </p>
-            </div>
-          </div>
-        </section>
+        </div>
       </main>
     </>
   );

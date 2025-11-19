@@ -17,4 +17,6 @@ and
 
 and
 
-eference the following files to stay on track with the project alignments, info, riles, guide and others of all files with .md or .mdc extension
+reference the following files to stay on track with the project alignments, info, riles, guide and others of all files with .md or .mdc extension
+
+N.B. : Never consider the files in the root project in the folder called "never_consider_or_read_backup!" because it is a backup folder that should never be read, considered, or modified (the folder and its internal files)! Excluding it and its internal files will always be as if it/they did not exist!

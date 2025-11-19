@@ -236,12 +236,12 @@ const ProductDetail = () => {
           keywords={seoSettings.keywords}
           type="product"
           image={product.image || seoSettings.og_image_url}
-          url={`https://spirit-candle.com/${language}/product/${id}`}
+          url={`https://spirit-candle.com/product/${id}`}
           noindex={seoSettings.noindex}
           structuredData={[productStructuredData, breadcrumbData]}
           alternateUrls={{
-            en: `https://spirit-candle.com/en/product/${id}`,
-            pl: `https://spirit-candle.com/pl/product/${id}`
+            en: `https://spirit-candle.com/product/${id}`,
+            pl: `https://spirit-candle.com/product/${id}`
           }}
         />
       )}

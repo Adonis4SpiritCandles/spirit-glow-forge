@@ -80,12 +80,12 @@ const Index = () => {
           keywords={seoSettings.keywords}
           type="website"
           image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
-          url={`https://spirit-candle.com/${language}`}
+          url="https://spirit-candle.com/"
           noindex={seoSettings.noindex}
           structuredData={generateWebSiteStructuredData()}
           alternateUrls={{
-            en: 'https://spirit-candle.com/en',
-            pl: 'https://spirit-candle.com/pl'
+            en: 'https://spirit-candle.com/',
+            pl: 'https://spirit-candle.com/'
           }}
         />
       )}

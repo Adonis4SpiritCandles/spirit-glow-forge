@@ -118,23 +118,28 @@ export const generateWebSiteStructuredData = () => {
 
 /**
  * Get full URL for the current page
+ * NOTE: Site does NOT use /en or /pl prefixes in URLs
  */
 export const getFullUrl = (path: string, language: 'en' | 'pl'): string => {
   const baseUrl = 'https://spirit-candle.com';
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${baseUrl}/${language}${cleanPath}`;
+  // Return URL without language prefix since site doesn't use them
+  return `${baseUrl}${cleanPath}`;
 };
 
 /**
  * Generate alternate URLs for hreflang
+ * NOTE: Site does NOT use /en or /pl prefixes in URLs, so alternate URLs are the same
  */
 export const generateAlternateUrls = (path: string): { en: string; pl: string } => {
   const baseUrl = 'https://spirit-candle.com';
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
+  // Since site doesn't use language prefixes, both alternate URLs are the same
+  const url = `${baseUrl}${cleanPath}`;
   return {
-    en: `${baseUrl}/en${cleanPath}`,
-    pl: `${baseUrl}/pl${cleanPath}`
+    en: url,
+    pl: url
   };
 };
 

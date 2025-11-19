@@ -29,7 +29,26 @@ serve(async (req) => {
     const userAgent = req.headers.get('user-agent') || '';
     const pathname = url.pathname;
     
-    console.log('[serve-seo-meta] Request:', { pathname, userAgent: userAgent.substring(0, 50) });
+    // Detect language from Accept-Language header
+    // Since the site doesn't use /en or /pl in URLs, we detect from browser preferences
+    const acceptLanguage = req.headers.get('accept-language') || '';
+    let detectedLanguage = 'en'; // default
+    if (acceptLanguage) {
+      // Simple detection: if 'pl' appears before 'en' in Accept-Language, use Polish
+      const lowerAcceptLang = acceptLanguage.toLowerCase();
+      const plIndex = lowerAcceptLang.indexOf('pl');
+      const enIndex = lowerAcceptLang.indexOf('en');
+      if (plIndex !== -1 && (enIndex === -1 || plIndex < enIndex)) {
+        detectedLanguage = 'pl';
+      }
+    }
+    
+    console.log('[serve-seo-meta] Request:', { 
+      pathname, 
+      userAgent: userAgent.substring(0, 50),
+      detectedLanguage,
+      acceptLanguage: acceptLanguage.substring(0, 50)
+    });
     
     // Check if request is from a crawler
     if (!isCrawler(userAgent)) {
@@ -48,7 +67,8 @@ serve(async (req) => {
     }
     
     // Parse URL to get page type, language, and IDs
-    const parsed = parseUrl(pathname);
+    // Pass detected language to parseUrl (site doesn't use /en or /pl in URLs)
+    const parsed = parseUrl(pathname, detectedLanguage);
     console.log('[serve-seo-meta] Parsed URL:', parsed);
     
     let title = '';

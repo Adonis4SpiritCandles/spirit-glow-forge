@@ -29,57 +29,43 @@ export interface ParsedUrl {
   id?: string;
 }
 
-export function parseUrl(pathname: string): ParsedUrl {
+export function parseUrl(pathname: string, language: string = 'en'): ParsedUrl {
   // Remove trailing slash
   const cleanPath = pathname.replace(/\/$/, '');
   
-  // Extract language prefix (/en/ or /pl/)
-  let language = 'en'; // default
-  let pathWithoutLang = cleanPath;
+  // NOTE: This site does NOT use /en or /pl prefixes in URLs
+  // Language is determined by Accept-Language header or defaults to 'en'
+  // The pathname is used directly without removing language prefixes
   
-  if (cleanPath.startsWith('/en/') || cleanPath === '/en') {
-    language = 'en';
-    pathWithoutLang = cleanPath.slice(3);
-  } else if (cleanPath.startsWith('/pl/') || cleanPath === '/pl') {
-    language = 'pl';
-    pathWithoutLang = cleanPath.slice(3);
-  } else if (cleanPath.startsWith('/en')) {
-    language = 'en';
-    pathWithoutLang = '';
-  } else if (cleanPath.startsWith('/pl')) {
-    language = 'pl';
-    pathWithoutLang = '';
-  }
-  
-  // Detect page type
-  if (!pathWithoutLang || pathWithoutLang === '/') {
+  // Detect page type directly from pathname
+  if (!cleanPath || cleanPath === '/') {
     return { pageType: 'home', language };
   }
   
-  if (pathWithoutLang.startsWith('/about')) {
+  if (cleanPath.startsWith('/about')) {
     return { pageType: 'about', language };
   }
   
-  if (pathWithoutLang.startsWith('/shop')) {
+  if (cleanPath.startsWith('/shop')) {
     return { pageType: 'shop', language };
   }
   
-  if (pathWithoutLang.startsWith('/contact')) {
+  if (cleanPath.startsWith('/contact')) {
     return { pageType: 'contact', language };
   }
   
-  if (pathWithoutLang.startsWith('/custom-candles')) {
+  if (cleanPath.startsWith('/custom-candles')) {
     return { pageType: 'custom_candles', language };
   }
   
   // Product detail: /product/:id
-  const productMatch = pathWithoutLang.match(/^\/product\/([^/]+)/);
+  const productMatch = cleanPath.match(/^\/product\/([^/]+)/);
   if (productMatch) {
     return { pageType: 'product', language, id: productMatch[1] };
   }
   
   // Collection detail: /collection/:id
-  const collectionMatch = pathWithoutLang.match(/^\/collection\/([^/]+)/);
+  const collectionMatch = cleanPath.match(/^\/collection\/([^/]+)/);
   if (collectionMatch) {
     return { pageType: 'collection', language, id: collectionMatch[1] };
   }
@@ -256,9 +242,10 @@ export function generateHTML(metaTags: {
   <meta name="twitter:site" content="@spiritcandle0" />
   
   <!-- Alternate Languages -->
-  <link rel="alternate" hreflang="en" href="${url.replace(/\/(en|pl)\//, '/en/')}" />
-  <link rel="alternate" hreflang="pl" href="${url.replace(/\/(en|pl)\//, '/pl/')}" />
-  <link rel="alternate" hreflang="x-default" href="${url.replace(/\/(en|pl)\//, '/en/')}" />
+  <!-- Note: Site doesn't use /en or /pl in URLs, so alternate URLs are the same -->
+  <link rel="alternate" hreflang="en" href="${url}" />
+  <link rel="alternate" hreflang="pl" href="${url}" />
+  <link rel="alternate" hreflang="x-default" href="${url}" />
 </head>
 <body>
   <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">

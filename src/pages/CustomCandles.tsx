@@ -197,11 +197,11 @@ const CustomCandles = () => {
             ? 'custom candles, personalized candles, custom fragrance candles, custom label candles, personalized gifts'
             : 'personalizowane świece, świece na zamówienie, świece z własnym zapachem, świece z własną etykietą, spersonalizowane prezenty')}
           image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
-          url={`https://spirit-candle.com/${language}/custom-candles`}
+          url="https://spirit-candle.com/custom-candles"
           noindex={seoSettings.noindex}
           alternateUrls={{
-            en: 'https://spirit-candle.com/en/custom-candles',
-            pl: 'https://spirit-candle.com/pl/custom-candles'
+            en: 'https://spirit-candle.com/custom-candles',
+            pl: 'https://spirit-candle.com/custom-candles'
           }}
         />
       )}

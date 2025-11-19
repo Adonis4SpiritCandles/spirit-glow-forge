@@ -66,6 +66,14 @@ const SEOManager = ({
   const finalCanonical = canonical || finalUrl;
   const finalImageAlt = imageAlt || finalTitle;
 
+  // Check if title already contains "SPIRIT CANDLES" to avoid duplication
+  // If titleTemplate is null/undefined, don't use template
+  // If title already contains "SPIRIT CANDLES", don't add it again
+  const shouldUseTemplate = titleTemplate && !finalTitle.includes('SPIRIT CANDLES');
+  const finalTitleWithTemplate = shouldUseTemplate 
+    ? titleTemplate.replace('%s', finalTitle)
+    : finalTitle;
+
   // Clean URL from tracking parameters
   const cleanCanonical = finalCanonical.split('?')[0];
 
@@ -105,7 +113,7 @@ const SEOManager = ({
     <Helmet>
       {/* Primary Meta Tags */}
       <html lang={currentLocale} />
-      <title>{titleTemplate ? titleTemplate.replace('%s', finalTitle) : finalTitle}</title>
+      <title>{finalTitleWithTemplate}</title>
       <meta name="title" content={finalTitle} />
       <meta name="description" content={finalDescription} />
       <meta name="keywords" content={finalKeywords} />

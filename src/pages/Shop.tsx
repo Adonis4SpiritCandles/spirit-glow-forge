@@ -210,12 +210,12 @@ const Shop = () => {
           description={description}
           keywords={seoSettings.keywords}
           image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
-          url={`https://spirit-candle.com/${language}/shop`}
+          url="https://spirit-candle.com/shop"
           noindex={seoSettings.noindex}
           structuredData={breadcrumbData}
           alternateUrls={{
-            en: 'https://spirit-candle.com/en/shop',
-            pl: 'https://spirit-candle.com/pl/shop'
+            en: 'https://spirit-candle.com/shop',
+            pl: 'https://spirit-candle.com/shop'
           }}
         />
       )}

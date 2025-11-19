@@ -312,9 +312,9 @@ const UserDashboard = () => {
       <div className="min-h-screen bg-background py-8">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="mb-8">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
               {t('dashboard') || 'Dashboard'}
-            </h2>
+            </h1>
             <p className="text-lg text-muted-foreground title-candle-flicker mb-2">
               {language === 'pl' 
                 ? 'Zarządzaj swoim profilem, zamówieniami i nagrodami' 

@@ -19,9 +19,11 @@ import {
   generateAlternateUrls,
   truncateDescription
 } from "@/utils/seoUtils";
+import { useSEOSettings } from "@/hooks/useSEOSettings";
 
 const Contact = () => {
   const { t, language } = useLanguage();
+  const seoSettings = useSEOSettings('contact');
 
   // Add styles for luminescence and candle-flicker animation
   useEffect(() => {
@@ -251,19 +253,24 @@ const Contact = () => {
     ? 'contact spirit candles, customer service, candle inquiries, support, help'
     : 'kontakt spirit candles, obsługa klienta, zapytania świece, wsparcie, pomoc';
 
+  // Use SEO settings from database or fallback to defaults
+  const seoTitle = seoSettings.title || (language === 'en' ? 'Contact Us' : 'Kontakt');
+  const seoDescription = seoSettings.description || truncateDescription(language === 'en'
+    ? 'Get in touch with SPIRIT CANDLES. We are here to help with your questions about our luxury soy candles, orders, and shipping.'
+    : 'Skontaktuj się z SPIRIT CANDLES. Jesteśmy tutaj, aby pomóc w pytaniach dotyczących naszych luksusowych świec sojowych, zamówień i wysyłki.', 160);
+
   return (
     <>
       <SEOManager
-        title={language === 'en' ? 'Contact Us' : 'Kontakt'}
-        description={truncateDescription(language === 'en'
-          ? 'Get in touch with SPIRIT CANDLES. We are here to help with your questions about our luxury soy candles, orders, and shipping.'
-          : 'Skontaktuj się z SPIRIT CANDLES. Jesteśmy tutaj, aby pomóc w pytaniach dotyczących naszych luksusowych świec sojowych, zamówień i wysyłki.', 160)}
-        keywords={keywords}
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoSettings.keywords || keywords}
         type="website"
-        image="https://spirit-candle.com/spiritcandles/spirit-logo.png"
+        image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
         imageAlt={language === 'en' ? 'Contact SPIRIT CANDLES' : 'Kontakt SPIRIT CANDLES'}
         url={contactUrl}
         canonical={contactUrl}
+        noindex={seoSettings.noindex}
         structuredData={[contactStructuredData, breadcrumbData]}
         alternateUrls={alternateUrls}
       />

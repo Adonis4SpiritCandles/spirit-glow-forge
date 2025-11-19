@@ -1684,9 +1684,9 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
+          <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-glow to-primary title-luminescent title-candle-flicker">
             {t('adminDashboard')}
-          </h2>
+          </h1>
           <p className="text-lg text-muted-foreground title-candle-flicker">
             {language === 'pl' 
               ? 'Ustawienia, Zarządzanie Zamówieniami & Spirit Tools' 

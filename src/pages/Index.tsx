@@ -15,12 +15,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Bell, Gift } from "lucide-react";
 import SEOManager from "@/components/SEO/SEOManager";
 import { generateWebSiteStructuredData } from "@/utils/seoUtils";
+import { useSEOSettings } from "@/hooks/useSEOSettings";
 import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
   const { unseenCount, isAdmin } = useAdminNotifications();
   const { t, language } = useLanguage();
+  const seoSettings = useSEOSettings('home');
   const [searchParams, setSearchParams] = useSearchParams();
   const [showReferralBanner, setShowReferralBanner] = useState(false);
 
@@ -59,22 +61,25 @@ const Index = () => {
     }
   }, [searchParams, language, setSearchParams]);
 
-  const title = language === 'en' 
+  // Use SEO settings from database or fallback to defaults
+  const title = seoSettings.title || (language === 'en' 
     ? 'SPIRIT CANDLES — Reborn Your Nature | Luxury Soy Candles'
-    : 'SPIRIT CANDLES — Odrodź Swoją Naturę | Luksusowe Świece Sojowe';
+    : 'SPIRIT CANDLES — Odrodź Swoją Naturę | Luksusowe Świece Sojowe');
   
-  const description = language === 'en'
+  const description = seoSettings.description || (language === 'en'
     ? 'Discover SPIRIT CANDLES luxury soy candles inspired by iconic fragrances. Handcrafted with natural soy wax and wooden wicks for an elevated sensory experience. Reborn your nature.'
-    : 'Odkryj luksusowe świece sojowe SPIRIT CANDLES inspirowane kultowymi zapachami. Ręcznie robione z naturalnego wosku sojowego i drewnianymi knotami dla wyjątkowych doznań zmysłowych. Odrodź swoją naturę.';
+    : 'Odkryj luksusowe świece sojowe SPIRIT CANDLES inspirowane kultowymi zapachami. Ręcznie robione z naturalnego wosku sojowego i drewnianymi knotami dla wyjątkowych doznań zmysłowych. Odrodź swoją naturę.');
 
   return (
     <main>
       <SEOManager
         title={title}
         description={description}
+        keywords={seoSettings.keywords}
         type="website"
-        image="https://spirit-candle.com/og-image-home.jpg"
+        image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-home.jpg"}
         url={`https://spirit-candle.com/${language}`}
+        noindex={seoSettings.noindex}
         structuredData={generateWebSiteStructuredData()}
         alternateUrls={{
           en: 'https://spirit-candle.com/en',

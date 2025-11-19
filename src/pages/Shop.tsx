@@ -17,12 +17,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import SEOManager from "@/components/SEO/SEOManager";
 import { generateBreadcrumbStructuredData } from "@/utils/seoUtils";
+import { useSEOSettings } from "@/hooks/useSEOSettings";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 
 const Shop = () => {
   const { t, language } = useLanguage();
+  const seoSettings = useSEOSettings('shop');
 
   // Add styles for luminescence and candle-flicker animation
   useEffect(() => {
@@ -188,10 +190,11 @@ const Shop = () => {
     }
   });
 
-  const title = language === 'en' ? 'Shop Luxury Candles' : 'Sklep z luksusowymi świecami';
-  const description = language === 'en'
+  // Use SEO settings from database or fallback to defaults
+  const title = seoSettings.title || (language === 'en' ? 'Shop Luxury Candles' : 'Sklep z luksusowymi świecami');
+  const description = seoSettings.description || (language === 'en'
     ? `Browse our complete collection of luxury soy candles. Premium quality, iconic fragrances, wooden wicks. ${sortedProducts.length} products available. Free shipping on orders over 250 PLN.`
-    : `Przeglądaj naszą pełną kolekcję luksusowych świec sojowych. Najwyższa jakość, kultowe zapachy, drewniane knoty. ${sortedProducts.length} produktów dostępnych. Darmowa wysyłka przy zamówieniach powyżej 250 PLN.`;
+    : `Przeglądaj naszą pełną kolekcję luksusowych świec sojowych. Najwyższa jakość, kultowe zapachy, drewniane knoty. ${sortedProducts.length} produktów dostępnych. Darmowa wysyłka przy zamówieniach powyżej 250 PLN.`);
 
   const breadcrumbData = generateBreadcrumbStructuredData([
     { name: language === 'en' ? 'Home' : 'Strona główna', url: `https://spirit-candle.com/${language}` },
@@ -203,7 +206,10 @@ const Shop = () => {
       <SEOManager
         title={title}
         description={description}
+        keywords={seoSettings.keywords}
+        image={seoSettings.og_image_url || "https://spirit-candle.com/spiritcandles/og-image-default.jpg"}
         url={`https://spirit-candle.com/${language}/shop`}
+        noindex={seoSettings.noindex}
         structuredData={breadcrumbData}
         alternateUrls={{
           en: 'https://spirit-candle.com/en/shop',

@@ -13,6 +13,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import ProductReviews from "@/components/ProductReviews";
 import SEOManager from "@/components/SEO/SEOManager";
 import { generateProductStructuredData, generateBreadcrumbStructuredData, getProductAvailability, truncateDescription } from "@/utils/seoUtils";
+import { useSEOSettings } from "@/hooks/useSEOSettings";
 const Product3DViewer = lazy(async () => {
   try {
     return await import("@/components/product/Product3DViewer");
@@ -45,6 +46,7 @@ const ProductDetail = () => {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { averageRating, reviewCount } = useReviews(id);
   const { t, language } = useLanguage();
+  const seoSettings = useSEOSettings('product_default');
   
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -229,9 +231,11 @@ const ProductDetail = () => {
       <SEOManager
         title={product.name}
         description={truncateDescription(product.summary || product.description || product.fragrance)}
+        keywords={seoSettings.keywords}
         type="product"
-        image={product.image}
+        image={product.image || seoSettings.og_image_url}
         url={`https://spirit-candle.com/${language}/product/${id}`}
+        noindex={seoSettings.noindex}
         structuredData={[productStructuredData, breadcrumbData]}
         alternateUrls={{
           en: `https://spirit-candle.com/en/product/${id}`,

@@ -16,6 +16,7 @@ import {
   truncateDescription,
   generateSlug
 } from "@/utils/seoUtils";
+import { useSEOSettings } from "@/hooks/useSEOSettings";
 
 export default function CollectionDetail() {
   // Add styles for luminescence and candle-flicker animation
@@ -67,6 +68,7 @@ export default function CollectionDetail() {
   }, []);
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const seoSettings = useSEOSettings('collection_default');
   const [collection, setCollection] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -222,12 +224,13 @@ export default function CollectionDetail() {
       <SEOManager
         title={collectionName}
         description={truncateDescription(collectionDescription || '', 160)}
-        keywords={keywords}
+        keywords={seoSettings.keywords || keywords}
         type="website"
-        image={collection.image_url || collection.cover_image_url || 'https://spirit-candle.com/spiritcandles/spirit-logo.png'}
+        image={collection.image_url || collection.cover_image_url || seoSettings.og_image_url || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg'}
         imageAlt={collectionName}
         url={collectionUrl}
         canonical={collectionUrl}
+        noindex={seoSettings.noindex}
         structuredData={[collectionStructuredData, breadcrumbData]}
         alternateUrls={alternateUrls}
       />

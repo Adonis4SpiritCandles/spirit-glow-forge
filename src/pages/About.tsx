@@ -15,9 +15,11 @@ import {
   truncateDescription
 } from "@/utils/seoUtils";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEOSettings } from "@/hooks/useSEOSettings";
 
 const About = () => {
   const { t, language } = useLanguage();
+  const seoSettings = useSEOSettings('about');
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [heroSettings, setHeroSettings] = useState<any>(null);
@@ -211,19 +213,24 @@ const About = () => {
         }
       ];
 
+  // Use SEO settings from database or fallback to defaults
+  const seoTitle = seoSettings.title || (language === 'en' ? 'About Us' : 'O Nas');
+  const seoDescription = seoSettings.description || truncateDescription(heroIntro1 || heroIntro2 || (language === 'en' 
+    ? 'Learn about SPIRIT CANDLES – our story, values, and commitment to creating luxury soy candles.'
+    : 'Dowiedz się więcej o SPIRIT CANDLES – naszej historii, wartościach i zaangażowaniu w tworzenie luksusowych świec sojowych.'), 160);
+
   return (
     <>
       <SEOManager
-        title={language === 'en' ? 'About Us' : 'O Nas'}
-        description={truncateDescription(heroIntro1 || heroIntro2 || (language === 'en' 
-          ? 'Learn about SPIRIT CANDLES – our story, values, and commitment to creating luxury soy candles.'
-          : 'Dowiedz się więcej o SPIRIT CANDLES – naszej historii, wartościach i zaangażowaniu w tworzenie luksusowych świec sojowych.'), 160)}
-        keywords={keywords}
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoSettings.keywords || keywords}
         type="website"
-        image={heroImage || 'https://spirit-candle.com/spiritcandles/spirit-logo.png'}
+        image={seoSettings.og_image_url || heroImage || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg'}
         imageAlt={language === 'en' ? 'About SPIRIT CANDLES' : 'O SPIRIT CANDLES'}
         url={aboutUrl}
         canonical={aboutUrl}
+        noindex={seoSettings.noindex}
         structuredData={[aboutStructuredData, breadcrumbData]}
         alternateUrls={alternateUrls}
       />

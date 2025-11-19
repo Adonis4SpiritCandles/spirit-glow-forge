@@ -257,6 +257,30 @@ serve(async (req) => {
         console.error('[serve-seo-meta] Error in collection handling:', error);
         // Continue with fallback defaults - will be handled below
       }
+    } else if (parsed.pageType === 'collections') {
+      // Collections list page (no specific ID)
+      console.log('[serve-seo-meta] Fetching SEO settings for collections list page');
+      try {
+        const collectionsSettings = await withTimeout(
+          fetchSEOSettings(supabaseUrl, supabaseKey, 'collections', parsed.language),
+          5000,
+          null
+        );
+        
+        if (collectionsSettings) {
+          title = collectionsSettings.title;
+          description = collectionsSettings.description;
+          keywords = collectionsSettings.keywords;
+          image = collectionsSettings.og_image_url;
+          noindex = collectionsSettings.noindex;
+          console.log('[serve-seo-meta] Using collections list SEO settings');
+        } else {
+          console.warn('[serve-seo-meta] No SEO settings found for collections list - using fallback');
+        }
+      } catch (error) {
+        console.error('[serve-seo-meta] Error fetching collections list settings:', error);
+        // Continue with fallback defaults - will be handled below
+      }
     } else {
       // For other pages (home, shop, about, contact, custom_candles)
       console.log('[serve-seo-meta] Fetching SEO settings for page type:', parsed.pageType, 'language:', parsed.language);

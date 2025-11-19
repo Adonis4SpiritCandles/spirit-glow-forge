@@ -65,13 +65,24 @@ export function parseUrl(pathname: string, language: string = 'en'): ParsedUrl {
     return { pageType: 'custom_candles', language };
   }
   
+  // Collections list page: /collections (plural, no ID)
+  if (cleanPath === '/collections') {
+    return { pageType: 'collections', language };
+  }
+  
+  // Collections detail page: /collections/:id (plural with ID)
+  const collectionsDetailMatch = cleanPath.match(/^\/collections\/([^/]+)/);
+  if (collectionsDetailMatch) {
+    return { pageType: 'collection', language, id: collectionsDetailMatch[1] };
+  }
+  
   // Product detail: /product/:id
   const productMatch = cleanPath.match(/^\/product\/([^/]+)/);
   if (productMatch) {
     return { pageType: 'product', language, id: productMatch[1] };
   }
   
-  // Collection detail: /collection/:id
+  // Collection detail: /collection/:id (singular, legacy format)
   const collectionMatch = cleanPath.match(/^\/collection\/([^/]+)/);
   if (collectionMatch) {
     return { pageType: 'collection', language, id: collectionMatch[1] };

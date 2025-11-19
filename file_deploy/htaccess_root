@@ -37,17 +37,8 @@ Options -MultiViews
   # Per LiteSpeed/Hostinger, usa redirect 302 (i crawler lo seguono e ottengono l'HTML corretto)
   # IMPORTANTE: Tutte le RewriteCond devono essere ripetute per ogni RewriteRule!
   
-  # Abilita mod_proxy e mod_proxy_http per proxy pass (se disponibili)
-  # Se non disponibili, queste righe verranno ignorate e useremo il redirect
-  <IfModule mod_proxy.c>
-    <IfModule mod_proxy_http.c>
-      ProxyPreserveHost On
-      ProxyPassReverse / https://fhtuqmdlgzmpsbflxhra.supabase.co/
-    </IfModule>
-  </IfModule>
-  
-  # Homepage per crawler - PROXY PASS (mantiene URL originale)
-  # Se mod_proxy non è disponibile, fallback a redirect 302
+  # Homepage per crawler - REDIRECT 302 (compatibile con Hostinger)
+  # I crawler seguono il redirect e ottengono l'HTML corretto dall'Edge Function
   # Aggiunti più User-Agent per WhatsApp e altri servizi
   RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|LinkedInBot|slackbot|Slackbot|telegrambot|whatsapp|WhatsApp|WhatsAppBot|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot|SkypeUriPreview|Applebot|ia_archiver) [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
@@ -55,10 +46,10 @@ Options -MultiViews
   RewriteCond %{REQUEST_URI} !^/(spiritcandles|wordpress|wp-admin|wp-includes|wp-content|ImageFiles|OLD_spirit-candle_OLD) [NC]
   RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|json|xml|txt)$ [NC]
   RewriteCond %{REQUEST_URI} ^/$
-  RewriteRule ^$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=/ [P,L]
+  RewriteRule ^$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=/ [R=302,L]
   
-  # Altri path per crawler - PROXY PASS (mantiene URL originale)
-  # Se mod_proxy non è disponibile, fallback a redirect 302
+  # Altri path per crawler - REDIRECT 302 (compatibile con Hostinger)
+  # I crawler seguono il redirect e ottengono l'HTML corretto dall'Edge Function
   # Aggiunti più User-Agent per WhatsApp e altri servizi
   RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|twitterbot|linkedinbot|LinkedInBot|slackbot|Slackbot|telegrambot|whatsapp|WhatsApp|WhatsAppBot|pinterest|discordbot|googlebot|bingbot|baiduspider|yandexbot|SkypeUriPreview|Applebot|ia_archiver) [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
@@ -66,7 +57,7 @@ Options -MultiViews
   RewriteCond %{REQUEST_URI} !^/(spiritcandles|wordpress|wp-admin|wp-includes|wp-content|ImageFiles|OLD_spirit-candle_OLD) [NC]
   RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|json|xml|txt)$ [NC]
   RewriteCond %{REQUEST_URI} !^/$
-  RewriteRule ^(.*)$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=%{REQUEST_URI} [P,L]
+  RewriteRule ^(.*)$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/serve-seo-meta?path=%{REQUEST_URI} [R=302,L]
 
   # 7) CATCH-ALL SPA (URL belli: nessun /spiritcandles visibile)
   # Solo per utenti normali (non crawler)

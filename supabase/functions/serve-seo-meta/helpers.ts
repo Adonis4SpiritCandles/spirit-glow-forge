@@ -53,7 +53,12 @@ export function parseUrl(pathname: string, language: string = 'en'): ParsedUrl {
     return { pageType: 'about', language };
   }
   
-  if (cleanPath.startsWith('/shop')) {
+  // Shop/Products list page: /shop or /products
+  if (cleanPath === '/shop' || cleanPath === '/products') {
+    return { pageType: 'shop', language };
+  }
+  
+  if (cleanPath.startsWith('/shop/')) {
     return { pageType: 'shop', language };
   }
   
@@ -70,10 +75,10 @@ export function parseUrl(pathname: string, language: string = 'en'): ParsedUrl {
     return { pageType: 'collections', language };
   }
   
-  // Collections detail page: /collections/:id (plural with ID)
+  // Collections detail page: /collections/:slug (plural with slug)
   const collectionsDetailMatch = cleanPath.match(/^\/collections\/([^/]+)/);
   if (collectionsDetailMatch) {
-    return { pageType: 'collection', language, id: collectionsDetailMatch[1] };
+    return { pageType: 'collection', language, id: collectionsDetailMatch[1] }; // id field contains slug
   }
   
   // Product detail: /product/:id
@@ -86,6 +91,116 @@ export function parseUrl(pathname: string, language: string = 'en'): ParsedUrl {
   const collectionMatch = cleanPath.match(/^\/collection\/([^/]+)/);
   if (collectionMatch) {
     return { pageType: 'collection', language, id: collectionMatch[1] };
+  }
+  
+  // Static pages
+  if (cleanPath === '/faq') {
+    return { pageType: 'faq', language };
+  }
+  
+  if (cleanPath === '/privacy-policy') {
+    return { pageType: 'privacy_policy', language };
+  }
+  
+  if (cleanPath === '/cookie-policy') {
+    return { pageType: 'cookie_policy', language };
+  }
+  
+  if (cleanPath === '/terms-of-sale') {
+    return { pageType: 'terms_of_sale', language };
+  }
+  
+  if (cleanPath === '/shipping-returns') {
+    return { pageType: 'shipping_returns', language };
+  }
+  
+  if (cleanPath === '/legal-notice') {
+    return { pageType: 'legal_notice', language };
+  }
+  
+  if (cleanPath === '/data-request') {
+    return { pageType: 'data_request', language };
+  }
+  
+  if (cleanPath === '/accessibility') {
+    return { pageType: 'accessibility', language };
+  }
+  
+  if (cleanPath === '/all-notices') {
+    return { pageType: 'all_notices', language };
+  }
+  
+  if (cleanPath === '/wishlist') {
+    return { pageType: 'wishlist', language };
+  }
+  
+  if (cleanPath === '/scent-quiz') {
+    return { pageType: 'scent_quiz', language };
+  }
+  
+  if (cleanPath === '/loyalty') {
+    return { pageType: 'loyalty', language };
+  }
+  
+  if (cleanPath === '/cart') {
+    return { pageType: 'cart', language };
+  }
+  
+  if (cleanPath === '/checkout') {
+    return { pageType: 'checkout', language };
+  }
+  
+  if (cleanPath === '/payment-success') {
+    return { pageType: 'payment_success', language };
+  }
+  
+  if (cleanPath === '/auth') {
+    return { pageType: 'auth', language };
+  }
+  
+  if (cleanPath === '/dashboard') {
+    return { pageType: 'dashboard', language };
+  }
+  
+  if (cleanPath === '/admin') {
+    return { pageType: 'admin', language };
+  }
+  
+  if (cleanPath === '/leaderboard') {
+    return { pageType: 'leaderboard', language };
+  }
+  
+  if (cleanPath === '/reset-password') {
+    return { pageType: 'reset_password', language };
+  }
+  
+  if (cleanPath === '/privacy-registration') {
+    return { pageType: 'privacy_registration', language };
+  }
+  
+  // Dynamic routes with parameters
+  // AR Viewer: /ar/:productId
+  const arMatch = cleanPath.match(/^\/ar\/([^/]+)/);
+  if (arMatch) {
+    return { pageType: 'ar', language, id: arMatch[1] };
+  }
+  
+  // Profile: /profile/:userId
+  const profileMatch = cleanPath.match(/^\/profile\/([^/]+)/);
+  if (profileMatch) {
+    return { pageType: 'profile', language, id: profileMatch[1] };
+  }
+  
+  // Order timeline: /order/:orderId/timeline
+  const orderTimelineMatch = cleanPath.match(/^\/order\/([^/]+)\/timeline/);
+  if (orderTimelineMatch) {
+    return { pageType: 'order_timeline', language, id: orderTimelineMatch[1] };
+  }
+  
+  // Shared wishlist: /wishlist/shared/:token
+  const sharedWishlistMatch = cleanPath.match(/^\/wishlist\/shared\/([^/]+)/);
+  if (sharedWishlistMatch) {
+    return { pageType: 'shared_wishlist', language, id: sharedWishlistMatch[1] };
   }
   
   // Default to home
@@ -141,25 +256,56 @@ export async function fetchProductData(supabaseUrl: string, supabaseKey: string,
   
   return {
     title: `${data[nameField]} | SPIRIT CANDLES`,
-    description: data[descField] || data.summary || '',
-    image: data.image || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg',
-    price: data.price_pln,
+    description: data[descField] || data.summary_en || data.summary_pl || '',
+    image: data.image_url || (data.image_urls && data.image_urls.length > 0 ? data.image_urls[0] : null) || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg',
+    price: data.price_pln ? parseFloat(data.price_pln.toString()) : undefined,
     currency: 'PLN'
   };
 }
 
 // Fetch collection data for specific meta tags
+// collectionId can be either an ID (UUID) or a slug (string)
 export async function fetchCollectionData(supabaseUrl: string, supabaseKey: string, collectionId: string, language: string) {
   const supabase = createClient(supabaseUrl, supabaseKey);
   
-  const { data, error } = await supabase
+  // Try to fetch by ID first (UUID format)
+  let query = supabase
     .from('collections')
-    .select('*')
-    .eq('id', collectionId)
-    .single();
+    .select('*');
+  
+  // Check if collectionId looks like a UUID
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(collectionId);
+  
+  if (isUUID) {
+    query = query.eq('id', collectionId);
+  } else {
+    // Otherwise, try to fetch by slug
+    query = query.eq('slug', collectionId);
+  }
+  
+  const { data, error } = await query.single();
   
   if (error || !data) {
     console.error('Error fetching collection data:', error);
+    // If fetching by slug failed and it wasn't a UUID, try by ID as fallback
+    if (!isUUID) {
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('collections')
+        .select('*')
+        .eq('id', collectionId)
+        .single();
+      
+      if (!fallbackError && fallbackData) {
+        const nameField = language === 'en' ? 'name_en' : 'name_pl';
+        const descField = language === 'en' ? 'description_en' : 'description_pl';
+        
+        return {
+          title: `${fallbackData[nameField]} Collection | SPIRIT CANDLES`,
+          description: fallbackData[descField] || '',
+          image: fallbackData.image_url || fallbackData.cover_image_url || 'https://spirit-candle.com/spiritcandles/og-image-default.jpg'
+        };
+      }
+    }
     return null;
   }
   

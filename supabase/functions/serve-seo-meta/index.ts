@@ -26,6 +26,9 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, fallback: T): Pr
   ]);
 };
 
+// Default timeout increased to 10 seconds for database queries
+const DB_TIMEOUT_MS = 10000;
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -139,7 +142,7 @@ serve(async (req) => {
         // Check if we should use specific meta for products
         const productSettings = await withTimeout(
           fetchSEOSettings(supabaseUrl, supabaseKey, 'product_default', parsed.language),
-          5000,
+          DB_TIMEOUT_MS,
           null
         );
         
@@ -149,7 +152,7 @@ serve(async (req) => {
           try {
             const productData = await withTimeout(
               fetchProductData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
-              5000,
+              DB_TIMEOUT_MS,
               null
             );
             if (productData) {
@@ -202,7 +205,7 @@ serve(async (req) => {
         // Check if we should use specific meta for collections
         const collectionSettings = await withTimeout(
           fetchSEOSettings(supabaseUrl, supabaseKey, 'collection_default', parsed.language),
-          5000,
+          DB_TIMEOUT_MS,
           null
         );
         
@@ -212,7 +215,7 @@ serve(async (req) => {
           try {
             const collectionData = await withTimeout(
               fetchCollectionData(supabaseUrl, supabaseKey, parsed.id, parsed.language),
-              5000,
+              DB_TIMEOUT_MS,
               null
             );
             if (collectionData) {
@@ -263,7 +266,7 @@ serve(async (req) => {
       try {
         const collectionsSettings = await withTimeout(
           fetchSEOSettings(supabaseUrl, supabaseKey, 'collections', parsed.language),
-          5000,
+          DB_TIMEOUT_MS,
           null
         );
         
@@ -287,7 +290,7 @@ serve(async (req) => {
       try {
         const pageSettings = await withTimeout(
           fetchSEOSettings(supabaseUrl, supabaseKey, parsed.pageType, parsed.language),
-          5000,
+          DB_TIMEOUT_MS,
           null
         );
         console.log('[serve-seo-meta] SEO settings retrieved:', pageSettings ? {

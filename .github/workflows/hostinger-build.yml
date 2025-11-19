@@ -83,14 +83,12 @@ jobs:
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
           set ftp:ssl-auth TLS
-          put -O /public_html  -o .htaccess ./file_deploy/htaccess_root
-          # opzionale: imposta i permessi (se il server lo supporta)
-          # mettere qui: chmod 644 /public_html/.htaccess
-          # opzionale: verifica presenza
+          cd /public_html
+          put ./file_deploy/htaccess_root .htaccess
           cls -l /public_html/.htaccess
           bye
           LFTP_CMDS
-
+  
       - name: Upload spiritcandles .htaccess in /spiritcandles/
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
@@ -104,10 +102,8 @@ jobs:
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
           set ftp:ssl-auth TLS
-          put -O /public_html/spiritcandles  -o .htaccess ./file_deploy/htaccess_spiritcandles_folder
-          # opzionale: imposta i permessi (se il server lo supporta)
-          # mettere qui: chmod 644 /public_html/.htaccess
-          # opzionale: verifica presenza
-          cls -l /public_html/.htaccess
+          cd /public_html/spiritcandles
+          put ./file_deploy/htaccess_spiritcandles_folder .htaccess
+          cls -l /public_html/spiritcandles/.htaccess
           bye
           LFTP_CMDS

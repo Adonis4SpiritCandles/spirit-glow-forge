@@ -19,10 +19,17 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  let actualPath = '/'; // Default to homepage for error handling
+  
   try {
     // Get environment variables
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('[serve-seo-meta] Missing environment variables');
+      throw new Error('Missing Supabase configuration');
+    }
     
     // Get request URL and user agent
     const url = new URL(req.url);
@@ -34,8 +41,15 @@ serve(async (req) => {
     const queryPath = url.searchParams.get('path');
     const pathname = queryPath || url.pathname;
     
+    console.log('[serve-seo-meta] Raw path values:', {
+      queryPath,
+      pathname,
+      fullUrl: req.url,
+      searchParams: url.search
+    });
+    
     // Normalize path: ensure it starts with / and remove trailing slash
-    let actualPath = pathname;
+    actualPath = pathname;
     if (!actualPath.startsWith('/')) {
       actualPath = '/' + actualPath;
     }
@@ -48,6 +62,8 @@ serve(async (req) => {
     if (actualPath === '/functions/v1/serve-seo-meta') {
       actualPath = '/';
     }
+    
+    console.log('[serve-seo-meta] Normalized path:', actualPath);
     
     // Detect language from Accept-Language header
     // Since the site doesn't use /en or /pl in URLs, we detect from browser preferences
@@ -234,17 +250,41 @@ serve(async (req) => {
     
   } catch (error) {
     console.error('[serve-seo-meta] Error:', error);
+    console.error('[serve-seo-meta] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('[serve-seo-meta] Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      url: req.url,
+      method: req.method,
+      userAgent: req.headers.get('user-agent')?.substring(0, 50)
+    });
     
-    return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        details: 'Failed to generate SEO meta tags'
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    // Return a proper HTML response even on error, so crawlers can still see something
+    const errorHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPIRIT CANDLES — Reborn Your Nature</title>
+  <meta name="description" content="Discover SPIRIT CANDLES luxury soy candles inspired by iconic fragrances and handcrafted with natural soy wax.">
+  <meta property="og:title" content="SPIRIT CANDLES — Reborn Your Nature">
+  <meta property="og:description" content="Discover SPIRIT CANDLES luxury soy candles inspired by iconic fragrances and handcrafted with natural soy wax.">
+  <meta property="og:image" content="https://spirit-candle.com/spiritcandles/og-image-default.jpg">
+  <meta property="og:url" content="https://spirit-candle.com${actualPath || '/'}">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <h1>SPIRIT CANDLES</h1>
+</body>
+</html>`;
+    
+    return new Response(errorHtml, {
+      status: 200, // Return 200 even on error so crawlers see the fallback HTML
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-cache'
       }
-    );
+    });
   }
 });
 

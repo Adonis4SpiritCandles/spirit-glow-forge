@@ -206,7 +206,8 @@ serve(async (req) => {
         : 'Odkryj luksusowe świece sojowe SPIRIT CANDLES inspirowane kultowymi zapachami i ręcznie robione z naturalnego wosku sojowego.';
     }
     
-    // Construct full URL
+    // Construct full URL - IMPORTANT: Use the original domain, not Supabase URL
+    // This ensures og:url points to the actual site URL, not the Edge Function URL
     const baseUrl = 'https://spirit-candle.com';
     const fullUrl = `${baseUrl}${actualPath}`;
     const canonicalUrl = fullUrl;
@@ -217,8 +218,11 @@ serve(async (req) => {
       description: description ? description.substring(0, 50) + '...' : '(empty - using fallback)',
       image: image || '(empty - using default)',
       url: fullUrl,
+      canonicalUrl: canonicalUrl,
+      actualPath: actualPath,
       pageType: parsed.pageType,
-      language: parsed.language
+      language: parsed.language,
+      requestUrl: req.url
     });
     
     // Generate HTML with meta tags

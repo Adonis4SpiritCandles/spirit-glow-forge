@@ -19,7 +19,24 @@ Options -MultiViews
 
   # 3) LASCIA PASSARE TUTTI GLI ASSET DELLA SPA
   RewriteRule ^spiritcandles/(assets|images|img|videos|media|fonts|static)/ - [L]
-  RewriteRule ^spiritcandles/(favicon\.(ico|png)|robots\.txt|sitemap\.xml)$ - [L]
+  RewriteRule ^spiritcandles/(favicon\.(ico|png)|robots\.txt|sitemap\.xml|og-image-default\.jpg|og-image-home\.jpg)$ - [L]
+
+  # 3.3) Assicura Content-Type corretto per immagini OG e altre immagini
+  # Questo garantisce che le immagini vengano servite con il Content-Type corretto
+  <IfModule mod_mime.c>
+    AddType image/jpeg .jpg .jpeg
+    AddType image/png .png
+    AddType image/gif .gif
+    AddType image/webp .webp
+    AddType image/svg+xml .svg
+  </IfModule>
+
+  # 3.4) Cache per immagini (opzionale, migliora performance)
+  <IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+      Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+  </IfModule>
 
   # 3.5) Sitemap.xml: serve from Edge Function (auto-generated)
   # La sitemap viene generata dinamicamente dalla Edge Function Supabase

@@ -21,6 +21,11 @@ Options -MultiViews
   RewriteRule ^spiritcandles/(assets|images|img|videos|media|fonts|static)/ - [L]
   RewriteRule ^spiritcandles/(favicon\.(ico|png)|robots\.txt|sitemap\.xml)$ - [L]
 
+  # 3.5) Sitemap.xml: serve from Edge Function (auto-generated)
+  # La sitemap viene generata dinamicamente dalla Edge Function Supabase
+  RewriteCond %{REQUEST_URI} ^/sitemap\.xml$ [NC]
+  RewriteRule ^(.*)$ https://fhtuqmdlgzmpsbflxhra.supabase.co/functions/v1/generate-sitemap [R=302,L]
+
   # 4) Mappature comode per path assoluti "brevi"
   RewriteRule ^videos/(.*)$ /spiritcandles/videos/$1 [L]
   RewriteRule ^images/(.*)$ /spiritcandles/images/$1 [L]

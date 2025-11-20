@@ -34,14 +34,35 @@ Questa guida ti aiuta a configurare Cloudflare Workers per risolvere il problema
 
 ## 🛣️ Passo 4: Configura le Routes
 
-1. Nel dashboard del Worker, vai su **"Triggers"** → **"Routes"**
-2. Clicca su **"Add route"**
-3. Inserisci:
-   - **Route**: `spirit-candle.com/*`
-   - **Zone**: `spirit-candle.com`
-   - **Worker**: Seleziona il Worker appena creato
-4. Clicca su **"Add route"**
-5. Ripeti per `www.spirit-candle.com/*` se usi anche il www
+1. Nel dashboard del Worker, vai su **"Settings"** (tab in alto)
+2. Nella sezione **"Domains & Routes"**, clicca su **"+ Add"** (bottone blu in alto a destra)
+3. Si aprirà un modal "Route" sulla destra. Configura:
+   
+   **Zone:**
+   - Seleziona `spirit-candle.com` dal dropdown
+   - Il campo mostra "Click to copy" - puoi ignorarlo
+   
+   **Route:**
+   - Inserisci `spirit-candle.com/*` nel campo input
+   - Questo cattura tutte le richieste al dominio
+   
+   **Failure mode:**
+   - ⚠️ **IMPORTANTE**: Seleziona **"Fail open (proceed)"** (radio button)
+     - **Perché**: Se il Worker fallisce o supera il limite, le richieste passeranno comunque al server originale (Hostinger). Questo garantisce che il sito rimanga sempre accessibile.
+     - **"Fail closed (block)"** bloccherebbe tutto in caso di problemi - NON consigliato per un e-commerce!
+   
+4. Leggi il warning blu sul limite Free (100.000 richieste/giorno) - è normale
+5. Clicca su **"Add route"** (bottone in basso nel modal)
+6. Se usi anche `www.spirit-candle.com`, ripeti i passaggi 2-5 con:
+   - **Zone**: `spirit-candle.com` (stesso dominio)
+   - **Route**: `www.spirit-candle.com/*`
+   - **Failure mode**: **"Fail open (proceed)"**
+
+**Nota sul limite Free**: 
+- Il piano Free di Cloudflare include 100.000 richieste Worker/giorno
+- Con "Fail open", se superi il limite, le richieste passeranno comunque al server originale (Hostinger)
+- Per un e-commerce medio, 100.000 richieste/giorno sono più che sufficienti
+- Se superi regolarmente il limite, considera l'upgrade del piano
 
 ## ✅ Passo 5: Verifica la configurazione
 
@@ -54,12 +75,24 @@ Questa guida ti aiuta a configurare Cloudflare Workers per risolvere il problema
 ## 🔍 Test del Worker
 
 Puoi testare il Worker direttamente:
-h
+
+```bash
 # Test con curl simulando Facebook crawler
 curl -H "User-Agent: facebookexternalhit/1.1" https://spirit-candle.com/collections/luxury
 
 # Dovresti vedere l'HTML con i meta tag corretti
-# Verifica che og:url sia https://spirit-candle.com/collections/luxury## 📝 Note importanti
+# Verifica che og:url sia https://spirit-candle.com/collections/luxury
+
+# Test sitemap
+curl https://spirit-candle.com/sitemap.xml
+
+# Test homepage
+curl -H "User-Agent: facebookexternalhit/1.1" https://spirit-candle.com/
+```
+
+Oppure usa lo script di test completo: `test-cloudflare-worker.js`
+
+## 📝 Note importanti
 
 - **DNS Propagation**: I nameserver possono richiedere fino a 48 ore per propagarsi
 - **Cache**: Cloudflare cache le risposte per 1 ora. Puoi invalidare la cache dal dashboard se necessario

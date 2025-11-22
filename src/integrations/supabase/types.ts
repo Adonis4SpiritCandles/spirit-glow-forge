@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      about_settings: {
+        Row: {
+          created_at: string | null
+          features: Json | null
+          features_section_description_en: string | null
+          features_section_description_pl: string | null
+          features_section_title_en: string | null
+          features_section_title_pl: string | null
+          hero_animation_enabled: boolean | null
+          hero_button_link: string | null
+          hero_button_text_en: string | null
+          hero_button_text_pl: string | null
+          hero_fluorescent_enabled: boolean | null
+          hero_fluorescent_intensity: number | null
+          hero_image_size: string | null
+          hero_image_url: string | null
+          hero_image_url_external: string | null
+          hero_intro1_en: string | null
+          hero_intro1_pl: string | null
+          hero_intro2_en: string | null
+          hero_intro2_pl: string | null
+          hero_parallax_strength: number | null
+          hero_title_en: string | null
+          hero_title_pl: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          features?: Json | null
+          features_section_description_en?: string | null
+          features_section_description_pl?: string | null
+          features_section_title_en?: string | null
+          features_section_title_pl?: string | null
+          hero_animation_enabled?: boolean | null
+          hero_button_link?: string | null
+          hero_button_text_en?: string | null
+          hero_button_text_pl?: string | null
+          hero_fluorescent_enabled?: boolean | null
+          hero_fluorescent_intensity?: number | null
+          hero_image_size?: string | null
+          hero_image_url?: string | null
+          hero_image_url_external?: string | null
+          hero_intro1_en?: string | null
+          hero_intro1_pl?: string | null
+          hero_intro2_en?: string | null
+          hero_intro2_pl?: string | null
+          hero_parallax_strength?: number | null
+          hero_title_en?: string | null
+          hero_title_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          features?: Json | null
+          features_section_description_en?: string | null
+          features_section_description_pl?: string | null
+          features_section_title_en?: string | null
+          features_section_title_pl?: string | null
+          hero_animation_enabled?: boolean | null
+          hero_button_link?: string | null
+          hero_button_text_en?: string | null
+          hero_button_text_pl?: string | null
+          hero_fluorescent_enabled?: boolean | null
+          hero_fluorescent_intensity?: number | null
+          hero_image_size?: string | null
+          hero_image_url?: string | null
+          hero_image_url_external?: string | null
+          hero_intro1_en?: string | null
+          hero_intro1_pl?: string | null
+          hero_intro2_en?: string | null
+          hero_intro2_pl?: string | null
+          hero_parallax_strength?: number | null
+          hero_title_en?: string | null
+          hero_title_pl?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       badge_rewards: {
         Row: {
           badge_id: string
@@ -473,7 +560,13 @@ export type Database = {
         Row: {
           created_at: string | null
           fragrances: Json | null
+          hero_animation_enabled: boolean | null
+          hero_fluorescent_enabled: boolean | null
+          hero_fluorescent_intensity: number | null
+          hero_image_size: string | null
           hero_image_url: string | null
+          hero_image_url_external: string | null
+          hero_parallax_strength: number | null
           id: string
           info_card_text_en: string | null
           info_card_text_pl: string | null
@@ -488,7 +581,13 @@ export type Database = {
         Insert: {
           created_at?: string | null
           fragrances?: Json | null
+          hero_animation_enabled?: boolean | null
+          hero_fluorescent_enabled?: boolean | null
+          hero_fluorescent_intensity?: number | null
+          hero_image_size?: string | null
           hero_image_url?: string | null
+          hero_image_url_external?: string | null
+          hero_parallax_strength?: number | null
           id?: string
           info_card_text_en?: string | null
           info_card_text_pl?: string | null
@@ -503,7 +602,13 @@ export type Database = {
         Update: {
           created_at?: string | null
           fragrances?: Json | null
+          hero_animation_enabled?: boolean | null
+          hero_fluorescent_enabled?: boolean | null
+          hero_fluorescent_intensity?: number | null
+          hero_image_size?: string | null
           hero_image_url?: string | null
+          hero_image_url_external?: string | null
+          hero_parallax_strength?: number | null
           id?: string
           info_card_text_en?: string | null
           info_card_text_pl?: string | null
@@ -595,6 +700,36 @@ export type Database = {
           processed_at?: string | null
           request_type?: string
           status?: string | null
+        }
+        Relationships: []
+      }
+      email_marketing_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          show_newsletter_checkbox_contact: boolean | null
+          show_newsletter_checkbox_registration: boolean | null
+          show_newsletter_section_homepage: boolean | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          show_newsletter_checkbox_contact?: boolean | null
+          show_newsletter_checkbox_registration?: boolean | null
+          show_newsletter_section_homepage?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          show_newsletter_checkbox_contact?: boolean | null
+          show_newsletter_checkbox_registration?: boolean | null
+          show_newsletter_section_homepage?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -907,6 +1042,42 @@ export type Database = {
         }
         Relationships: []
       }
+      homepage_community_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          subtitle_en: string | null
+          subtitle_pl: string | null
+          title_en: string | null
+          title_pl: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          subtitle_en?: string | null
+          subtitle_pl?: string | null
+          title_en?: string | null
+          title_pl?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          subtitle_en?: string | null
+          subtitle_pl?: string | null
+          title_en?: string | null
+          title_pl?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       homepage_features: {
         Row: {
           created_at: string | null
@@ -1051,6 +1222,63 @@ export type Database = {
           updated_at?: string | null
           updated_by?: string | null
           video_url?: string
+        }
+        Relationships: []
+      }
+      homepage_sections_toggle: {
+        Row: {
+          community_section_active: boolean | null
+          created_at: string | null
+          features_section_active: boolean | null
+          hero_section_active: boolean | null
+          hero_text_active: boolean | null
+          id: string
+          newsletter_section_active: boolean | null
+          product_carousel_active: boolean | null
+          scent_journey_active: boolean | null
+          testimonials_navigation_enabled_desktop: boolean | null
+          testimonials_navigation_enabled_mobile: boolean | null
+          testimonials_navigation_enabled_tablet: boolean | null
+          testimonials_section_active: boolean | null
+          trust_badges_active: boolean | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          community_section_active?: boolean | null
+          created_at?: string | null
+          features_section_active?: boolean | null
+          hero_section_active?: boolean | null
+          hero_text_active?: boolean | null
+          id?: string
+          newsletter_section_active?: boolean | null
+          product_carousel_active?: boolean | null
+          scent_journey_active?: boolean | null
+          testimonials_navigation_enabled_desktop?: boolean | null
+          testimonials_navigation_enabled_mobile?: boolean | null
+          testimonials_navigation_enabled_tablet?: boolean | null
+          testimonials_section_active?: boolean | null
+          trust_badges_active?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          community_section_active?: boolean | null
+          created_at?: string | null
+          features_section_active?: boolean | null
+          hero_section_active?: boolean | null
+          hero_text_active?: boolean | null
+          id?: string
+          newsletter_section_active?: boolean | null
+          product_carousel_active?: boolean | null
+          scent_journey_active?: boolean | null
+          testimonials_navigation_enabled_desktop?: boolean | null
+          testimonials_navigation_enabled_mobile?: boolean | null
+          testimonials_navigation_enabled_tablet?: boolean | null
+          testimonials_section_active?: boolean | null
+          trust_badges_active?: boolean | null
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -2224,6 +2452,7 @@ export type Database = {
           title_en: string | null
           title_pl: string | null
           updated_at: string | null
+          use_specific_meta: boolean | null
         }
         Insert: {
           created_at?: string | null
@@ -2238,6 +2467,7 @@ export type Database = {
           title_en?: string | null
           title_pl?: string | null
           updated_at?: string | null
+          use_specific_meta?: boolean | null
         }
         Update: {
           created_at?: string | null
@@ -2252,6 +2482,7 @@ export type Database = {
           title_en?: string | null
           title_pl?: string | null
           updated_at?: string | null
+          use_specific_meta?: boolean | null
         }
         Relationships: []
       }
@@ -2619,6 +2850,7 @@ export type Database = {
           username: string
         }[]
       }
+      generate_unique_referral_code: { Args: never; Returns: string }
       get_current_user_role: { Args: never; Returns: string }
       get_spirit_leaderboard: {
         Args: { limit_count: number; time_period: string }

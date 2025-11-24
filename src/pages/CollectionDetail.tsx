@@ -64,7 +64,9 @@ export default function CollectionDetail() {
       }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();

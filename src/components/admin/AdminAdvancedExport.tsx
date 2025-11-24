@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { exportData, ExportFormat, ExportData } from '@/utils/exportHelpers';
 import { Download, Calendar as CalendarIcon, FileText, Database, Users, ShoppingCart, Package, Upload, Archive, Save, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { format } from 'date-fns';
+import { format as formatDate } from 'date-fns';
 import { toast } from 'sonner';
 
 type ExportType = 'analytics' | 'referrals' | 'customers' | 'orders' | 'products';
@@ -93,7 +93,7 @@ export default function AdminAdvancedExport() {
     const dateMap = new Map<string, { orders: number; revenue: number; customers: Set<string> }>();
     
     orders?.forEach(order => {
-      const date = format(new Date(order.created_at), 'yyyy-MM-dd');
+      const date = formatDate(new Date(order.created_at), 'yyyy-MM-dd');
       if (!dateMap.has(date)) {
         dateMap.set(date, { orders: 0, revenue: 0, customers: new Set() });
       }
@@ -116,7 +116,7 @@ export default function AdminAdvancedExport() {
     return {
       headers: selectedMetrics.map(m => m.replace(/_/g, ' ').toUpperCase()),
       rows,
-      filename: `analytics_${format(dateFrom, 'yyyy-MM-dd')}_${format(dateTo, 'yyyy-MM-dd')}`
+      filename: `analytics_${formatDate(dateFrom, 'yyyy-MM-dd')}_${formatDate(dateTo, 'yyyy-MM-dd')}`
     };
   };
 
@@ -172,7 +172,7 @@ export default function AdminAdvancedExport() {
     return {
       headers: selectedMetrics.map(m => m.replace(/_/g, ' ').toUpperCase()),
       rows,
-      filename: `referrals_${format(dateFrom, 'yyyy-MM-dd')}_${format(dateTo, 'yyyy-MM-dd')}`
+      filename: `referrals_${formatDate(dateFrom, 'yyyy-MM-dd')}_${formatDate(dateTo, 'yyyy-MM-dd')}`
     };
   };
 
@@ -207,14 +207,14 @@ export default function AdminAdvancedExport() {
       if (selectedMetrics.includes('total_orders')) row.push(totalOrders);
       if (selectedMetrics.includes('total_spent')) row.push(totalSpent.toFixed(2));
       if (selectedMetrics.includes('loyalty_points')) row.push(profile.spirit_points || 0);
-      if (selectedMetrics.includes('registered_at')) row.push(format(new Date(profile.created_at), 'yyyy-MM-dd'));
+      if (selectedMetrics.includes('registered_at')) row.push(formatDate(new Date(profile.created_at), 'yyyy-MM-dd'));
       return row;
     });
 
     return {
       headers: selectedMetrics.map(m => m.replace(/_/g, ' ').toUpperCase()),
       rows,
-      filename: `customers_${format(dateFrom, 'yyyy-MM-dd')}_${format(dateTo, 'yyyy-MM-dd')}`
+      filename: `customers_${formatDate(dateFrom, 'yyyy-MM-dd')}_${formatDate(dateTo, 'yyyy-MM-dd')}`
     };
   };
 
@@ -244,7 +244,7 @@ export default function AdminAdvancedExport() {
       }
       if (selectedMetrics.includes('total')) row.push(order.total_pln.toFixed(2));
       if (selectedMetrics.includes('status')) row.push(order.status);
-      if (selectedMetrics.includes('created_at')) row.push(format(new Date(order.created_at), 'yyyy-MM-dd HH:mm'));
+      if (selectedMetrics.includes('created_at')) row.push(formatDate(new Date(order.created_at), 'yyyy-MM-dd HH:mm'));
       if (selectedMetrics.includes('shipping_status')) row.push(order.shipping_status || 'N/A');
       return row;
     });
@@ -252,7 +252,7 @@ export default function AdminAdvancedExport() {
     return {
       headers: selectedMetrics.map(m => m.replace(/_/g, ' ').toUpperCase()),
       rows,
-      filename: `orders_${format(dateFrom, 'yyyy-MM-dd')}_${format(dateTo, 'yyyy-MM-dd')}`
+      filename: `orders_${formatDate(dateFrom, 'yyyy-MM-dd')}_${formatDate(dateTo, 'yyyy-MM-dd')}`
     };
   };
 
@@ -293,12 +293,12 @@ export default function AdminAdvancedExport() {
     return {
       headers: selectedMetrics.map(m => m.replace(/_/g, ' ').toUpperCase()),
       rows,
-      filename: `products_${format(new Date(), 'yyyy-MM-dd')}`
+      filename: `products_${formatDate(new Date(), 'yyyy-MM-dd')}`
     };
   };
 
   // Backup functions
-  const exportFullBackup = async (format: 'xlsx' | 'csv' | 'txt' | 'json') => {
+  const exportFullBackup = async (exportFormat: 'xlsx' | 'csv' | 'txt' | 'json') => {
     try {
       const backup: any = {};
 
@@ -322,9 +322,9 @@ export default function AdminAdvancedExport() {
       const { data: categoriesData } = await supabase.from('collections').select('*');
       backup.categories = categoriesData || [];
 
-      // Social Media
-      const { data: socialData } = await supabase.from('social_media').select('*');
-      backup.social = socialData || [];
+      // Social Media - DISABLED (table does not exist)
+      // const { data: socialData } = await supabase.from('social_media').select('*');
+      // backup.social = socialData || [];
 
       // Coupons
       const { data: couponsData } = await supabase.from('coupons').select('*');
@@ -344,12 +344,12 @@ export default function AdminAdvancedExport() {
       // Collections
       backup.collections = categoriesData || [];
 
-      if (format === 'json') {
+      if (exportFormat === 'json') {
         const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `full_backup_${format(new Date(), 'yyyy-MM-dd')}.json`;
+        link.download = `full_backup_${formatDate(new Date(), 'yyyy-MM-dd')}.json`;
         link.click();
         URL.revokeObjectURL(url);
         toast.success(language === 'pl' ? 'Backup completo esportato' : 'Full backup exported');
@@ -362,9 +362,9 @@ export default function AdminAdvancedExport() {
             Array.isArray(value) ? value.length : 1,
             JSON.stringify(value)
           ]),
-          filename: `full_backup_${format(new Date(), 'yyyy-MM-dd')}`
+          filename: `full_backup_${formatDate(new Date(), 'yyyy-MM-dd')}`
         };
-        exportData(exportDataResult, format as ExportFormat);
+        exportData(exportDataResult, exportFormat as ExportFormat);
         toast.success(language === 'pl' ? 'Backup completo esportato' : 'Full backup exported');
       }
     } catch (error) {
@@ -403,10 +403,11 @@ export default function AdminAdvancedExport() {
         if (error) throw error;
       }
       
-      if (backup.social && Array.isArray(backup.social)) {
-        const { error } = await supabase.from('social_media').upsert(backup.social, { onConflict: 'id' });
-        if (error) throw error;
-      }
+      // Social Media - DISABLED (table does not exist)
+      // if (backup.social && Array.isArray(backup.social)) {
+      //   const { error } = await supabase.from('social_media').upsert(backup.social, { onConflict: 'id' });
+      //   if (error) throw error;
+      // }
       
       if (backup.coupons && Array.isArray(backup.coupons)) {
         const { error } = await supabase.from('coupons').upsert(backup.coupons, { onConflict: 'id' });
@@ -463,10 +464,10 @@ export default function AdminAdvancedExport() {
           const { data: categories } = await supabase.from('collections').select('*');
           data = categories || [];
           break;
-        case 'social':
-          const { data: social } = await supabase.from('social_media').select('*');
-          data = social || [];
-          break;
+        // case 'social': - DISABLED (table does not exist)
+        //   const { data: social } = await supabase.from('social_media').select('*');
+        //   data = social || [];
+        //   break;
         case 'coupons':
           const { data: coupons } = await supabase.from('coupons').select('*');
           data = coupons || [];
@@ -489,12 +490,12 @@ export default function AdminAdvancedExport() {
           break;
       }
 
-      if (format === 'json') {
+      if (exportFormat === 'json') {
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${category}_backup_${format(new Date(), 'yyyy-MM-dd')}.json`;
+        link.download = `${category}_backup_${formatDate(new Date(), 'yyyy-MM-dd')}.json`;
         link.click();
         URL.revokeObjectURL(url);
         toast.success(language === 'pl' ? `Backup ${category} esportato` : `${category} backup exported`);
@@ -505,9 +506,9 @@ export default function AdminAdvancedExport() {
           rows: Array.isArray(data) 
             ? data.map(item => Object.values(item))
             : [[JSON.stringify(data)]],
-          filename: `${category}_backup_${format(new Date(), 'yyyy-MM-dd')}`
+          filename: `${category}_backup_${formatDate(new Date(), 'yyyy-MM-dd')}`
         };
-        exportData(exportDataResult, format as ExportFormat);
+        exportData(exportDataResult, exportFormat as ExportFormat);
         toast.success(language === 'pl' ? `Backup ${category} esportato` : `${category} backup exported`);
       }
     } catch (error) {
@@ -558,12 +559,12 @@ export default function AdminAdvancedExport() {
             error = result.error;
           }
           break;
-        case 'social':
-          if (Array.isArray(data)) {
-            const result = await supabase.from('social_media').upsert(data, { onConflict: 'id' });
-            error = result.error;
-          }
-          break;
+        // case 'social': - DISABLED (table does not exist)
+        //   if (Array.isArray(data)) {
+        //     const result = await supabase.from('social_media').upsert(data, { onConflict: 'id' });
+        //     error = result.error;
+        //   }
+        //   break;
         case 'coupons':
           if (Array.isArray(data)) {
             const result = await supabase.from('coupons').upsert(data, { onConflict: 'id' });
@@ -695,7 +696,7 @@ export default function AdminAdvancedExport() {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full sm:w-[150px] justify-start text-xs sm:text-sm truncate">
                       <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                      <span className="truncate">{format(dateFrom, 'PPP')}</span>
+                      <span className="truncate">{formatDate(dateFrom, 'PPP')}</span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -710,7 +711,7 @@ export default function AdminAdvancedExport() {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full sm:w-[150px] justify-start text-xs sm:text-sm truncate">
                       <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                      <span className="truncate">{format(dateTo, 'PPP')}</span>
+                      <span className="truncate">{formatDate(dateTo, 'PPP')}</span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">

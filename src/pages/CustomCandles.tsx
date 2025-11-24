@@ -65,7 +65,9 @@ const CustomCandles = () => {
       }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const [heroSettings, setHeroSettings] = useState<any>(null);

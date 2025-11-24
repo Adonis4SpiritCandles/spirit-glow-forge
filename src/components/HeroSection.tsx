@@ -111,13 +111,15 @@ const HeroSection = () => {
           }
         });
       },
-      { threshold: 0.2, triggerOnce: true }
+      { threshold: 0.2 }
     );
+
+    const observerRef = observer; // Store ref to disconnect
 
     observer.observe(textContainerRef.current);
 
     return () => {
-      observer.disconnect();
+      observerRef.disconnect();
     };
   }, []);
 

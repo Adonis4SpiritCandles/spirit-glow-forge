@@ -71,7 +71,9 @@ const Shop = () => {
       }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");

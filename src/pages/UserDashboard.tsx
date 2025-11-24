@@ -137,7 +137,9 @@ const UserDashboard = () => {
       }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);

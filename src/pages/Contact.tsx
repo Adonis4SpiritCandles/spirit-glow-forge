@@ -70,7 +70,9 @@ const Contact = () => {
       }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
   const [formData, setFormData] = useState({
     name: "",

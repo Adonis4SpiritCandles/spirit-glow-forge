@@ -159,7 +159,9 @@ const AdminDashboard = () => {
       }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -198,6 +200,7 @@ const AdminDashboard = () => {
     weight: '',
     stock_quantity: 0,
     image_url: '',
+    collection_id: '',
     image_urls: [] as string[],
     preferred_card_tag: 'category' as string
   });
@@ -751,7 +754,7 @@ const AdminDashboard = () => {
     // Filter by collections
     if (productFilterCollections.length > 0) {
       filtered = filtered.filter(product => {
-        const productCollectionIds = (product.product_collections || [])
+        const productCollectionIds = ((product as any).product_collections || [])
           .map((pc: any) => pc.collection?.id)
           .filter(Boolean);
         return productFilterCollections.some(colId => productCollectionIds.includes(colId));
@@ -1000,6 +1003,7 @@ const AdminDashboard = () => {
       stock_quantity: product.stock_quantity,
       image_url: product.image_url || '',
       image_urls: (product as any).image_urls || [],
+      collection_id: '',
       preferred_card_tag: (product as any).preferred_card_tag || 'category'
     });
     setIsEditModalOpen(true); // Use Dialog instead of inline form
@@ -1811,7 +1815,8 @@ const AdminDashboard = () => {
                     stock_quantity: 0,
                     image_url: '',
                     image_urls: [],
-                    preferred_card_tag: 'category'
+                    preferred_card_tag: 'category',
+                    collection_id: ''
                   });
                   setSelectedCollections([]);
                   setIsEditModalOpen(true); // Use Dialog instead of inline form

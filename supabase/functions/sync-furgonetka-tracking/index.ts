@@ -1,3 +1,4 @@
+// file in "supabase/functions/sync-furgonetka-tracking/index.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.1';
 
 const corsHeaders = {
